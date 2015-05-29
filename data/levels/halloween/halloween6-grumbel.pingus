@@ -10,7 +10,7 @@ This is a risky trip, but you must take it to find out how to bring them all to 
     (number-of-pingus 40)
     (number-to-save 35)
     (time -1)
-    (music "gd-ite.it")
+    (music "gd-ite.wav")
     (actions 
       (basher 5)
       (blocker 5)

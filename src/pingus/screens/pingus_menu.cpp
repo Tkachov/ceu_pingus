@@ -93,7 +93,7 @@ PingusMenu::PingusMenu() :
 
   help = _("..:: Ctrl-g: mouse grab   ::   F10: fps counter   ::   F11: fullscreen   ::   F12: screenshot ::..");
 
-  Sound::PingusSound::play_music("pingus-1.it");
+  Sound::PingusSound::play_music("pingus-1.wav");
 }
 
 PingusMenu::~PingusMenu()

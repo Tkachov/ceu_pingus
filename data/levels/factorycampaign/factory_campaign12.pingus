@@ -8,7 +8,7 @@
     (number-of-pingus 30)
     (number-to-save 25)
     (time -1)
-    (music "goin_march.it")
+    (music "goin_march.wav")
     (actions 
       (basher 5)
       (blocker 5)

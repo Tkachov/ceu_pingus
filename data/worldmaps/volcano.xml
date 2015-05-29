@@ -3,7 +3,7 @@
     <name>Volcano Island</name>
     <short-name>volcano</short-name>
     <description>Be careful, it's hot!</description>
-    <music>gd-myla.it</music>
+    <music>gd-myla.wav</music>
     <author>Ingo Ruhnke</author>
     <email>grumbel@gmx.de</email>
     <width>800</width>
@@ -14,7 +14,7 @@
   
   <intro_story>
     <title>Volcano Island</title>
-    <music>pingus-6.it</music>
+    <music>pingus-6.wav</music>
     <pages>
       <page01>
         <surface>
@@ -35,7 +35,7 @@
   
   <end_story>
     <title>Volcano Island</title>
-    <music>pingus-6.it</music>
+    <music>pingus-6.wav</music>
     <pages>
       <page01>
         <surface>

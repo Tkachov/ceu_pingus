@@ -13,7 +13,7 @@
     (difficulty 0)
     (playable 1)
     (comment "remake of So close but so far away from the game Lemmings 2 - The Tribes")
-    (music "pingus-7.it")
+    (music "pingus-7.wav")
     (actions 
       (basher 2)
       (blocker 2)

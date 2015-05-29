@@ -13,7 +13,7 @@
     (difficulty 0)
     (playable 1)
     (comment "")
-    (music "pingus-7.it")
+    (music "pingus-7.wav")
     (actions 
       (basher 99)
       (blocker 99)

@@ -9,7 +9,7 @@
     (number-of-pingus 100)
     (number-to-save 100)
     (time -1)
-    (music "pingus-5.it")
+    (music "pingus-5.wav")
     (actions 
       (miner 2))
     (levelsize 1920 1200)

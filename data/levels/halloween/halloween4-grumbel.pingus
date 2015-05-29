@@ -8,7 +8,7 @@
     (number-of-pingus 20)
     (number-to-save 5)
     (time -1)
-    (music "gd-ite.it")
+    (music "gd-ite.wav")
     (actions 
       (bridger 10)
       (floater 10)

@@ -4,7 +4,7 @@
     (name "Tutorial Island")
     (short-name "tutorial")
     (description "Learn the basics")
-    (music "pingus-1.it")
+    (music "pingus-1.wav")
     (author "Ingo Ruhnke")
     (email "grumbel@gmx.de")
     (width 1920)

@@ -8,7 +8,7 @@
     (number-of-pingus 30)
     (number-to-save 25)
     (time -1)
-    (music "pingus-3.it")
+    (music "pingus-3.wav")
     (actions 
       (basher 1)
       (blocker 1)

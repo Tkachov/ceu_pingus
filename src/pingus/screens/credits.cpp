@@ -204,7 +204,7 @@ void
 Credits::on_startup ()
 {
   offset = static_cast<float>(Display::get_height()) - 50;
-  //PingusSound::play_music("pingus-5.it");
+  //PingusSound::play_music("pingus-5.wav");
 }
 
 void

@@ -13,7 +13,7 @@
     (difficulty 35)
     (playable 1)
     (comment "")
-    (music "pingus-5.it")
+    (music "pingus-5.wav")
     (actions 
       (basher 5)
       (blocker 3)

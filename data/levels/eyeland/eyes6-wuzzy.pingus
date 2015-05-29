@@ -13,7 +13,7 @@
     (difficulty 0)
     (playable 1)
     (comment "")
-    (music "rough_journey.it")
+    (music "rough_journey.wav")
     (actions 
       (basher 5)
       (blocker 2)

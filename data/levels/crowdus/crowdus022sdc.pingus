@@ -8,7 +8,7 @@
     (number-of-pingus 8)
     (number-to-save 8)
     (time -1)
-    (music "pingus-2.it")
+    (music "pingus-2.wav")
     (actions 
       (slider 13))
     (levelsize 1920 1200))

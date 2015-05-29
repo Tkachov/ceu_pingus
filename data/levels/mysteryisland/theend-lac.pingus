@@ -13,7 +13,7 @@
     (difficulty 30)
     (playable 1)
     (comment "")
-    (music "pingus-3.it")
+    (music "pingus-3.wav")
     (actions )
     (levelsize 1800 600))
   (objects 

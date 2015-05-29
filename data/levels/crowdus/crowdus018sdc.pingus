@@ -10,7 +10,7 @@ Hints: 1) Don't leave gaps when bridging. 3) Really take care and keep careful t
     (number-of-pingus 8)
     (number-to-save 8)
     (time -1)
-    (music "pingus-7.it")
+    (music "pingus-7.wav")
     (actions 
       (bridger 3)
       (climber 1)

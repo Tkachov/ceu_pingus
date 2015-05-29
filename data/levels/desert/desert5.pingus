@@ -8,7 +8,7 @@
     (number-of-pingus 30)
     (number-to-save 20)
     (time -1)
-    (music "gd-cancn.it")
+    (music "gd-cancn.wav")
     (actions 
       (blocker 5)
       (bomber 10)

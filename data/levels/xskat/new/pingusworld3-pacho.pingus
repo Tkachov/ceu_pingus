@@ -11,7 +11,7 @@
     (difficulty 20)
     (playable 1)
     (comment "got broken due to the new head-bounce feature")
-    (music "pingus-4.it")
+    (music "pingus-4.wav")
     (actions 
       (basher 15)
       (blocker 15)

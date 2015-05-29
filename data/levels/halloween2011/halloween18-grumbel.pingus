@@ -8,7 +8,7 @@
     (number-of-pingus 50)
     (number-to-save 48)
     (time -1)
-    (music "sorcerer.it")
+    (music "sorcerer.wav")
     (actions 
       (digger 50)
       (jumper 20))

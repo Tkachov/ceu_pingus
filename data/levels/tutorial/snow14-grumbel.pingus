@@ -8,7 +8,7 @@
     (number-of-pingus 35)
     (number-to-save 15)
     (time -1)
-    (music "pingus-8.it")
+    (music "pingus-8.wav")
     (actions 
       (blocker 20)
       (bomber 20))

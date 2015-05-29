@@ -8,7 +8,7 @@
     (number-of-pingus 100)
     (number-to-save 80)
     (time -1)
-    (music "gd-cancn.it")
+    (music "gd-cancn.wav")
     (actions 
       (basher 3)
       (blocker 15)

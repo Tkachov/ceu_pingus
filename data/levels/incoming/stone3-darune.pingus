@@ -13,7 +13,7 @@
     (difficulty 40)
     (playable 0)
     (comment )
-    (music "pingus-5.it")
+    (music "pingus-5.wav")
     (actions 
       (bomber 50)
       (floater 10)

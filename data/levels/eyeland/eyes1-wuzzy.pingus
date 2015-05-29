@@ -13,7 +13,7 @@
     (difficulty 0)
     (playable 1)
     (comment "")
-    (music "pingus-4.it")
+    (music "pingus-4.wav")
     (actions 
       (basher 2)
       (climber 1)

@@ -276,11 +276,11 @@ ResultScreen::on_startup()
 {
   if (result.success())
   {
-    Sound::PingusSound::play_music("success_1.it", 1.f, false);
+    Sound::PingusSound::play_music("success_1.wav", 1.f, false);
   }
   else
   {
-    Sound::PingusSound::play_music("pingus-2.it", 1.f, false);
+    Sound::PingusSound::play_music("pingus-2.wav", 1.f, false);
   }
 }
 

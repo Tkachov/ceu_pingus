@@ -4,7 +4,7 @@
     <name>Tutorial Island</name>
     <short-name>tutorial</short-name>
     <description>Learn the basics</description>
-    <music>pingus-1.it</music>
+    <music>pingus-1.wav</music>
     <author>Ingo Ruhnke</author>
     <email>grumbel@gmx.de</email>
     <width>1161</width>
@@ -15,7 +15,7 @@
   
   <intro_story>
     <title>The Journey Begins</title>
-    <music>pingus-4.it</music>
+    <music>pingus-4.wav</music>
     <pages>
       <page00>
         <surface>
@@ -78,7 +78,7 @@
   
   <end_story>
     <title>The Journey Continues</title>
-    <music>pingus-4.it</music>
+    <music>pingus-4.wav</music>
     <pages>
       <page01>
         <surface>

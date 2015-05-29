@@ -9,7 +9,7 @@
     (number-of-pingus 50)
     (number-to-save 45)
     (time -1)
-    (music "pingus-5.it")
+    (music "pingus-5.wav")
     (actions 
       (basher 5)
       (blocker 1)

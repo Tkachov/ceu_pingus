@@ -8,7 +8,7 @@
     (number-of-pingus 10)
     (number-to-save 5)
     (time -1)
-    (music "pingus-7.it")
+    (music "pingus-7.wav")
     (actions 
       (digger 10))
     (levelsize 1920 1200))

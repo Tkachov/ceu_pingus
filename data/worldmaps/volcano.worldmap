@@ -4,7 +4,7 @@
     (name "Volcano Island")
     (short-name "volcano")
     (description "Be careful, it's hot!")
-    (music "gd-myla.it")
+    (music "gd-myla.wav")
     (author "Ingo Ruhnke")
     (email "grumbel@gmx.de")
     (width 800)
@@ -13,7 +13,7 @@
     (final-node "leveldot_19"))
   (intro_story 
     (title "Volcano Island")
-    (music "pingus-6.it")
+    (music "pingus-6.wav")
     (pages 
       (page01 
         (surface 
@@ -27,7 +27,7 @@
         (text "This is page 2 of the volcano story."))))
   (end_story 
     (title "Volcano Island")
-    (music "pingus-6.it")
+    (music "pingus-6.wav")
     (pages 
       (page01 
         (surface 

@@ -13,7 +13,7 @@
     (difficulty 35)
     (playable 1)
     (comment "")
-    (music "gd-matth.it")
+    (music "gd-matth.wav")
     (actions 
       (jumper 140))
     (levelsize 2314 600))

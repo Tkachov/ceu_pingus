@@ -8,7 +8,7 @@
     (number-of-pingus 5)
     (number-to-save 2)
     (time -1)
-    (music "rough_journey.it")
+    (music "rough_journey.wav")
     (actions 
       (blocker 2)
       (bomber 1))

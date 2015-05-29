@@ -8,7 +8,7 @@
     (number-of-pingus 8)
     (number-to-save 8)
     (time -1)
-    (music "rough_journey.it")
+    (music "rough_journey.wav")
     (actions 
       (basher 1)
       (bridger 5)

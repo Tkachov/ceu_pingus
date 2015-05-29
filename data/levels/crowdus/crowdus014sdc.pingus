@@ -10,7 +10,7 @@ Hint: Markers (clues) are provided for when a Pingu should do something.")
     (number-of-pingus 8)
     (number-to-save 8)
     (time -1)
-    (music "gd-ite.it")
+    (music "gd-ite.wav")
     (actions 
       (bridger 7)
       (climber 5)

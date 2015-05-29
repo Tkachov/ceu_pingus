@@ -9,7 +9,7 @@ travling for so long that it is christmas")
     (number-of-pingus 50)
     (number-to-save 40)
     (time -1)
-    (music "pingus-1.it")
+    (music "pingus-1.wav")
     (actions 
       (basher 2)
       (blocker 6)

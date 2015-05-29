@@ -61,25 +61,23 @@ install-exec: build/pingus
 install-data:
 	cd data/ && \
 	find . \
-        -type f -a  \( \
-        -name "*.png" -o \
-        -name "*.jpg" -o \
-        -name "*.wav" -o \
-        -name "*.scm" -o \
-        -name "*.font" -o \
-        -name "*.story" -o \
-        -name "*.credits" -o \
-        -name "*.prefab" -o \
-        -name "*.it" -o \
-        -name "*.ogg" -o \
-        -name "*.s3m" -o \
-        -name "*.po" -o \
-        -name "*.worldmap" -o \
-        -name "*.res" -o \
-        -name "*.pingus" -o \
-        -name "*.levelset" -o \
-        -name "*.sprite" \
-        \) -exec install -D {} $(DESTDIR)$(DATADIR)/{} \;
+		-type f -a  \( \
+		-name "*.png" -o \
+		-name "*.jpg" -o \
+		-name "*.scm" -o \
+		-name "*.font" -o \
+		-name "*.story" -o \
+		-name "*.credits" -o \
+		-name "*.prefab" -o \
+		-name "*.wav" -o \
+		-name "*.ogg" -o \
+		-name "*.po" -o \
+		-name "*.worldmap" -o \
+		-name "*.res" -o \
+		-name "*.pingus" -o \
+		-name "*.levelset" -o \
+		-name "*.sprite" \
+		\) -exec install -D {} $(DESTDIR)$(DATADIR)/{} \;
 
 install-man:
 	install -D doc/man/pingus.6 "$(DESTDIR)$(MANDIR)/man1/pingus.6"

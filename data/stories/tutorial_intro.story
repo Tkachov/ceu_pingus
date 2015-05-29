@@ -1,6 +1,6 @@
 (pingus-story
  (title "The Journey Begins")
- (music "pingus-4.it")
+ (music "pingus-4.wav")
  (pages 
   (page 
    (surface 

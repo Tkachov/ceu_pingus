@@ -50,15 +50,13 @@ install-data:
         -type f -a  \( \
         -name "*.png" -o \
         -name "*.jpg" -o \
-        -name "*.wav" -o \
         -name "*.scm" -o \
         -name "*.font" -o \
         -name "*.story" -o \
         -name "*.credits" -o \
         -name "*.prefab" -o \
-        -name "*.it" -o \
+        -name "*.wav" -o \
         -name "*.ogg" -o \
-        -name "*.s3m" -o \
         -name "*.po" -o \
         -name "*.worldmap" -o \
         -name "*.res" -o \

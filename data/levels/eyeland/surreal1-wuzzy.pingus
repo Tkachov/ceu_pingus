@@ -13,7 +13,7 @@
     (difficulty 0)
     (playable 1)
     (comment "")
-    (music "the_big_march_in_space.it")
+    (music "the_big_march_in_space.wav")
     (actions 
       (basher 2)
       (bridger 5)

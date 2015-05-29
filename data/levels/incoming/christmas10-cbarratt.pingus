@@ -9,7 +9,7 @@ closer to ther smoke")
     (number-of-pingus 50)
     (number-to-save 20)
     (time -1)
-    (music "pingus-3.it")
+    (music "pingus-3.wav")
     (actions 
       (blocker 2)
       (bridger 5)

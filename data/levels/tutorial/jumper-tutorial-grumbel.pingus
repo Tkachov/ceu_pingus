@@ -8,7 +8,7 @@
     (number-of-pingus 25)
     (number-to-save 5)
     (time -1)
-    (music "pingus-5.it")
+    (music "pingus-5.wav")
     (actions 
       (jumper 80))
     (levelsize 1920 1200))

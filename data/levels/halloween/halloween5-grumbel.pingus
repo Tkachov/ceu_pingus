@@ -10,7 +10,7 @@ Yet again the solution is your call... your gray matter is the key to the Pingus
     (number-of-pingus 40)
     (number-to-save 30)
     (time -1)
-    (music "sorcerer.it")
+    (music "sorcerer.wav")
     (actions 
       (basher 5)
       (blocker 5)

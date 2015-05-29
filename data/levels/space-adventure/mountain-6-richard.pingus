@@ -8,7 +8,7 @@
     (number-of-pingus 60)
     (number-to-save 40)
     (time -1)
-    (music "gd-ite.it")
+    (music "gd-ite.wav")
     (actions 
       (basher 3)
       (blocker 3)

@@ -12,7 +12,7 @@
     (difficulty 35)
     (playable 1)
     (comment )
-    (music "pingus-7.it")
+    (music "pingus-7.wav")
     (actions 
       (basher 8)
       (bridger 1)

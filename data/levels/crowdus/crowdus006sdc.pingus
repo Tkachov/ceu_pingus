@@ -8,7 +8,7 @@
     (number-of-pingus 8)
     (number-to-save 8)
     (time -1)
-    (music "sorcerer.it")
+    (music "sorcerer.wav")
     (actions 
       (basher 11)
       (blocker 1)
