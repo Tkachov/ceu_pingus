@@ -33,79 +33,47 @@ MenuButton::MenuButton(PingusMenu* menu_, const Vector2i& pos_,
   desc(desc_),
   text(text_),
   mouse_over(false),
-  pressed(false)
-{ }
+  pressed(false) {}
 
-MenuButton::~MenuButton ()
-{
-}
+MenuButton::~MenuButton() {}
 
-void
-MenuButton::on_click ()
-{
+void MenuButton::on_click () {
   menu->on_click(this);
 }
 
-void
-MenuButton::draw (DrawingContext& gc)
-{  
-  if (mouse_over)
-  {
+void MenuButton::draw(DrawingContext& gc) {
+  if(mouse_over) {
     gc.draw(surface_p,Vector2i(x_pos, y_pos));
     gc.draw(highlight, Vector2i(x_pos, y_pos));
     gc.print_center(font_large, Vector2i(x_pos, y_pos - 28), text);
-  }
-  else
-  {
+  } else {
     gc.draw(surface_p, Vector2i(x_pos, y_pos));
     gc.print_center(font_large, Vector2i(x_pos, y_pos - 28), text);
   }
 }
 
-void
-MenuButton::update (float delta)
-{
-}
+void MenuButton::update(float delta) {}
 
-void
-MenuButton::on_pointer_enter ()
-{
-  /*mouse_over = true;
-  Sound::PingusSound::play_sound ("tick");  
-  menu->set_hint(desc);*/
-}
+void MenuButton::on_pointer_enter() {}
 
-void
-MenuButton::on_pointer_leave ()
-{  
-  /*mouse_over = false;
-  menu->set_hint("");*/
-}
+void MenuButton::on_pointer_leave() {}
 
-void
-MenuButton::on_pointer_press ()
-{
+void MenuButton::on_pointer_press() {
   pressed = true;
 }
 
-void
-MenuButton::on_pointer_release ()
-{
+void MenuButton::on_pointer_release() {
   pressed = false;
 }
 
-bool
-MenuButton::is_at(int x, int y)
-{
+bool MenuButton::is_at(int x, int y) {
   return (x > x_pos - int(surface_p.get_width()) / 2
           && x < x_pos + int(surface_p.get_width()) / 2
           && y > y_pos - int(surface_p.get_height()) / 2
           && y < y_pos + int(surface_p.get_height()) / 2);
 }
 
-void
-MenuButton::set_pos(int x, int y)
-{
+void MenuButton::set_pos(int x, int y) {
   x_pos = x;
   y_pos = y;
 }

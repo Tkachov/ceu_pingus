@@ -257,7 +257,7 @@ ScreenManager::update(float delta, const std::vector<Input::Event>& events)
 
     if (last_screen != get_current_screen())
     {
-      //fade_over(last_screen, get_current_screen());
+      fade_over(last_screen, get_current_screen());
       return;
     }
   }
@@ -265,7 +265,7 @@ ScreenManager::update(float delta, const std::vector<Input::Event>& events)
   last_screen->update(delta);
   if (last_screen != get_current_screen())
   {
-    //fade_over(last_screen, get_current_screen());
+    fade_over(last_screen, get_current_screen());
     return;
   }
 
@@ -361,7 +361,7 @@ ScreenManager::fade_over(ScreenPtr old_screen, ScreenPtr new_screen)
     return;
   
   Uint32 last_ticks = SDL_GetTicks();
-  float progress = 0.0f;
+  float progress = 0.01f;
   Framebuffer& fb = *Display::get_framebuffer();
   while (progress <= 1.0f)
   {
@@ -387,7 +387,7 @@ ScreenManager::fade_over(ScreenPtr old_screen, ScreenPtr new_screen)
     display_gc->clear();
       
     progress = static_cast<float>(SDL_GetTicks() - last_ticks)/1000.0f * 2.0f;
-    SDL_Delay(1000);
+    SDL_Delay(50); //very strange decision to use 1000 here Oo
   }
 
   input_manager.refresh();
