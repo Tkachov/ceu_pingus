@@ -4,6 +4,7 @@
 #include "c.ceu"
 #include "sdl.ceu"
 #include "enterleave.ceu"
+#include "igui_component.ceu"
 
 native/pre do
 	##include "engine/sound/sound.hpp"
@@ -15,10 +16,12 @@ end
 
 class MenuButton with
 	var _MenuButton* mb_ptr;
+	interface IGUI_Component;
 do  
 	var _MenuButton&? me = _PTR2REF(mb_ptr);
+	component = _PTR2REF(mb_ptr);
 	var EnterLeave el with
-		this.component = _PTR2REF(outer.mb_ptr);
+		this.component = outer;
 	end;
 
 	//par/or do

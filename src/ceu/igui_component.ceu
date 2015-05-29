@@ -1,0 +1,15 @@
+#ifndef IGUI_COMPONENT_CEU
+#define IGUI_COMPONENT_CEU
+
+native/pre do
+	##include "engine/gui/component.hpp"
+    ##define GUI_Component GUI::Component
+end
+
+interface IGUI_Component with
+    var _GUI_Component&? component;
+    event void mouse_enter;
+    event void mouse_leave;
+end
+
+#endif
