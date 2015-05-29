@@ -1,0 +1,32 @@
+#ifndef _C_CEU
+#define _C_CEU
+
+native _assert(),
+       _malloc();
+
+native @const _stderr;
+
+native @nohold _FILE,
+				_fopen(),
+				_fprintf(),
+               _free(),
+               _printf(),
+               _sprintf(),
+               _rand(),
+               _srand();
+
+native @pure _abs(),
+             _strcmp(),
+             _strcpy();
+
+///// USEFUL STUFF /////
+
+native/pre do
+    ##define PTR2REF(v) v
+end
+
+native @pure _PTR2REF; //convert any pointer (*) to any reference (&?)
+
+native @pure _print_message(); //this could be used to write message in log -- with filename and line
+
+#endif

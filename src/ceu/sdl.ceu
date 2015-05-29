@@ -1,0 +1,160 @@
+#ifndef _SDL_CEU
+#define _SDL_CEU
+
+input void SDL_REDRAW;
+input void SDL_QUIT;
+input int  SDL_DT;
+
+data SDL_Color with
+    var u8 r;
+    var u8 g;
+    var u8 b;
+    var u8 a;
+end
+
+data SDL_Point with
+    var int x;
+    var int y;
+end
+
+data SDL_Rect with
+    var int x;
+    var int y;
+    var int w;
+    var int h;
+end
+
+native @const _GL_SCISSOR_TEST, _GL_TEXTURE_2D;
+native _glEnable(), _glDisable(), _glScissor();
+
+native @plain _SDL_Rect, _SDL_Point, _SDL_Color,
+              _SDL_TouchFingerEvent,
+              _SDL_Texture;
+
+native @const _SDL_TRUE, _SDL_FALSE,
+              _SDL_BLENDMODE_NONE, _SDL_BLENDMODE_BLEND,
+              _SDL_BUTTON_LEFT,
+              _SDL_BUTTON_RIGHT,
+              _SDL_KEYDOWN,
+              _SDL_MOUSEBUTTONDOWN,
+              _SDL_PIXELFORMAT_UNKNOWN,
+              _SDL_SCANCODE_AC_BACK,
+              _SDL_RENDERER_ACCELERATED,
+              _SDL_RENDERER_PRESENTVSYNC,
+              _SDL_TEXTINPUT,
+              _SDL_TEXTUREACCESS_STATIC,
+              _SDL_TEXTUREACCESS_TARGET,
+              _SDL_WINDOW_SHOWN,
+              _SDL_WINDOW_RESIZABLE,
+              _SDL_WINDOWEVENT_RESIZED,
+              _AUDIO_S16SYS;
+
+native @const _SDLK_ESCAPE,
+              _SDLK_BACKSPACE,
+              _SDLK_RETURN,
+              _SDLK_p;
+
+native @nohold _SDL_GL_BindTexture(),
+               _SDL_CreateWindow(),
+               _SDL_CreateRenderer(),
+               _SDL_CreateSoftwareRenderer(),
+               _SDL_CreateTexture(),
+               _SDL_CreateTextureFromSurface(),
+               _SDL_FreeSurface(),
+               _SDL_GetMouseState(),
+               _SDL_GetRendererInfo(),
+               _SDL_GetRendererOutputSize(),
+               _SDL_GetWindowSize(),
+               _SDL_HasIntersection(),
+               _SDL_SetWindowFullscreen(),
+               _SDL_SetRenderDrawColor(),
+               _SDL_RenderClear(),
+               _SDL_RenderDrawLine(),
+               _SDL_RenderDrawRect(),
+               _SDL_RenderFillRect(),
+               _SDL_RenderCopy(),
+               _SDL_RenderPresent(),
+               _SDL_DestroyRenderer(),
+               _SDL_DestroyTexture(),
+               _SDL_DestroyWindow(),
+               _SDL_FreeSurface(),
+               _SDL_QueryTexture(),
+               _SDL_Quit(),
+               _SDL_Delay(),
+               _SDL_SetEventFilter(),
+               _SDL_SetRenderDrawBlendMode(),
+               _SDL_SetRenderTarget(),
+               _SDL_SetTextInputRect(),
+               _SDL_SetWindowDisplayMode(),
+               _SDL_SetWindowTitle(),
+               _SDL_StartTextInput(),
+               _SDL_StopTextInput(),
+               _IMG_LoadTexture(),
+               _TTF_CloseFont(),
+               _TTF_Init(),
+               _TTF_OpenFont(),
+               _TTF_Quit(),
+               _TTF_RenderText_Blended(),
+               _TTF_RenderText_Shaded(),
+               _TTF_RenderText_Solid(),
+               _TTF_SizeText(),
+               _Mix_LoadWAV(),
+               _Mix_FreeChunk(),
+               _Mix_FreeMusic(),
+               _Mix_PlayChannel(),
+               _Mix_PlayMusic(),
+               _Mix_Playing(),
+               _Mix_CloseAudio(),
+               _Mix_OpenAudio();
+
+native @nohold _SDL_Circle_vs_Mouse(),
+               _SDL_Circle_vs_Point(),
+               _SDL_Circle_vs_Circle(),
+               _SDL_Rect_vs_Mouse(),
+               _SDL_Rect_vs_Point(),
+               _SDL_Rect2Point(),
+               _SDL_Point2Rect(),
+               _SDL_Touch2Point();
+
+native do
+    int SDL_Rect_vs_Mouse (SDL_Rect* r, SDL_MouseButtonEvent* but) {
+        return (but->x >= r->x) && (but->x <= r->x+r->w)
+            && (but->y >= r->y) && (but->y <= r->y+r->h);
+    }
+    int SDL_Rect_vs_Point (SDL_Rect* r, SDL_Point* pt) {
+        return (pt->x >= r->x) && (pt->x <= r->x+r->w)
+            && (pt->y >= r->y) && (pt->y <= r->y+r->h);
+    }
+    SDL_Point* SDL_Touch2Point (SDL_Point* pt, SDL_TouchFingerEvent* e, int w, int h) {
+        pt->x = e->x * w;
+        pt->y = e->y * h;
+        return pt;
+    }
+
+    SDL_Point SDL_Rect2Point (SDL_Rect* r) {
+        SDL_Point pt = { r->x+r->w/2, r->y+r->h/2 };
+        return pt;
+    }
+    SDL_Rect SDL_Point2Rect (SDL_Point* pt, int radix) {
+        SDL_Rect r = { pt->x-radix, pt->y-radix, radix*2, radix*2 };
+        return r;
+    }
+
+##ifdef SDL_MATH
+    int SDL_Circle_vs_Mouse (SDL_Point* pos, int rad, SDL_MouseButtonEvent* but) {
+        SDL_Point pt = { but->x, but->y };
+        return SDL_Circle_vs_Point(pos, rad, &pt);
+    }
+
+    int SDL_Circle_vs_Point (SDL_Point* pos, int rad, SDL_Point* pt) {
+        return sqrt( pow(pos->x-pt->x,2) + pow(pos->y-pt->y,2) ) < rad;
+    }
+
+    int SDL_Circle_vs_Circle (SDL_Point* pos1, int rad1, SDL_Point* pos2, int rad2) {
+        return sqrt( pow(pos1->x-pos2->x,2) + pow(pos1->y-pos2->y,2) )
+                < rad1+rad2;
+    }
+##endif
+end
+
+#endif

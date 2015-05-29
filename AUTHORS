@@ -1,0 +1,176 @@
+I tried to list here all people, which have contributed to Pingus. If
+you know somebody who I have missed please drop me a quick reminder to 
+<grumbel@gmx.de>. 
+
+Ingo Ruhnke <grumbel@gmx.de> - http://pingus.seul.org/~grumbel/
+	* lots of gfx
+	* level design
+	* project maintainer
+	* programming
+
+Michael Käser <michaelk@gmx.ch>
+	* maintainer of the Windows version for Pingus 0.4.0
+
+Joel Fauche <joel-fauche@worldonline.fr> - http://www.multimania.com/jfauche/
+	* most of the pingus (floater, walker, ...)
+
+Michael Mestre <mmestre@teaser.fr> - http://www.teaser.fr/~mmestre/
+	* some gfx (rock tile, weed, traps)
+
+Craig Timpany <craigtimpany@w3.to>
+	* some pingu gfx(digger, tumbler, bridger2)
+	* traps
+	* lots of great levels
+
+Jules Bean <jmlb2@hermes.cam.ac.uk>
+	* first pingus Mailing List
+
+David Philippi <david@torangan.de>
+	* RPM version maintainer
+	* Sound code
+        * Input code
+        * include cleanup
+        * lots and lots of code cleanup
+
+Johnny Taporg <taporg@yahoo.com>
+	* A little Banner
+
+Thomas Prokosch <Thomas.Prokosch@jk.uni-linz.ac.at>
+	* another Banner for the pingus homepage
+
+Robert Wittams <rob@conspiracy.nu>
+	* Programming (misc)
+
+Werner Steiner <werner@rmdata-linux.dhs.org>
+	* Programming (Blocker)
+
+H. Matthew Smith <matthew@synature.com>
+	* music (data/music/gd-*.{it,s3m})
+
+Joseph Toscano <zhaytee@zhaymusic.com> - http://zhaymusic.com/
+	* music (data/music/pingus-*.it)
+
+Magnus Norddahl <mbn@dark.x.dtu.dk> - http://dark.x.dtu.dk/~mbn/
+	* RPM Packages
+
+Stefan Stiasny <sc@swi.priv.at> - http://sc.ist.org/
+	* miner, stopper
+	* http://sc.ist.org/pingus/
+
+Alan Tennent <rdt@post.queensu.ca>
+	* shotgun
+	* bazooker
+	* http://www.geocities.com/SiliconValley/Mouse/8254/
+
+Kenneth Gangstø <kennethg@iname.com>
+	* Some fonts
+        * lots of Win32 help and testing
+
+Peter Todd <retep@penguinpowered.com> - http://www.petertodd.ca
+	* Programming (forces)
+
+David Fauthoux <david.fauthoux@free.fr> - http://david.fauthoux.free.fr/
+	* armageddon button animation
+
+David M. Turner <turnerd@reed.edu>
+	* Gfx
+	* Programming
+
+David Flores <davidf@linuxfan.com>
+	* Programming
+	* fixed the bridger
+
+Tuomas (Tigert) Kuosmanen <tigert@gimp.org> - http://tigert.gimp.org/
+	* Editor Icons (riped out of gnome-stock)
+
+Keir Fraser <Keir.Fraser@cl.cam.ac.uk>
+	* ???
+
+Felix Natter <fnatter@gmx.net>
+	* Lots of namespace clean ups
+	* Spellingmistake fixups
+	* iostream fixups
+
+Mark Collinson <mark.collinson@lineone.net>
+	* Menu
+	* Title picture
+
+Tom Flavel <tom@printf.net>
+	* gfx
+	* levels
+
+Michael Wand <mwand@gmx.de>
+	* levels
+
+Jens Henrik Goebbert <jens.goebbert@post.rwth-aachen.de>
+	* levels 
+
+Bernhard Trummer <bernhard.trummer@gmx.at>
+	* libxml configure.in entry
+
+Andrew Mustun <andrew@qcad.org>
+Benjamin Winkler
+	* caimagemanip
+
+Jens Henrik Goebbert <jens.goebbert@post.rwth-aachen.de>
+	* levels
+
+Rob Gietema <tycoon@planetdescent.com>,
+Robin Hogan <R.J.Hogan@reading.ac.uk>
+	* see xpenguins
+	* superman, angel
+
+Yuri Sucupira <yuri_sucupira@hotmail.com>
+	* music (success_*.it, rough_journey.it,
+          the_big_march_in_space.it, goin_march.it)
+
+Giray Devlet <giray@devlet.cc>
+Cagri Coltekin <cagri@metu.edu.tr>
+	* Font reworked
+	* ToDo Manager
+	* gettext patches
+
+Philippe Descamps <pwrdesc@free.fr>
+	* Levels
+
+Gervase Lam <gervase@group.force9.co.uk>
+	* Lots of action fixes
+
+Alberto Curro <acurrop@wanadoo.es>
+	* Win32 Port for Pingus 0.5.0
+
+Mattias Andersson <mattiasa@neod.com>
+	* some fixes for Win32 Port
+
+"Fischer, Björn Christoph" <B.Fischer@dmt.de>
+"Neil Mitchell" <neil__mitchell@hotmail.com>
+	* Misc win32 fixes/cleanups/etc.
+
+Misc little compile patches:
+  Giuseppe D'Aqui' <kumber@tiscalinet.it>
+
+"Henri Manson" <hfmanson@home.nl>:
+        * MemLeak at application shutdown fixes   
+
+Milan Babuskov <milanb@yu.net>
+        * Serbian (sr) translation
+
+Philippe Saint-Pierre <stpere@linuxmail.org>
+        * French (fr) translation
+
+Jason Green <jave27@gmail.com>
+	* SDL porting
+
+Jimmy Salmon <jsalmon3@yahoo.com>
+	* SDL porting
+
+Michael Ploujnikov <ploujj@gmail.com>
+	* SDL porting
+
+Nehal Mistry <nehalmistry@gmx.net>
+	* SDL porting
+
+Karl Ove Hufthammer <karl@huftis.org>
+    * Norwegian Nynorsk translation
+
+-- EOF --

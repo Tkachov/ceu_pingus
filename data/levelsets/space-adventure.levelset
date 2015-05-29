@@ -1,0 +1,22 @@
+;; -*- scheme -*-
+(pingus-levelset
+ (title "Space adventure")
+ (description "Going beyond planet Earth and familiar lands")
+ (image  "levelsets/space-adventure")
+ (locked #f)
+ (levels 
+  (level (filename "space-adventure/mountain-1-richard"))
+  (level (filename "space-adventure/mountain-2-richard"))
+  (level (filename "space-adventure/mountain-3-richard"))
+  (level (filename "space-adventure/mountain-4-richard"))
+  (level (filename "space-adventure/mountain-5-richard"))
+  (level (filename "space-adventure/mountain-6-richard"))
+  (level (filename "space-adventure/mountain-7-richard"))
+  (level (filename "space-adventure/mountain-8-richard"))
+  (level (filename "space-adventure/space-1-richard"))
+  (level (filename "space-adventure/space-2-richard"))
+  (level (filename "space-adventure/space-3-richard"))
+  (level (filename "space-adventure/space-4-richard"))
+ )
+)
+;; EOF ;;

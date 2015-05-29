@@ -1,0 +1,1 @@
+make ceu && cd build && ./pingus
