@@ -2,26 +2,26 @@
 #define ENTERLEAVE_CEU
 
 #include "c.ceu"
+#include "igui_component.ceu"
 
 native/pre do
-	##include "engine/gui/component.hpp"
-	##define GUI_Component GUI::Component
+    ##include "engine/gui/component.hpp"
+    ##define GUI_Component GUI::Component
 end
 
 input _GUI_Component* ON_POINTER_ENTER;
 input _GUI_Component* ON_POINTER_LEAVE;
 
-class EnterLeave with	
-	var _GUI_Component& component;
-	event void mouse_enter;
-	event void mouse_leave;
-do	
-	loop do
-		var _GUI_Component* gui = await ON_POINTER_ENTER until (gui == &component);
-		emit mouse_enter;
-		gui = await ON_POINTER_LEAVE until (gui == (_GUI_Component*)&component);
-		emit mouse_leave;
-	end
+class EnterLeave with
+    var IGUI_Component& gui;
+do
+    loop do
+        var _GUI_Component* g;
+        g = await ON_POINTER_ENTER until (g == &gui.me);
+        emit gui.mouse_enter;
+        g = await ON_POINTER_LEAVE until (g == &gui.me);
+        emit gui.mouse_leave;
+    end
 end
 
 #endif

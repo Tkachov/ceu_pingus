@@ -1,6 +1,6 @@
 native/pre do
-	##define private public
-	##define protected public
+    ##define private public
+    ##define protected public
 end
 native do
 end
@@ -12,30 +12,30 @@ end
 input _MenuButton* NEW_MENUBUTTON;
 
 par/or do
-	await SDL_QUIT;
+    await SDL_QUIT;
 with
-	every new_menubutton in NEW_MENUBUTTON do
-		spawn MenuButton with
-			this.mb_ptr = new_menubutton;
-		end;
-	end
-with	
-	loop do
-		await SDL_REDRAW;
-	end
+    every new_menubutton in NEW_MENUBUTTON do
+        spawn MenuButton with
+            this.mb_ptr = new_menubutton;
+        end;
+    end
+with    
+    loop do
+        await SDL_REDRAW;
+    end
 with
-	//FPS
-	loop do
-		var int c = 0;
-		par/or do
-			every SDL_REDRAW do
-				c = c + 1;
-			end
-		with
-			await 1s;
-		end
-		_printf("[FPS=%d]\n", c);
-	end
+    //FPS
+    loop do
+        var int c = 0;
+        par/or do
+            every SDL_REDRAW do
+                c = c + 1;
+            end
+        with
+            await 1s;
+        end
+        _printf("[FPS=%d]\n", c);
+    end
 end
 
 //I'm not sure about this thingy, as it works with and without it:

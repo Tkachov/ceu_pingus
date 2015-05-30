@@ -4,37 +4,40 @@
 #include "c.ceu"
 #include "sdl.ceu"
 #include "enterleave.ceu"
+#include "igui_component.ceu"
 
 native/pre do
-	##include "engine/sound/sound.hpp"
-	##include "pingus/components/menu_button.hpp"
-	##include "src/pingus/screens/pingus_menu.hpp"
-	
-	##define Sound_PingusSound_play_sound Sound::PingusSound::play_sound
+    ##include "engine/sound/sound.hpp"
+    ##include "pingus/components/menu_button.hpp"
+    ##include "src/pingus/screens/pingus_menu.hpp"
+    
+    ##define Sound_PingusSound_play_sound Sound::PingusSound::play_sound
 end
 
 class MenuButton with
-	var _MenuButton* mb_ptr;
-do  
-	var _MenuButton&? me = _PTR2REF(mb_ptr);
-	var EnterLeave el with
-		this.component = _PTR2REF(outer.mb_ptr);
-	end;
+    var _MenuButton* mb_ptr;
+    interface IGUI_Component;
+do
+    var _MenuButton&? me_ = _PTR2REF(mb_ptr);
+    this.me = me_;
+    var EnterLeave el with
+        this.gui = outer;
+    end;
 
-	//par/or do
-	//	await SDL_QUIT;
-	//with
-		loop do
-			await el.mouse_enter;
-			me.mouse_over = true;
-			_Sound_PingusSound_play_sound("tick");
-			me.menu:set_hint(me.desc) finalize with end;
+    //par/or do
+    //    await SDL_QUIT;
+    //with
+        loop do
+            await mouse_enter;
+            me_.mouse_over = true;
+            _Sound_PingusSound_play_sound("tick");
+            me_.menu:set_hint(me_.desc) finalize with end;
 
-			await el.mouse_leave;
-			me.mouse_over = false;
-			me.menu:set_hint("");
-		end
-	//end
+            await mouse_leave;
+            me_.mouse_over = false;
+            me_.menu:set_hint("");
+        end
+    //end
 end
 
 #endif
