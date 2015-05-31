@@ -93,6 +93,7 @@ WorldmapComponent::on_primary_button_press (int x, int y)
   Rect cliprect = worldmap_screen->get_trans_rect();
   worldmap_screen->get_worldmap()->on_primary_button_press(x - cliprect.left,
                                                            y - cliprect.top);
+  //TODO: Ceu ON_PRIMARY_BUTTON_PRESS
 }
 
 void
@@ -101,6 +102,7 @@ WorldmapComponent::on_pointer_move (int x, int y)
   Rect cliprect = worldmap_screen->get_trans_rect();
   worldmap_screen->get_worldmap()->on_pointer_move(x - cliprect.left,
                                                    y - cliprect.top);
+  //TODO: Ceu ON_POINTER_MOVE
 }
 
 void
@@ -109,6 +111,7 @@ WorldmapComponent::on_secondary_button_press (int x, int y)
   Rect cliprect = worldmap_screen->get_trans_rect();
   worldmap_screen->get_worldmap()->on_secondary_button_press(x - cliprect.left,
                                                              y - cliprect.top);
+  //TODO: Ceu SECONDARY_BUTTON_PRESS
 }
 
 void

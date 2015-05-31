@@ -1,0 +1,37 @@
+#ifndef FORWARDBUTTON_CEU
+#define FORWARDBUTTON_CEU
+
+#include "c.ceu"
+#include "sdl.ceu"
+#include "pressreleaseclick.ceu"
+#include "igui_component.ceu"
+
+native/pre do    
+    ##include "pingus/components/action_button.hpp"
+    ##include "pingus/screens/game_session.hpp"    
+end
+
+class ForwardButton with
+    var _ForwardButton* ptr;
+    interface IGUI_Component;
+do
+    var _ForwardButton&? me_ = _PTR2REF(ptr);
+    this.me = me_;
+    var PressReleaseClick prc with
+        this.gui = outer;
+    end;
+
+    //par/or do
+    //    await SDL_QUIT;
+    //with
+        loop do
+            await mouse_press;
+            me_.session:set_fast_forward(true);
+  
+            await mouse_release;
+            me_.session:set_fast_forward(false);
+        end
+    //end
+end
+
+#endif

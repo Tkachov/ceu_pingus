@@ -1,0 +1,19 @@
+#ifndef DOUBLECLICK_CEU
+#define DOUBLECLICK_CEU
+
+#include "c.ceu"
+#include "igui_component.ceu"
+
+class DoubleClick with
+    var IGUI_Component& gui;
+do
+    loop do
+        await gui.mouse_click;
+        watching 1s do
+            await gui.mouse_click;
+            emit gui.mouse_double_click;
+        end
+    end
+end
+
+#endif

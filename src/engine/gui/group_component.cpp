@@ -80,6 +80,8 @@ GroupComponent::on_primary_button_press (int x, int y)
   if (grabbed_comp)
   {
     grabbed_comp->on_primary_button_press(mouse_pos.x, mouse_pos.y);
+    //Ceu ON_PRIMARY_BUTTON_PRESS
+    ceu_sys_go(&CEUapp, CEU_IN_ON_PRIMARY_BUTTON_PRESS, &grabbed_comp);
   }
   else 
   {
@@ -87,6 +89,8 @@ GroupComponent::on_primary_button_press (int x, int y)
     if (comp)
     {
       comp->on_primary_button_press(mouse_pos.x, mouse_pos.y);
+      //Ceu ON_PRIMARY_BUTTON_PRESS
+      ceu_sys_go(&CEUapp, CEU_IN_ON_PRIMARY_BUTTON_PRESS, &comp);
       
       if (focused_comp)
         focused_comp->set_focus(false);
@@ -109,6 +113,8 @@ GroupComponent::on_primary_button_release (int x, int y)
   if (grabbed_comp)
   {
     grabbed_comp->on_primary_button_release(mouse_pos.x, mouse_pos.y);
+    //Ceu ON_PRIMARY_BUTTON_RELEASE
+    ceu_sys_go(&CEUapp, CEU_IN_ON_PRIMARY_BUTTON_RELEASE, &grabbed_comp);
   }
   else 
   {
@@ -117,16 +123,24 @@ GroupComponent::on_primary_button_release (int x, int y)
     if (primary_pressed_comp)
     {
       primary_pressed_comp->on_primary_button_release(mouse_pos.x, mouse_pos.y);
+      //Ceu ON_PRIMARY_BUTTON_RELEASE
+      ceu_sys_go(&CEUapp, CEU_IN_ON_PRIMARY_BUTTON_RELEASE, &primary_pressed_comp);
 
-      if (comp == primary_pressed_comp)
+      if(comp == primary_pressed_comp) {
         primary_pressed_comp->on_primary_button_click(mouse_pos.x, mouse_pos.y);
+        //Ceu ON_PRIMARY_BUTTON_CLICK
+        ceu_sys_go(&CEUapp, CEU_IN_ON_PRIMARY_BUTTON_CLICK, &primary_pressed_comp);
+      }
 
       primary_pressed_comp = 0;
     }
     else
     {
-      if (comp)
+      if(comp) {
         comp->on_primary_button_release(mouse_pos.x, mouse_pos.y);
+        //Ceu ON_PRIMARY_BUTTON_PRESS
+        ceu_sys_go(&CEUapp, CEU_IN_ON_PRIMARY_BUTTON_PRESS, &comp);
+      }
     }
   }
 }
@@ -139,12 +153,17 @@ GroupComponent::on_secondary_button_press (int x, int y)
   if (grabbed_comp)
   {
     grabbed_comp->on_secondary_button_press(mouse_pos.x, mouse_pos.y);
+    //Ceu ON_SECONDARY_BUTTON_PRESS
+    ceu_sys_go(&CEUapp, CEU_IN_ON_SECONDARY_BUTTON_PRESS, &grabbed_comp);
   }
   else 
   {
     Component* comp = component_at(mouse_pos);
-    if (comp)
+    if(comp) {
       comp->on_secondary_button_press(mouse_pos.x, mouse_pos.y);
+      //Ceu ON_SECONDARY_BUTTON_PRESS
+      ceu_sys_go(&CEUapp, CEU_IN_ON_SECONDARY_BUTTON_PRESS, &comp);
+    }
 
     if (!primary_pressed_comp)
       secondary_pressed_comp = comp;
@@ -161,26 +180,37 @@ GroupComponent::on_secondary_button_release(int x, int y)
   if (grabbed_comp)
   {
     grabbed_comp->on_secondary_button_release(mouse_pos.x, mouse_pos.y);
+    //Ceu ON_SECONDARY_BUTTON_RELEASE
+    ceu_sys_go(&CEUapp, CEU_IN_ON_SECONDARY_BUTTON_RELEASE, &grabbed_comp);
   }
   else if (secondary_pressed_comp)
   {
     secondary_pressed_comp->on_secondary_button_release(mouse_pos.x, mouse_pos.y);
+    //Ceu ON_SECONDARY_BUTTON_RELEASE
+    ceu_sys_go(&CEUapp, CEU_IN_ON_SECONDARY_BUTTON_RELEASE, &secondary_pressed_comp);
       
-    if (comp == secondary_pressed_comp)
+    if(comp == secondary_pressed_comp) {
       secondary_pressed_comp->on_secondary_button_click(mouse_pos.x, mouse_pos.y);
+      //Ceu ON_SECONDARY_BUTTON_CLICK
+      ceu_sys_go(&CEUapp, CEU_IN_ON_SECONDARY_BUTTON_CLICK, &secondary_pressed_comp);
+    }
       
     secondary_pressed_comp = 0;
   }
   else
   {
-    if (comp)
+    if(comp) {
       comp->on_secondary_button_release(mouse_pos.x, mouse_pos.y);
+      //Ceu ON_SECONDARY_BUTTON_RELEASE
+      ceu_sys_go(&CEUapp, CEU_IN_ON_SECONDARY_BUTTON_RELEASE, &comp);
+    }
   }
 }
 
 void
 GroupComponent::on_key_pressed(const Input::KeyboardEvent& ev)
 {
+  //TODO: Ceu ON_KEY_PRESSED
   if (grabbed_comp)
     grabbed_comp->on_key_pressed(ev);
   else if (focused_comp)
@@ -192,6 +222,7 @@ GroupComponent::on_key_pressed(const Input::KeyboardEvent& ev)
 void
 GroupComponent::on_text_input(const Input::TextInputEvent& ev)
 {
+  //TODO: Ceu ON_TEXT_INPUT
   if (grabbed_comp)
     grabbed_comp->on_text_input(ev);
   else if (focused_comp)
@@ -208,14 +239,17 @@ GroupComponent::on_pointer_move(int x, int y)
   if (grabbed_comp)
   {
     grabbed_comp->on_pointer_move(mouse_pos.x, mouse_pos.y);
+    //TODO: Ceu ON_POINTER_MOVE
   }
   else if (primary_pressed_comp)
   {
     primary_pressed_comp->on_pointer_move(mouse_pos.x, mouse_pos.y);
+    //TODO: Ceu ON_POINTER_MOVE
   }
   else if (secondary_pressed_comp)
   {
     secondary_pressed_comp->on_pointer_move(mouse_pos.x, mouse_pos.y);
+    //TODO: Ceu ON_POINTER_MOVE
   }
   else
   {
@@ -223,6 +257,7 @@ GroupComponent::on_pointer_move(int x, int y)
     if (comp)
     {
       comp->on_pointer_move(mouse_pos.x, mouse_pos.y); 
+      //TODO: Ceu ON_POINTER_MOVE
     }
 
     if (comp != mouse_over_comp)
@@ -231,7 +266,7 @@ GroupComponent::on_pointer_move(int x, int y)
       {
         mouse_over_comp->set_mouse_over(false);
         mouse_over_comp->on_pointer_leave();
-        //TODO: Ceu ON_POINTER_LEAVE
+        //Ceu ON_POINTER_LEAVE
         ceu_sys_go(&CEUapp, CEU_IN_ON_POINTER_LEAVE, &mouse_over_comp);
       }
       
@@ -239,7 +274,7 @@ GroupComponent::on_pointer_move(int x, int y)
       {
         comp->set_mouse_over(true);
         comp->on_pointer_enter();
-        //TODO: Ceu ON_POINTER_ENTER
+        //Ceu ON_POINTER_ENTER
         ceu_sys_go(&CEUapp, CEU_IN_ON_POINTER_ENTER, &comp);
       }
     }
@@ -287,7 +322,7 @@ GroupComponent::on_pointer_leave()
     {
       mouse_over_comp->set_mouse_over(false);
       mouse_over_comp->on_pointer_leave();
-      //TODO: Ceu leave
+      //Ceu ON_POINTER_LEAVE
       ceu_sys_go(&CEUapp, CEU_IN_ON_POINTER_LEAVE, &mouse_over_comp);
     }
     mouse_over_comp = 0; 

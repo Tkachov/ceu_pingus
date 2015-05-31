@@ -33,8 +33,6 @@ class ArmageddonButton : public GUI::RectComponent
 {
 private:
   Server* server;
-  bool   pressed;
-  float  press_time;
   Sprite sprite;
   Sprite background;
   Sprite backgroundhl;
@@ -45,7 +43,6 @@ public:
 
   void draw(DrawingContext& gc);
   void update(float);
-  void on_primary_button_click (int x, int y);
 
 private:
   ArmageddonButton (const ArmageddonButton&);
@@ -69,8 +66,6 @@ public:
   virtual ~ForwardButton();
 
   void draw(DrawingContext& gc);
-  void on_primary_button_press (int x, int y);
-  void on_primary_button_release (int x, int y);
 
 private:
   ForwardButton (const ForwardButton&);

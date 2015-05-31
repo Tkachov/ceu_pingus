@@ -1,0 +1,40 @@
+#ifndef ARMAGEDDONBUTTON_CEU
+#define ARMAGEDDONBUTTON_CEU
+
+#include "c.ceu"
+#include "sdl.ceu"
+#include "doubleclick.ceu"
+#include "pressreleaseclick.ceu"
+#include "igui_component.ceu"
+
+native/pre do    
+    ##include "pingus/components/action_button.hpp"
+    ##include "pingus/server.hpp"
+end
+
+class ArmageddonButton with
+    var _ArmageddonButton* ptr;
+    interface IGUI_Component;
+do
+    var _ArmageddonButton&? me_ = _PTR2REF(ptr);
+    this.me = me_;
+    
+    //DoubleClick requires PressReleaseClick
+    var PressReleaseClick prc with
+        this.gui = outer;
+    end;
+    var DoubleClick dc with
+        this.gui = outer;
+    end;
+
+    //par/or do
+    //    await SDL_QUIT;
+    //with
+        loop do
+            await mouse_double_click;            
+            me_.server:send_armageddon_event();
+        end
+    //end
+end
+
+#endif

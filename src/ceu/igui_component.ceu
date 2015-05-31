@@ -8,8 +8,19 @@ end
 
 interface IGUI_Component with
     var _GUI_Component& me;
+
     event void mouse_enter;
     event void mouse_leave;
+
+    event void mouse_press;
+    event void mouse_release;
+    event void mouse_click;
+    event void mouse_double_click;
+
+    event void mouse_secondary_press;
+    event void mouse_secondary_release;
+    event void mouse_secondary_click;
+    event void mouse_secondary_double_click;
 end
 
 #endif

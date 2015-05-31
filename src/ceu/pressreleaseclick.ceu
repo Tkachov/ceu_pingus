@@ -1,0 +1,64 @@
+#ifndef PRESSRELEASECLICK_CEU
+#define PRESSRELEASECLICK_CEU
+
+#include "c.ceu"
+#include "igui_component.ceu"
+
+native/pre do
+    ##include "engine/gui/component.hpp"
+    ##define GUI_Component GUI::Component
+end
+
+input _GUI_Component* ON_PRIMARY_BUTTON_PRESS;
+input _GUI_Component* ON_PRIMARY_BUTTON_RELEASE;
+input _GUI_Component* ON_PRIMARY_BUTTON_CLICK;
+input _GUI_Component* ON_SECONDARY_BUTTON_PRESS;
+input _GUI_Component* ON_SECONDARY_BUTTON_RELEASE;
+input _GUI_Component* ON_SECONDARY_BUTTON_CLICK;
+
+//I'm not sure release is always emitted after press in C++
+//so I made them independent
+
+class PressReleaseClick with
+    var IGUI_Component& gui;
+do
+    par do
+        loop do
+            var _GUI_Component* g;
+            g = await ON_PRIMARY_BUTTON_PRESS until (g == &gui.me);
+            emit gui.mouse_press;
+        end
+    with
+        loop do
+            var _GUI_Component* g;
+            g = await ON_PRIMARY_BUTTON_RELEASE until (g == &gui.me);
+            emit gui.mouse_release;
+        end
+    with
+        loop do
+            var _GUI_Component* g;
+            g = await ON_PRIMARY_BUTTON_CLICK until (g == &gui.me);
+            emit gui.mouse_click;
+        end
+    with
+        loop do
+            var _GUI_Component* g;
+            g = await ON_SECONDARY_BUTTON_PRESS until (g == &gui.me);
+            emit gui.mouse_secondary_press;
+        end
+    with
+        loop do
+            var _GUI_Component* g;
+            g = await ON_SECONDARY_BUTTON_RELEASE until (g == &gui.me);
+            emit gui.mouse_secondary_release;
+        end
+    with
+        loop do
+            var _GUI_Component* g;
+            g = await ON_SECONDARY_BUTTON_CLICK until (g == &gui.me);
+            emit gui.mouse_secondary_click;
+        end
+    end
+end
+
+#endif

@@ -8,15 +8,31 @@ end
 #include "c.ceu"
 #include "sdl.ceu"
 #include "menubutton.ceu"
+#include "armageddonbutton.ceu"
+#include "forwardbutton.ceu"
 
 input _MenuButton* NEW_MENUBUTTON;
+input _ArmageddonButton* NEW_ARMAGEDDONBUTTON;
+input _ForwardButton* NEW_FORWARDBUTTON;
 
 par/or do
     await SDL_QUIT;
 with
     every new_menubutton in NEW_MENUBUTTON do
         spawn MenuButton with
-            this.mb_ptr = new_menubutton;
+            this.ptr = new_menubutton;
+        end;
+    end
+with
+    every new_armageddonbutton in NEW_ARMAGEDDONBUTTON do
+        spawn ArmageddonButton with
+            this.ptr = new_armageddonbutton;
+        end;
+    end
+with
+    every new_forwardbutton in NEW_FORWARDBUTTON do
+        spawn ForwardButton with
+            this.ptr = new_forwardbutton;
         end;
     end
 with    

@@ -15,10 +15,10 @@ native/pre do
 end
 
 class MenuButton with
-    var _MenuButton* mb_ptr;
+    var _MenuButton* ptr;
     interface IGUI_Component;
 do
-    var _MenuButton&? me_ = _PTR2REF(mb_ptr);
+    var _MenuButton&? me_ = _PTR2REF(ptr);
     this.me = me_;
     var EnterLeave el with
         this.gui = outer;
