@@ -1,11 +1,10 @@
 #ifndef ARMAGEDDONBUTTON_CEU
 #define ARMAGEDDONBUTTON_CEU
 
-#include "c.ceu"
-#include "sdl.ceu"
-#include "doubleclick.ceu"
-#include "pressreleaseclick.ceu"
-#include "igui_component.ceu"
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../../engine/gui/igui_component.ceu"
+#include "../../proxies/primarybuttonproxy.ceu"
 
 native/pre do    
     ##include "pingus/components/action_button.hpp"
@@ -17,13 +16,8 @@ class ArmageddonButton with
     interface IGUI_Component;
 do
     var _ArmageddonButton&? me_ = _PTR2REF(ptr);
-    this.me = me_;
-    
-    //DoubleClick requires PressReleaseClick
-    var PressReleaseClick prc with
-        this.gui = outer;
-    end;
-    var DoubleClick dc with
+    this.me = me_;    
+    var PrimaryButtonProxy p with
         this.gui = outer;
     end;
 

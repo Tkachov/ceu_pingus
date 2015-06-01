@@ -20,6 +20,8 @@
 #include "engine/screen/screen_manager.hpp"
 #include "pingus/global_event.hpp"
 
+#include "ceuvars.h"
+
 namespace Input {
 
 SDLDriver::SDLDriver() :
@@ -219,7 +221,9 @@ SDLDriver::update(float delta)
     {
       case SDL_QUIT: // FIXME: make this into a GameEvent
         ScreenManager::instance()->pop_all_screens();
-        break;
+        //Ceu SDL_QUIT
+        ceu_sys_go(&CEUapp, CEU_IN_SDL_QUIT, 0);
+      break;
 
       case SDL_MOUSEMOTION:
         for(std::vector<PointerBinding>::iterator i = pointer_bindings.begin();
@@ -235,23 +239,28 @@ SDLDriver::update(float delta)
           i->binding->set_delta(Vector2f(static_cast<float>(event.motion.xrel),
                                          static_cast<float>(event.motion.yrel)));
         }
-        break;
+
+        //TODO: somehow pass x, y, xrel, yrel info in Ceu SDL_MOUSEMOTION
+      break;
 
       case SDL_MOUSEWHEEL:
         log_error("mousewheel not implemented: %1% %2%", event.wheel.which, event.wheel.x, event.wheel.y);
-        break;
+        //TODO: somehow pass which, x, y info in Ceu SDL_MOUSEWHEEL
+      break;
 
       case SDL_TEXTINPUT:
         if (keyboard_binding)
         {
           keyboard_binding->send_event(event);
         }
-        break;
+        //TODO: somehow pass event in Ceu SDL_TEXTINPUT
+      break;
 
       case SDL_TEXTEDITING:
         log_error("textediting not implemented: %1% %2% '%3%'",
                   event.edit.start, event.edit.length, event.edit.text);
-        break;
+        //TODO: somehow pass event in Ceu SDL_TEXTEDITING
+      break;
 
       case SDL_MOUSEBUTTONDOWN:
       case SDL_MOUSEBUTTONUP:
@@ -266,7 +275,10 @@ SDLDriver::update(float delta)
               (*i).binding->set_state(BUTTON_RELEASED);
           }
         }
-        break;
+
+        //TODO: somehow pass button, state info in Ceu SDL_MOUSEBUTTONUP/DOWN
+        //(may be _PRESSED and _RELEASED versions with button as parameter?)
+      break;
 
       case SDL_WINDOWEVENT:
         switch(event.window.event)
@@ -278,7 +290,8 @@ SDLDriver::update(float delta)
           default:
             break;
         }
-        break;
+        //TODO: do we need Ceu SDL_WINDOWEVENT?
+      break;
 
       case SDL_KEYDOWN:
       case SDL_KEYUP:
@@ -304,7 +317,9 @@ SDLDriver::update(float delta)
               i->binding->set_state(BUTTON_RELEASED);
           }
         }
-        break;
+
+        //TODO: pass event with Ceu SDL_KEYUP/DOWN
+      break;
 
       case SDL_JOYAXISMOTION:
         for(std::vector<JoystickAxisBinding>::iterator i = joystick_axis_bindings.begin();
@@ -314,7 +329,9 @@ SDLDriver::update(float delta)
               event.jaxis.axis  == i->axis)
             i->binding->set_state(static_cast<float>(event.jaxis.value) / 32767.0f);
         }
-        break;
+
+        //TODO: pass it to Ceu SDL_JOYAXISMOTION if necessary
+      break;
 
       case SDL_JOYBUTTONDOWN:
       case SDL_JOYBUTTONUP:
@@ -327,11 +344,13 @@ SDLDriver::update(float delta)
             i->binding->set_state(event.jbutton.state == SDL_PRESSED ? BUTTON_PRESSED : BUTTON_RELEASED);
           }
         }
-        break;
+
+        //TODO: pass it to Ceu SDL_JOYAXISUP/DOWN if necessary
+      break;
 
       default:
         // FIXME: Do something with other events
-        break;
+      break;
     }
   }
 }

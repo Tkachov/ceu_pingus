@@ -1,10 +1,10 @@
 #ifndef FORWARDBUTTON_CEU
 #define FORWARDBUTTON_CEU
 
-#include "c.ceu"
-#include "sdl.ceu"
-#include "pressreleaseclick.ceu"
-#include "igui_component.ceu"
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../../engine/gui/igui_component.ceu"
+#include "../../proxies/primarybuttonproxy.ceu"
 
 native/pre do    
     ##include "pingus/components/action_button.hpp"
@@ -17,7 +17,7 @@ class ForwardButton with
 do
     var _ForwardButton&? me_ = _PTR2REF(ptr);
     this.me = me_;
-    var PressReleaseClick prc with
+    var PrimaryButtonProxy p with
         this.gui = outer;
     end;
 

@@ -1,18 +1,17 @@
-#ifndef ENTERLEAVE_CEU
-#define ENTERLEAVE_CEU
+#ifndef POINTERPROXY_CEU
+#define POINTERPROXY_CEU
 
-#include "c.ceu"
-#include "igui_component.ceu"
+#include "proxyeventlist.ceu"
+
+#include "../c.ceu"
+#include "../engine/gui/igui_component.ceu"
 
 native/pre do
     ##include "engine/gui/component.hpp"
     ##define GUI_Component GUI::Component
 end
 
-input _GUI_Component* ON_POINTER_ENTER;
-input _GUI_Component* ON_POINTER_LEAVE;
-
-class EnterLeave with
+class PointerProxy with
     var IGUI_Component& gui;
 do
     loop do

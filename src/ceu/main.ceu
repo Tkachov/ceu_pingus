@@ -7,9 +7,10 @@ end
 
 #include "c.ceu"
 #include "sdl.ceu"
-#include "menubutton.ceu"
-#include "armageddonbutton.ceu"
-#include "forwardbutton.ceu"
+#include "pingus/components/menubutton.ceu"
+#include "pingus/components/armageddonbutton.ceu"
+#include "pingus/components/forwardbutton.ceu"
+#include "proxies/proxyeventlist.ceu"
 
 input _MenuButton* NEW_MENUBUTTON;
 input _ArmageddonButton* NEW_ARMAGEDDONBUTTON;

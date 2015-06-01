@@ -1,0 +1,23 @@
+#ifndef PROXYEVENTLIST_CEU
+#define PROXYEVENTLIST_CEU
+
+//this file should be included in main.ceu
+//because if some proxies are not used (SecondaryButtonProxy, for example)
+//but C++ code contains ceu_sys_go() for those
+//there would be a compile error as ON_SECONDARY_BUTTON_PRESS looks undeclared for the compiler
+
+//I'm going to include it in every proxy file as well, so it always remains up-to-date
+
+input _GUI_Component* ON_POINTER_ENTER;
+input _GUI_Component* ON_POINTER_LEAVE;
+//TODO: pointer move
+
+input _GUI_Component* ON_PRIMARY_BUTTON_PRESS;
+input _GUI_Component* ON_PRIMARY_BUTTON_RELEASE;
+input _GUI_Component* ON_PRIMARY_BUTTON_CLICK;
+
+input _GUI_Component* ON_SECONDARY_BUTTON_PRESS;
+input _GUI_Component* ON_SECONDARY_BUTTON_RELEASE;
+input _GUI_Component* ON_SECONDARY_BUTTON_CLICK;
+
+#endif

@@ -1,0 +1,46 @@
+#ifndef SECONDARYBUTTONPROXY_CEU
+#define SECONDARYBUTTONPROXY_CEU
+
+#include "proxyeventlist.ceu"
+
+#include "../c.ceu"
+#include "../engine/gui/igui_component.ceu"
+
+native/pre do
+    ##include "engine/gui/component.hpp"
+    ##define GUI_Component GUI::Component
+end
+
+class SecondaryButtonProxy with
+    var IGUI_Component& gui;
+do
+    par do
+        every g in ON_SECONDARY_BUTTON_PRESS do
+            if g == &gui.me then
+                emit gui.mouse_secondary_press;
+            end
+        end
+    with
+        every g in ON_SECONDARY_BUTTON_RELEASE do
+            if g == &gui.me then
+                emit gui.mouse_secondary_release;
+            end
+        end
+    with
+        every g in ON_SECONDARY_BUTTON_CLICK do
+            if g == &gui.me then
+                emit gui.mouse_secondary_click;
+            end
+        end
+    with
+        loop do
+            await gui.mouse_secondary_click;
+            watching 1s do
+                await gui.mouse_secondary_click;
+                emit gui.mouse_secondary_double_click;
+            end
+        end
+    end
+end
+
+#endif
