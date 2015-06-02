@@ -12,7 +12,7 @@ native/pre do
 end
 
 class WalkerAction with
-    var _PinguAction* ptr;
+    //var _PinguAction* ptr;
     interface IAction;
     var IPingu& pingu;    
 do

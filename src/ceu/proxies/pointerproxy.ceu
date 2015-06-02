@@ -15,11 +15,16 @@ class PointerProxy with
     var IGUI_Component& gui;
 do
     loop do
-        var _GUI_Component* g;
-        g = await ON_POINTER_ENTER until (g == &gui.me);
-        emit gui.mouse_enter;
-        g = await ON_POINTER_LEAVE until (g == &gui.me);
-        emit gui.mouse_leave;
+        do
+            var _GUI_Component* g =
+                await ON_POINTER_ENTER until (g == &gui.me);
+            emit gui.mouse_enter;
+        end
+        do
+            var _GUI_Component* g =
+                await ON_POINTER_LEAVE until (g == &gui.me);
+            emit gui.mouse_leave;
+        end
     end
 end
 

@@ -15,11 +15,9 @@ native/pre do
 end
 
 class MenuButton with
-    var _MenuButton* ptr;
     interface IGUI_Component;
 do
-    var _MenuButton&? me_ = _PTR2REF(ptr);
-    this.me = me_;
+    var _MenuButton&? me_ = _PTR2REF((_MenuButton*)&this.me);
     var PointerProxy p with
         this.gui = outer;
     end;

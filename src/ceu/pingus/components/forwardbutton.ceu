@@ -12,11 +12,9 @@ native/pre do
 end
 
 class ForwardButton with
-    var _ForwardButton* ptr;
     interface IGUI_Component;
 do
-    var _ForwardButton&? me_ = _PTR2REF(ptr);
-    this.me = me_;
+    var _ForwardButton&? me_ = _PTR2REF((_ForwardButton*)&this.me);
     var PrimaryButtonProxy p with
         this.gui = outer;
     end;

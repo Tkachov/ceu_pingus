@@ -18,22 +18,21 @@ input _PinguAction* PINGU_SET_ACTION;
 input _Pingu* PINGU_UPDATE;
 
 class Pingu with
-    var _Pingu* ptr;
     interface IPingu;
 do
-    var _Pingu&? me_ = _PTR2REF(ptr);
-    this.me = me_;
+    var _Pingu&? me_ = _PTR2REF((_Pingu*)&this.me);
 
     par/or do
-        every a in PINGU_SET_ACTION do
-            if a:pingu == &me_ then
+        every a_ in PINGU_SET_ACTION do
+            var _PinguAction&? a = _PTR2REF(a_);
+            if a.pingu == &me_ then
                 _printf("before emit action_changed\n");
                 emit action_changed; //destroys previous one
 
                 _printf("before new spawn\n");
-                if a:get_type() == _A_WALKER then
+                if a.get_type() == _A_WALKER then
                     spawn WalkerAction with
-                        this.ptr = _PTR2REF(a);
+                        //this.ptr = a;
                         this.pingu = outer;
                     end;
                 end;

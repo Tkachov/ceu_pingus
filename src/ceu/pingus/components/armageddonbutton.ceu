@@ -12,11 +12,9 @@ native/pre do
 end
 
 class ArmageddonButton with
-    var _ArmageddonButton* ptr;
     interface IGUI_Component;
 do
-    var _ArmageddonButton&? me_ = _PTR2REF(ptr);
-    this.me = me_;    
+    var _ArmageddonButton&? me_ = _PTR2REF((_ArmageddonButton*)&this.me);
     var PrimaryButtonProxy p with
         this.gui = outer;
     end;
