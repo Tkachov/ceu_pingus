@@ -1,0 +1,61 @@
+#ifndef PINGU_CEU
+#define PINGU_CEU
+
+#include "../c.ceu"
+#include "../sdl.ceu"
+#include "actions/walkeraction.ceu"
+#include "iaction.ceu"
+#include "ipingu.ceu"
+
+native/pre do
+    ##include "pingus/pingu.hpp"
+    ##define A_Enum(x) (ActionName::Enum)(x)
+    ##define A_WALKER ActionName::WALKER    
+end
+
+input _PinguAction* NEW_ACTION;
+input _PinguAction* PINGU_SET_ACTION;
+input _Pingu* PINGU_UPDATE;
+
+class Pingu with
+    var _Pingu* ptr;
+    interface IPingu;
+do
+    var _Pingu&? me_ = _PTR2REF(ptr);
+    this.me = me_;
+
+    par/or do
+        every a in PINGU_SET_ACTION do
+            if a:pingu == &me_ then
+                _printf("before emit action_changed\n");
+                emit action_changed; //destroys previous one
+
+                _printf("before new spawn\n");
+                if a:get_type() == _A_WALKER then
+                    spawn WalkerAction with
+                        this.ptr = _PTR2REF(a);
+                        this.pingu = outer;
+                    end;
+                end;
+
+                _printf("after spawn\n");
+            end
+        end
+    with        
+        every a in set_action do
+            _printf("before set_action\n");
+            me_.set_action(_A_Enum(a));
+            _printf("after set_action\n");
+        end        
+    with        
+        every p in PINGU_UPDATE do
+            if p == &me_ then
+                emit update;
+            end
+        end
+    with
+        await SDL_QUIT;
+    end    
+end
+
+#endif

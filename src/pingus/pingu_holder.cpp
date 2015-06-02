@@ -19,6 +19,8 @@
 #include "pingus/pingu.hpp"
 #include "pingus/pingus_level.hpp"
 
+#include "ceuvars.h"
+
 PinguHolder::PinguHolder(const PingusLevel& plf) :
   number_of_allowed(plf.get_number_of_pingus()),
   number_of_exited(0),

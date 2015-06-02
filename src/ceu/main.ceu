@@ -10,16 +10,18 @@ end
 #include "pingus/components/menubutton.ceu"
 #include "pingus/components/armageddonbutton.ceu"
 #include "pingus/components/forwardbutton.ceu"
+#include "pingus/pingu.ceu"
 #include "proxies/proxyeventlist.ceu"
 
 input _MenuButton* NEW_MENUBUTTON;
 input _ArmageddonButton* NEW_ARMAGEDDONBUTTON;
 input _ForwardButton* NEW_FORWARDBUTTON;
+input _Pingu* NEW_PINGU;
 
 par/or do
     await SDL_QUIT;
 with
-    every new_menubutton in NEW_MENUBUTTON do
+    every new_menubutton in NEW_MENUBUTTON do        
         spawn MenuButton with
             this.ptr = new_menubutton;
         end;
@@ -36,7 +38,13 @@ with
             this.ptr = new_forwardbutton;
         end;
     end
-with    
+with
+    every new_pingu in NEW_PINGU do        
+        spawn Pingu with
+            this.ptr = new_pingu;
+        end;
+    end
+with
     loop do
         await SDL_REDRAW;
     end

@@ -1,0 +1,8 @@
+#ifndef IACTION_CEU
+#define IACTION_CEU
+
+interface IAction with
+    event void update;
+end
+
+#endif

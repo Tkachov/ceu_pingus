@@ -54,13 +54,13 @@ PingusMenu::PingusMenu() :
   start_button = new MenuButton(this, Vector2i(size_.width/2 - 125,
                                                size_.height/2 - 20),
                                 _("Story"),
-                                _("..:: Start the game ::.."));
+                                _("..:: Start the game ::.."));  
   ceu_out_go(&CEUapp, CEU_IN_NEW_MENUBUTTON, &start_button);
 
   editor_button = new MenuButton(this, Vector2i(size_.width/2 + 125,
                                                 size_.height/2 - 20),
                                  _("Editor"),
-                                 _("..:: Create your own levels ::.."));
+                                 _("..:: Create your own levels ::.."));  
   ceu_out_go(&CEUapp, CEU_IN_NEW_MENUBUTTON, &editor_button);
 
   options_button = new MenuButton(this, Vector2i(size_.width/2 + 125, 

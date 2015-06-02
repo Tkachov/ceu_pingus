@@ -1,0 +1,38 @@
+#ifndef WALKERACTION_CEU
+#define WALKERACTION_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../iaction.ceu"
+#include "../ipingu.ceu"
+
+native/pre do
+    ##include "pingus/pingu_action.hpp"
+    ##define A_DIGGER ActionName::DIGGER 
+end
+
+class WalkerAction with
+    var _PinguAction* ptr;
+    interface IAction;
+    var IPingu& pingu;    
+do
+    par/or do
+        every pingu.update do
+            _printf("before emit\n");
+            emit pingu.set_action => _A_DIGGER;
+            _printf("after emit\n");
+        end
+    with
+        await pingu.action_changed;
+    end
+
+    _printf("after par/or\n");
+
+    //uncommenting any of these lines fixes the crash:
+    //await SDL_QUIT;
+    //await pingu.action_changed;
+
+    _printf("goodbye\n");
+end
+
+#endif

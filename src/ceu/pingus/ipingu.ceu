@@ -1,0 +1,17 @@
+#ifndef IPINGU_CEU
+#define IPINGU_CEU
+
+native/pre do
+    ##include "pingus/pingu.hpp"
+    ##define ActionName_Enum ActionName::Enum
+end
+
+interface IPingu with
+    var _Pingu& me;
+
+    event int set_action;
+    event void update;
+    event void action_changed;
+end
+
+#endif

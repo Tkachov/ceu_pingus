@@ -50,6 +50,8 @@
 
 #include "util/log.hpp"
 
+#include "ceuvars.h"
+
 using namespace Actions;
 
 // Init a pingu at the given position while falling
@@ -73,6 +75,14 @@ Pingu::Pingu (int arg_id, const Vector3f& arg_pos, int owner) :
   // Initialisize the action, after this step the action ptr will
   // always be valid in the pingu class
   action = create_action(ActionName::FALLER);
+
+  //create Ceu Pingu
+  Pingu* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_NEW_PINGU, &self);
+
+  //pass action to Ceu
+  PinguAction* p = action.get();
+  ceu_out_go(&CEUapp, CEU_IN_PINGU_SET_ACTION, &p);
 }
 
 Pingu::~Pingu ()
@@ -237,6 +247,10 @@ Pingu::set_action(std::shared_ptr<PinguAction> act)
   previous_action = action->get_type();
 
   action = act;
+
+  //notify Ceu that it need new action to be created
+  PinguAction* p = action.get();
+  ceu_out_go(&CEUapp, CEU_IN_PINGU_SET_ACTION, &p);
 }
 
 bool
@@ -337,6 +351,9 @@ Pingu::update()
   }
 
   action->update();
+
+  Pingu* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_PINGU_UPDATE, &self);
 }
 
 // Draws the pingu on the screen with the given offset

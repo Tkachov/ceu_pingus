@@ -274,7 +274,7 @@ GroupComponent::on_pointer_move(int x, int y)
       {
         comp->set_mouse_over(true);
         comp->on_pointer_enter();
-        //Ceu ON_POINTER_ENTER
+        //Ceu ON_POINTER_ENTER        
         ceu_sys_go(&CEUapp, CEU_IN_ON_POINTER_ENTER, &comp);
       }
     }
