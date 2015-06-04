@@ -40,17 +40,22 @@ do
     with
         //wait for e_CHANGE_ACTION and create an instance
         loop do
-            watching current_action in e_CHANGE_ACTION do
-                if current_action == null then
-                else/if current_action:get_type() == _A_WALKER then
+            var _PinguAction* current_action;
+            par/or do
+                current_action = await e_CHANGE_ACTION;
+            with
+/// had to change from "wacthing" to "par/or" to use the PTR2REF trick
+                var _PinguAction&? a = _PTR2REF(current_action);
+                if &a == null then
+                else/if a.get_type() == _A_WALKER then
                     do WalkerAction with
                         this.pingu = outer;
-                        this.me = current_action;
+                        this.me = &a;
                     end;
-                else/if current_action:get_type() == _A_DIGGER then
+                else/if a.get_type() == _A_DIGGER then
                     do DiggerAction with
                         this.pingu = outer;
-                        this.me = current_action;
+                        this.me = &a;
                     end;
                 end;
 

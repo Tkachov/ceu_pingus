@@ -8,12 +8,13 @@
 
 native/pre do
     ##include "pingus/actions/digger.hpp"
+    #define A_Digger Actions::Digger
 end
 
 class DiggerAction with
     interface IAction;    
 do
-    var _Digger&? digger = _PTR2REF((_Digger*)&this.me);
+    var _A_Digger&? digger = _PTR2REF((_A_Digger*)&this.me);
 
     every pingu.e_UPDATE_CALLED do
         //sprite.update();
