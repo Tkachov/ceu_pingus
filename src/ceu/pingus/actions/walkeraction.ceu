@@ -14,24 +14,14 @@ end
 class WalkerAction with
     interface IAction;
     var IPingu& pingu;    
-do
-    var int res = 0;
-    _printf("Walker\n");
+do    
     par/or do
-        every pingu.update do
-            _printf("before emit\n"); //this never happens because C++ calls set_action(Faller) faster
-            emit pingu.set_action => _A_DIGGER;
-            _printf("after emit\n");
+        every pingu.e_UPDATE_CALLED do
+            //emit pingu.e_CALL_SET_ACTION => _A_DIGGER;
         end
     with
-        res = await pingu.action_changed;
-        _printf("action_changed\n");
+        await FOREVER;
     end
-
-    _printf("goodbye\n");
-
-    //emit pingu.update_action => res;
-    escape res;
 end
 
 #endif
