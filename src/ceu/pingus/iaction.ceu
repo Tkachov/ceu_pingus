@@ -1,8 +1,18 @@
 #ifndef IACTION_CEU
 #define IACTION_CEU
 
+native/pre do
+    ##include "pingus/pingu_action.hpp"
+    ##define A_DIGGER ActionName::DIGGER
+    ##define A_DROWN ActionName::DROWN
+    ##define A_WALKER ActionName::WALKER
+end
+
+#include "ipingu.ceu"
+
 interface IAction with
-    event void update;
+    var IPingu& pingu;
+    var _PinguAction* me;
 end
 
 #endif

@@ -10,7 +10,7 @@ interface IPingu with
     var _Pingu& me;
 
     event int e_CALL_SET_ACTION;
-    event int e_CHANGE_ACTION;
+    event _PinguAction* e_CHANGE_ACTION;
     event void e_UPDATE_CALLED;
 end
 

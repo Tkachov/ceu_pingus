@@ -6,21 +6,11 @@
 #include "../iaction.ceu"
 #include "../ipingu.ceu"
 
-native/pre do
-    ##include "pingus/pingu_action.hpp"
-    ##define A_DIGGER ActionName::DIGGER 
-end
-
 class WalkerAction with
-    interface IAction;
-    var IPingu& pingu;    
+    interface IAction;   
 do    
-    par/or do
-        every pingu.e_UPDATE_CALLED do
-            //emit pingu.e_CALL_SET_ACTION => _A_DIGGER;
-        end
-    with
-        await FOREVER;
+    every pingu.e_UPDATE_CALLED do
+        //emit pingu.e_CALL_SET_ACTION => _A_DIGGER;
     end
 end
 

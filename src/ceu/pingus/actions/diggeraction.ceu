@@ -1,0 +1,45 @@
+#ifndef DIGGERACTION_CEU
+#define DIGGERACTION_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../iaction.ceu"
+#include "../ipingu.ceu"
+
+native/pre do
+    ##include "pingus/actions/digger.hpp"
+end
+
+class DiggerAction with
+    interface IAction;    
+do
+    var _Digger&? digger = _PTR2REF((_Digger*)&this.me);
+
+    every pingu.e_UPDATE_CALLED do
+        //sprite.update();
+
+        //delay_count += 1;
+
+        /*
+        if (rel_getpixel(0, -1) ==  Groundtype::GP_WATER
+          || rel_getpixel(0, -1) ==  Groundtype::GP_LAVA)
+        {
+            emit pingu.e_CALL_SET_ACTION => _A_DROWN;
+        }
+        else
+        {
+            if (!have_something_to_dig())
+            {
+              dig(true);              
+              emit pingu.e_CALL_SET_ACTION => _A_WALKER;
+            }
+            else if (delay_count % 4 == 0)
+            {
+              dig(false);
+            }
+        }
+        */
+    end
+end
+
+#endif
