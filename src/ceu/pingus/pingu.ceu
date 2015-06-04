@@ -18,41 +18,44 @@ input _PinguAction* PINGU_SET_ACTION;
 input _Pingu* PINGU_UPDATE;
 
 class Pingu with
-    var _Pingu* ptr;
     interface IPingu;
 do
-    var _Pingu&? me_ = _PTR2REF(ptr);
-    this.me = me_;
+    var _Pingu&? me_ = _PTR2REF((_Pingu*)&this.me);
+    var int current_action = _A_WALKER;  // default action
 
     par/or do
-        every a in PINGU_SET_ACTION do
-            if a:pingu == &me_ then
-                _printf("before emit action_changed\n");
-                emit action_changed; //destroys previous one
-
-                _printf("before new spawn\n");
-                if a:get_type() == _A_WALKER then
-                    spawn WalkerAction with
-                        this.ptr = _PTR2REF(a);
-                        this.pingu = outer;
-                    end;
-                end;
-
-                _printf("after spawn\n");
-            end
-        end
-    with        
-        every a in set_action do
-            _printf("before set_action\n");
-            me_.set_action(_A_Enum(a));
-            _printf("after set_action\n");
-        end        
-    with        
+        //pass update() call
         every p in PINGU_UPDATE do
             if p == &me_ then
-                emit update;
+                emit e_UPDATE_CALLED;
             end
         end
+    with
+        //notify about set_action() call
+        every a_ in PINGU_SET_ACTION do
+            var _PinguAction&? a = _PTR2REF(a_);
+            if a.pingu == &me_ then                
+                emit e_CHANGE_ACTION => a.get_type();
+            end
+        end
+    with
+        //wait for e_CHANGE_ACTION and create an instance
+        loop do
+            par/or do
+                current_action = await e_CHANGE_ACTION;
+            with
+                if current_action == _A_WALKER then
+                    do WalkerAction with this.pingu = outer; end;
+                end;
+
+                await FOREVER;
+            end
+        end
+    with
+        //wait for e_CALL_SET_ACTION and call C++'s set_action()
+        every a in e_CALL_SET_ACTION do
+            me_.set_action(_A_Enum(a));
+        end        
     with
         await SDL_QUIT;
     end    

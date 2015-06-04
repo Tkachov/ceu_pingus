@@ -9,9 +9,9 @@ end
 interface IPingu with
     var _Pingu& me;
 
-    event int set_action;
-    event void update;
-    event void action_changed;
+    event int e_CALL_SET_ACTION;
+    event int e_CHANGE_ACTION;
+    event void e_UPDATE_CALLED;
 end
 
 #endif
