@@ -11,7 +11,8 @@ interface IPingu with
 
     event int set_action;
     event void update;
-    event void action_changed;
+    event int action_changed;
+    event int update_action;
 end
 
 #endif

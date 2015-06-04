@@ -21,32 +21,37 @@ class Pingu with
     interface IPingu;
 do
     var _Pingu&? me_ = _PTR2REF((_Pingu*)&this.me);
+    var int cur = _A_WALKER;  // default action
 
     par/or do
         every a_ in PINGU_SET_ACTION do
             var _PinguAction&? a = _PTR2REF(a_);
             if a.pingu == &me_ then
-                _printf("before emit action_changed\n");
-                emit action_changed; //destroys previous one
-
-                _printf("before new spawn\n");
-                if a.get_type() == _A_WALKER then
-                    spawn WalkerAction with
-                        //this.ptr = a;
-                        this.pingu = outer;
-                    end;
-                end;
-
-                _printf("after spawn\n");
+                _printf("got SET_ACTION %d\n", a.get_type()); //let us know that set_action was called in C++
+                emit action_changed => a.get_type(); //notify current action to terminate with a.get_type()
+                _printf("action_changed emitted\n"); // <<< never happens <<<
+                emit update_action => a.get_type(); //notify watching loop to start new iteration
             end
         end
+    with
+        watching cur in update_action do
+            _printf("update_action: cur = %d (WALKER == %d)\n", cur, _A_WALKER); //let us know which action we're creating
+            if cur == _A_WALKER then
+                cur = do WalkerAction with
+                    this.pingu = outer;
+                end;
+                //here we wait for WalkerAction and thus never react on update_action
+                _printf("action terminated: cur = %d\n", cur); //shows which value should be on next iteration
+                //next iteration never happens
+            end;
+        end;
     with        
         every a in set_action do
             _printf("before set_action\n");
             me_.set_action(_A_Enum(a));
             _printf("after set_action\n");
         end        
-    with        
+    with
         every p in PINGU_UPDATE do
             if p == &me_ then
                 emit update;
