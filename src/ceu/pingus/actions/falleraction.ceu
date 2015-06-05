@@ -3,6 +3,7 @@
 
 #include "../../c.ceu"
 #include "../../sdl.ceu"
+#include "../../math/vector3f.ceu"
 #include "../iaction.ceu"
 #include "../ipingu.ceu"
 
@@ -61,8 +62,9 @@ do
         faller.pingu:set_pos(faller.mover.get_pos());
 
         var bool collided = faller.mover.collided();
-        var float velocity_x = faller.pingu:get_velocity().x;
-        var float velocity_y = faller.pingu:get_velocity().y;
+        var Vector3f velocity;
+        velocity.x = faller.pingu:get_velocity().x;
+        velocity.y = faller.pingu:get_velocity().y;
 
         // If the Pingu collided with something...
         if collided then
@@ -73,16 +75,16 @@ do
                faller.rel_getpixel(1, 0) != _GT_BRIDGE
             then
                 // Make Pingu bounce off wall
-                velocity_x = -(velocity_x/3.0);
+                velocity.x = -(velocity.x/3.0);
 
                 // Make the Pingu face the correct direction.  NB: Pingu may
                 // previously have been facing in the opposite direction of its
                 // velocity because of an explosion.
-                if velocity_x > 0 then faller.pingu:direction.right();
+                if velocity.x > 0 then faller.pingu:direction.right();
                 else faller.pingu:direction.left(); end
 
-                faller.pingu:set_velocity(_Vector3f(velocity_x, velocity_y));
-            else/if velocity_y > 0.0 // If the Pingu collided into something while moving down...
+                faller.pingu:set_velocity(_Vector3f(velocity.x, velocity.y));
+            else/if velocity.y > 0.0 // If the Pingu collided into something while moving down...
             then
                 // Ping is on ground/water/something
                 if faller.rel_getpixel(0, -1) == _GT_WATER or
@@ -90,7 +92,7 @@ do
                 then
                     emit pingu.e_CALL_SET_ACTION => _A_DROWN;
                 // Did we stop too fast?
-                else/if _Math__abs(velocity_y) > _deadly_velocity then
+                else/if _Math__abs(velocity.y) > _deadly_velocity then
                     //log_info("Pingus splashed: " << pingu:get_velocity().y << " " << deadly_velocity);
                     emit pingu.e_CALL_SET_ACTION => _A_SPLASHED;
                 else
@@ -105,10 +107,10 @@ do
             // If the Pingu collided into something while moving up...
             else
                 // Don't make the Pingu go up any further.
-                velocity_y = 0;
-                velocity_x = velocity_x/3.0;
+                velocity.y = 0;
+                velocity.x = velocity.x/3.0;
 
-                faller.pingu:set_velocity(_Vector3f(velocity_x, velocity_y));
+                faller.pingu:set_velocity(_toVector3f(velocity));
             end
         end
     end

@@ -1,0 +1,18 @@
+#ifndef VECTOR3F_CEU
+#define VECTOR3F_CEU
+
+native/pre do
+    ##include "math/vector3f.hpp"
+    ##define toVector3f(v) Vector3f(v.x, v.y, v.z)
+end
+
+native @plain _Vector3f;
+native @pure _toVector3f();
+
+data Vector3f with
+    var float x;
+    var float y;
+    var float z;
+end
+
+#endif

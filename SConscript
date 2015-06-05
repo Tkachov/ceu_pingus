@@ -97,6 +97,7 @@ class Project:
 
         self.env.Append(CPPPATH=['/usr/local/include','/usr/include/mingw'])
         self.env.Append(LIBPATH=['/usr/local/lib'])
+        self.env.Append(CXXFLAGS=['-Wno-write-strings']) #I don't like those
         self.env.Append(LINKFLAGS=['-mwindows'])
         self.env.Append(LIBS=['-lm', '-lpthread', '-lcygwin', '-lSDL2main', '-lSDL2', '-lSDL2_image', '-lSDL2_mixer', '-lSDL2_ttf', '-lSDL2_net', '-lSDL2_gfx'])
         #                  LINKFLAGS = [ '-mwindows' ],
