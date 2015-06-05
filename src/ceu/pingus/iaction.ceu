@@ -3,9 +3,11 @@
 
 native/pre do
     ##include "pingus/pingu_action.hpp"
+    ##define A_BLOCKER ActionName::BLOCKER
     ##define A_DIGGER ActionName::DIGGER
     ##define A_DROWN ActionName::DROWN
     ##define A_FALLER ActionName::FALLER
+    ##define A_SPLASHED ActionName::SPLASHED
     ##define A_WALKER ActionName::WALKER
 end
 

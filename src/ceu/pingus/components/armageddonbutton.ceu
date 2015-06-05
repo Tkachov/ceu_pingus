@@ -9,6 +9,7 @@
 native/pre do
     ##include "pingus/components/action_button.hpp"
     ##include "pingus/server.hpp"
+    ##include "pingus/world.hpp"
 end
 
 input _ArmageddonButton* DELETE_ARMAGEDDONBUTTON;

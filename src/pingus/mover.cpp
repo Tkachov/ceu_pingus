@@ -43,4 +43,11 @@ bool Mover::collided() const
   return collision;
 }
 
+void Mover::reset(World* const new_world, const Vector3f& new_pos) {
+	//world = new_world;
+	pos = new_pos;
+	remaining_move = Vector3f(0, 0, 0);
+	collision = false;
+}
+
 /* EOF */

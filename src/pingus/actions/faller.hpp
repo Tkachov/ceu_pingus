@@ -19,6 +19,7 @@
 
 #include "pingus/pingu_action.hpp"
 #include "pingus/state_sprite.hpp"
+#include "pingus/movers/linear_mover.hpp"
 
 namespace Actions {
 
@@ -29,6 +30,8 @@ private:
   StateSprite tumbler;
 
 public:
+  Movers::LinearMover mover;
+
   Faller(Pingu*);
   virtual ~Faller();
 
