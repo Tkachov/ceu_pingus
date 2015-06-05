@@ -10,12 +10,14 @@ end
 #include "pingus/components/menubutton.ceu"
 #include "pingus/components/armageddonbutton.ceu"
 #include "pingus/components/forwardbutton.ceu"
+#include "pingus/components/pausebutton.ceu"
 #include "pingus/pingu.ceu"
 #include "proxies/proxyeventlist.ceu"
 
 input _MenuButton* NEW_MENUBUTTON;
 input _ArmageddonButton* NEW_ARMAGEDDONBUTTON;
 input _ForwardButton* NEW_FORWARDBUTTON;
+input _PauseButton* NEW_PAUSEBUTTON;
 input _Pingu* NEW_PINGU;
 
 par/or do
@@ -36,6 +38,12 @@ with
     every new_forwardbutton in NEW_FORWARDBUTTON do
         spawn ForwardButton with
             this.me = _PTR2REF(new_forwardbutton);
+        end;
+    end
+with
+    every new_pausebutton in NEW_PAUSEBUTTON do
+        spawn PauseButton with
+            this.me = _PTR2REF(new_pausebutton);
         end;
     end
 with

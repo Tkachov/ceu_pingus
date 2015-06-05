@@ -11,6 +11,8 @@ native/pre do
     ##include "pingus/screens/game_session.hpp"
 end
 
+input _ForwardButton* DELETE_FORWARDBUTTON;
+
 class ForwardButton with
     interface IGUI_Component;
 do
@@ -19,12 +21,16 @@ do
         this.gui = outer;
     end;
 
-    loop do
-        await mouse_press;
-        me_.session:set_fast_forward(true);
+    par/or do
+        loop do
+            await mouse_press;
+            me_.session:set_fast_forward(true);
 
-        await mouse_release;
-        me_.session:set_fast_forward(false);
+            await mouse_release;
+            me_.session:set_fast_forward(false);
+        end
+    with
+        var _ForwardButton* b = await DELETE_FORWARDBUTTON until (b == &me_);
     end
 end
 

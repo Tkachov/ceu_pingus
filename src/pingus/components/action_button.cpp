@@ -23,6 +23,8 @@
 
 #include "stdio.h"
 
+#include "ceuvars.h"
+
 ArmageddonButton::ArmageddonButton(Server* s, int x, int y) :
   RectComponent(Rect(Vector2i(x, y), Size(38, 60))),
   server(s),
@@ -30,11 +32,15 @@ ArmageddonButton::ArmageddonButton(Server* s, int x, int y) :
   background  ("core/buttons/hbuttonbgb"),
   backgroundhl("core/buttons/hbuttonbg")
 {
-  sprite       = Sprite("core/buttons/armageddon_anim");
+  sprite = Sprite("core/buttons/armageddon_anim");
+
+  void* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_NEW_ARMAGEDDONBUTTON, &self);
 }
 
-ArmageddonButton::~ArmageddonButton () 
-{
+ArmageddonButton::~ArmageddonButton() {
+  void* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_DELETE_ARMAGEDDONBUTTON, &self);
 }
 
 void
@@ -70,9 +76,15 @@ ForwardButton::ForwardButton(GameSession* s, int x, int y) :
   backgroundhl("core/buttons/hbuttonbg")
 {
   surface = Sprite("core/buttons/fast_forward");
+
+  void* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_NEW_FORWARDBUTTON, &self);
 }
 
-ForwardButton::~ForwardButton () {}
+ForwardButton::~ForwardButton() {
+  void* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_DELETE_FORWARDBUTTON, &self);
+}
 
 void
 ForwardButton::draw (DrawingContext& gc)
@@ -99,10 +111,14 @@ PauseButton::PauseButton(GameSession* s, int x, int y) :
   backgroundhl("core/buttons/hbuttonbg")
 {
   surface = Sprite("core/buttons/pause");
+
+  void* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_NEW_PAUSEBUTTON, &self);
 }
 
-PauseButton::~PauseButton () 
-{
+PauseButton::~PauseButton() {
+  void* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_DELETE_PAUSEBUTTON, &self);
 }
 
 void
@@ -120,12 +136,6 @@ PauseButton::draw (DrawingContext& gc)
   }
 
   gc.draw(surface, pos);
-}
-
-void
-PauseButton::on_primary_button_click (int x, int y)
-{
-  session->set_pause(!session->get_pause());
 }
 
 /* EOF */

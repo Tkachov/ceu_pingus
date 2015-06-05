@@ -19,8 +19,8 @@ do
     every pingu.e_UPDATE_CALLED do
         //emit pingu.e_CALL_SET_ACTION => _A_DIGGER;
 
-        walker.walker[walker.pingu->direction].update(0.033f);
-        walker.floaterlayer[walker.pingu->direction].update(0.033f);
+        walker.walker[walker.pingu:direction].update(0.033);
+        walker.floaterlayer[walker.pingu:direction].update(0.033);
     end
 end
 

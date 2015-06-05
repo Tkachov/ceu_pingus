@@ -89,9 +89,7 @@ public:
   PauseButton(GameSession*, int x, int y);
   virtual ~PauseButton();
 
-  void draw(DrawingContext& gc);
-  
-  void on_primary_button_click (int x, int y);
+  void draw(DrawingContext& gc);  
 
 private:
   PauseButton (const PauseButton&);

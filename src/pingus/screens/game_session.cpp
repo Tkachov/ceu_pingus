@@ -34,8 +34,6 @@
 #include "pingus/world.hpp"
 #include "util/log.hpp"
 
-#include "ceuvars.h"
-
 GameSession::GameSession(const PingusLevel& arg_plf, bool arg_show_result_screen) :
   plf(arg_plf),
   show_result_screen(arg_show_result_screen),
@@ -85,10 +83,8 @@ GameSession::GameSession(const PingusLevel& arg_plf, bool arg_show_result_screen
   gui_manager->add(small_map);
   gui_manager->add(time_display);
 
-  armageddon_button = new ArmageddonButton(get_server(), Display::get_width() - 40, Display::get_height() - 62);
-  ceu_out_go(&CEUapp, CEU_IN_NEW_ARMAGEDDONBUTTON, &armageddon_button);
-  forward_button    = new ForwardButton(this, Display::get_width() - 40 * 2, Display::get_height() - 62);
-  ceu_out_go(&CEUapp, CEU_IN_NEW_FORWARDBUTTON, &forward_button);
+  armageddon_button = new ArmageddonButton(get_server(), Display::get_width() - 40, Display::get_height() - 62);  
+  forward_button    = new ForwardButton(this, Display::get_width() - 40 * 2, Display::get_height() - 62);  
   pause_button      = new PauseButton(this, Display::get_width() - 40 * 3, Display::get_height() - 62);
 
   gui_manager->add(armageddon_button);

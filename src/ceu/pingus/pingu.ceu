@@ -19,6 +19,7 @@ input _Pingu* PINGU_UPDATE;
 
 class Pingu with
     interface IPingu;
+    event _PinguAction* e_CHANGE_ACTION;
 do
     var _Pingu&? me_ = _PTR2REF((_Pingu*)&this.me);
     var _PinguAction* current_action = null;

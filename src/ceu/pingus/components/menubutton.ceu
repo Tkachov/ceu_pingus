@@ -14,6 +14,8 @@ native/pre do
     ##define Sound_PingusSound_play_sound Sound::PingusSound::play_sound
 end
 
+input _MenuButton* DELETE_MENUBUTTON;
+
 class MenuButton with
     interface IGUI_Component;
 do
@@ -22,15 +24,19 @@ do
         this.gui = outer;
     end;
 
-    loop do
-        await mouse_enter;
-        me_.mouse_over = true;
-        _Sound_PingusSound_play_sound("tick");
-        me_.menu:set_hint(me_.desc) finalize with end;
+    par/or do
+        loop do
+            await mouse_enter;
+            me_.mouse_over = true;
+            _Sound_PingusSound_play_sound("tick");
+            me_.menu:set_hint(me_.desc) finalize with end;
 
-        await mouse_leave;
-        me_.mouse_over = false;
-        me_.menu:set_hint("");
+            await mouse_leave;
+            me_.mouse_over = false;
+            me_.menu:set_hint("");
+        end
+    with
+        var _MenuButton* b = await DELETE_MENUBUTTON until (b == &me_);
     end
 end
 

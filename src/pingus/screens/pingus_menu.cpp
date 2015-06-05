@@ -32,7 +32,7 @@
 #include "pingus/worldmap/worldmap_screen.hpp"
 #include "pingus/stat_manager.hpp"
 
-#include "ceuvars.h"
+
 
 PingusMenu::PingusMenu() :
   is_init(),
@@ -55,31 +55,26 @@ PingusMenu::PingusMenu() :
                                                size_.height/2 - 20),
                                 _("Story"),
                                 _("..:: Start the game ::.."));  
-  ceu_out_go(&CEUapp, CEU_IN_NEW_MENUBUTTON, &start_button);
 
   editor_button = new MenuButton(this, Vector2i(size_.width/2 + 125,
                                                 size_.height/2 - 20),
                                  _("Editor"),
-                                 _("..:: Create your own levels ::.."));  
-  ceu_out_go(&CEUapp, CEU_IN_NEW_MENUBUTTON, &editor_button);
+                                 _("..:: Create your own levels ::.."));
 
   options_button = new MenuButton(this, Vector2i(size_.width/2 + 125, 
                                                  size_.height/2 + 50),
                                   _("Options"),
                                   _("..:: Configure the game ::.."));
-  ceu_out_go(&CEUapp, CEU_IN_NEW_MENUBUTTON, &options_button);
 
   contrib_button = new MenuButton(this, Vector2i(size_.width/2 - 125,
                                                  size_.height/2 + 50),
                                   _("Levelsets"),
                                   _("..:: Play User Built levels ::.."));
-  ceu_out_go(&CEUapp, CEU_IN_NEW_MENUBUTTON, &contrib_button);
 
   quit_button = new MenuButton(this, Vector2i(size_.width/2, 
                                               size_.height/2 + 120),
                                _("Exit"),
                                _("..:: Bye, bye ::.."));
-  ceu_out_go(&CEUapp, CEU_IN_NEW_MENUBUTTON, &quit_button);
 
   gui_manager->add(quit_button);
   gui_manager->add(options_button);

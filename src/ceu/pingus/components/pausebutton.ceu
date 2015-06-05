@@ -1,0 +1,33 @@
+#ifndef PAUSEBUTTON_CEU
+#define PAUSEBUTTON_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../../engine/gui/igui_component.ceu"
+#include "../../proxies/primarybuttonproxy.ceu"
+
+native/pre do
+    ##include "pingus/components/action_button.hpp"
+    ##include "pingus/screens/game_session.hpp"
+end
+
+input _PauseButton* DELETE_PAUSEBUTTON;
+
+class PauseButton with
+    interface IGUI_Component;
+do
+    var _PauseButton&? me_ = _PTR2REF((_PauseButton*)&this.me);
+    var PrimaryButtonProxy p with
+        this.gui = outer;
+    end;
+
+    par/or do
+        every mouse_click do
+            me_.session:set_pause(not me_.session:get_pause());
+        end
+    with
+        var _PauseButton* b = await DELETE_PAUSEBUTTON until (b == &me_);
+    end
+end
+
+#endif

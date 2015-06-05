@@ -11,6 +11,8 @@ native/pre do
     ##include "pingus/server.hpp"
 end
 
+input _ArmageddonButton* DELETE_ARMAGEDDONBUTTON;
+
 class ArmageddonButton with
     interface IGUI_Component;
 do
@@ -19,9 +21,13 @@ do
         this.gui = outer;
     end;
 
-    loop do
-        await mouse_double_click;
-        me_.server:send_armageddon_event();
+    par/or do
+        loop do
+            await mouse_double_click;
+            me_.server:send_armageddon_event();
+        end
+    with
+        var _ArmageddonButton* b = await DELETE_ARMAGEDDONBUTTON until (b == &me_);
     end
 end
 

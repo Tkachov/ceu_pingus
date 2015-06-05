@@ -21,6 +21,8 @@
 #include "math/vector2i.hpp"
 #include "pingus/screens/pingus_menu.hpp"
 
+#include "ceuvars.h"
+
 MenuButton::MenuButton(PingusMenu* menu_, const Vector2i& pos_,
                        const std::string& text_, const std::string& desc_):
   menu(menu_),
@@ -33,9 +35,15 @@ MenuButton::MenuButton(PingusMenu* menu_, const Vector2i& pos_,
   desc(desc_),
   text(text_),
   mouse_over(false),
-  pressed(false) {}
+  pressed(false) {
+    void* self = this;
+    ceu_out_go(&CEUapp, CEU_IN_NEW_MENUBUTTON, &self);
+  }
 
-MenuButton::~MenuButton() {}
+MenuButton::~MenuButton() {
+  void* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_DELETE_MENUBUTTON, &self);
+}
 
 void MenuButton::on_click () {
   menu->on_click(this);
