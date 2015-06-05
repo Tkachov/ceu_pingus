@@ -25,8 +25,8 @@ native/pre do
     ##define Math__abs Math::abs
 end
 
-native @pure    _Colliders__PinguCollider(),
-                _WorldObj__get_world();
+native @pure _Colliders__PinguCollider(),
+             _WorldObj__get_world();
 
 class FallerAction with
     interface IAction;
@@ -56,13 +56,13 @@ do
           + _Vector3f(0, _WorldObj__get_world():get_gravity()) );
 
         // Move the Pingu as far is it can go
-        faller.mover.reset(_WorldObj__get_world(), faller.pingu:get_pos());
+        faller.mover.reset(faller.pingu:get_pos());
         faller.mover.update(faller.pingu:get_velocity(), _Colliders__PinguCollider(_pingu_height));
         faller.pingu:set_pos(faller.mover.get_pos());
 
         var bool collided = faller.mover.collided();
-        var int velocity_x = faller.pingu:get_velocity().x;
-        var int velocity_y = faller.pingu:get_velocity().y;
+        var float velocity_x = faller.pingu:get_velocity().x;
+        var float velocity_y = faller.pingu:get_velocity().y;
 
         // If the Pingu collided with something...
         if collided then

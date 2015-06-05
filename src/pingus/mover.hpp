@@ -44,7 +44,7 @@ public:
   bool collided() const;
 
   //Ceu port: reset the object - new world and position, no remaining / collided info
-  void reset(World* const new_world, const Vector3f& new_pos);
+  void reset(const Vector3f& new_pos);
 
 protected:
   /** World in which the object should move */
