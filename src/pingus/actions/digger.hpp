@@ -29,7 +29,6 @@ private:
   CollisionMask digger_radius;
   CollisionMask digger_radius_final;
   Sprite sprite;
-  int delay_count;
 
 public:
   Digger(Pingu*);

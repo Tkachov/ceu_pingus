@@ -23,13 +23,9 @@
 #include "pingus/world.hpp"
 #include "pingus/worldobj.hpp"
 
-#include "ceuvars.h"
-
 PinguAction::PinguAction (Pingu* p)
   : pingu (p)
-{
-  //ceu_out_go(&CEUapp, CEU_IN_NEW_ACTION, &this);
-}
+{}
 
 PinguAction::~PinguAction ()
 {

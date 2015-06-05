@@ -28,37 +28,12 @@ Digger::Digger(Pingu* p) :
   PinguAction(p),
   digger_radius("pingus/common/digger_radius_gfx", "pingus/common/digger_radius"),
   digger_radius_final("pingus/common/digger_radius_final_gfx", "pingus/common/digger_radius_final_gfx"),
-  sprite(),
-  delay_count(0)
+  sprite()
 {
   sprite = Sprite("pingus/player" + pingu->get_owner_str() + "/digger/left");
 }
 
-void
-Digger::update()
-{
-  sprite.update();
-
-  delay_count += 1;
-
-  if (rel_getpixel(0, -1) ==  Groundtype::GP_WATER
-      || rel_getpixel(0, -1) ==  Groundtype::GP_LAVA)
-  {
-    pingu->set_action(ActionName::DROWN);
-  }
-  else
-  {
-    if (!have_something_to_dig())
-    {
-      dig(true);
-      pingu->set_action(ActionName::WALKER);
-    }
-    else if (delay_count % 4 == 0)
-    {
-      dig(false);
-    }
-  }
-}
+void Digger::update() {}
 
 bool
 Digger::have_something_to_dig()
