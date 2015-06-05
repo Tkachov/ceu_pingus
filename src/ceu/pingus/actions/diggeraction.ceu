@@ -1,0 +1,41 @@
+#ifndef DIGGERACTION_CEU
+#define DIGGERACTION_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../iaction.ceu"
+#include "../ipingu.ceu"
+
+native/pre do
+    ##include "pingus/actions/digger.hpp"    
+    ##define ADigger Actions::Digger
+
+    ##include "pingus/groundtype.hpp"
+    ##define GT_WATER Groundtype::GP_WATER
+    ##define GT_LAVA Groundtype::GP_LAVA
+end
+
+class DiggerAction with
+    interface IAction;    
+do
+    var _ADigger&? digger = _PTR2REF((_ADigger*)this.me);
+    var int delay_count = 0;
+
+    every pingu.e_UPDATE_CALLED do        
+        digger.sprite.update();
+        delay_count = delay_count + 1;
+        
+        if digger.rel_getpixel(0, -1) == _GT_WATER or digger.rel_getpixel(0, -1) == _GT_LAVA then
+            emit pingu.e_CALL_SET_ACTION => _A_DROWN;
+        else
+            if not digger.have_something_to_dig() then          
+                digger.dig(true);
+                emit pingu.e_CALL_SET_ACTION => _A_WALKER;            
+            else/if delay_count % 4 == 0 then
+                digger.dig(false);
+            end
+        end
+    end
+end
+
+#endif

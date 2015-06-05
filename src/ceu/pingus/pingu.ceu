@@ -3,17 +3,16 @@
 
 #include "../c.ceu"
 #include "../sdl.ceu"
+#include "actions/diggeraction.ceu"
 #include "actions/walkeraction.ceu"
 #include "iaction.ceu"
 #include "ipingu.ceu"
 
 native/pre do
     ##include "pingus/pingu.hpp"
-    ##define A_Enum(x) (ActionName::Enum)(x)
-    ##define A_WALKER ActionName::WALKER    
+    ##define A_Enum(x) (ActionName::Enum)(x)    
 end
 
-input _PinguAction* NEW_ACTION;
 input _PinguAction* PINGU_SET_ACTION;
 input _Pingu* PINGU_UPDATE;
 
@@ -21,7 +20,7 @@ class Pingu with
     interface IPingu;
 do
     var _Pingu&? me_ = _PTR2REF((_Pingu*)&this.me);
-    var int current_action = _A_WALKER;  // default action
+    var _PinguAction* current_action = null;    
 
     par/or do
         //pass update() call
@@ -35,17 +34,24 @@ do
         every a_ in PINGU_SET_ACTION do
             var _PinguAction&? a = _PTR2REF(a_);
             if a.pingu == &me_ then                
-                emit e_CHANGE_ACTION => a.get_type();
+                emit e_CHANGE_ACTION => a_;
             end
         end
     with
         //wait for e_CHANGE_ACTION and create an instance
         loop do
-            par/or do
-                current_action = await e_CHANGE_ACTION;
-            with
-                if current_action == _A_WALKER then
-                    do WalkerAction with this.pingu = outer; end;
+            watching current_action in e_CHANGE_ACTION do
+                if current_action == null then
+                else/if current_action:get_type() == _A_WALKER then
+                    do WalkerAction with
+                        this.pingu = outer;
+                        this.me = current_action;
+                    end;
+                else/if current_action:get_type() == _A_DIGGER then
+                    do DiggerAction with
+                        this.pingu = outer;
+                        this.me = current_action;
+                    end;
                 end;
 
                 await FOREVER;
