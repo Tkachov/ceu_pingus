@@ -38,20 +38,15 @@ void Digger::update() {}
 bool
 Digger::have_something_to_dig()
 {
-  if (rel_getpixel(0, -1) !=  Groundtype::GP_NOTHING)
-  {
-    if (rel_getpixel(0, -1) ==  Groundtype::GP_SOLID)
-    {
-      Sound::PingusSound::play_sound("chink");
-      return false;
-    }
-    else
-      return true;
-  }
-  else
-  {
+  if(rel_getpixel(0, -1) == Groundtype::GP_NOTHING)
+    return false;
+  
+  if(rel_getpixel(0, -1) == Groundtype::GP_SOLID) {
+    Sound::PingusSound::play_sound("chink");
     return false;
   }
+
+  return true;  
 }
 
 void

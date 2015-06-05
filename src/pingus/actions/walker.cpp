@@ -42,9 +42,6 @@ Walker::Walker (Pingu* p) :
 void
 Walker::update ()
 {
-  // update the sprite
-  walker[pingu->direction].update(0.033f);
-  floaterlayer[pingu->direction].update(0.033f);
 
   Vector3f last_pos = pingu->get_pos();
 
@@ -184,22 +181,6 @@ Walker::update ()
     pingu->set_pos(last_pos);
     return;
   }
-
-  /*
-    for(int y_inc=1; y_inc <= max_steps; ++y_inc)
-    {
-    if (rel_getpixel(1, -y_inc) == ColMap::WATER)
-    {
-    pingu->set_paction ("drown");
-    return;
-    }
-    else if(rel_getpixel(1, -y_inc) != ColMap::NOTHING)
-    { // there is land
-    pingu->pos.y += y_inc - 1;
-    break;
-    }
-    }
-  */
 }
 
 void

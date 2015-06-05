@@ -6,9 +6,9 @@
 #include "../../engine/gui/igui_component.ceu"
 #include "../../proxies/primarybuttonproxy.ceu"
 
-native/pre do    
+native/pre do
     ##include "pingus/components/action_button.hpp"
-    ##include "pingus/screens/game_session.hpp"    
+    ##include "pingus/screens/game_session.hpp"
 end
 
 class ForwardButton with
@@ -19,17 +19,13 @@ do
         this.gui = outer;
     end;
 
-    //par/or do
-    //    await SDL_QUIT;
-    //with
-        loop do
-            await mouse_press;
-            me_.session:set_fast_forward(true);
-  
-            await mouse_release;
-            me_.session:set_fast_forward(false);
-        end
-    //end
+    loop do
+        await mouse_press;
+        me_.session:set_fast_forward(true);
+
+        await mouse_release;
+        me_.session:set_fast_forward(false);
+    end
 end
 
 #endif

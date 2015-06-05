@@ -4,13 +4,14 @@
 #include "../c.ceu"
 #include "../sdl.ceu"
 #include "actions/diggeraction.ceu"
+#include "actions/falleraction.ceu"
 #include "actions/walkeraction.ceu"
 #include "iaction.ceu"
 #include "ipingu.ceu"
 
 native/pre do
     ##include "pingus/pingu.hpp"
-    ##define A_Enum(x) (ActionName::Enum)(x)    
+    ##define A_Enum(x) (ActionName::Enum)(x)
 end
 
 input _PinguAction* PINGU_SET_ACTION;
@@ -20,7 +21,7 @@ class Pingu with
     interface IPingu;
 do
     var _Pingu&? me_ = _PTR2REF((_Pingu*)&this.me);
-    var _PinguAction* current_action = null;    
+    var _PinguAction* current_action = null;
 
     par/or do
         //pass update() call
@@ -33,7 +34,7 @@ do
         //notify about set_action() call
         every a_ in PINGU_SET_ACTION do
             var _PinguAction&? a = _PTR2REF(a_);
-            if a.pingu == &me_ then                
+            if a.pingu == &me_ then
                 emit e_CHANGE_ACTION => a_;
             end
         end
@@ -41,16 +42,22 @@ do
         //wait for e_CHANGE_ACTION and create an instance
         loop do
             watching current_action in e_CHANGE_ACTION do
-                if current_action == null then
-                else/if current_action:get_type() == _A_WALKER then
-                    do WalkerAction with
-                        this.pingu = outer;
-                        this.me = current_action;
-                    end;
-                else/if current_action:get_type() == _A_DIGGER then
+                var _PinguAction&? ref = _PTR2REF(current_action);
+                if &ref == null then
+                else/if ref.get_type() == _A_DIGGER then
                     do DiggerAction with
                         this.pingu = outer;
-                        this.me = current_action;
+                        this.me = &ref;
+                    end;
+                else/if ref.get_type() == _A_FALLER then
+                    do FallerAction with
+                        this.pingu = outer;
+                        this.me = &ref;
+                    end;
+                else/if ref.get_type() == _A_WALKER then
+                    do WalkerAction with
+                        this.pingu = outer;
+                        this.me = &ref;
                     end;
                 end;
 
@@ -61,10 +68,10 @@ do
         //wait for e_CALL_SET_ACTION and call C++'s set_action()
         every a in e_CALL_SET_ACTION do
             me_.set_action(_A_Enum(a));
-        end        
+        end
     with
         await SDL_QUIT;
-    end    
+    end
 end
 
 #endif

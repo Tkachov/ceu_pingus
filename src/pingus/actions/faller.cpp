@@ -49,15 +49,7 @@ Faller::~Faller () { }
 void
 Faller::update ()
 {
-  if (is_tumbling()) 
-  {
-    tumbler[pingu->direction].update();
-  }
-  else
-  {
-    faller[pingu->direction].update();
-  }
-
+  
   // FIXME: This should be triggered at a later point, when close to
   // FIXME: deadly_velocity or something like that. A translation
   // FIXME: animation for the floater might also help
@@ -128,7 +120,7 @@ Faller::update ()
       }
     }
     // If the Pingu collided into something while moving up...
-    else // if (velocity.y < 0.0f)
+    else
     {
       // Don't make the Pingu go up any further.
       velocity.y = 0;

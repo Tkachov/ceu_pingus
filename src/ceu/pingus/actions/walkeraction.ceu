@@ -6,11 +6,21 @@
 #include "../iaction.ceu"
 #include "../ipingu.ceu"
 
+native/pre do
+    ##include "pingus/actions/walker.hpp"
+    ##define AWalker Actions::Walker
+end
+
 class WalkerAction with
-    interface IAction;   
-do    
+    interface IAction;
+do
+    var _AWalker&? walker = _PTR2REF((_AWalker*)this.me);
+
     every pingu.e_UPDATE_CALLED do
         //emit pingu.e_CALL_SET_ACTION => _A_DIGGER;
+
+        walker.walker[walker.pingu->direction].update(0.033f);
+        walker.floaterlayer[walker.pingu->direction].update(0.033f);
     end
 end
 

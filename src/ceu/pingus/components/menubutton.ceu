@@ -10,7 +10,7 @@ native/pre do
     ##include "engine/sound/sound.hpp"
     ##include "pingus/components/menu_button.hpp"
     ##include "pingus/screens/pingus_menu.hpp"
-    
+
     ##define Sound_PingusSound_play_sound Sound::PingusSound::play_sound
 end
 
@@ -22,20 +22,16 @@ do
         this.gui = outer;
     end;
 
-    //par/or do
-    //    await SDL_QUIT;
-    //with
-        loop do
-            await mouse_enter;
-            me_.mouse_over = true;
-            _Sound_PingusSound_play_sound("tick");
-            me_.menu:set_hint(me_.desc) finalize with end;
+    loop do
+        await mouse_enter;
+        me_.mouse_over = true;
+        _Sound_PingusSound_play_sound("tick");
+        me_.menu:set_hint(me_.desc) finalize with end;
 
-            await mouse_leave;
-            me_.mouse_over = false;
-            me_.menu:set_hint("");
-        end
-    //end
+        await mouse_leave;
+        me_.mouse_over = false;
+        me_.menu:set_hint("");
+    end
 end
 
 #endif

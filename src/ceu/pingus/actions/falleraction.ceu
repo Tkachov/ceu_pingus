@@ -1,0 +1,34 @@
+#ifndef FALLERACTION_CEU
+#define FALLERACTION_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../iaction.ceu"
+#include "../ipingu.ceu"
+
+native/pre do
+    ##include "pingus/actions/faller.hpp"
+    ##define AFaller Actions::Faller
+
+    ##include "pingus/groundtype.hpp"
+    ##define GT_WATER Groundtype::GP_WATER
+    ##define GT_LAVA Groundtype::GP_LAVA
+end
+
+class FallerAction with
+    interface IAction;
+do
+    var _AFaller&? faller = _PTR2REF((_AFaller*)this.me);
+
+    every pingu.e_UPDATE_CALLED do
+        if faller.is_tumbling() then
+            faller.tumbler[faller.pingu:direction].update();
+        else
+            faller.faller[faller.pingu:direction].update();
+        end
+
+        //...
+    end
+end
+
+#endif
