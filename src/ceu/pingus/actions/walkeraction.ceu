@@ -10,12 +10,6 @@
 native/pre do
 	##include "pingus/actions/walker.hpp"
 	##define AWalker Actions::Walker
-
-	##include "pingus/groundtype.hpp"
-	##define GT_OUTOFSCREEN Groundtype::GP_OUTOFSCREEN
-    ##define GT_NOTHING Groundtype::GP_NOTHING
-	##define GT_WATER Groundtype::GP_WATER
-    ##define GT_BRIDGE Groundtype::GP_BRIDGE
 end
 
 class WalkerAction with
@@ -123,14 +117,14 @@ do
                     // No break here, since we always want to use the highest possible position
                     //break;
                 end
-            end            
+            end
 
             if found_next_step then
-                // pos.y has a reversed co-system to rel_getpixel()?                
+                // pos.y has a reversed co-system to rel_getpixel()?
                 walker.pingu:set_pos(
                     walker.pingu:get_x() + (float)walker.pingu:direction,
                     walker.pingu:get_y() - (float)possible_y_step);
-            else                
+            else
                 if walker.rel_getpixel(1, 0) != _GT_NOTHING then
                     // We reached a wall
                     if walker.pingu:request_wall_action() then
@@ -142,7 +136,7 @@ do
                         // No persitent action found, so change the direction
                         walker.pingu:direction.change();
                     end
-                else                
+                else
                     // We take the step, so that we are in the air
                     walker.pingu:set_x(walker.pingu:get_x() + (float)walker.pingu:direction);
 

@@ -321,37 +321,7 @@ Pingu::dist(int x, int y)
 }
 
 // Let the pingu do his job (i.e. walk his way)
-void
-Pingu::update()
-{
-  if (status == PS_DEAD)
-    return;
-
-  // FIXME: Out of screen check is ugly
-  /** The Pingu has hit the edge of the screen, a good time to let him
-      die. */
-  if (rel_getpixel(0, -1) == Groundtype::GP_OUTOFSCREEN)
-  {
-    //Sound::PingusSound::play_sound("die");
-    status = PS_DEAD;
-    return;
-  }
-
-  // if an countdown action is set, update the countdown time
-  if (action_time > -1)
-    --action_time;
-
-  if (action_time == 0 && countdown_action)
-  {
-    set_action(countdown_action);
-    // Reset the countdown action handlers
-    countdown_action = std::shared_ptr<PinguAction>();
-    action_time = -1;
-    return;
-  }
-
-  action->update();
-
+void Pingu::update() {
   Pingu* self = this;
   ceu_out_go(&CEUapp, CEU_IN_PINGU_UPDATE, &self);
 }
