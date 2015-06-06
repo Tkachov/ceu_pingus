@@ -1,0 +1,102 @@
+#ifndef BOMBERACTION_CEU
+#define BOMBERACTION_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../../math/vector3f.ceu"
+#include "../iaction.ceu"
+#include "../ipingu.ceu"
+
+native/pre do
+	##include "pingus/actions/bomber.hpp"
+	##define ABomber Actions::Bomber
+
+	##include "pingus/groundtype.hpp"
+	##define GT_OUTOFSCREEN Groundtype::GP_OUTOFSCREEN
+    ##define GT_NOTHING Groundtype::GP_NOTHING
+	##define GT_WATER Groundtype::GP_WATER
+    ##define GT_BRIDGE Groundtype::GP_BRIDGE
+
+    ##include "pingus/particles/pingu_particle_holder.hpp"
+    ##include "pingus/colliders/pingu_collider.hpp"
+    ##include "pingus/movers/linear_mover.hpp"
+    ##include "pingus/pingu_enums.hpp"
+    ##include "pingus/worldobj.hpp"
+    ##define WorldObj__get_world WorldObj::get_world
+    ##define WorldObj__get_world_remove WorldObj::get_world()->remove
+    ##define Colliders__PinguCollider Colliders::PinguCollider
+    ##define Math__abs Math::abs
+
+    ##define PS_DEAD Pingu::PS_DEAD
+end
+
+native @pure _Colliders__PinguCollider(),
+             _WorldObj__get_world(),
+             _WorldObj__get_world_remove();
+
+class BomberAction with
+	interface IAction;
+do
+	var _ABomber&? bomber = _PTR2REF((_ABomber*)this.me);
+    var bool sound_played = false;
+    var bool particle_thrown = false;
+    var bool colmap_exploded = false;
+
+	every pingu.e_UPDATE_CALLED do        
+        bomber.sprite.update();
+        
+        // Move the Pingu
+        bomber.mover.reset(bomber.pingu:get_pos());
+        bomber.mover.update(bomber.pingu:get_velocity(), _Colliders__PinguCollider(_pingu_height));
+        bomber.pingu:set_pos(bomber.mover.get_pos());
+
+        // If the Bomber hasn't 'exploded' yet...
+        var bool do_return = false;
+        if bomber.sprite[bomber.pingu:direction].get_current_frame() <= 9 then
+            // ...and it has hit Water or Lava
+            if bomber.rel_getpixel(0, -1) == _GT_WATER or bomber.rel_getpixel(0, -1) == _GT_LAVA then                
+                emit pingu.e_CALL_SET_ACTION => _A_DROWN;
+                do_return = true;
+            end
+
+            // ...and it has hit the ground too quickly
+            if bomber.rel_getpixel(0, -1) != _GT_NOTHING and bomber.pingu:get_velocity().y > _deadly_velocity then                
+                emit pingu.e_CALL_SET_ACTION => _A_SPLASHED;
+                do_return = true;
+            end
+        end
+
+        if do_return then
+            continue;
+        end
+
+        if bomber.sprite[bomber.pingu:direction].get_current_frame() > 9 and not sound_played then
+            _WorldObj__get_world():play_sound("plop", bomber.pingu:get_pos());
+            sound_played = true;
+        end
+
+        // Throwing particles
+        if bomber.sprite[bomber.pingu:direction].get_current_frame() > 12 and not particle_thrown then
+            particle_thrown = true;
+            _WorldObj__get_world():get_pingu_particle_holder():add_particle(
+                (int)bomber.pingu:get_x(), (int)bomber.pingu:get_y() - 5
+            );
+        end
+
+        if bomber.sprite[bomber.pingu:direction].get_current_frame() >= 13 and not colmap_exploded then
+            colmap_exploded = true;            
+            _WorldObj__get_world_remove(
+                bomber.bomber_radius,
+                (int)((int)bomber.pingu:get_x() - (bomber.bomber_radius.get_width()/2)),
+                (int)((int)bomber.pingu:get_y() - 16 - (bomber.bomber_radius.get_width()/2))
+            );            
+        end
+
+        // The pingu explode
+        if bomber.sprite[bomber.pingu:direction].is_finished() then
+            bomber.pingu:set_status(_PS_DEAD);
+        end
+	end
+end
+
+#endif

@@ -20,6 +20,7 @@
 #include "pingus/collision_mask.hpp"
 #include "pingus/pingu_action.hpp"
 #include "pingus/state_sprite.hpp"
+#include "pingus/movers/linear_mover.hpp"
 
 namespace Actions {
 
@@ -27,16 +28,14 @@ namespace Actions {
     Pingu leaves a hole inside the ground. */
 class Bomber : public PinguAction
 {
-private:
-  bool particle_thrown;
-  bool sound_played;
-  bool gfx_exploded;
-  bool colmap_exploded;
+private:  
+  bool gfx_exploded;  
 
   CollisionMask bomber_radius;
   StateSprite sprite;
 
   Sprite   explo_surf;
+  Movers::LinearMover mover;
 
 public:
   Bomber (Pingu* p);
