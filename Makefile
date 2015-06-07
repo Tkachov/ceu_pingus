@@ -35,6 +35,15 @@ ceu:
 	cd ./src/ceu && ceu main.ceu && cp _ceu_app.c .. && cp _ceu_app.h .. && cd ../..
 	scons
 
+do_ceu:
+	cd ./src/ceu && ceu main.ceu && cp _ceu_app.c .. && cp _ceu_app.h .. && cd ../..
+
+build/debug:
+	#please run it only after ./rebuild
+	scons debug=1 src
+	scons debug=1
+	ln -fs build/pingus
+
 build/pingus:
 	mkdir -p build
 	scons src

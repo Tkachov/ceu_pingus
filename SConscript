@@ -104,6 +104,10 @@ class Project:
         #                 LIBS = [ 'mingw32', 'SDLmain', "SDL", "SDL_mixer", "SDL_image", "boost_signals", "png",
         #                         'opengl32', 'glu32' ])
 
+        if ARGUMENTS.get('debug', 0):
+            self.env.Append(CXXFLAGS = ["-g"])
+            print "<<< debug mode >>>"
+
         ######
         
         Help(self.opts.GenerateHelpText(self.env))

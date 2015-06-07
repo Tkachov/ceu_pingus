@@ -6,6 +6,7 @@
 #include "actions/bomberaction.ceu"
 #include "actions/diggeraction.ceu"
 #include "actions/falleraction.ceu"
+#include "actions/floateraction.ceu"
 #include "actions/walkeraction.ceu"
 #include "iaction.ceu"
 #include "ipingu.ceu"
@@ -51,24 +52,6 @@ do
                 continue;
             end
 
-            // if an countdown action is set, update the countdown time
-            var bool do_return = false;
-            if me_.action_time > -1 then
-                me_.action_time = me_.action_time - 1;
-
-                if me_.action_time == 0 and me_.countdown_action then
-                    _pingu_set_action(me_, me_.countdown_action);
-                    // Reset the countdown action handlers
-                    me_.countdown_action = _std__shared_ptr_PinguAction();
-                    me_.action_time = -1;
-                    do_return = true;
-                end
-            end
-
-            if do_return then
-                continue;
-            end
-
             me_.action:update();
         end
     with
@@ -100,6 +83,11 @@ do
                         this.pingu = outer;
                         this.me = &ref;
                     end;
+                else/if ref.get_type() == _A_FLOATER then                    
+                    do FloaterAction with
+                        this.pingu = outer;
+                        this.me = &ref;
+                    end;                    
                 else/if ref.get_type() == _A_WALKER then
                     do WalkerAction with
                         this.pingu = outer;

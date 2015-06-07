@@ -1,0 +1,32 @@
+#ifndef FLOATERACTION_CEU
+#define FLOATERACTION_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../../math/vector3f.ceu"
+#include "../iaction.ceu"
+#include "../ipingu.ceu"
+
+native/pre do
+    ##include "pingus/actions/floater.hpp"
+    ##define AFloater Actions::Floater
+end
+
+class FloaterAction with
+    interface IAction;
+do
+    var _AFloater&? floater = _PTR2REF((_AFloater*)this.me);
+
+    every pingu.e_UPDATE_CALLED do
+        floater.sprite.update();
+        floater.pingu:set_velocity(_Vector3f(0.0, 1.0));
+
+        if floater.rel_getpixel(0, -1) == _GT_NOTHING then
+            floater.pingu:set_y(floater.pingu:get_y() + 1);
+        else
+            emit pingu.e_CALL_SET_ACTION => _A_WALKER;
+        end
+    end
+end
+
+#endif

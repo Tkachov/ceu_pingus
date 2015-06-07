@@ -5,12 +5,12 @@
 //  it under the terms of the GNU General Public License as published by
 //  the Free Software Foundation, either version 3 of the License, or
 //  (at your option) any later version.
-//  
+//
 //  This program is distributed in the hope that it will be useful,
 //  but WITHOUT ANY WARRANTY; without even the implied warranty of
 //  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //  GNU General Public License for more details.
-//  
+//
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -23,6 +23,8 @@
 #include "pingus/world.hpp"
 #include "pingus/worldobj.hpp"
 
+#include "ceuvars.h"
+
 namespace Actions {
 
 Faller::Faller (Pingu* p) :
@@ -31,14 +33,14 @@ Faller::Faller (Pingu* p) :
   tumbler(),
   mover(WorldObj::get_world(), Vector3f(0, 0, 0))
 {
-  faller.load(Direction::LEFT,  Sprite("pingus/player" + 
+  faller.load(Direction::LEFT,  Sprite("pingus/player" +
                                        pingu->get_owner_str() + "/faller/left"));
-  faller.load(Direction::RIGHT, Sprite("pingus/player" + 
+  faller.load(Direction::RIGHT, Sprite("pingus/player" +
                                        pingu->get_owner_str() + "/faller/right"));
 
   tumbler.load(Direction::LEFT,  Sprite("pingus/player" +
                                         pingu->get_owner_str() + "/tumbler/left"));
-  tumbler.load(Direction::RIGHT, Sprite("pingus/player" + 
+  tumbler.load(Direction::RIGHT, Sprite("pingus/player" +
                                         pingu->get_owner_str() + "/tumbler/right"));
 
   // FIXME: add sprites for jumping here: if x_vel > y_vel, use them
@@ -70,7 +72,7 @@ bool
 Faller::change_allowed (ActionName::Enum new_action)
 {
   return
-    new_action == ActionName::FLOATER || 
+    new_action == ActionName::FLOATER ||
     new_action == ActionName::CLIMBER ||
     new_action == ActionName::BOMBER;
 }

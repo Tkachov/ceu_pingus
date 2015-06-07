@@ -55,14 +55,12 @@
 using namespace Actions;
 
 // Init a pingu at the given position while falling
-Pingu::Pingu (int arg_id, const Vector3f& arg_pos, int owner) :
-  action(),
-  countdown_action(),
+Pingu::Pingu (int arg_id, const Vector3f& arg_pos, int owner):
+  action(),  
   wall_action(),
   fall_action(),
   previous_action(ActionName::FALLER),
-  id(arg_id),
-  action_time(-1),
+  id(arg_id),  
   owner_id(owner),
   status(PS_ALIVE),
   pos_x(arg_pos.x),
@@ -70,7 +68,7 @@ Pingu::Pingu (int arg_id, const Vector3f& arg_pos, int owner) :
   velocity(0, 0, 0),
   direction()
 {
-  direction.left ();
+  direction.left();
 
   // Initialisize the action, after this step the action ptr will
   // always be valid in the pingu class
@@ -203,24 +201,6 @@ Pingu::request_set_action(ActionName::Enum action_name)
         }
         break;
 
-      case COUNTDOWN_TRIGGERED:
-        {
-          if (countdown_action && countdown_action->get_type() == action_name)
-          {
-            log_debug("Not using countdown action, we have already");
-            ret_val = false;
-            break;
-          }
-
-          log_debug("Setting countdown action");
-          // We set the action and start the countdown
-          std::shared_ptr<PinguAction> act = create_action(action_name);
-          action_time = act->activation_time();
-          countdown_action = act;
-          ret_val = true;
-        }
-        break;
-
       default:
         log_debug("unknown action activation_mode");
         ret_val = false;
@@ -327,22 +307,8 @@ void Pingu::update() {
 }
 
 // Draws the pingu on the screen with the given offset
-void
-Pingu::draw(SceneContext& gc)
-{
-  char str[16];
-
+void Pingu::draw(SceneContext& gc) {
   action->draw(gc);
-
-  if (action_time != -1)
-  {
-    // FIXME: some people preffer a 5-0 or a 9-0 countdown, not sure
-    // FIXME: about that got used to the 50-0 countdown [counting is
-    // FIXME: in ticks, should probally be in seconds]
-    snprintf(str, 16, "%d", action_time/3);
-
-    gc.color().print_center(Fonts::chalk_normal, Vector2i(static_cast<int>(pos_x), static_cast<int>(pos_y) - 48), str);
-  }
 }
 
 int

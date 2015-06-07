@@ -5,12 +5,12 @@
 //  it under the terms of the GNU General Public License as published by
 //  the Free Software Foundation, either version 3 of the License, or
 //  (at your option) any later version.
-//  
+//
 //  This program is distributed in the hope that it will be useful,
 //  but WITHOUT ANY WARRANTY; without even the implied warranty of
 //  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //  GNU General Public License for more details.
-//  
+//
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -46,11 +46,6 @@ public:
   std::shared_ptr<PinguAction> action;
 
 private:
-  
-
-  /** A secondary action which will turn active after a given amount of time
-      The only example is currently the bomber. */
-  std::shared_ptr<PinguAction> countdown_action;
 
   /** the action that gets triggered when the pingu hits a wall */
   std::shared_ptr<PinguAction> wall_action;
@@ -66,9 +61,6 @@ private:
   /** The uniq id of the Pingu, this is used to refer to the Pingu in
       a demo file or in a network connection */
   unsigned int id;
-
-  /** Countdown till countdown_action is triggered (-1 for no active countdown) */
-  int action_time;
 
   /** The id of the owner of the pingus, used in multiplayer matches */
   int owner_id;
@@ -174,6 +166,8 @@ public:
   /// set the fall action if we have one
   bool request_fall_action ();
 
+  bool can_request_fall_action() { return (fall_action?1:0); }
+
   PinguAction* get_wall_action () { return wall_action.get(); }
 
   PinguAction* get_fall_action () { return fall_action.get(); }
@@ -206,7 +200,7 @@ public:
   /** @return The owner_id of the owner, only used in multiplayer
       configurations, ought to be 0 in single player */
   int get_owner ();
-  
+
   /** @return The owner_id as a string. Only used in multiplayer
       configurations, ought to be "0" in single player */
   std::string get_owner_str ();

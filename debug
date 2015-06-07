@@ -1,0 +1,1 @@
+make build/debug && cd build && gdb ./pingus
