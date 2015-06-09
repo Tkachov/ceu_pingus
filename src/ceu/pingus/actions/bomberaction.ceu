@@ -30,65 +30,75 @@ class BomberAction with
 	interface IAction;
 do
 	var _ABomber&? bomber = _PTR2REF((_ABomber*)this.me);
-    var bool sound_played = false;
-    var bool particle_thrown = false;
-    var bool colmap_exploded = false;
 
-	every pingu.e_UPDATE_CALLED do
-        bomber.sprite.update();
+    par/or do
+    	every pingu.e_UPDATE_CALLED do
+            bomber.sprite.update();
 
-        // Move the Pingu
-        bomber.mover.reset(bomber.pingu:get_pos());
-        bomber.mover.update(bomber.pingu:get_velocity(), _Colliders__PinguCollider(_pingu_height));
-        bomber.pingu:set_pos(bomber.mover.get_pos());
-
+            // Move the Pingu
+            bomber.mover.reset(bomber.pingu:get_pos());
+            bomber.mover.update(bomber.pingu:get_velocity(), _Colliders__PinguCollider(_pingu_height));
+            bomber.pingu:set_pos(bomber.mover.get_pos());
+        end
+    with
         // If the Bomber hasn't 'exploded' yet...
-        var bool do_return = false;
-        if bomber.sprite[bomber.pingu:direction].get_current_frame() <= 9 then
+        every pingu.e_UPDATE_CALLED do                    
+            if bomber.sprite[bomber.pingu:direction].get_current_frame() > 9 then
+                break;
+            end
+
             // ...and it has hit Water or Lava
             if bomber.rel_getpixel(0, -1) == _GT_WATER or bomber.rel_getpixel(0, -1) == _GT_LAVA then
-                emit pingu.e_CALL_SET_ACTION => _A_DROWN;
-                do_return = true;
+                emit pingu.e_CALL_SET_ACTION => _A_DROWN;                
             end
 
             // ...and it has hit the ground too quickly
             if bomber.rel_getpixel(0, -1) != _GT_NOTHING and bomber.pingu:get_velocity().y > _deadly_velocity then
-                emit pingu.e_CALL_SET_ACTION => _A_SPLASHED;
-                do_return = true;
+                emit pingu.e_CALL_SET_ACTION => _A_SPLASHED;                
+            end            
+        end
+
+        //Play sound at 10th frame (>9)
+        _WorldObj__get_world():play_sound("plop", bomber.pingu:get_pos());
+
+        //Wait for 13th frame to throw particles
+        every pingu.e_UPDATE_CALLED do    
+            if bomber.sprite[bomber.pingu:direction].get_current_frame() > 12 then
+                break;
             end
         end
 
-        if do_return then
-            continue;
-        end
-
-        if bomber.sprite[bomber.pingu:direction].get_current_frame() > 9 and not sound_played then
-            _WorldObj__get_world():play_sound("plop", bomber.pingu:get_pos());
-            sound_played = true;
-        end
-
         // Throwing particles
-        if bomber.sprite[bomber.pingu:direction].get_current_frame() > 12 and not particle_thrown then
-            particle_thrown = true;
-            _WorldObj__get_world():get_pingu_particle_holder():add_particle(
-                (int)bomber.pingu:get_x(), (int)bomber.pingu:get_y() - 5
-            );
+        _WorldObj__get_world():get_pingu_particle_holder():add_particle(
+            (int)bomber.pingu:get_x(), (int)bomber.pingu:get_y() - 5
+        );
+
+        //Wait for 13th frame again?..
+        if bomber.sprite[bomber.pingu:direction].get_current_frame() < 13 then
+            every pingu.e_UPDATE_CALLED do     
+                if bomber.sprite[bomber.pingu:direction].get_current_frame() >= 13 then
+                    break;
+                end
+            end
         end
 
-        if bomber.sprite[bomber.pingu:direction].get_current_frame() >= 13 and not colmap_exploded then
-            colmap_exploded = true;
-            _WorldObj__get_world_remove(
-                bomber.bomber_radius,
-                (int)((int)bomber.pingu:get_x() - (bomber.bomber_radius.get_width()/2)),
-                (int)((int)bomber.pingu:get_y() - 16 - (bomber.bomber_radius.get_width()/2))
-            );
-        end
+        _WorldObj__get_world_remove(
+            bomber.bomber_radius,
+            (int)((int)bomber.pingu:get_x() - (bomber.bomber_radius.get_width()/2)),
+            (int)((int)bomber.pingu:get_y() - 16 - (bomber.bomber_radius.get_width()/2))
+        );        
 
         // The pingu explode
-        if bomber.sprite[bomber.pingu:direction].is_finished() then
-            bomber.pingu:set_status(_PS_DEAD);
+        if not bomber.sprite[bomber.pingu:direction].is_finished() then
+            every pingu.e_UPDATE_CALLED do     
+                if bomber.sprite[bomber.pingu:direction].is_finished() then
+                    break;
+                end
+            end
         end
-	end
+
+        bomber.pingu:set_status(_PS_DEAD);
+    end
 end
 
 #endif
