@@ -25,16 +25,14 @@ namespace Actions {
 class Exiter : public PinguAction
 {
 private:
-  StateSprite sprite;
-  bool sound_played;
+  StateSprite sprite;  
 
 public:
-  Exiter(Pingu*);
-  void init(void);
+  Exiter(Pingu*);  
   ActionName::Enum get_type() const { return ActionName::EXITER; }
 
   void draw (SceneContext& gc);
-  void update();
+  void update() {};
 
 private:
   Exiter (const Exiter&);

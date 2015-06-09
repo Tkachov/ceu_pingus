@@ -1,0 +1,38 @@
+#ifndef EXITERACTION_CEU
+#define EXITERACTION_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../iaction.ceu"
+#include "../ipingu.ceu"
+
+native/pre do
+	##include "pingus/actions/exiter.hpp"
+	##define AExiter Actions::Exiter
+
+    ##include "engine/sound/sound.hpp"
+    ##define Sound_PingusSound_play_sound Sound::PingusSound::play_sound
+end
+
+class ExiterAction with
+	interface IAction;
+do
+	var _AExiter&? exiter = _PTR2REF((_AExiter*)this.me);
+
+    par/and do
+    	every pingu.e_UPDATE_CALLED do
+            exiter.sprite[exiter.pingu:direction].update();
+
+            if exiter.sprite[exiter.pingu:direction].is_finished() then
+                if exiter.pingu:get_status() != _PS_EXITED then
+                    exiter.pingu:set_status(_PS_EXITED);
+                end
+            end
+        end
+    with
+        await pingu.e_UPDATE_CALLED;
+        _Sound_PingusSound_play_sound("yipee");
+    end
+end
+
+#endif

@@ -4,6 +4,7 @@
 native/pre do
     ##include "pingus/pingu.hpp"
     ##define PS_DEAD Pingu::PS_DEAD
+    ##define PS_EXITED Pingu::PS_EXITED
 
     ##include "pingus/groundtype.hpp"
     ##define GT_OUTOFSCREEN Groundtype::GP_OUTOFSCREEN

@@ -9,6 +9,7 @@ native/pre do
     ##define A_CLIMBER ActionName::CLIMBER
     ##define A_DIGGER ActionName::DIGGER
     ##define A_DROWN ActionName::DROWN
+    ##define A_EXITER ActionName::EXITER
     ##define A_FALLER ActionName::FALLER
     ##define A_FLOATER ActionName::FLOATER
     ##define A_JUMPER ActionName::JUMPER
