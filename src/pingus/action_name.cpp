@@ -18,6 +18,8 @@
 
 #include "gettext.h"
 
+#include "util/log.hpp"
+
 namespace ActionName {
 
 std::string to_screenname(Enum action)
@@ -40,7 +42,7 @@ std::string to_screenname(Enum action)
     case LASERKILL      : return _("Laserkill");
     case MINER          : return _("Miner");
     case SLIDER         : return _("Slider");
-    case SMASHED        : return _("Smashed");
+    case SMASHED        : { log_error("SMASHED is deprecated"); return _("Smashed"); }
     case SPLASHED       : return _("Splashed");
     case SUPERMAN       : return _("Superman");
     case TELEPORTED     : return _("Teleported");
@@ -70,7 +72,7 @@ std::string to_string(Enum action)
     case LASERKILL      : return "laserkill";
     case MINER          : return "miner";
     case SLIDER         : return "slider";
-    case SMASHED        : return "smashed";
+    case SMASHED        : { log_error("SMASHED is deprecated"); return "smashed"; }
     case SPLASHED       : return "splashed";
     case SUPERMAN       : return "superman";
     case TELEPORTED     : return "teleported";
@@ -98,7 +100,7 @@ Enum from_string(const std::string& action)
   if (action == "laserkill")      return LASERKILL;
   if (action == "miner")          return MINER;
   if (action == "slider")         return SLIDER;
-  if (action == "smashed")        return SMASHED;
+  if (action == "smashed")        { log_error("SMASHED is deprecated"); return SMASHED; }
   if (action == "splashed")       return SPLASHED;
   if (action == "superman")       return SUPERMAN;
   if (action == "teleported")     return TELEPORTED;

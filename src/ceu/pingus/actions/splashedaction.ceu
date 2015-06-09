@@ -1,0 +1,39 @@
+#ifndef SPLASHEDACTION_CEU
+#define SPLASHEDACTION_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../../math/vector3f.ceu"
+#include "../iaction.ceu"
+#include "../ipingu.ceu"
+
+native/pre do
+	##include "pingus/actions/splashed.hpp"
+	##define ASplashed Actions::Splashed
+
+    ##include "pingus/worldobj.hpp"
+    ##define WorldObj__get_world WorldObj::get_world
+end
+
+native @pure _WorldObj__get_world();
+
+class SplashedAction with
+	interface IAction;
+do
+	var _ASplashed&? splashed = _PTR2REF((_ASplashed*)this.me);
+
+    par/and do
+    	every pingu.e_UPDATE_CALLED do
+            splashed.sprite.update();
+
+            if splashed.sprite.is_finished() then
+                splashed.pingu:set_status(_PS_DEAD);
+            end
+        end
+    with
+        await pingu.e_UPDATE_CALLED;
+        _WorldObj__get_world():play_sound("splash", splashed.pingu:get_pos());
+    end
+end
+
+#endif

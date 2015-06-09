@@ -42,7 +42,6 @@
 #include "pingus/actions/laser_kill.hpp"
 #include "pingus/actions/miner.hpp"
 #include "pingus/actions/slider.hpp"
-#include "pingus/actions/smashed.hpp"
 #include "pingus/actions/splashed.hpp"
 #include "pingus/actions/superman.hpp"
 #include "pingus/actions/waiter.hpp"
@@ -418,8 +417,7 @@ Pingu::create_action(ActionName::Enum action_)
     case ActionName::JUMPER:    return std::make_shared<Jumper>(this);
     case ActionName::LASERKILL: return std::make_shared<LaserKill>(this);
     case ActionName::MINER:     return std::make_shared<Miner>(this);
-    case ActionName::SLIDER:    return std::make_shared<Slider>(this);
-    case ActionName::SMASHED:   return std::make_shared<Smashed>(this);
+    case ActionName::SLIDER:    return std::make_shared<Slider>(this);    
     case ActionName::SPLASHED:  return std::make_shared<Splashed>(this);
     case ActionName::SUPERMAN:  return std::make_shared<Superman>(this);
     case ActionName::WAITER:    return std::make_shared<Waiter>(this);

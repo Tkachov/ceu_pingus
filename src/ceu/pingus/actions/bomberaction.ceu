@@ -97,7 +97,11 @@ do
             end
         end
 
-        bomber.pingu:set_status(_PS_DEAD);
+        //Be dead forever       
+        loop do
+            bomber.pingu:set_status(_PS_DEAD);
+            await pingu.e_UPDATE_CALLED;
+        end
     end
 end
 
