@@ -13,6 +13,7 @@ native/pre do
     ##define A_FALLER ActionName::FALLER
     ##define A_FLOATER ActionName::FLOATER
     ##define A_JUMPER ActionName::JUMPER
+    ##define A_MINER ActionName::MINER
     ##define A_SPLASHED ActionName::SPLASHED
     ##define A_WALKER ActionName::WALKER
     ##define ActionName_Enum ActionName::Enum

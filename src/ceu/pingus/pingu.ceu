@@ -10,6 +10,7 @@
 #include "actions/falleraction.ceu"
 #include "actions/floateraction.ceu"
 #include "actions/jumperaction.ceu"
+#include "actions/mineraction.ceu"
 #include "actions/splashedaction.ceu"
 #include "actions/walkeraction.ceu"
 #include "iaction.ceu"
@@ -104,6 +105,11 @@ do
                     end;
                 else/if ref.get_type() == _A_JUMPER then
                     do JumperAction with
+                        this.pingu = outer;
+                        this.me = &ref;
+                    end;
+                else/if ref.get_type() == _A_MINER then
+                    do MinerAction with
                         this.pingu = outer;
                         this.me = &ref;
                     end;
