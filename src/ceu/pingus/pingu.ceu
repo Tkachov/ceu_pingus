@@ -3,6 +3,7 @@
 
 #include "../c.ceu"
 #include "../sdl.ceu"
+#include "actions/basheraction.ceu"
 #include "actions/bomberaction.ceu"
 #include "actions/diggeraction.ceu"
 #include "actions/falleraction.ceu"
@@ -68,6 +69,11 @@ do
             watching current_action in e_CHANGE_ACTION do
                 var _PinguAction&? ref = _PTR2REF(current_action);
                 if &ref == null then
+                else/if ref.get_type() == _A_BASHER then
+                    do BasherAction with
+                        this.pingu = outer;
+                        this.me = &ref;
+                    end;
                 else/if ref.get_type() == _A_BOMBER then
                     do BomberAction with
                         this.pingu = outer;
@@ -83,11 +89,11 @@ do
                         this.pingu = outer;
                         this.me = &ref;
                     end;
-                else/if ref.get_type() == _A_FLOATER then                    
+                else/if ref.get_type() == _A_FLOATER then
                     do FloaterAction with
                         this.pingu = outer;
                         this.me = &ref;
-                    end;                    
+                    end;
                 else/if ref.get_type() == _A_WALKER then
                     do WalkerAction with
                         this.pingu = outer;
