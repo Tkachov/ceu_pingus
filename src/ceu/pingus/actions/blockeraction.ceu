@@ -1,0 +1,30 @@
+#ifndef BLOCKERACTION_CEU
+#define BLOCKERACTION_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../iaction.ceu"
+#include "../ipingu.ceu"
+
+native/pre do
+    ##include "pingus/actions/blocker.hpp"
+    ##define ABlocker Actions::Blocker
+end
+
+class BlockerAction with
+    interface IAction;
+do
+    var _ABlocker&? blocker = _PTR2REF((_ABlocker*)this.me);
+
+    every pingu.e_UPDATE_CALLED do
+        if not blocker.standing_on_ground() then
+            emit pingu.e_CALL_SET_ACTION => _A_FALLER;
+            continue;
+        end
+
+        blocker.catch_pingus();
+        blocker.sprite.update();
+    end
+end
+
+#endif

@@ -5,6 +5,7 @@
 #include "../sdl.ceu"
 #include "actions/basheraction.ceu"
 #include "actions/bomberaction.ceu"
+#include "actions/blockeraction.ceu"
 #include "actions/diggeraction.ceu"
 #include "actions/exiteraction.ceu"
 #include "actions/falleraction.ceu"
@@ -80,6 +81,11 @@ do
                     end;
                 else/if ref.get_type() == _A_BOMBER then
                     do BomberAction with
+                        this.pingu = outer;
+                        this.me = &ref;
+                    end;
+                else/if ref.get_type() == _A_BLOCKER then
+                    do BlockerAction with
                         this.pingu = outer;
                         this.me = &ref;
                     end;
