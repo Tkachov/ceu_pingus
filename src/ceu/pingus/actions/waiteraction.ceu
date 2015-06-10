@@ -1,0 +1,32 @@
+#ifndef WAITERACTION_CEU
+#define WAITERACTION_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../iaction.ceu"
+#include "../ipingu.ceu"
+
+native/pre do
+    ##include "pingus/actions/waiter.hpp"
+    ##define AWaiter Actions::Waiter
+end
+
+class WaiterAction with
+    interface IAction;
+do
+    var _AWaiter&? waiter = _PTR2REF((_AWaiter*)this.me);
+
+    par/and do
+        every pingu.e_UPDATE_CALLED do
+              waiter.sprite.update();
+        end
+    with
+        //in C++ there was a countdown from 2 to 0 with step 0.025 per frame - that's 80 frames
+        loop i in 80 do
+            await pingu.e_UPDATE_CALLED;
+        end
+        emit pingu.e_CALL_SET_ACTION => _A_WALKER;
+    end
+end
+
+#endif

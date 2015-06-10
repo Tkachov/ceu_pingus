@@ -7,20 +7,20 @@
 #include "../ipingu.ceu"
 
 native/pre do
-	##include "pingus/actions/exiter.hpp"
-	##define AExiter Actions::Exiter
+    ##include "pingus/actions/exiter.hpp"
+    ##define AExiter Actions::Exiter
 
     ##include "engine/sound/sound.hpp"
     ##define Sound_PingusSound_play_sound Sound::PingusSound::play_sound
 end
 
 class ExiterAction with
-	interface IAction;
+    interface IAction;
 do
-	var _AExiter&? exiter = _PTR2REF((_AExiter*)this.me);
+    var _AExiter&? exiter = _PTR2REF((_AExiter*)this.me);
 
     par/and do
-    	every pingu.e_UPDATE_CALLED do
+        every pingu.e_UPDATE_CALLED do
             exiter.sprite[exiter.pingu:direction].update();
 
             if exiter.sprite[exiter.pingu:direction].is_finished() then

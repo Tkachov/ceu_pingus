@@ -15,6 +15,7 @@
 #include "actions/jumperaction.ceu"
 #include "actions/mineraction.ceu"
 #include "actions/splashedaction.ceu"
+#include "actions/waiteraction.ceu"
 #include "actions/walkeraction.ceu"
 #include "iaction.ceu"
 #include "ipingu.ceu"
@@ -133,6 +134,11 @@ do
                     end;
                 else/if ref.get_type() == _A_SPLASHED then
                     do SplashedAction with
+                        this.pingu = outer;
+                        this.me = &ref;
+                    end;
+                else/if ref.get_type() == _A_WAITER then
+                    do WaiterAction with
                         this.pingu = outer;
                         this.me = &ref;
                     end;
