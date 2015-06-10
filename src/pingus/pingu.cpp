@@ -5,12 +5,12 @@
 //  it under the terms of the GNU General Public License as published by
 //  the Free Software Foundation, either version 3 of the License, or
 //  (at your option) any later version.
-//  
+//
 //  This program is distributed in the hope that it will be useful,
 //  but WITHOUT ANY WARRANTY; without even the implied warranty of
 //  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //  GNU General Public License for more details.
-//  
+//
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -55,11 +55,11 @@ using namespace Actions;
 
 // Init a pingu at the given position while falling
 Pingu::Pingu (int arg_id, const Vector3f& arg_pos, int owner):
-  action(),  
+  action(),
   wall_action(),
   fall_action(),
   previous_action(ActionName::FALLER),
-  id(arg_id),  
+  id(arg_id),
   owner_id(owner),
   status(PS_ALIVE),
   pos_x(arg_pos.x),
@@ -295,7 +295,7 @@ Pingu::dist(int x, int y)
 {
   Vector3f p = get_center_pos ();
 
-  return Math::sqrt(((p.x - static_cast<float>(x)) * (p.x - static_cast<float>(x)) + 
+  return Math::sqrt(((p.x - static_cast<float>(x)) * (p.x - static_cast<float>(x)) +
                      (p.y - static_cast<float>(y)) * (p.y - static_cast<float>(y))));
 }
 
@@ -417,7 +417,7 @@ Pingu::create_action(ActionName::Enum action_)
     case ActionName::JUMPER:    return std::make_shared<Jumper>(this);
     case ActionName::LASERKILL: return std::make_shared<LaserKill>(this);
     case ActionName::MINER:     return std::make_shared<Miner>(this);
-    case ActionName::SLIDER:    return std::make_shared<Slider>(this);    
+    case ActionName::SLIDER:    return std::make_shared<Slider>(this);
     case ActionName::SPLASHED:  return std::make_shared<Splashed>(this);
     case ActionName::SUPERMAN:  return std::make_shared<Superman>(this);
     case ActionName::WAITER:    return std::make_shared<Waiter>(this);

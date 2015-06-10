@@ -6,7 +6,9 @@
 #include "actions/basheraction.ceu"
 #include "actions/bomberaction.ceu"
 #include "actions/blockeraction.ceu"
+#include "actions/bridgeraction.ceu"
 #include "actions/diggeraction.ceu"
+#include "actions/drownaction.ceu"
 #include "actions/exiteraction.ceu"
 #include "actions/falleraction.ceu"
 #include "actions/floateraction.ceu"
@@ -89,8 +91,18 @@ do
                         this.pingu = outer;
                         this.me = &ref;
                     end;
+                else/if ref.get_type() == _A_BRIDGER then
+                    do BridgerAction with
+                        this.pingu = outer;
+                        this.me = &ref;
+                    end;
                 else/if ref.get_type() == _A_DIGGER then
                     do DiggerAction with
+                        this.pingu = outer;
+                        this.me = &ref;
+                    end;
+                else/if ref.get_type() == _A_DROWN then
+                    do DrownAction with
                         this.pingu = outer;
                         this.me = &ref;
                     end;

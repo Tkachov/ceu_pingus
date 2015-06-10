@@ -1,0 +1,28 @@
+#ifndef DROWNACTION_CEU
+#define DROWNACTION_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../iaction.ceu"
+#include "../ipingu.ceu"
+
+native/pre do
+    ##include "pingus/actions/drown.hpp"
+    ##define ADrown Actions::Drown
+end
+
+class DrownAction with
+    interface IAction;
+do
+    var _ADrown&? drown = _PTR2REF((_ADrown*)this.me);
+
+    every pingu.e_UPDATE_CALLED do
+        drown.sprite[drown.pingu:direction].update();
+
+        if drown.sprite[drown.pingu:direction].is_finished() then
+            drown.pingu:set_status(_PS_DEAD);
+        end
+    end
+end
+
+#endif
