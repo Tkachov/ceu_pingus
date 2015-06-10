@@ -36,8 +36,7 @@ public:
 
   void draw (SceneContext& gc);
   void update();
-
-  char get_persistent_char () { return 'f'; }
+  
   bool change_allowed (ActionName::Enum new_action);
 
 private:

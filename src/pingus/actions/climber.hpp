@@ -36,7 +36,6 @@ public:
 
   void update() {};
 
-  char get_persistent_char () { return 'c'; }
   bool change_allowed(ActionName::Enum new_action);
 
   Vector3f get_center_pos() const;

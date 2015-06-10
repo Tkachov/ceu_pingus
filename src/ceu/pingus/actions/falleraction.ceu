@@ -41,8 +41,8 @@ do
            deadly_velocity or something like that. A translation
            animation for the floater might also help
          */
-        if faller.pingu:get_velocity().y > 5.0 and faller.pingu:can_request_fall_action() then
-            emit pingu.e_CALL_SET_ACTION => faller.pingu:get_fall_action():get_type();
+        if faller.pingu:get_velocity().y > 5.0 and faller.pingu:has_fall_action() then
+            emit pingu.e_CALL_SET_ACTION => faller.pingu:get_fall_action();
             continue;
         end
 

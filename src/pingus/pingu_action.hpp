@@ -75,10 +75,6 @@ public:
   /// The type of the action
   virtual ActionName::Enum get_type () const =0;
 
-  /** Return the character that is shown when a persitent action is
-      activated in the CaptureRectangle. */
-  virtual char get_persistent_char ();
-
   /// Catch another pingu and act on it (see blocker.hxx)
   virtual bool  need_catch();
 

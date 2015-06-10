@@ -23,6 +23,8 @@
 #include "pingus/direction.hpp"
 #include "pingus/action_name.hpp"
 
+struct CEU_Pingu;
+
 class ActionHolder;
 class PinguAction;
 class SceneContext;
@@ -40,18 +42,19 @@ public:
 
       FIXME: different subvalues of PS_DEAD might be usefull (drowned,
       FIXME: splashed, smashed, etc.) */
-  enum PinguStatus { PS_ALIVE, PS_EXITED, PS_DEAD };
-
-  /** The primary action which is currently in use */
-  std::shared_ptr<PinguAction> action;
+  enum PinguStatus { PS_ALIVE, PS_EXITED, PS_DEAD };  
 
 private:
 
+  PinguAction** ceu_action;
+
   /** the action that gets triggered when the pingu hits a wall */
-  std::shared_ptr<PinguAction> wall_action;
+  ActionName::Enum wall_action;
+  bool wall_action_set;
 
   /** the action that gets triggered when the pingu falls */
-  std::shared_ptr<PinguAction> fall_action;
+  ActionName::Enum fall_action;
+  bool fall_action_set;
 
   /** The previous_action contains the action type that was in action
       before action got applied, its here to enable action to behave
@@ -74,7 +77,7 @@ private:
   Vector3f velocity;
 
 private:
-  void set_action(std::shared_ptr<PinguAction>);
+  void set_action(PinguAction*);
 
   std::shared_ptr<PinguAction> create_action(ActionName::Enum action);
 
@@ -91,6 +94,9 @@ public:
 
   /** Destruct the pingu... */
   ~Pingu ();
+
+  PinguAction* get_ceu_action() const;
+  void set_ceu_action(PinguAction*);
 
   /** Return the logical pingus position, this is the position which
       is used for collision detection to the ground (the pingus
@@ -160,19 +166,13 @@ public:
       instantly control. */
   void set_action (ActionName::Enum action_name);
 
-  /// set the wall action if we have one
-  bool request_wall_action ();
+  PinguAction* create_action2(ActionName::Enum action_);
 
-  /// set the fall action if we have one
-  bool request_fall_action ();
+  bool has_fall_action() { return fall_action_set; }
+  ActionName::Enum get_fall_action () { return fall_action; }
 
-  bool can_request_fall_action() { return (fall_action?1:0); }
-
-  bool can_request_wall_action() { return (wall_action?1:0); }
-
-  PinguAction* get_wall_action () { return wall_action.get(); }
-
-  PinguAction* get_fall_action () { return fall_action.get(); }
+  bool has_wall_action() { return wall_action_set; }
+  ActionName::Enum get_wall_action () { return wall_action; }
 
   /** Returns the `color' of the colmap in the walking direction
       Examples:

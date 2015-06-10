@@ -46,7 +46,7 @@ Walker::draw (SceneContext& gc)
 {
   gc.color().draw(walker[pingu->direction], pingu->get_pos());
 
-  if (pingu->get_fall_action() && pingu->get_fall_action()->get_type() == ActionName::FLOATER)
+  if (pingu->has_fall_action() && pingu->get_fall_action() == ActionName::FLOATER)
   {
     gc.color().draw(floaterlayer[pingu->direction], pingu->get_pos());
   }

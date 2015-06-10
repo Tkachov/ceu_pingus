@@ -127,9 +127,9 @@ do
             else
                 if walker.rel_getpixel(1, 0) != _GT_NOTHING then
                     // We reached a wall
-                    if walker.pingu:can_request_wall_action() then
+                    if walker.pingu:has_wall_action() then
                         _log_debug("Pingu: We are in front of a wall, setting persistant action");
-                        emit pingu.e_CALL_SET_ACTION => walker.pingu:get_wall_action():get_type();
+                        emit pingu.e_CALL_SET_ACTION => walker.pingu:get_wall_action();
                         do_return = true;
                     end
 

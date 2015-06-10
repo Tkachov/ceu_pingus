@@ -55,9 +55,11 @@ using namespace Actions;
 
 // Init a pingu at the given position while falling
 Pingu::Pingu (int arg_id, const Vector3f& arg_pos, int owner):
-  action(),
+  ceu_action(0),
   wall_action(),
+  wall_action_set(false),
   fall_action(),
+  fall_action_set(false),
   previous_action(ActionName::FALLER),
   id(arg_id),
   owner_id(owner),
@@ -69,21 +71,23 @@ Pingu::Pingu (int arg_id, const Vector3f& arg_pos, int owner):
 {
   direction.left();
 
-  // Initialisize the action, after this step the action ptr will
-  // always be valid in the pingu class
-  action = create_action(ActionName::FALLER);
-
   //create Ceu Pingu
   Pingu* self = this;
   ceu_out_go(&CEUapp, CEU_IN_NEW_PINGU, &self);
 
-  //pass action to Ceu
-  PinguAction* p = action.get();
-  ceu_out_go(&CEUapp, CEU_IN_PINGU_SET_ACTION, &p);
+  //ceu_pingu should be already set now from Ceu Pingu
 }
 
 Pingu::~Pingu ()
 {
+}
+
+PinguAction* Pingu::get_ceu_action() const {
+  return *ceu_action;
+}
+
+void Pingu::set_ceu_action(PinguAction* a) {
+  *ceu_action = a;
 }
 
 unsigned int
@@ -95,8 +99,9 @@ Pingu::get_id ()
 bool
 Pingu::change_allowed(ActionName::Enum new_action)
 {
-  assert (action);
-  return action->change_allowed (new_action);
+  assert(ceu_action);
+  assert(get_ceu_action());
+  return get_ceu_action()->change_allowed (new_action);
 }
 
 void
@@ -139,121 +144,82 @@ Pingu::set_velocity (const Vector3f& velocity_)
 // This function is used by external stuff, like the ButtonPanel, etc
 // When you select a function on the button panel and click on a
 // pingu, this action will be called with the action name
-bool
-Pingu::request_set_action(ActionName::Enum action_name)
-{
-  bool ret_val = false;
-
-  if (status == PS_DEAD)
-  {
+bool Pingu::request_set_action(ActionName::Enum action_name) {
+  if(status == PS_DEAD) {
     log_debug("Setting action to a dead pingu");
-    ret_val =  false;
-  }
-  else
-  {
-    switch (PinguAction::get_activation_mode(action_name))
-    {
-      case INSTANT:
-        if (action_name == action->get_type())
-        {
-          log_debug("Pingu: Already have action");
-          ret_val = false;
-        }
-        else if (action->change_allowed(action_name))
-        {
-          log_debug("setting instant action");
-          set_action(action_name);
-          ret_val = true;
-        }
-        else
-        {
-          log_debug("change from action %1% not allowed", action->get_name());
-          ret_val = false;
-        }
-        break;
-
-      case WALL_TRIGGERED:
-        if (wall_action && wall_action->get_type() == action_name)
-        {
-          log_debug("Not using wall action, we have already");
-          ret_val = false;
-        }
-        else
-        {
-          log_debug("Setting wall action");
-          wall_action = create_action(action_name);
-          ret_val = true;
-        }
-        break;
-
-      case FALL_TRIGGERED:
-        if (fall_action && fall_action->get_type() == action_name)
-        {
-          log_debug("Not using fall action, we have already");
-          ret_val = false;
-        }
-        else
-        {
-          log_debug("Setting fall action");
-          fall_action = create_action(action_name);
-          ret_val = true;
-        }
-        break;
-
-      default:
-        log_debug("unknown action activation_mode");
-        ret_val = false;
-        assert(0);
-        break;
-    }
+    return false;
   }
 
-  return ret_val;
+  switch(PinguAction::get_activation_mode(action_name)) {
+    case INSTANT:
+      if(action_name == get_ceu_action()->get_type()) {
+        log_debug("Pingu: Already have action");
+        return false;
+      } else if(get_ceu_action()->change_allowed(action_name)) {
+        log_debug("setting instant action");
+        set_action(action_name);
+        return true;
+      } else {
+        log_debug("change from action %1% not allowed", get_ceu_action()->get_name());
+        return false;
+      }
+    break;
+
+    case WALL_TRIGGERED:
+      if(wall_action_set && wall_action == action_name) {
+        log_debug("Not using wall action, we have already");
+        return false;
+      } else {
+        log_debug("Setting wall action");
+        wall_action = action_name;
+        wall_action_set = true;
+        return true;
+      }
+    break;
+
+    case FALL_TRIGGERED:
+      if(fall_action_set && fall_action == action_name) {
+        log_debug("Not using fall action, we have already");
+        return false;
+      } else {
+        log_debug("Setting fall action");
+        fall_action = action_name;
+        fall_action_set = true;
+        return true;
+      }
+    break;
+
+    default:
+      log_debug("unknown action activation_mode");      
+      assert(0);
+      return false;
+    break;
+  }
+
+  return false;
 }
 
 void
 Pingu::set_action (ActionName::Enum action_name)
 {
-  set_action(create_action(action_name));
+  set_action(create_action2(action_name));
 }
 
 // Sets an action without any checking
 void
-Pingu::set_action(std::shared_ptr<PinguAction> act)
+Pingu::set_action(PinguAction* act)
 {
-  assert(act);
+  assert(act);  
 
-  previous_action = action->get_type();
+  PinguAction* backup = get_ceu_action();
+  set_ceu_action(act);
 
-  action = act;
+  previous_action = backup->get_type();
+  delete backup;  
 
   //notify Ceu that it need new action to be created
-  PinguAction* p = action.get();
-  ceu_out_go(&CEUapp, CEU_IN_PINGU_SET_ACTION, &p);
-}
-
-bool
-Pingu::request_fall_action ()
-{
-  if (fall_action)
-  {
-    set_action(fall_action);
-    return true;
-  }
-
-  return false;
-}
-
-bool
-Pingu::request_wall_action ()
-{
-  if (wall_action)
-  {
-    set_action(wall_action);
-    return true;
-  }
-
-  return false;
+  PinguAction* p = get_ceu_action();
+  ceu_out_go(&CEUapp, CEU_IN_PINGU_SET_ACTION, &p);  
 }
 
 Pingu::PinguStatus
@@ -307,7 +273,7 @@ void Pingu::update() {
 
 // Draws the pingu on the screen with the given offset
 void Pingu::draw(SceneContext& gc) {
-  action->draw(gc);
+  get_ceu_action()->draw(gc);
 }
 
 int
@@ -320,7 +286,7 @@ Pingu::rel_getpixel(int x, int y)
 void
 Pingu::catch_pingu (Pingu* pingu)
 {
-  action->catch_pingu(pingu);
+  get_ceu_action()->catch_pingu(pingu);
 }
 
 bool
@@ -329,7 +295,7 @@ Pingu::need_catch ()
   if (status == PS_DEAD || status == PS_EXITED)
     return false;
 
-  return action->need_catch();
+  return get_ceu_action()->need_catch();
 }
 
 void
@@ -347,13 +313,13 @@ Pingu::is_alive (void)
 std::string
 Pingu::get_name()
 {
-  return action->get_name();
+  return get_ceu_action()->get_name();
 }
 
 ActionName::Enum
 Pingu::get_action ()
 {
-  return action->get_type();
+  return get_ceu_action()->get_type();
 }
 
 void
@@ -374,7 +340,7 @@ Pingu::get_pos () const
 Vector3f
 Pingu::get_center_pos () const
 {
-  return action->get_center_pos();
+  return get_ceu_action()->get_center_pos();
 }
 
 int
@@ -394,7 +360,7 @@ Pingu::get_owner_str ()
 bool
 Pingu::catchable ()
 {
-  return action->catchable ();
+  return get_ceu_action()->catchable ();
 }
 
 std::shared_ptr<PinguAction>
@@ -422,6 +388,32 @@ Pingu::create_action(ActionName::Enum action_)
     case ActionName::SUPERMAN:  return std::make_shared<Superman>(this);
     case ActionName::WAITER:    return std::make_shared<Waiter>(this);
     case ActionName::WALKER:    return std::make_shared<Walker>(this);
+    default: assert(!"Invalid action name provied");
+  }
+}
+
+PinguAction* Pingu::create_action2(ActionName::Enum action_) {
+  switch(action_) {
+    case ActionName::ANGEL:     return new Angel(this);
+    case ActionName::BASHER:    return new Basher(this);
+    case ActionName::BLOCKER:   return new Blocker(this);
+    case ActionName::BOARDER:   return new Boarder(this);
+    case ActionName::BOMBER:    return new Bomber(this);
+    case ActionName::BRIDGER:   return new Bridger(this);
+    case ActionName::CLIMBER:   return new Climber(this);
+    case ActionName::DIGGER:    return new Digger(this);
+    case ActionName::DROWN:     return new Drown(this);
+    case ActionName::EXITER:    return new Exiter(this);
+    case ActionName::FALLER:    return new Faller(this);
+    case ActionName::FLOATER:   return new Floater(this);
+    case ActionName::JUMPER:    return new Jumper(this);
+    case ActionName::LASERKILL: return new LaserKill(this);
+    case ActionName::MINER:     return new Miner(this);
+    case ActionName::SLIDER:    return new Slider(this);
+    case ActionName::SPLASHED:  return new Splashed(this);
+    case ActionName::SUPERMAN:  return new Superman(this);
+    case ActionName::WAITER:    return new Waiter(this);
+    case ActionName::WALKER:    return new Walker(this);
     default: assert(!"Invalid action name provied");
   }
 }

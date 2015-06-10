@@ -83,15 +83,15 @@ CaptureRectangle::set_pingu (Pingu* p)
   {
     action_str = pingu->get_name();
 
-    if (pingu->get_wall_action() || pingu->get_fall_action())
+    if (pingu->has_wall_action() || pingu->has_fall_action())
     {
       action_str += "[";
 
-      if (pingu->get_wall_action())
-        action_str += pingu->get_wall_action()->get_persistent_char();
+      if (pingu->has_wall_action())
+        action_str += ActionName::get_persistent_char(pingu->get_wall_action());
 
-      if (pingu->get_fall_action())
-        action_str += pingu->get_fall_action()->get_persistent_char();
+      if (pingu->has_fall_action())
+        action_str += ActionName::get_persistent_char(pingu->get_fall_action());
 
       action_str += "]";
     }

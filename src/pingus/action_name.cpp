@@ -110,6 +110,13 @@ Enum from_string(const std::string& action)
   return WALKER;
 }
 
+char get_persistent_char(Enum action) {
+  if(action == CLIMBER) return 'c';
+  if(action == FLOATER) return 'f';
+  assert(!"This is not a persitent action!");
+  return '-';
+}
+
 } // namespace ActionName
 
 /* EOF */

@@ -26,10 +26,12 @@ native/pre do
     ##define A_Enum(x) (ActionName::Enum)(x)
     ##define std__shared_ptr_PinguAction std::shared_ptr<PinguAction>
     ##define pingu_set_action(p, a) p->set_action(a)
+    ##define REF(ptr) **ptr
 end
 
 native @pure _std__shared_ptr_PinguAction(),
-             _pingu_set_action();
+             _pingu_set_action(),
+             _REF();
 
 input _PinguAction* PINGU_SET_ACTION;
 input _Pingu* PINGU_UPDATE;
@@ -37,14 +39,17 @@ input _Pingu* PINGU_UPDATE;
 class Pingu with
     interface IPingu;
     event _PinguAction* e_CHANGE_ACTION;
+    var _PinguAction* action;
 do
     var _Pingu&? me_ = _PTR2REF((_Pingu*)&this.me);
     var _PinguAction* current_action = null;
+    action = _PTR2REF(me_.create_action2(_A_FALLER));
+    me_.ceu_action = &action;
 
     par/or do
         //pass update() call
         every p in PINGU_UPDATE do
-            if p == &me_ then
+            if p == &me_ then                
                 emit e_UPDATE_CALLED;
             end
         end
@@ -62,13 +67,13 @@ do
                 continue;
             end
 
-            me_.action:update();
+            //me_.action:update();
         end
     with
         //notify about set_action() call
-        every a_ in PINGU_SET_ACTION do
-            var _PinguAction&? a = _PTR2REF(a_);
-            if a.pingu == &me_ then
+        every a_ in PINGU_SET_ACTION do            
+            var _PinguAction&? a = _PTR2REF(a_);            
+            if a.pingu == &me_ then                
                 emit e_CHANGE_ACTION => a_;
             end
         end
@@ -160,10 +165,11 @@ do
         end
     with
         //wait for e_CALL_SET_ACTION and call C++'s set_action()
-        every a in e_CALL_SET_ACTION do
+        every a in e_CALL_SET_ACTION do            
             me_.set_action(_A_Enum(a));
         end
     with
+        emit e_CHANGE_ACTION => action;
         await SDL_QUIT;
     end
 end

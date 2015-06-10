@@ -62,6 +62,9 @@ Enum from_string(const std::string& action);
     thing that is seen on the screen for the user Bomber => "Bomber" */
 std::string to_screenname(Enum action);
 
+/** for CaptureRectangle */
+char get_persistent_char(Enum action);
+
 } // namespace ActionName
 
 #endif
