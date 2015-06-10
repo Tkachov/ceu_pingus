@@ -8,18 +8,18 @@
 #include "../ipingu.ceu"
 
 native/pre do
-	##include "pingus/actions/walker.hpp"
-	##define AWalker Actions::Walker
+    ##include "pingus/actions/walker.hpp"
+    ##define AWalker Actions::Walker
 end
 
 class WalkerAction with
-	interface IAction;
+    interface IAction;
 do
-	var _AWalker&? walker = _PTR2REF((_AWalker*)this.me);
+    var _AWalker&? walker = _PTR2REF((_AWalker*)this.me);
 
-	every pingu.e_UPDATE_CALLED do
-		walker.walker[walker.pingu:direction].update(0.033);
-		walker.floaterlayer[walker.pingu:direction].update(0.033);
+    every pingu.e_UPDATE_CALLED do
+        walker.walker[walker.pingu:direction].update(0.033);
+        walker.floaterlayer[walker.pingu:direction].update(0.033);
 
         /* How should this code work?
 
@@ -36,15 +36,15 @@ do
 
          */
 
-		if walker.rel_getpixel(1, 0) == _GT_OUTOFSCREEN then
-			walker.pingu:set_x(walker.pingu:get_x() + (float)(walker.pingu:direction));
-			continue;
-		end
+        if walker.rel_getpixel(1, 0) == _GT_OUTOFSCREEN then
+            walker.pingu:set_x(walker.pingu:get_x() + (float)(walker.pingu:direction));
+            continue;
+        end
 
-		if walker.rel_getpixel(0, -1) == _GT_WATER then
-			emit pingu.e_CALL_SET_ACTION => _A_DROWN;
-			continue;
-		end
+        if walker.rel_getpixel(0, -1) == _GT_WATER then
+            emit pingu.e_CALL_SET_ACTION => _A_DROWN;
+            continue;
+        end
 
         var Vector3f last_pos;
         last_pos.x = walker.pingu:get_pos().x;
@@ -127,8 +127,9 @@ do
             else
                 if walker.rel_getpixel(1, 0) != _GT_NOTHING then
                     // We reached a wall
-                    if walker.pingu:request_wall_action() then
+                    if walker.pingu:can_request_wall_action() then
                         _log_debug("Pingu: We are in front of a wall, setting persistant action");
+                        emit pingu.e_CALL_SET_ACTION => walker.pingu:get_wall_action():get_type();
                         do_return = true;
                     end
 
@@ -161,7 +162,7 @@ do
             walker.pingu:set_pos(_toVector3f(last_pos));
             continue;
         end
-	end
+    end
 end
 
 #endif

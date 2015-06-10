@@ -168,6 +168,8 @@ public:
 
   bool can_request_fall_action() { return (fall_action?1:0); }
 
+  bool can_request_wall_action() { return (wall_action?1:0); }
+
   PinguAction* get_wall_action () { return wall_action.get(); }
 
   PinguAction* get_fall_action () { return fall_action.get(); }

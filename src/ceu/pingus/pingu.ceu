@@ -7,6 +7,7 @@
 #include "actions/bomberaction.ceu"
 #include "actions/blockeraction.ceu"
 #include "actions/bridgeraction.ceu"
+#include "actions/climberaction.ceu"
 #include "actions/diggeraction.ceu"
 #include "actions/drownaction.ceu"
 #include "actions/exiteraction.ceu"
@@ -94,6 +95,11 @@ do
                     end;
                 else/if ref.get_type() == _A_BRIDGER then
                     do BridgerAction with
+                        this.pingu = outer;
+                        this.me = &ref;
+                    end;
+                else/if ref.get_type() == _A_CLIMBER then
+                    do ClimberAction with
                         this.pingu = outer;
                         this.me = &ref;
                     end;
