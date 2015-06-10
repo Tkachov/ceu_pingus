@@ -9,15 +9,15 @@
 native/pre do
     ##include "pingus/actions/climber.hpp"
     ##define AClimber Actions::Climber
-    ##define head_collision_on_walk(c, x, y) (c)->head_collision_on_walk(x, y)
+    ##define head_collision_on_walk(c, x, y) (c).head_collision_on_walk(x, y)
 end
 
 native @pure _head_collision_on_walk();
 
 class ClimberAction with
     interface IAction;
-do
-    var _AClimber&? climber = _PTR2REF((_AClimber*)this.me);
+do     
+    var _AClimber& climber = _PTR2REF((_AClimber*)pingu.set_ptr(_A_CLIMBER));
 
     every pingu.e_UPDATE_CALLED do
         climber.sprite[climber.pingu:direction].update();
@@ -25,6 +25,7 @@ do
         //there's something above
         if climber.rel_getpixel(0, 1) != _GT_NOTHING and climber.rel_getpixel(0, 1) != _GT_BRIDGE then
             climber.pingu:direction.change();
+            //escape _A_WALKER;
             emit pingu.e_CALL_SET_ACTION => _A_WALKER;
             continue;
         end
@@ -47,9 +48,9 @@ do
             climber.pingu:direction.change();
         end
 
-        // Finish climbing.
+        // Finish climbing.        
+        //escape _A_WALKER;
         emit pingu.e_CALL_SET_ACTION => _A_WALKER;
-
     end
 end
 

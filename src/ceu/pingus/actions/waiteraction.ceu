@@ -13,8 +13,8 @@ end
 
 class WaiterAction with
     interface IAction;
-do
-    var _AWaiter&? waiter = _PTR2REF((_AWaiter*)this.me);
+do    
+    var _AWaiter& waiter = _PTR2REF((_AWaiter*)pingu.set_ptr(_A_WAITER));
 
     par/and do
         every pingu.e_UPDATE_CALLED do

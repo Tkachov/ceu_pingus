@@ -17,9 +17,12 @@ end
 
 interface IPingu with
     var _Pingu& me;
+    var _PinguAction* action;
 
     event int e_CALL_SET_ACTION;
     event void e_UPDATE_CALLED;
+
+    function (int) => _PinguAction* set_ptr;
 end
 
 #endif

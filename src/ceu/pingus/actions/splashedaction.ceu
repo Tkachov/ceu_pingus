@@ -19,8 +19,8 @@ native @pure _WorldObj__get_world();
 
 class SplashedAction with
 	interface IAction;
-do
-	var _ASplashed&? splashed = _PTR2REF((_ASplashed*)this.me);
+do    
+	var _ASplashed&? splashed = _PTR2REF((_ASplashed*)pingu.set_ptr(_A_SPLASHED));
 
     par/and do
     	every pingu.e_UPDATE_CALLED do

@@ -17,8 +17,8 @@ end
 
 class BasherAction with
     interface IAction;
-do
-    var _ABasher&? basher = _PTR2REF((_ABasher*)this.me);
+do    
+    var _ABasher&? basher = _PTR2REF((_ABasher*)pingu.set_ptr(_A_BASHER));
     var bool odd_frame = true; //-1th, I hope first block will execute not odd_frame faster
 
     par/or do

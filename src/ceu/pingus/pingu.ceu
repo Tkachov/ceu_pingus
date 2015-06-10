@@ -23,28 +23,28 @@
 
 native/pre do
     ##include "pingus/pingu.hpp"
-    ##define A_Enum(x) (ActionName::Enum)(x)
-    ##define std__shared_ptr_PinguAction std::shared_ptr<PinguAction>
-    ##define pingu_set_action(p, a) p->set_action(a)
-    ##define REF(ptr) **ptr
+    ##define A_Enum(x) (ActionName::Enum)(x)    
+    ##define del(ptr) delete ptr
 end
 
-native @pure _std__shared_ptr_PinguAction(),
-             _pingu_set_action(),
-             _REF();
+native @pure _del();
 
 input _PinguAction* PINGU_SET_ACTION;
 input _Pingu* PINGU_UPDATE;
 
 class Pingu with
     interface IPingu;
-    event _PinguAction* e_CHANGE_ACTION;
-    var _PinguAction* action;
+    event int e_CHANGE_ACTION;    
 do
+    function (int a) => _PinguAction* set_ptr do        
+        action = _PTR2REF(me.create_action2((ActionName_Enum)a));
+        me.replace_action(action); //delete in there
+        return action;        
+    end
+
     var _Pingu&? me_ = _PTR2REF((_Pingu*)&this.me);
-    var _PinguAction* current_action = null;
-    action = _PTR2REF(me_.create_action2(_A_FALLER));
-    me_.ceu_action = &action;
+    var int current_action = _A_FALLER;    
+    set_ptr(_A_FALLER);
 
     par/or do
         //pass update() call
@@ -74,102 +74,89 @@ do
         every a_ in PINGU_SET_ACTION do            
             var _PinguAction&? a = _PTR2REF(a_);            
             if a.pingu == &me_ then                
-                emit e_CHANGE_ACTION => a_;
+                emit e_CHANGE_ACTION => a.get_type();
             end
         end
     with
         //wait for e_CHANGE_ACTION and create an instance
         loop do
             watching current_action in e_CHANGE_ACTION do
-                var _PinguAction&? ref = _PTR2REF(current_action);
-                if &ref == null then
-                else/if ref.get_type() == _A_BASHER then
-                    do BasherAction with
-                        this.pingu = outer;
-                        this.me = &ref;
-                    end;
-                else/if ref.get_type() == _A_BOMBER then
-                    do BomberAction with
-                        this.pingu = outer;
-                        this.me = &ref;
-                    end;
-                else/if ref.get_type() == _A_BLOCKER then
-                    do BlockerAction with
-                        this.pingu = outer;
-                        this.me = &ref;
-                    end;
-                else/if ref.get_type() == _A_BRIDGER then
-                    do BridgerAction with
-                        this.pingu = outer;
-                        this.me = &ref;
-                    end;
-                else/if ref.get_type() == _A_CLIMBER then
-                    do ClimberAction with
-                        this.pingu = outer;
-                        this.me = &ref;
-                    end;
-                else/if ref.get_type() == _A_DIGGER then
-                    do DiggerAction with
-                        this.pingu = outer;
-                        this.me = &ref;
-                    end;
-                else/if ref.get_type() == _A_DROWN then
-                    do DrownAction with
-                        this.pingu = outer;
-                        this.me = &ref;
-                    end;
-                else/if ref.get_type() == _A_EXITER then
-                    do ExiterAction with
-                        this.pingu = outer;
-                        this.me = &ref;
-                    end;
-                else/if ref.get_type() == _A_FALLER then
-                    do FallerAction with
-                        this.pingu = outer;
-                        this.me = &ref;
-                    end;
-                else/if ref.get_type() == _A_FLOATER then
-                    do FloaterAction with
-                        this.pingu = outer;
-                        this.me = &ref;
-                    end;
-                else/if ref.get_type() == _A_JUMPER then
-                    do JumperAction with
-                        this.pingu = outer;
-                        this.me = &ref;
-                    end;
-                else/if ref.get_type() == _A_MINER then
-                    do MinerAction with
-                        this.pingu = outer;
-                        this.me = &ref;
-                    end;
-                else/if ref.get_type() == _A_SPLASHED then
-                    do SplashedAction with
-                        this.pingu = outer;
-                        this.me = &ref;
-                    end;
-                else/if ref.get_type() == _A_WAITER then
-                    do WaiterAction with
-                        this.pingu = outer;
-                        this.me = &ref;
-                    end;
-                else/if ref.get_type() == _A_WALKER then
-                    do WalkerAction with
-                        this.pingu = outer;
-                        this.me = &ref;
-                    end;
-                end;
+                _printf("/start current_action == %d\n", current_action);
 
-                await FOREVER;
+                if current_action == _A_BASHER then
+                    current_action = do BasherAction with
+                        this.pingu = outer;
+                    end;
+                else/if current_action == _A_BOMBER then
+                    current_action = do BomberAction with
+                        this.pingu = outer;
+                    end;
+                else/if current_action == _A_BLOCKER then
+                    current_action = do BlockerAction with
+                        this.pingu = outer;
+                    end;
+                else/if current_action == _A_BRIDGER then
+                    current_action = do BridgerAction with
+                        this.pingu = outer;
+                    end;
+                else/if current_action == _A_CLIMBER then
+                    current_action = do ClimberAction with
+                        this.pingu = outer;
+                    end;
+                else/if current_action == _A_DIGGER then
+                    current_action = do DiggerAction with
+                        this.pingu = outer;
+                    end;
+                else/if current_action == _A_DROWN then
+                    current_action = do DrownAction with
+                        this.pingu = outer;
+                    end;
+                else/if current_action == _A_EXITER then
+                    current_action = do ExiterAction with
+                        this.pingu = outer;
+                    end;
+                else/if current_action == _A_FALLER then
+                    current_action = do FallerAction with
+                        this.pingu = outer;
+                    end;
+                else/if current_action == _A_FLOATER then
+                    current_action = do FloaterAction with
+                        this.pingu = outer;
+                    end;
+                else/if current_action == _A_JUMPER then
+                    current_action = do JumperAction with
+                        this.pingu = outer;
+                    end;
+                else/if current_action == _A_MINER then
+                    current_action = do MinerAction with
+                        this.pingu = outer;
+                    end;
+                else/if current_action == _A_SPLASHED then
+                    current_action = do SplashedAction with
+                        this.pingu = outer;
+                    end;
+                else/if current_action == _A_WAITER then
+                    current_action = do WaiterAction with
+                        this.pingu = outer;
+                    end;
+                else/if current_action == _A_WALKER then
+                    current_action = do WalkerAction with
+                        this.pingu = outer;
+                    end;
+                else
+                    await FOREVER;
+                end
+
+                _printf("/end current_action == %d\n", current_action);
             end
         end
     with
-        //wait for e_CALL_SET_ACTION and call C++'s set_action()
+        //wait for e_CALL_SET_ACTION and call C++'s set_action()        
         every a in e_CALL_SET_ACTION do            
-            me_.set_action(_A_Enum(a));
+            emit e_CHANGE_ACTION => a;            
         end
     with
-        emit e_CHANGE_ACTION => action;
+        //emit e_CHANGE_ACTION => action;
         await SDL_QUIT;
     end
 end

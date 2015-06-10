@@ -56,6 +56,7 @@ using namespace Actions;
 // Init a pingu at the given position while falling
 Pingu::Pingu (int arg_id, const Vector3f& arg_pos, int owner):
   ceu_action(0),
+  backup_action(0),
   wall_action(),
   wall_action_set(false),
   fall_action(),
@@ -71,23 +72,33 @@ Pingu::Pingu (int arg_id, const Vector3f& arg_pos, int owner):
 {
   direction.left();
 
+  ceu_action = create_action2(ActionName::FALLER); //so get_ceu_action() never fails
+
   //create Ceu Pingu
   Pingu* self = this;
   ceu_out_go(&CEUapp, CEU_IN_NEW_PINGU, &self);
 
-  //ceu_pingu should be already set now from Ceu Pingu
+  //ceu_pingu should be already set now from Ceu Pingu  
 }
 
 Pingu::~Pingu ()
 {
 }
 
-PinguAction* Pingu::get_ceu_action() const {
-  return *ceu_action;
+void Pingu::replace_action(PinguAction* a) {
+  printf("delete %d; \t ", backup_action);
+  delete backup_action;
+  backup_action = ceu_action;
+  ceu_action = a;
+  printf("alive %d & %d.\n", backup_action, ceu_action);
+}
+
+PinguAction* Pingu::get_ceu_action() {
+  return ceu_action;
 }
 
 void Pingu::set_ceu_action(PinguAction* a) {
-  *ceu_action = a;
+  //*ceu_action = a;
 }
 
 unsigned int
@@ -209,8 +220,11 @@ Pingu::set_action (ActionName::Enum action_name)
 void
 Pingu::set_action(PinguAction* act)
 {
-  assert(act);  
-
+  assert(act);
+  printf("C++ set_action\n");  
+  PinguAction* p = act;
+  ceu_out_go(&CEUapp, CEU_IN_PINGU_SET_ACTION, &p);
+/*
   PinguAction* backup = get_ceu_action();
   set_ceu_action(act);
 
@@ -219,7 +233,7 @@ Pingu::set_action(PinguAction* act)
 
   //notify Ceu that it need new action to be created
   PinguAction* p = get_ceu_action();
-  ceu_out_go(&CEUapp, CEU_IN_PINGU_SET_ACTION, &p);  
+  ceu_out_go(&CEUapp, CEU_IN_PINGU_SET_ACTION, &p);  */
 }
 
 Pingu::PinguStatus
@@ -338,7 +352,7 @@ Pingu::get_pos () const
 }
 
 Vector3f
-Pingu::get_center_pos () const
+Pingu::get_center_pos ()
 {
   return get_ceu_action()->get_center_pos();
 }

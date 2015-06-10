@@ -13,8 +13,8 @@ end
 
 class BlockerAction with
     interface IAction;
-do
-    var _ABlocker&? blocker = _PTR2REF((_ABlocker*)this.me);
+do    
+    var _ABlocker&? blocker = _PTR2REF((_ABlocker*)pingu.set_ptr(_A_BLOCKER));
 
     every pingu.e_UPDATE_CALLED do
         if not blocker.standing_on_ground() then

@@ -28,8 +28,8 @@ native @pure _Colliders__PinguCollider(),
 
 class BomberAction with
 	interface IAction;
-do
-	var _ABomber&? bomber = _PTR2REF((_ABomber*)this.me);
+do    
+	var _ABomber&? bomber = _PTR2REF((_ABomber*)pingu.set_ptr(_A_BOMBER));
 
     par/or do
     	every pingu.e_UPDATE_CALLED do

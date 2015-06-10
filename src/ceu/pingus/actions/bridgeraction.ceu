@@ -15,8 +15,8 @@ end
 
 class BridgerAction with
     interface IAction;
-do
-    var _ABridger&? bridger = _PTR2REF((_ABridger*)this.me);
+do    
+    var _ABridger&? bridger = _PTR2REF((_ABridger*)pingu.set_ptr(_A_BRIDGER));
 
     loop do
         //B_BUILDING first

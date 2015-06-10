@@ -13,8 +13,8 @@ end
 
 class JumperAction with
     interface IAction;
-do
-    var _AJumper&? jumper = _PTR2REF((_AJumper*)this.me);
+do    
+    var _AJumper&? jumper = _PTR2REF((_AJumper*)pingu.set_ptr(_A_JUMPER));
 
     await pingu.e_UPDATE_CALLED;
 

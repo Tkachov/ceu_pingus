@@ -13,8 +13,8 @@ end
 
 class DiggerAction with
     interface IAction;
-do
-    var _ADigger&? digger = _PTR2REF((_ADigger*)this.me);
+do    
+    var _ADigger& digger = _PTR2REF((_ADigger*)pingu.set_ptr(_A_DIGGER));
     var int delay_count = 0;
 
     every pingu.e_UPDATE_CALLED do

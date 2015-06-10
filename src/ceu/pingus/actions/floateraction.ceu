@@ -14,8 +14,8 @@ end
 
 class FloaterAction with
     interface IAction;
-do
-    var _AFloater&? floater = _PTR2REF((_AFloater*)this.me);
+do    
+    var _AFloater&? floater = _PTR2REF((_AFloater*)pingu.set_ptr(_A_FLOATER));
 
     every pingu.e_UPDATE_CALLED do
         floater.sprite.update();

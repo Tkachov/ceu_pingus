@@ -16,8 +16,8 @@ end
 
 class MinerAction with
     interface IAction;
-do
-    var _AMiner&? miner = _PTR2REF((_AMiner*)this.me);
+do    
+    var _AMiner&? miner = _PTR2REF((_AMiner*)pingu.set_ptr(_A_MINER));
     var int delay_count = 0;
 
     par/or do

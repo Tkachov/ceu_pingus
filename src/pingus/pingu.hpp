@@ -46,7 +46,11 @@ public:
 
 private:
 
-  PinguAction** ceu_action;
+  //PinguAction** ceu_action;
+  PinguAction* ceu_action;
+  PinguAction* backup_action;
+
+  void replace_action(PinguAction* a);
 
   /** the action that gets triggered when the pingu hits a wall */
   ActionName::Enum wall_action;
@@ -95,7 +99,7 @@ public:
   /** Destruct the pingu... */
   ~Pingu ();
 
-  PinguAction* get_ceu_action() const;
+  PinguAction* get_ceu_action();
   void set_ceu_action(PinguAction*);
 
   /** Return the logical pingus position, this is the position which
@@ -105,7 +109,7 @@ public:
 
   /** Returns the visible position of the pingu, the graphical center
       of the pingu. */
-  Vector3f get_center_pos () const;
+  Vector3f get_center_pos ();
 
   /** Returns the x position of the pingu
    * For backward comp. only

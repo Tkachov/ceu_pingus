@@ -14,8 +14,8 @@ end
 
 class WalkerAction with
     interface IAction;
-do
-    var _AWalker&? walker = _PTR2REF((_AWalker*)this.me);
+do    
+    var _AWalker& walker = _PTR2REF((_AWalker*)pingu.set_ptr(_A_WALKER));
 
     every pingu.e_UPDATE_CALLED do
         walker.walker[walker.pingu:direction].update(0.033);
@@ -42,16 +42,15 @@ do
         end
 
         if walker.rel_getpixel(0, -1) == _GT_WATER then
+            //escape _A_DROWN;            
             emit pingu.e_CALL_SET_ACTION => _A_DROWN;
-            continue;
+            continue;            
         end
 
         var Vector3f last_pos;
         last_pos.x = walker.pingu:get_pos().x;
         last_pos.y = walker.pingu:get_pos().y;
         last_pos.z = walker.pingu:get_pos().z;
-
-        var bool do_return = false;
 
         // The Pingu stands no longer on ground, the cause for this could be
         // a digger, miner or a bomber
@@ -73,12 +72,10 @@ do
             if found_ground then
                 walker.pingu:set_y(walker.pingu:get_y() - (float)level);
             else
-                emit pingu.e_CALL_SET_ACTION => _A_FALLER;
-                do_return = true;
+                //escape _A_FALLER;                
+                emit pingu.e_CALL_SET_ACTION => _A_FALLER;                
             end
         end
-
-        if do_return then continue; end
 
         // original FIXME: here we could/should scan more pixels
         if walker.rel_getpixel(1, 0) == _GT_BRIDGE and not walker.head_collision_on_walk(1, 1) then  // bridge
@@ -129,26 +126,22 @@ do
                     // We reached a wall
                     if walker.pingu:has_wall_action() then
                         _log_debug("Pingu: We are in front of a wall, setting persistant action");
+                        //escape walker.pingu:get_wall_action();
                         emit pingu.e_CALL_SET_ACTION => walker.pingu:get_wall_action();
-                        do_return = true;
                     end
 
-                    if not do_return then
-                        // No persitent action found, so change the direction
-                        walker.pingu:direction.change();
-                    end
+                    // No persitent action found, so change the direction
+                    walker.pingu:direction.change();                    
                 else
                     // We take the step, so that we are in the air
                     walker.pingu:set_x(walker.pingu:get_x() + (float)walker.pingu:direction);
 
                     // We reached a cliff
-                    emit pingu.e_CALL_SET_ACTION => _A_FALLER;
-                    do_return = true;
+                    //escape _A_FALLER;                    
+                    emit pingu.e_CALL_SET_ACTION => _A_FALLER;                
                 end
             end
         end
-
-        if do_return then continue; end
 
         // This is moved here to fix the bug where pingu stuck turning both
         // sides indefinetely when a head collision occured. the fix needs the
