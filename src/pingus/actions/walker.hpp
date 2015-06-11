@@ -5,12 +5,12 @@
 //  it under the terms of the GNU General Public License as published by
 //  the Free Software Foundation, either version 3 of the License, or
 //  (at your option) any later version.
-//  
+//
 //  This program is distributed in the hope that it will be useful,
 //  but WITHOUT ANY WARRANTY; without even the implied warranty of
 //  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //  GNU General Public License for more details.
-//  
+//
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -22,8 +22,7 @@
 
 namespace Actions {
 
-class Walker : public PinguAction
-{
+class Walker: public PinguAction {
 private:
   StateSprite walker;
   StateSprite floaterlayer;
@@ -31,12 +30,10 @@ private:
   enum { max_steps = 5 }; // max nr. of pixels that pingu can walk up/down
 
 public:
-  Walker (Pingu*);
-
-  void draw (SceneContext& gc);
-  void update ();
-
-  ActionName::Enum get_type () const { return ActionName::WALKER; }
+  Walker(Pingu* p): PinguAction(p), walker(), floaterlayer() {};
+  void draw(SceneContext& gc) {};
+  void update() {};
+  ActionName::Enum get_type() const { return ActionName::WALKER; }
 
 private:
   Walker (const Walker&);

@@ -80,8 +80,9 @@ Pingu::Pingu (int arg_id, const Vector3f& arg_pos, int owner):
   //ceu_pingu should be already set now from Ceu Pingu
 }
 
-Pingu::~Pingu ()
-{
+Pingu::~Pingu() {
+  Pingu* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_DELETE_PINGU, &self);
 }
 
 void Pingu::replace_action(PinguAction* a) {

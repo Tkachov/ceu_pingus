@@ -33,6 +33,7 @@ input _PinguAction* PINGU_SET_ACTION;
 input void PINGU_UPDATE_ALL;
 input _SceneContext* PINGU_DRAW_WALKER;
 input _SceneContext* PINGU_DRAW_OTHERS;
+input _Pingu* DELETE_PINGU;
 
 class Pingu with
     interface IPingu;
@@ -167,7 +168,7 @@ do
             end
         end
     with
-        await SDL_QUIT;
+        var _Pingu* p = await DELETE_PINGU until (p == &me_);
     end
 end
 

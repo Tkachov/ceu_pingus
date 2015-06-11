@@ -33,32 +33,13 @@ Faller::Faller (Pingu* p) :
   tumbler(),
   mover(WorldObj::get_world(), Vector3f(0, 0, 0))
 {
-  faller.load(Direction::LEFT,  Sprite("pingus/player" +
-                                       pingu->get_owner_str() + "/faller/left"));
-  faller.load(Direction::RIGHT, Sprite("pingus/player" +
-                                       pingu->get_owner_str() + "/faller/right"));
-
-  tumbler.load(Direction::LEFT,  Sprite("pingus/player" +
-                                        pingu->get_owner_str() + "/tumbler/left"));
-  tumbler.load(Direction::RIGHT, Sprite("pingus/player" +
-                                        pingu->get_owner_str() + "/tumbler/right"));
-
   // FIXME: add sprites for jumping here: if x_vel > y_vel, use them
 }
 
 Faller::~Faller() {}
 
 void Faller::update() {}
-
-void
-Faller::draw (SceneContext& gc)
-{
-  if (is_tumbling()) {
-    gc.color().draw(tumbler[pingu->direction], pingu->get_pos ());
-  } else {
-    gc.color().draw(faller[pingu->direction], pingu->get_pos ());
-  }
-}
+void Faller::draw (SceneContext& gc) {}
 
 bool
 Faller::is_tumbling () const

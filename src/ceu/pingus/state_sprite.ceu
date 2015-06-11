@@ -10,7 +10,7 @@ native/pre do
     ##define concat(a, b) a "" b
 end
 
-#define load_directions(action, suffix) action.sprite.load(_D_LEFT, _make_player_sprite(action.pingu:get_owner_str(), _concat(suffix, "left"))); \
-                                        action.sprite.load(_D_RIGHT, _make_player_sprite(action.pingu:get_owner_str(), _concat(suffix, "right")));
+#define load_directions(sprite, action, suffix) sprite.load(_D_LEFT, _make_player_sprite(action.pingu:get_owner_str(), _concat(suffix, "left"))); \
+                                                sprite.load(_D_RIGHT, _make_player_sprite(action.pingu:get_owner_str(), _concat(suffix, "right")));
 
 #endif
