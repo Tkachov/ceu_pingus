@@ -17,7 +17,7 @@ end
 
 class BasherAction with
     interface IAction;
-do    
+do
     var _ABasher&? basher = _PTR2REF((_ABasher*)pingu.set_ptr(_A_BASHER));
     var bool odd_frame = true; //-1th, I hope first block will execute not odd_frame faster
 
@@ -41,7 +41,7 @@ do
 
             // If on walking forward the Basher has now walked on to water or lava
             if basher.rel_getpixel(0, -1) == _GT_WATER or basher.rel_getpixel(0, -1) == _GT_LAVA then
-                emit pingu.e_CALL_SET_ACTION => _A_DROWN;
+                escape _A_DROWN;
             // If walking on to something (i.e. hasn't fallen)
             else/if basher.rel_getpixel(0, -1) != _GT_NOTHING then
                 //original FIXME: Game logic must be separate from Sprite
@@ -53,7 +53,7 @@ do
                     // Change direction and let walk code walk forward/up to get out.
                     _Sound_PingusSound_play_sound("chink");
                     basher.pingu:direction.change();
-                    emit pingu.e_CALL_SET_ACTION => _A_WALKER;
+                    escape _A_WALKER;
                 else/if basher.have_something_to_dig() then
                     // We only bash every second step, cause the Pingus would
                     // get trapped otherwise in the bashing area.
@@ -62,7 +62,7 @@ do
                     end
                 else/if progress > 0.6 then
                     //original FIXME: EVIL! Engine must not relay on graphic
-                    emit pingu.e_CALL_SET_ACTION => _A_WALKER;
+                    escape _A_WALKER;
                 end
             end
 

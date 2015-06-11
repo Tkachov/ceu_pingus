@@ -13,7 +13,7 @@ end
 
 class JumperAction with
     interface IAction;
-do    
+do
     var _AJumper&? jumper = _PTR2REF((_AJumper*)pingu.set_ptr(_A_JUMPER));
 
     await pingu.e_UPDATE_CALLED;
@@ -35,7 +35,7 @@ do
     // Move the pingu in the air, so that it can start 'falling'
     jumper.pingu:set_y(jumper.pingu:get_y() - 1);
 
-    emit pingu.e_CALL_SET_ACTION => _A_FALLER;
+    escape _A_FALLER;
 end
 
 #endif

@@ -25,7 +25,7 @@ native @pure _Colliders__PinguCollider(),
 
 class FallerAction with
     interface IAction;
-do    
+do
     var _AFaller& faller = _PTR2REF((_AFaller*)pingu.set_ptr(_A_FALLER));
 
     every pingu.e_UPDATE_CALLED do
@@ -42,9 +42,7 @@ do
            animation for the floater might also help
          */
         if faller.pingu:get_velocity().y > 5.0 and faller.pingu:has_fall_action() then
-            escape faller.pingu:get_fall_action();            
-            //emit pingu.e_CALL_SET_ACTION => faller.pingu:get_fall_action();
-            //continue;
+            escape faller.pingu:get_fall_action();
         end
 
         // Apply gravity
@@ -87,12 +85,10 @@ do
                    faller.rel_getpixel(0, -1) == _GT_LAVA
                 then
                     escape _A_DROWN;
-                    //emit pingu.e_CALL_SET_ACTION => _A_DROWN;                    
                 // Did we stop too fast?
                 else/if _Math__abs(velocity.y) > _deadly_velocity then
                     //log_info("Pingus splashed: " << pingu:get_velocity().y << " " << deadly_velocity);
                     escape _A_SPLASHED;
-                    //emit pingu.e_CALL_SET_ACTION => _A_SPLASHED;                    
                 else
                     // This is where the jumper bug happens
                     //log_info("Reached the unreachable: " << pingu:get_velocity().y);
@@ -100,7 +96,6 @@ do
                         escape faller.pingu:get_previous_action();
                     else
                         escape _A_WALKER;
-                        //emit pingu.e_CALL_SET_ACTION => _A_WALKER;
                     end
                 end
             // If the Pingu collided into something while moving up...

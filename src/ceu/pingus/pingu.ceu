@@ -23,7 +23,7 @@
 
 native/pre do
     ##include "pingus/pingu.hpp"
-    ##define A_Enum(x) (ActionName::Enum)(x)    
+    ##define A_Enum(x) (ActionName::Enum)(x)
     ##define del(ptr) delete ptr
 end
 
@@ -34,22 +34,22 @@ input _Pingu* PINGU_UPDATE;
 
 class Pingu with
     interface IPingu;
-    event int e_CHANGE_ACTION;    
+    event int e_CHANGE_ACTION;
 do
-    function (int a) => _PinguAction* set_ptr do        
+    function (int a) => _PinguAction* set_ptr do
         action = _PTR2REF(me.create_action2((ActionName_Enum)a));
         me.replace_action(action); //delete in there
-        return action;        
+        return action;
     end
 
     var _Pingu&? me_ = _PTR2REF((_Pingu*)&this.me);
-    var int current_action = _A_FALLER;    
+    var int current_action = _A_FALLER;
     set_ptr(_A_FALLER);
 
     par/or do
         //pass update() call
         every p in PINGU_UPDATE do
-            if p == &me_ then                
+            if p == &me_ then
                 emit e_UPDATE_CALLED;
             end
         end
@@ -71,9 +71,9 @@ do
         end
     with
         //notify about set_action() call
-        every a_ in PINGU_SET_ACTION do            
-            var _PinguAction&? a = _PTR2REF(a_);            
-            if a.pingu == &me_ then                
+        every a_ in PINGU_SET_ACTION do
+            var _PinguAction&? a = _PTR2REF(a_);
+            if a.pingu == &me_ then
                 emit e_CHANGE_ACTION => a.get_type();
             end
         end
@@ -152,9 +152,9 @@ do
             end
         end
     with
-        //wait for e_CALL_SET_ACTION and call C++'s set_action()        
-        every a in e_CALL_SET_ACTION do            
-            emit e_CHANGE_ACTION => a;            
+        //wait for e_CALL_SET_ACTION and call C++'s set_action()
+        every a in e_CALL_SET_ACTION do
+            emit e_CHANGE_ACTION => a;
         end
     with
         //emit e_CHANGE_ACTION => action;

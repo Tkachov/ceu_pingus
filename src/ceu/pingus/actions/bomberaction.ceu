@@ -8,8 +8,8 @@
 #include "../ipingu.ceu"
 
 native/pre do
-	##include "pingus/actions/bomber.hpp"
-	##define ABomber Actions::Bomber
+    ##include "pingus/actions/bomber.hpp"
+    ##define ABomber Actions::Bomber
 
     ##include "pingus/particles/pingu_particle_holder.hpp"
     ##include "pingus/colliders/pingu_collider.hpp"
@@ -27,12 +27,12 @@ native @pure _Colliders__PinguCollider(),
              _WorldObj__get_world_remove();
 
 class BomberAction with
-	interface IAction;
-do    
-	var _ABomber&? bomber = _PTR2REF((_ABomber*)pingu.set_ptr(_A_BOMBER));
+    interface IAction;
+do
+    var _ABomber&? bomber = _PTR2REF((_ABomber*)pingu.set_ptr(_A_BOMBER));
 
     par/or do
-    	every pingu.e_UPDATE_CALLED do
+        every pingu.e_UPDATE_CALLED do
             bomber.sprite.update();
 
             // Move the Pingu
@@ -42,27 +42,27 @@ do
         end
     with
         // If the Bomber hasn't 'exploded' yet...
-        every pingu.e_UPDATE_CALLED do                    
+        every pingu.e_UPDATE_CALLED do
             if bomber.sprite[bomber.pingu:direction].get_current_frame() > 9 then
                 break;
             end
 
             // ...and it has hit Water or Lava
             if bomber.rel_getpixel(0, -1) == _GT_WATER or bomber.rel_getpixel(0, -1) == _GT_LAVA then
-                emit pingu.e_CALL_SET_ACTION => _A_DROWN;                
+                escape _A_DROWN;
             end
 
             // ...and it has hit the ground too quickly
             if bomber.rel_getpixel(0, -1) != _GT_NOTHING and bomber.pingu:get_velocity().y > _deadly_velocity then
-                emit pingu.e_CALL_SET_ACTION => _A_SPLASHED;                
-            end            
+                escape _A_SPLASHED;
+            end
         end
 
         //Play sound at 10th frame (>9)
         _WorldObj__get_world():play_sound("plop", bomber.pingu:get_pos());
 
         //Wait for 13th frame to throw particles
-        every pingu.e_UPDATE_CALLED do    
+        every pingu.e_UPDATE_CALLED do
             if bomber.sprite[bomber.pingu:direction].get_current_frame() > 12 then
                 break;
             end
@@ -75,7 +75,7 @@ do
 
         //Wait for 13th frame again?..
         if bomber.sprite[bomber.pingu:direction].get_current_frame() < 13 then
-            every pingu.e_UPDATE_CALLED do     
+            every pingu.e_UPDATE_CALLED do
                 if bomber.sprite[bomber.pingu:direction].get_current_frame() >= 13 then
                     break;
                 end
@@ -86,18 +86,18 @@ do
             bomber.bomber_radius,
             (int)((int)bomber.pingu:get_x() - (bomber.bomber_radius.get_width()/2)),
             (int)((int)bomber.pingu:get_y() - 16 - (bomber.bomber_radius.get_width()/2))
-        );        
+        );
 
         // The pingu explode
         if not bomber.sprite[bomber.pingu:direction].is_finished() then
-            every pingu.e_UPDATE_CALLED do     
+            every pingu.e_UPDATE_CALLED do
                 if bomber.sprite[bomber.pingu:direction].is_finished() then
                     break;
                 end
             end
         end
 
-        //Be dead forever       
+        //Be dead forever
         loop do
             bomber.pingu:set_status(_PS_DEAD);
             await pingu.e_UPDATE_CALLED;

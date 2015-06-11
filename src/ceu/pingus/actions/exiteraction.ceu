@@ -16,7 +16,7 @@ end
 
 class ExiterAction with
     interface IAction;
-do    
+do
     var _AExiter&? exiter = _PTR2REF((_AExiter*)pingu.set_ptr(_A_EXITER));
 
     par/and do

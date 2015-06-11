@@ -13,7 +13,7 @@ end
 
 class DrownAction with
     interface IAction;
-do    
+do
     var _ADrown&? drown = _PTR2REF((_ADrown*)pingu.set_ptr(_A_DROWN));
 
     every pingu.e_UPDATE_CALLED do

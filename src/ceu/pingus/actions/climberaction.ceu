@@ -16,7 +16,7 @@ native @pure _head_collision_on_walk();
 
 class ClimberAction with
     interface IAction;
-do     
+do
     var _AClimber& climber = _PTR2REF((_AClimber*)pingu.set_ptr(_A_CLIMBER));
 
     every pingu.e_UPDATE_CALLED do
@@ -26,8 +26,6 @@ do
         if climber.rel_getpixel(0, 1) != _GT_NOTHING and climber.rel_getpixel(0, 1) != _GT_BRIDGE then
             climber.pingu:direction.change();
             escape _A_WALKER;
-            //emit pingu.e_CALL_SET_ACTION => _A_WALKER;
-            //continue;
         end
 
         //nothing above and there is still ground to walk on
@@ -48,9 +46,8 @@ do
             climber.pingu:direction.change();
         end
 
-        // Finish climbing.        
+        // Finish climbing.
         escape _A_WALKER;
-        //emit pingu.e_CALL_SET_ACTION => _A_WALKER;
     end
 end
 

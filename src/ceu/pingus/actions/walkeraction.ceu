@@ -14,7 +14,7 @@ end
 
 class WalkerAction with
     interface IAction;
-do    
+do
     var _AWalker& walker = _PTR2REF((_AWalker*)pingu.set_ptr(_A_WALKER));
 
     every pingu.e_UPDATE_CALLED do
@@ -42,9 +42,7 @@ do
         end
 
         if walker.rel_getpixel(0, -1) == _GT_WATER then
-            escape _A_DROWN;            
-            //emit pingu.e_CALL_SET_ACTION => _A_DROWN;
-            //continue;            
+            escape _A_DROWN;
         end
 
         var Vector3f last_pos;
@@ -72,8 +70,7 @@ do
             if found_ground then
                 walker.pingu:set_y(walker.pingu:get_y() - (float)level);
             else
-                escape _A_FALLER;                
-                //emit pingu.e_CALL_SET_ACTION => _A_FALLER;                
+                escape _A_FALLER;
             end
         end
 
@@ -127,18 +124,16 @@ do
                     if walker.pingu:has_wall_action() then
                         _log_debug("Pingu: We are in front of a wall, setting persistant action");
                         escape walker.pingu:get_wall_action();
-                        //emit pingu.e_CALL_SET_ACTION => walker.pingu:get_wall_action();
                     end
 
                     // No persitent action found, so change the direction
-                    walker.pingu:direction.change();                    
+                    walker.pingu:direction.change();
                 else
                     // We take the step, so that we are in the air
                     walker.pingu:set_x(walker.pingu:get_x() + (float)walker.pingu:direction);
 
                     // We reached a cliff
-                    escape _A_FALLER;                    
-                    //emit pingu.e_CALL_SET_ACTION => _A_FALLER;                
+                    escape _A_FALLER;
                 end
             end
         end

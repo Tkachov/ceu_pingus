@@ -13,7 +13,7 @@ end
 
 class DiggerAction with
     interface IAction;
-do    
+do
     var _ADigger& digger = _PTR2REF((_ADigger*)pingu.set_ptr(_A_DIGGER));
     var int delay_count = 0;
 
@@ -22,11 +22,11 @@ do
         delay_count = delay_count + 1;
 
         if digger.rel_getpixel(0, -1) == _GT_WATER or digger.rel_getpixel(0, -1) == _GT_LAVA then
-            emit pingu.e_CALL_SET_ACTION => _A_DROWN;
+            escape _A_DROWN;
         else
             if not digger.have_something_to_dig() then
                 digger.dig(true);
-                emit pingu.e_CALL_SET_ACTION => _A_WALKER;
+                escape _A_WALKER;
             else/if delay_count % 4 == 0 then
                 digger.dig(false);
             end

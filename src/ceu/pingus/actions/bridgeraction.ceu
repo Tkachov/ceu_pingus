@@ -15,7 +15,7 @@ end
 
 class BridgerAction with
     interface IAction;
-do    
+do
     var _ABridger&? bridger = _PTR2REF((_ABridger*)pingu.set_ptr(_A_BRIDGER));
 
     loop do
@@ -36,12 +36,10 @@ do
                     bridger.place_a_brick();
                 else
                     bridger.pingu:direction.change();
-                    emit pingu.e_CALL_SET_ACTION => _A_WALKER;
-                    break;
+                    escape _A_WALKER;
                 end
             else // Out of bricks
-                emit pingu.e_CALL_SET_ACTION => _A_WAITER;
-                break;
+                escape _A_WAITER;
             end
 
             if not bridger.build_sprite[bridger.pingu:direction].is_finished() then
@@ -72,8 +70,7 @@ do
             bridger.walk_one_step_up();
         else // We reached a wall...
             bridger.pingu:direction.change();
-            emit pingu.e_CALL_SET_ACTION => _A_WALKER;
-            break;
+            escape _A_WALKER;
         end
     end
 end
