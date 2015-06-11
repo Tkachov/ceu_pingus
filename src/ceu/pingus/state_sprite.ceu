@@ -1,0 +1,16 @@
+#ifndef STATE_SPRITE_CEU
+#define STATE_SPRITE_CEU
+
+native/pre do
+    ##include "pingus/state_sprite.hpp"
+    ##define D_LEFT Direction::LEFT
+    ##define D_RIGHT Direction::RIGHT
+    ##define make_sprite(a, b, c) Sprite(a+b+c)
+    ##define make_player_sprite(a, b) Sprite("pingus/player"+a+b)
+    ##define concat(a, b) a "" b
+end
+
+#define load_directions(action, suffix) action.sprite.load(_D_LEFT, _make_player_sprite(action.pingu:get_owner_str(), _concat(suffix, "left"))); \
+                                        action.sprite.load(_D_RIGHT, _make_player_sprite(action.pingu:get_owner_str(), _concat(suffix, "right")));
+
+#endif

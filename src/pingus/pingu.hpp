@@ -40,10 +40,10 @@ public:
 
       FIXME: different subvalues of PS_DEAD might be usefull (drowned,
       FIXME: splashed, smashed, etc.) */
-  enum PinguStatus { PS_ALIVE, PS_EXITED, PS_DEAD };  
+  enum PinguStatus { PS_ALIVE, PS_EXITED, PS_DEAD };
 
 private:
-  
+
   PinguAction* ceu_action;
 
   void replace_action(PinguAction* a);
@@ -188,10 +188,7 @@ public:
   /** Returns true if the pingu needs to catch another pingu */
   bool need_catch ();
 
-  void draw (SceneContext& gc);
   void apply_force (Vector3f);
-
-  void update();
 
   /** Indicate if the pingu's speed is above the deadly velocity */
   //bool is_tumbling () const;

@@ -3,6 +3,7 @@
 
 native/pre do
     ##include "pingus/pingu.hpp"
+    ##define PS_ALIVE Pingu::PS_ALIVE
     ##define PS_DEAD Pingu::PS_DEAD
     ##define PS_EXITED Pingu::PS_EXITED
 
@@ -19,8 +20,8 @@ interface IPingu with
     var _Pingu& me;
     var _PinguAction* action;
 
-    event int e_CALL_SET_ACTION;
     event void e_UPDATE_CALLED;
+    event _SceneContext* e_DRAW_CALLED;
 
     function (int) => _PinguAction* set_ptr;
 end

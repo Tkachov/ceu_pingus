@@ -24,13 +24,15 @@
 native/pre do
     ##include "pingus/pingu.hpp"
     ##define A_Enum(x) (ActionName::Enum)(x)
-    ##define del(ptr) delete ptr
+    ##define call_draw(a, gc) a->draw(*gc)
 end
 
-native @pure _del();
+native @pure _call_draw();
 
 input _PinguAction* PINGU_SET_ACTION;
-input _Pingu* PINGU_UPDATE;
+input void PINGU_UPDATE_ALL;
+input _SceneContext* PINGU_DRAW_WALKER;
+input _SceneContext* PINGU_DRAW_OTHERS;
 
 class Pingu with
     interface IPingu;
@@ -48,13 +50,7 @@ do
 
     par/or do
         //pass update() call
-        every p in PINGU_UPDATE do
-            if p == &me_ then
-                emit e_UPDATE_CALLED;
-            end
-        end
-    with
-        every e_UPDATE_CALLED do
+        every PINGU_UPDATE_ALL do
             if me_.status == _PS_DEAD then
                 continue;
             end
@@ -67,7 +63,28 @@ do
                 continue;
             end
 
-            //me_.action:update();
+            //action:update();
+            emit e_UPDATE_CALLED;
+        end
+    with
+        every gc in PINGU_DRAW_WALKER do
+            if me_.status != _PS_ALIVE then
+                continue;
+            end
+            if current_action == _A_WALKER then
+                emit e_DRAW_CALLED => gc;
+                _call_draw(action, gc);
+            end
+        end
+    with
+        every gc in PINGU_DRAW_WALKER do
+            if me_.status != _PS_ALIVE then
+                continue;
+            end
+            if current_action != _A_WALKER then
+                emit e_DRAW_CALLED => gc;
+                _call_draw(action, gc);
+            end
         end
     with
         //notify about set_action() call
@@ -81,9 +98,8 @@ do
         //wait for e_CHANGE_ACTION and create an instance
         loop do
             watching current_action in e_CHANGE_ACTION do
-                _printf("/start current_action == %d\n", current_action);
-
-                if current_action == _A_BASHER then
+                if false then
+                else/if current_action == _A_BASHER then
                     current_action = do BasherAction with
                         this.pingu = outer;
                     end;
@@ -147,17 +163,10 @@ do
                     await FOREVER;
                 end
 
-                _printf("/end current_action == %d\n", current_action);
-                await PINGU_UPDATE; //hack
+                await PINGU_UPDATE_ALL; //hack
             end
         end
     with
-        //wait for e_CALL_SET_ACTION and call C++'s set_action()
-        every a in e_CALL_SET_ACTION do
-            emit e_CHANGE_ACTION => a;
-        end
-    with
-        //emit e_CHANGE_ACTION => action;
         await SDL_QUIT;
     end
 end

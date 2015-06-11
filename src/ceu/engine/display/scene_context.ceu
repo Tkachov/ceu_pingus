@@ -1,0 +1,11 @@
+#ifndef SCENE_CONTEXT_CEU
+#define SCENE_CONTEXT_CEU
+
+native/pre do
+    ##include "engine/display/scene_context.hpp"
+    ##define gc_color_draw(gc, s, p) gc->color().draw(s, p)
+end
+
+native @pure _gc_color_draw();
+
+#endif

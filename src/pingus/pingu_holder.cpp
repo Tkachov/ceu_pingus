@@ -5,12 +5,12 @@
 //  it under the terms of the GNU General Public License as published by
 //  the Free Software Foundation, either version 3 of the License, or
 //  (at your option) any later version.
-//  
+//
 //  This program is distributed in the hope that it will be useful,
 //  but WITHOUT ANY WARRANTY; without even the implied warranty of
 //  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //  GNU General Public License for more details.
-//  
+//
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -62,58 +62,31 @@ PinguHolder::create_pingu (const Vector3f& pos, int owner_id)
 void
 PinguHolder::draw (SceneContext& gc)
 {
-  // Draw all walkers
-  for(std::list<Pingu*>::iterator pingu = pingus.begin();
-      pingu != pingus.end();
-      ++pingu)
-  {
-    if ((*pingu)->get_action() == ActionName::WALKER)
-      (*pingu)->draw (gc);
-  }
-
-  // Draw all non-walkers, so that they are easier spotable
-
-  // FIXME: This might be usefull, but looks kind of ugly in the game
-  // FIXME: Bridgers where walkers walk behind are an example of
-  // FIMME: uglyness. Either we rip this code out again or fix the
-  // FIXME: bridger so that it looks higher and better with walkers
-  // FIXME: behind him.
-  for(std::list<Pingu*>::iterator pingu = pingus.begin();
-      pingu != pingus.end();
-      ++pingu)
-  {
-    if ((*pingu)->get_action() != ActionName::WALKER)
-      (*pingu)->draw (gc);
-  }
+  SceneContext* g = &gc;
+  ceu_out_go(&CEUapp, CEU_IN_PINGU_DRAW_WALKER, &g);
+  ceu_out_go(&CEUapp, CEU_IN_PINGU_DRAW_OTHERS, &g);
 }
 
-void
-PinguHolder::update()
-{
+void PinguHolder::update() {
+  ceu_out_go(&CEUapp, CEU_IN_PINGU_UPDATE_ALL, 0);
+
   PinguIter pingu = pingus.begin();
+  while(pingu != pingus.end()) {
+    switch((*pingu)->get_status()) {
+      case Pingu::PS_EXITED:
+        number_of_exited += 1;
+      //no break;
 
-  while(pingu != pingus.end())
-  {
-    (*pingu)->update();
+      case Pingu::PS_DEAD:
+        // Removing the pingu and setting the iterator back to
+        // the correct position, no memory hole since pingus will
+        // keep track of the allocated Pingus
+        pingu = pingus.erase(pingu);
+      break;
 
-    // FIXME: The draw-loop is not the place for things like this,
-    // this belongs in the update loop
-    if ((*pingu)->get_status() == Pingu::PS_DEAD)
-    {
-      // Removing the dead pingu and setting the iterator back to
-      // the correct possition, no memory hole since pingus will
-      // keep track of the allocated Pingus
-      pingu = pingus.erase(pingu);
-    }
-    else if ((*pingu)->get_status() == Pingu::PS_EXITED)
-    {
-      number_of_exited += 1;
-      pingu = pingus.erase(pingu);
-    }
-    else
-    {
-      // move to the next Pingu
-      ++pingu;
+      default:
+        // move to the next Pingu
+        ++pingu;
     }
   }
 }

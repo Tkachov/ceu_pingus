@@ -272,17 +272,6 @@ Pingu::dist(int x, int y)
                      (p.y - static_cast<float>(y)) * (p.y - static_cast<float>(y))));
 }
 
-// Let the pingu do his job (i.e. walk his way)
-void Pingu::update() {
-  Pingu* self = this;
-  ceu_out_go(&CEUapp, CEU_IN_PINGU_UPDATE, &self);
-}
-
-// Draws the pingu on the screen with the given offset
-void Pingu::draw(SceneContext& gc) {
-  get_ceu_action()->draw(gc);
-}
-
 int
 Pingu::rel_getpixel(int x, int y)
 {

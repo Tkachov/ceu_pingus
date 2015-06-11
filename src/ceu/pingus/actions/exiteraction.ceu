@@ -3,8 +3,10 @@
 
 #include "../../c.ceu"
 #include "../../sdl.ceu"
+#include "../../engine/display/scene_context.ceu"
 #include "../iaction.ceu"
 #include "../ipingu.ceu"
+#include "../state_sprite.ceu"
 
 native/pre do
     ##include "pingus/actions/exiter.hpp"
@@ -18,6 +20,7 @@ class ExiterAction with
     interface IAction;
 do
     var _AExiter&? exiter = _PTR2REF((_AExiter*)pingu.set_ptr(_A_EXITER));
+    load_directions(exiter, "/exit/");
 
     par/and do
         every pingu.e_UPDATE_CALLED do
@@ -28,6 +31,10 @@ do
                     exiter.pingu:set_status(_PS_EXITED);
                 end
             end
+        end
+    with
+        every gc in pingu.e_DRAW_CALLED do
+            _gc_color_draw(gc, exiter.sprite[exiter.pingu:direction], exiter.pingu:get_pos());
         end
     with
         await pingu.e_UPDATE_CALLED;
