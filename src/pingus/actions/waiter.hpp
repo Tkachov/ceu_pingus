@@ -25,18 +25,15 @@ namespace Actions {
 /** A Waiting action for the bridger, it gets activated when the
     bridger is out of bridges. It then waits two seconds (meanwhile doing a
     funny animation) and then he changes back to a normal walker. */
-class Waiter : public PinguAction
-{
+class Waiter: public PinguAction {
 private:
   Sprite sprite;
 
 public:
-  Waiter (Pingu*);
-
-  ActionName::Enum get_type () const { return ActionName::WAITER; }
-
-  void draw (SceneContext& gc);
+  Waiter(Pingu* p): PinguAction(p), sprite() {};
+  void draw (SceneContext& gc) {};
   void update() {};
+  ActionName::Enum get_type () const { return ActionName::WAITER; }
 
 private:
   Waiter (const Waiter&);
