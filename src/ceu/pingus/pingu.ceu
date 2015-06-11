@@ -148,6 +148,7 @@ do
                 end
 
                 _printf("/end current_action == %d\n", current_action);
+                await PINGU_UPDATE; //hack
             end
         end
     with

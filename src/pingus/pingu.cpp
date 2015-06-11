@@ -55,8 +55,7 @@ using namespace Actions;
 
 // Init a pingu at the given position while falling
 Pingu::Pingu (int arg_id, const Vector3f& arg_pos, int owner):
-  ceu_action(0),
-  backup_action(0),
+  ceu_action(0),  
   wall_action(),
   wall_action_set(false),
   fall_action(),
@@ -86,19 +85,13 @@ Pingu::~Pingu ()
 }
 
 void Pingu::replace_action(PinguAction* a) {
-  printf("delete %d; \t ", backup_action);
-  delete backup_action;
-  backup_action = ceu_action;
+  PinguAction* backup_action = ceu_action;
   ceu_action = a;
-  printf("alive %d & %d.\n", backup_action, ceu_action);
+  delete backup_action;  
 }
 
 PinguAction* Pingu::get_ceu_action() {
   return ceu_action;
-}
-
-void Pingu::set_ceu_action(PinguAction* a) {
-  //*ceu_action = a;
 }
 
 unsigned int
@@ -213,7 +206,7 @@ bool Pingu::request_set_action(ActionName::Enum action_name) {
 void
 Pingu::set_action (ActionName::Enum action_name)
 {
-  set_action(create_action2(action_name));
+  set_action(create_action(action_name).get());
 }
 
 // Sets an action without any checking

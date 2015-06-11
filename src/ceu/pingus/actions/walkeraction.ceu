@@ -42,9 +42,9 @@ do
         end
 
         if walker.rel_getpixel(0, -1) == _GT_WATER then
-            //escape _A_DROWN;            
-            emit pingu.e_CALL_SET_ACTION => _A_DROWN;
-            continue;            
+            escape _A_DROWN;            
+            //emit pingu.e_CALL_SET_ACTION => _A_DROWN;
+            //continue;            
         end
 
         var Vector3f last_pos;
@@ -72,8 +72,8 @@ do
             if found_ground then
                 walker.pingu:set_y(walker.pingu:get_y() - (float)level);
             else
-                //escape _A_FALLER;                
-                emit pingu.e_CALL_SET_ACTION => _A_FALLER;                
+                escape _A_FALLER;                
+                //emit pingu.e_CALL_SET_ACTION => _A_FALLER;                
             end
         end
 
@@ -126,8 +126,8 @@ do
                     // We reached a wall
                     if walker.pingu:has_wall_action() then
                         _log_debug("Pingu: We are in front of a wall, setting persistant action");
-                        //escape walker.pingu:get_wall_action();
-                        emit pingu.e_CALL_SET_ACTION => walker.pingu:get_wall_action();
+                        escape walker.pingu:get_wall_action();
+                        //emit pingu.e_CALL_SET_ACTION => walker.pingu:get_wall_action();
                     end
 
                     // No persitent action found, so change the direction
@@ -137,8 +137,8 @@ do
                     walker.pingu:set_x(walker.pingu:get_x() + (float)walker.pingu:direction);
 
                     // We reached a cliff
-                    //escape _A_FALLER;                    
-                    emit pingu.e_CALL_SET_ACTION => _A_FALLER;                
+                    escape _A_FALLER;                    
+                    //emit pingu.e_CALL_SET_ACTION => _A_FALLER;                
                 end
             end
         end

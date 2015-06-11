@@ -25,9 +25,9 @@ do
         //there's something above
         if climber.rel_getpixel(0, 1) != _GT_NOTHING and climber.rel_getpixel(0, 1) != _GT_BRIDGE then
             climber.pingu:direction.change();
-            //escape _A_WALKER;
-            emit pingu.e_CALL_SET_ACTION => _A_WALKER;
-            continue;
+            escape _A_WALKER;
+            //emit pingu.e_CALL_SET_ACTION => _A_WALKER;
+            //continue;
         end
 
         //nothing above and there is still ground to walk on
@@ -49,8 +49,8 @@ do
         end
 
         // Finish climbing.        
-        //escape _A_WALKER;
-        emit pingu.e_CALL_SET_ACTION => _A_WALKER;
+        escape _A_WALKER;
+        //emit pingu.e_CALL_SET_ACTION => _A_WALKER;
     end
 end
 

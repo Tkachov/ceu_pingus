@@ -23,8 +23,6 @@
 #include "pingus/direction.hpp"
 #include "pingus/action_name.hpp"
 
-struct CEU_Pingu;
-
 class ActionHolder;
 class PinguAction;
 class SceneContext;
@@ -45,10 +43,8 @@ public:
   enum PinguStatus { PS_ALIVE, PS_EXITED, PS_DEAD };  
 
 private:
-
-  //PinguAction** ceu_action;
+  
   PinguAction* ceu_action;
-  PinguAction* backup_action;
 
   void replace_action(PinguAction* a);
 
@@ -100,7 +96,6 @@ public:
   ~Pingu ();
 
   PinguAction* get_ceu_action();
-  void set_ceu_action(PinguAction*);
 
   /** Return the logical pingus position, this is the position which
       is used for collision detection to the ground (the pingus
