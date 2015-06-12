@@ -27,7 +27,6 @@ namespace Actions {
 class Bridger : public PinguAction
 {
 private:
-  enum Mode { B_WALKING, B_BUILDING } mode;
   enum { MAX_BRICKS = 15 };
   enum { brick_length = 16 };
 
@@ -49,8 +48,7 @@ public:
   ActionName::Enum get_type () const { return ActionName::BRIDGER; }
 
   void update() {};
-
-  void   draw (SceneContext& gc);
+  void draw(SceneContext& gc) {};
 
   bool   way_is_free ();
   bool   brick_placement_allowed (void);

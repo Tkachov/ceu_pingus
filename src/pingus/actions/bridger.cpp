@@ -26,9 +26,8 @@
 
 namespace Actions {
 
-Bridger::Bridger (Pingu* p) :
+Bridger::Bridger(Pingu* p):
   PinguAction(p),
-  mode(B_BUILDING),
   walk_sprite(),
   build_sprite(),
   brick_l("other/brick_left"),
@@ -36,49 +35,7 @@ Bridger::Bridger (Pingu* p) :
   bricks(MAX_BRICKS),
   block_build(false),
   name(_("Bridger") + std::string(" (" + StringUtil::to_string(bricks) + ")"))
-{
-  walk_sprite.load (Direction::LEFT,  Sprite("pingus/player" +
-                                             pingu->get_owner_str() + "/bridger_walk/left"));
-  walk_sprite.load (Direction::RIGHT, Sprite("pingus/player" +
-                                             pingu->get_owner_str() + "/bridger_walk/right"));
-
-  build_sprite.load(Direction::LEFT,  Sprite("pingus/player" +
-                                             pingu->get_owner_str() + "/bridger/left"));
-  build_sprite.load(Direction::RIGHT, Sprite("pingus/player" +
-                                             pingu->get_owner_str() + "/bridger/right"));
-}
-
-void
-Bridger::draw(SceneContext& gc)
-{
-  int x_offset = 6;
-  int y_offset = 4;
-
-  if (bricks == MAX_BRICKS) {
-    x_offset = -4;
-    y_offset = 0;
-
-  } else if (bricks == MAX_BRICKS - 1) {
-    x_offset = 0;
-    y_offset = 1;
-  } else if (bricks == MAX_BRICKS - 2) {
-    x_offset = 3;
-    y_offset = 2;
-  }
-
-  switch (mode)
-  {
-    case B_BUILDING:
-      gc.color().draw(build_sprite[pingu->direction], Vector3f(pingu->get_pos().x - static_cast<float>(x_offset * pingu->direction),
-                                                               pingu->get_pos().y + static_cast<float>(y_offset)));
-      break;
-
-    case B_WALKING:
-      gc.color().draw(walk_sprite[pingu->direction], Vector3f(pingu->get_pos().x - static_cast<float>(x_offset * pingu->direction),
-                                                              pingu->get_pos().y + static_cast<float>(y_offset)));
-      break;
-  }
-}
+{}
 
 // way_is_free() needs to stop BRIDGERS from getting stuck between a brick
 // and the ceiling.  The routine also stops cases of Bridgers building up but

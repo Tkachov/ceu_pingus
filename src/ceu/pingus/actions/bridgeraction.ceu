@@ -3,14 +3,15 @@
 
 #include "../../c.ceu"
 #include "../../sdl.ceu"
+#include "../../engine/display/scene_context.ceu"
 #include "../iaction.ceu"
 #include "../ipingu.ceu"
+#include "../state_sprite.ceu"
 
 native/pre do
     ##include "pingus/actions/bridger.hpp"
     ##define ABridger Actions::Bridger
-    ##define B_BUILDING Actions::Bridger::Mode::B_BUILDING
-    ##define B_WALKING Actions::Bridger::Mode::B_WALKING
+    ##define AB_MAX_BRICKS Actions::Bridger::MAX_BRICKS
 end
 
 class BridgerAction with
@@ -18,11 +19,41 @@ class BridgerAction with
 do
     var _ABridger&? bridger = _PTR2REF((_ABridger*)pingu.set_ptr(_A_BRIDGER));
 
+    load_directions(bridger.walk_sprite, bridger, "/bridger_walk/");
+    load_directions(bridger.build_sprite, bridger, "/bridger/");
+
     loop do
-        //B_BUILDING first
+        var float x_offset = 6;
+        var float y_offset = 4;
+
+        if bridger.bricks == _AB_MAX_BRICKS then
+            x_offset = -4;
+            y_offset = 0;
+        else/if bridger.bricks == _AB_MAX_BRICKS-1 then
+            x_offset = 0;
+            y_offset = 1;
+        else/if bridger.bricks == _AB_MAX_BRICKS-2 then
+            x_offset = 3;
+            y_offset = 2;
+        end
+
+        x_offset = x_offset * (float)bridger.pingu:direction;
+
+        //building step
         par/or do
             every pingu.e_UPDATE_CALLED do
                 bridger.build_sprite[bridger.pingu:direction].update();
+            end
+        with
+            every gc in pingu.e_DRAW_CALLED do
+                _gc_color_draw(
+                    gc,
+                    bridger.build_sprite[bridger.pingu:direction],
+                    _Vector3f(
+                        bridger.pingu:get_pos().x - x_offset,
+                        bridger.pingu:get_pos().y + y_offset
+                    )
+                );
             end
         with
             every pingu.e_UPDATE_CALLED do
@@ -50,22 +81,33 @@ do
                 end
             end
 
-            bridger.mode = _B_WALKING; //this is for C++'s draw() only
             bridger.build_sprite[bridger.pingu:direction].restart();
         end
 
-        //B_WALKING second
-        every pingu.e_UPDATE_CALLED do
-            //original FIXME: Dangerous! might not be fixed timing
-            if bridger.walk_sprite[bridger.pingu:direction].is_finished() then
-                break;
-            end
+        //walking step
+        par/or do
+            every pingu.e_UPDATE_CALLED do
+                //original FIXME: Dangerous! might not be fixed timing
+                if bridger.walk_sprite[bridger.pingu:direction].is_finished() then
+                    break;
+                end
 
-            bridger.walk_sprite.update();
+                bridger.walk_sprite.update();
+            end
+        with
+            every gc in pingu.e_DRAW_CALLED do
+                _gc_color_draw(
+                    gc,
+                    bridger.walk_sprite[bridger.pingu:direction],
+                    _Vector3f(
+                        bridger.pingu:get_pos().x - x_offset,
+                        bridger.pingu:get_pos().y + y_offset
+                    )
+                );
+            end
         end
 
         if bridger.way_is_free() then
-            bridger.mode = _B_BUILDING; //C++ draw()
             bridger.walk_sprite[bridger.pingu:direction].restart();
             bridger.walk_one_step_up();
         else // We reached a wall...
