@@ -1,0 +1,54 @@
+#ifndef ANGELACTION_CEU
+#define ANGELACTION_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../../engine/display/scene_context.ceu"
+#include "../iaction.ceu"
+#include "../ipingu.ceu"
+#include "../state_sprite.ceu"
+
+native/pre do
+    ##include "pingus/actions/angel.hpp"
+    ##define AAngel Actions::Angel
+
+    ##include "engine/sound/sound.hpp"
+    ##define Sound_PingusSound_play_sound Sound::PingusSound::play_sound
+
+    ##include "pingus/globals.hpp"
+    ##define globals__game_speed globals::game_speed
+    ##define Math__sin Math::sin
+end
+
+class AngelAction with
+    interface IAction;
+do
+    var _AAngel&? angel = _PTR2REF((_AAngel*)pingu.set_ptr(_A_ANGEL));
+
+    var float counter = 0;
+    var float x_pos = angel.pingu:get_x();
+    finalize
+        angel.sprite = _make_sprite("pingus/player", angel.pingu:get_owner_str(), "/angel");
+    with end;
+
+    par do
+        every pingu.e_UPDATE_CALLED do
+            angel.sprite.update();
+
+            counter = counter + (float)_globals__game_speed;
+            //angel.pingu:set_pos(x_pos + 20*_Math__sin(counter*3.0), angel.pingu:get_y() - 50.0*0.025);
+            angel.pingu:set_pos(x_pos + 4.0*_Math__sin(counter*0.01), (float)(angel.pingu:get_y() - 40.0*0.025));
+
+            // Out of screen, let the pingu die
+            if angel.pingu:get_y() < -32 then
+                angel.pingu:set_status(_PS_DEAD);
+            end
+        end
+    with
+        every gc in pingu.e_DRAW_CALLED do
+            _gc_color_draw(gc, angel.sprite, angel.pingu:get_pos());
+        end
+    end
+end
+
+#endif
