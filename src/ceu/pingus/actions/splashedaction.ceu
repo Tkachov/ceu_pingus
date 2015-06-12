@@ -22,7 +22,11 @@ class SplashedAction with
 do
     var _ASplashed&? splashed = _PTR2REF((_ASplashed*)pingu.set_ptr(_A_SPLASHED));
 
-    par/and do
+    par do
+        every gc in pingu.e_DRAW_CALLED do
+            _call_draw(splashed, gc);
+        end
+    with
         every pingu.e_UPDATE_CALLED do
             splashed.sprite.update();
 

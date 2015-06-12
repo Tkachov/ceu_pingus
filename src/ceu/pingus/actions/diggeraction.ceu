@@ -14,21 +14,27 @@ end
 class DiggerAction with
     interface IAction;
 do
-    var _ADigger& digger = _PTR2REF((_ADigger*)pingu.set_ptr(_A_DIGGER));
+    var _ADigger&? digger = _PTR2REF((_ADigger*)pingu.set_ptr(_A_DIGGER));
     var int delay_count = 0;
 
-    every pingu.e_UPDATE_CALLED do
-        digger.sprite.update();
-        delay_count = delay_count + 1;
+    par do
+        every gc in pingu.e_DRAW_CALLED do
+            _call_draw(digger, gc);
+        end
+    with
+        every pingu.e_UPDATE_CALLED do
+            digger.sprite.update();
+            delay_count = delay_count + 1;
 
-        if digger.rel_getpixel(0, -1) == _GT_WATER or digger.rel_getpixel(0, -1) == _GT_LAVA then
-            escape _A_DROWN;
-        else
-            if not digger.have_something_to_dig() then
-                digger.dig(true);
-                escape _A_WALKER;
-            else/if delay_count % 4 == 0 then
-                digger.dig(false);
+            if digger.rel_getpixel(0, -1) == _GT_WATER or digger.rel_getpixel(0, -1) == _GT_LAVA then
+                escape _A_DROWN;
+            else
+                if not digger.have_something_to_dig() then
+                    digger.dig(true);
+                    escape _A_WALKER;
+                else/if delay_count % 4 == 0 then
+                    digger.dig(false);
+                end
             end
         end
     end

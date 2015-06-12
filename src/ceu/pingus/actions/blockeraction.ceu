@@ -16,13 +16,19 @@ class BlockerAction with
 do
     var _ABlocker&? blocker = _PTR2REF((_ABlocker*)pingu.set_ptr(_A_BLOCKER));
 
-    every pingu.e_UPDATE_CALLED do
-        if not blocker.standing_on_ground() then
-            escape _A_FALLER;
+    par do
+        every gc in pingu.e_DRAW_CALLED do
+            _call_draw(blocker, gc);
         end
+    with
+        every pingu.e_UPDATE_CALLED do
+            if not blocker.standing_on_ground() then
+                escape _A_FALLER;
+            end
 
-        blocker.catch_pingus();
-        blocker.sprite.update();
+            blocker.catch_pingus();
+            blocker.sprite.update();
+        end
     end
 end
 

@@ -29,10 +29,7 @@
 native/pre do
     ##include "pingus/pingu.hpp"
     ##define A_Enum(x) (ActionName::Enum)(x)
-    ##define call_draw(a, gc) a->draw(*gc)
 end
-
-native @pure _call_draw();
 
 input _PinguAction* PINGU_SET_ACTION;
 input void PINGU_UPDATE_ALL;
@@ -85,7 +82,6 @@ do
             end
             if current_action == _A_WALKER then
                 emit e_DRAW_CALLED => gc;
-                _call_draw(action, gc);
             end
         end
     with
@@ -95,7 +91,6 @@ do
             end
             if current_action != _A_WALKER then
                 emit e_DRAW_CALLED => gc;
-                _call_draw(action, gc);
             end
         end
     with

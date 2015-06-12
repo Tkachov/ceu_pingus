@@ -21,7 +21,11 @@ do
     var _ABasher&? basher = _PTR2REF((_ABasher*)pingu.set_ptr(_A_BASHER));
     var bool odd_frame = true; //-1th, I hope first block will execute not odd_frame faster
 
-    par/or do
+    par do
+        every gc in pingu.e_DRAW_CALLED do
+            _call_draw(basher, gc);
+        end
+    with
         every pingu.e_UPDATE_CALLED do
             basher.sprite[basher.pingu:direction].update();
             odd_frame = not odd_frame;

@@ -26,7 +26,7 @@ do
     // Reset the velocity
     walker.pingu:set_velocity(_Vector3f());
 
-    par/or do
+    par do
         every gc in pingu.e_DRAW_CALLED do
             _gc_color_draw(gc, walker.walker[walker.pingu:direction], walker.pingu:get_pos());
 

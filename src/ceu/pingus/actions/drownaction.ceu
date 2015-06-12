@@ -16,11 +16,17 @@ class DrownAction with
 do
     var _ADrown&? drown = _PTR2REF((_ADrown*)pingu.set_ptr(_A_DROWN));
 
-    every pingu.e_UPDATE_CALLED do
-        drown.sprite[drown.pingu:direction].update();
+    par do
+        every gc in pingu.e_DRAW_CALLED do
+            _call_draw(drown, gc);
+        end
+    with
+        every pingu.e_UPDATE_CALLED do
+            drown.sprite[drown.pingu:direction].update();
 
-        if drown.sprite[drown.pingu:direction].is_finished() then
-            drown.pingu:set_status(_PS_DEAD);
+            if drown.sprite[drown.pingu:direction].is_finished() then
+                drown.pingu:set_status(_PS_DEAD);
+            end
         end
     end
 end

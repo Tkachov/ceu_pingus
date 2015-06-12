@@ -33,7 +33,7 @@ do
     load_directions(faller.faller, faller, "/faller/");
     load_directions(faller.tumbler, faller, "/tumbler/");
 
-    par/or do
+    par do
         every gc in pingu.e_DRAW_CALLED do
             if faller.is_tumbling() then
                 _gc_color_draw(gc, faller.tumbler[faller.pingu:direction], faller.pingu:get_pos());

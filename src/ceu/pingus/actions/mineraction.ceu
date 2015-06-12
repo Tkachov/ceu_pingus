@@ -20,7 +20,11 @@ do
     var _AMiner&? miner = _PTR2REF((_AMiner*)pingu.set_ptr(_A_MINER));
     var int delay_count = 0;
 
-    par/or do
+    par do
+        every gc in pingu.e_DRAW_CALLED do
+            _call_draw(miner, gc);
+        end
+    with
         every pingu.e_UPDATE_CALLED do
             miner.sprite[miner.pingu:direction].update();
         end

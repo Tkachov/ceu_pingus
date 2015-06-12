@@ -22,7 +22,7 @@ do
         waiter.sprite = _make_sprite("pingus/player", waiter.pingu:get_owner_str(), "/waiter/left");
     with end;
 
-    par/or do
+    par do
         every pingu.e_UPDATE_CALLED do
               waiter.sprite.update();
         end
