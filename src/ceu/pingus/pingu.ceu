@@ -18,6 +18,7 @@
 #include "actions/jumperaction.ceu"
 #include "actions/mineraction.ceu"
 #include "actions/splashedaction.ceu"
+#include "actions/supermanaction.ceu"
 #include "actions/waiteraction.ceu"
 #include "actions/walkeraction.ceu"
 #include "iaction.ceu"
@@ -124,6 +125,7 @@ do
                     DO_ACTION(_A_JUMPER, JumperAction)
                     DO_ACTION(_A_MINER, MinerAction)
                     DO_ACTION(_A_SPLASHED, SplashedAction)
+                    DO_ACTION(_A_SUPERMAN, SupermanAction)
                     DO_ACTION(_A_WAITER, WaiterAction)
                     DO_ACTION(_A_WALKER, WalkerAction)
                 else

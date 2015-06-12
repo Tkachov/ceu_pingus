@@ -1,0 +1,41 @@
+#ifndef SUPERMANACTION_CEU
+#define SUPERMANACTION_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../../engine/display/scene_context.ceu"
+#include "../iaction.ceu"
+#include "../ipingu.ceu"
+#include "../state_sprite.ceu"
+
+native/pre do
+    ##include "pingus/actions/superman.hpp"
+    ##define ASuperman Actions::Superman
+end
+
+class SupermanAction with
+    interface IAction;
+do
+    var _ASuperman&? superman = _PTR2REF((_ASuperman*)pingu.set_ptr(_A_SUPERMAN));
+
+    finalize
+        superman.sprite = _make_sprite("pingus/player", superman.pingu:get_owner_str(), "/superman");
+    with end;
+
+    par do
+        every pingu.e_UPDATE_CALLED do
+            superman.sprite.update();
+            superman.pingu:set_pos((float)(superman.pingu:get_x() + 40.0*0.025), superman.pingu:get_y() - 200.0*0.025);
+
+            if superman.pingu:get_y() < -32 then
+                superman.pingu:set_status(_PS_DEAD);
+            end
+        end
+    with
+        every gc in pingu.e_DRAW_CALLED do
+            _gc_color_draw(gc, superman.sprite, superman.pingu:get_pos());
+        end
+    end
+end
+
+#endif
