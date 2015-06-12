@@ -3,9 +3,11 @@
 
 #include "../../c.ceu"
 #include "../../sdl.ceu"
+#include "../../engine/display/scene_context.ceu"
 #include "../../math/vector3f.ceu"
 #include "../iaction.ceu"
 #include "../ipingu.ceu"
+#include "../state_sprite.ceu"
 
 native/pre do
     ##include "pingus/actions/floater.hpp"
@@ -17,9 +19,13 @@ class FloaterAction with
 do
     var _AFloater&? floater = _PTR2REF((_AFloater*)pingu.set_ptr(_A_FLOATER));
 
+    finalize
+        floater.sprite = _make_sprite("pingus/player", floater.pingu:get_owner_str(), "/floater/left");
+    with end;
+
     par do
         every gc in pingu.e_DRAW_CALLED do
-            _call_draw(floater, gc);
+            _gc_color_draw(gc, floater.sprite, floater.pingu:get_pos());
         end
     with
         every pingu.e_UPDATE_CALLED do

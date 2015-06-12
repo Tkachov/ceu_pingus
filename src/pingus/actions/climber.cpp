@@ -22,16 +22,6 @@
 
 namespace Actions {
 
-Climber::Climber (Pingu* p) :
-  PinguAction(p),
-  sprite()
-{
-  sprite.load(Direction::LEFT,  Sprite("pingus/player" +
-                                       pingu->get_owner_str() + "/climber/left"));
-  sprite.load(Direction::RIGHT, Sprite("pingus/player" +
-                                       pingu->get_owner_str() + "/climber/right"));
-}
-
 Vector3f
 Climber::get_center_pos() const
 {
@@ -43,12 +33,6 @@ Climber::get_center_pos() const
   {
     return pingu->get_pos() + Vector3f(-16, 0);
   }
-}
-
-void
-Climber::draw (SceneContext& gc)
-{
-  gc.color().draw(sprite[pingu->direction], pingu->get_pos());
 }
 
 bool

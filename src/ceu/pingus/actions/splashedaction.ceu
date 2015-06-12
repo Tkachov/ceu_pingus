@@ -3,9 +3,11 @@
 
 #include "../../c.ceu"
 #include "../../sdl.ceu"
+#include "../../engine/display/scene_context.ceu"
 #include "../../math/vector3f.ceu"
 #include "../iaction.ceu"
 #include "../ipingu.ceu"
+#include "../state_sprite.ceu"
 
 native/pre do
     ##include "pingus/actions/splashed.hpp"
@@ -22,9 +24,13 @@ class SplashedAction with
 do
     var _ASplashed&? splashed = _PTR2REF((_ASplashed*)pingu.set_ptr(_A_SPLASHED));
 
+    finalize
+        splashed.sprite = _make_sprite("pingus/player", splashed.pingu:get_owner_str(), "/splat");
+    with end;
+
     par do
         every gc in pingu.e_DRAW_CALLED do
-            _call_draw(splashed, gc);
+            _gc_color_draw(gc, splashed.sprite, splashed.pingu:get_pos());
         end
     with
         every pingu.e_UPDATE_CALLED do

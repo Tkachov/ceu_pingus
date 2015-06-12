@@ -30,12 +30,9 @@ public:
   Exiter(Pingu* p): PinguAction(p), sprite() {};
   ActionName::Enum get_type() const { return ActionName::EXITER; }
 
-  void draw(SceneContext& gc) {};
-  void update() {};
-
 private:
-  Exiter (const Exiter&);
-  Exiter& operator= (const Exiter&);
+  Exiter(const Exiter&);
+  Exiter& operator=(const Exiter&);
 };
 
 } // namespace Actions

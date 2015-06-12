@@ -38,9 +38,6 @@ Faller::Faller (Pingu* p) :
 
 Faller::~Faller() {}
 
-void Faller::update() {}
-void Faller::draw (SceneContext& gc) {}
-
 bool
 Faller::is_tumbling () const
 {

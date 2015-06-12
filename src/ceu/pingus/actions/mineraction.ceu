@@ -3,8 +3,10 @@
 
 #include "../../c.ceu"
 #include "../../sdl.ceu"
+#include "../../engine/display/scene_context.ceu"
 #include "../iaction.ceu"
 #include "../ipingu.ceu"
+#include "../state_sprite.ceu"
 
 native/pre do
     ##include "pingus/actions/miner.hpp"
@@ -20,9 +22,11 @@ do
     var _AMiner&? miner = _PTR2REF((_AMiner*)pingu.set_ptr(_A_MINER));
     var int delay_count = 0;
 
+    load_directions(miner.sprite, miner, "/miner/");
+
     par do
         every gc in pingu.e_DRAW_CALLED do
-            _call_draw(miner, gc);
+            _gc_color_draw(gc, miner.sprite[miner.pingu:direction], miner.pingu:get_pos());
         end
     with
         every pingu.e_UPDATE_CALLED do

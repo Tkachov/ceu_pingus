@@ -22,24 +22,19 @@
 
 namespace Actions {
 
-class Drown : public PinguAction
-{
+class Drown: public PinguAction {
 private:
   StateSprite sprite;
 
 public:
-  Drown (Pingu* p);
+  Drown(Pingu* p): PinguAction(p), sprite() {};
+  ActionName::Enum get_type() const { return ActionName::DROWN; }
 
-  ActionName::Enum get_type () const { return ActionName::DROWN; }
-
-  void draw (SceneContext& gc);
-  void update() {};
-
-  bool catchable () { return false; }
+  bool catchable() { return false; }
 
 private:
-  Drown (const Drown&);
-  Drown& operator= (const Drown&);
+  Drown(const Drown&);
+  Drown& operator=(const Drown&);
 };
 
 } // namespace Actions

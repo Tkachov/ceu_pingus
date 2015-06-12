@@ -12,6 +12,7 @@ native/pre do
     ##define GT_NOTHING Groundtype::GP_NOTHING
     ##define GT_WATER Groundtype::GP_WATER
     ##define GT_BRIDGE Groundtype::GP_BRIDGE
+    ##define GT_GROUND Groundtype::GP_GROUND
     ##define GT_LAVA Groundtype::GP_LAVA
     ##define GT_SOLID Groundtype::GP_SOLID
 end

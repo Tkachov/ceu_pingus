@@ -23,37 +23,11 @@
 
 namespace Actions {
 
-Blocker::Blocker(Pingu* p) :
-  PinguAction(p),
-  sprite()
-{
-  sprite.load(Direction::LEFT,  "pingus/player" + pingu->get_owner_str() + "/blocker/left");
-  sprite.load(Direction::RIGHT, "pingus/player" + pingu->get_owner_str() + "/blocker/right");
-
-  if (   rel_getpixel(0,-1)  ==  Groundtype::GP_NOTHING
-         && rel_getpixel(0, -2) ==  Groundtype::GP_GROUND)
-  {
-    pingu->set_y(pingu->get_y() + 1);
-  }
-  else if (   rel_getpixel(0,-1) ==  Groundtype::GP_NOTHING
-              && rel_getpixel(0,-2) ==  Groundtype::GP_NOTHING
-              && rel_getpixel(0,-3) ==  Groundtype::GP_GROUND)
-  {
-    pingu->set_y(pingu->get_y() + 2);
-  }
-}
-
 void Blocker::catch_pingus() {
   // FIXME: PinguHolder iterations should be handled otherwise
   PinguHolder* pingus = WorldObj::get_world()->get_pingus();
   for(PinguIter i = pingus->begin(); i != pingus->end(); ++i)
     catch_pingu(*i);
-}
-
-void
-Blocker::draw (SceneContext& gc)
-{
-  gc.color().draw(sprite[pingu->direction], pingu->get_pos());
 }
 
 bool

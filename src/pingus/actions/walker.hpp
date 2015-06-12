@@ -31,8 +31,6 @@ private:
 
 public:
   Walker(Pingu* p): PinguAction(p), walker(), floaterlayer() {};
-  void draw(SceneContext& gc) {};
-  void update() {};
   ActionName::Enum get_type() const { return ActionName::WALKER; }
 
 private:

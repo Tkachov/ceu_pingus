@@ -72,7 +72,6 @@ do
                 continue;
             end
 
-            //action:update();
             emit e_UPDATE_CALLED;
         end
     with

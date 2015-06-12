@@ -23,8 +23,7 @@
 
 namespace Actions {
 
-class Miner : public PinguAction
-{
+class Miner: public PinguAction {
 private:
   CollisionMask miner_radius;
   CollisionMask miner_radius_left;
@@ -34,19 +33,16 @@ private:
 
 public:
   Miner (Pingu* p);
-  virtual ~Miner () {}
+  virtual ~Miner() {};
 
-  ActionName::Enum get_type () const { return ActionName::MINER; }
-
-  void draw (SceneContext& gc);
-  void update() {};
+  ActionName::Enum get_type() const { return ActionName::MINER; }
 
 private:
   void mine(bool final);
 
 private:
-  Miner (const Miner&);
-  Miner& operator= (const Miner&);
+  Miner(const Miner&);
+  Miner& operator=(const Miner&);
 };
 
 } // namespace Actions

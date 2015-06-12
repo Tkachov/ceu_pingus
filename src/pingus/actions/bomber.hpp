@@ -39,14 +39,11 @@ public:
 
   ActionName::Enum get_type() const { return ActionName::BOMBER; }
 
-  bool change_allowed (ActionName::Enum action) { return false; }
-
-  void draw(SceneContext& gc) {};
-  void update() {};
+  bool change_allowed(ActionName::Enum action) { return false; }
 
 private:
-  Bomber (const Bomber&);
-  Bomber& operator= (const Bomber&);
+  Bomber(const Bomber&);
+  Bomber& operator=(const Bomber&);
 };
 
 } // namespace Actions

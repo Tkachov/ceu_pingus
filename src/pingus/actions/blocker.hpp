@@ -22,26 +22,21 @@
 
 namespace Actions {
 
-class Blocker : public PinguAction
-{
+class Blocker: public PinguAction {
 private:
   StateSprite sprite;
 
 public:
-  Blocker (Pingu* p);
-
+  Blocker(Pingu* p): PinguAction(p), sprite() {};
   ActionName::Enum get_type() const { return ActionName::BLOCKER; }
 
-  void  draw (SceneContext& gc);
-  void update() {};
-
 private:
-  bool  standing_on_ground();
-  void  catch_pingu(Pingu* pingu);
+  bool standing_on_ground();
+  void catch_pingu(Pingu* pingu);
   void catch_pingus();
 
-  Blocker (const Blocker&);
-  Blocker& operator= (const Blocker&);
+  Blocker(const Blocker&);
+  Blocker& operator=(const Blocker&);
 };
 
 } // namespace Actions

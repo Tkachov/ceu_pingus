@@ -3,8 +3,10 @@
 
 #include "../../c.ceu"
 #include "../../sdl.ceu"
+#include "../../engine/display/scene_context.ceu"
 #include "../iaction.ceu"
 #include "../ipingu.ceu"
+#include "../state_sprite.ceu"
 
 native/pre do
     ##include "pingus/actions/climber.hpp"
@@ -19,9 +21,11 @@ class ClimberAction with
 do
     var _AClimber&? climber = _PTR2REF((_AClimber*)pingu.set_ptr(_A_CLIMBER));
 
+    load_directions(climber.sprite, climber, "/climber/");
+
     par do
         every gc in pingu.e_DRAW_CALLED do
-            _call_draw(climber, gc);
+            _gc_color_draw(gc, climber.sprite[climber.pingu:direction], climber.pingu:get_pos());
         end
     with
         every pingu.e_UPDATE_CALLED do

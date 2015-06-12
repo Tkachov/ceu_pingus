@@ -29,8 +29,6 @@ private:
 public:
   Slider(Pingu* p): PinguAction(p), sprite() {};
   ActionName::Enum get_type() const { return ActionName::SLIDER; }
-  void draw(SceneContext& gc) {};
-  void update() {};
 
 private:
   Slider(const Slider&);

@@ -3,9 +3,11 @@
 
 #include "../../c.ceu"
 #include "../../sdl.ceu"
+#include "../../engine/display/scene_context.ceu"
 #include "../../math/vector3f.ceu"
 #include "../iaction.ceu"
 #include "../ipingu.ceu"
+#include "../state_sprite.ceu"
 
 native/pre do
     ##include "pingus/actions/basher.hpp"
@@ -21,9 +23,11 @@ do
     var _ABasher&? basher = _PTR2REF((_ABasher*)pingu.set_ptr(_A_BASHER));
     var bool odd_frame = true; //-1th, I hope first block will execute not odd_frame faster
 
+    load_directions(basher.sprite, basher, "/basher/");
+
     par do
         every gc in pingu.e_DRAW_CALLED do
-            _call_draw(basher, gc);
+            _gc_color_draw(gc, basher.sprite[basher.pingu:direction], basher.pingu:get_pos());
         end
     with
         every pingu.e_UPDATE_CALLED do

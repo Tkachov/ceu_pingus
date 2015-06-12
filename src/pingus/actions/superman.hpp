@@ -29,8 +29,6 @@ private:
 public:
   Superman(Pingu* p): PinguAction(p), sprite() {};
   ActionName::Enum get_type () const { return ActionName::SUPERMAN; }
-  void draw(SceneContext& gc) {};
-  void update() {};
 
 private:
   Superman(const Superman&);

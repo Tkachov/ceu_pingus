@@ -32,13 +32,7 @@ Miner::Miner (Pingu* p) :
   miner_radius("pingus/common/miner_radius_gfx", "pingus/common/miner_radius"),
   miner_radius_left("pingus/common/miner_radius_left_gfx", "pingus/common/miner_radius_left"),
   miner_radius_right("pingus/common/miner_radius_right_gfx", "pingus/common/miner_radius_right"),
-  sprite()
-{
-  sprite.load(Direction::LEFT,  Sprite("pingus/player" +
-                                       pingu->get_owner_str() + "/miner/left"));
-  sprite.load(Direction::RIGHT, Sprite("pingus/player" +
-                                       pingu->get_owner_str() + "/miner/right"));
-}
+  sprite() {}
 
 void
 Miner::mine(bool final)
@@ -58,12 +52,6 @@ Miner::mine(bool final)
                                   pingu->get_xi() - (radius.get_width() / 2) + pingu->direction,
                                   pingu->get_yi() - radius.get_height() + 2);
   }
-}
-
-void
-Miner::draw (SceneContext& gc)
-{
-  gc.color().draw(sprite[pingu->direction], pingu->get_pos());
 }
 
 } // namespace Actions

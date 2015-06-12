@@ -3,8 +3,10 @@
 
 #include "../../c.ceu"
 #include "../../sdl.ceu"
+#include "../../engine/display/scene_context.ceu"
 #include "../iaction.ceu"
 #include "../ipingu.ceu"
+#include "../state_sprite.ceu"
 
 native/pre do
     ##include "pingus/actions/jumper.hpp"
@@ -16,9 +18,11 @@ class JumperAction with
 do
     var _AJumper&? jumper = _PTR2REF((_AJumper*)pingu.set_ptr(_A_JUMPER));
 
+    load_directions(jumper.sprite, jumper, "/jumper/");
+
     par do
         every gc in pingu.e_DRAW_CALLED do
-            _call_draw(jumper, gc);
+            _gc_color_draw(gc, jumper.sprite[jumper.pingu:direction], jumper.pingu:get_pos());
         end
     with
         await pingu.e_UPDATE_CALLED;

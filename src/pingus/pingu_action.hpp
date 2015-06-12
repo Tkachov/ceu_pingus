@@ -60,12 +60,6 @@ public:
   /** Checks if this action allows to be overwritten with the given new action */
   virtual bool change_allowed (ActionName::Enum action) { return true; }
 
-  /// The "AI" of the pingu.
-  virtual void update () = 0;
-
-  /** Draws the action */
-  virtual void draw (SceneContext& gc) =0;
-
   virtual Vector3f get_center_pos() const;
 
   /** The name of the action, this is used in the CaputreRectangle, so

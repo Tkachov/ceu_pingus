@@ -22,25 +22,20 @@
 
 namespace Actions {
 
-class Splashed : public PinguAction
-{
+class Splashed: public PinguAction {
 private:
   Sprite sprite;
 
 public:
-  Splashed (Pingu*);
+  Splashed(Pingu* p): PinguAction(p), sprite() {};
+  ActionName::Enum get_type() const { return ActionName::SPLASHED; }
 
-  ActionName::Enum get_type () const { return ActionName::SPLASHED; }
-
-  void draw (SceneContext& gc);
-  void update ();
-
-  bool catchable () { return false; }
-  bool change_allowed (ActionName::Enum ) { return false; }
+  bool catchable() { return false; }
+  bool change_allowed(ActionName::Enum) { return false; }
 
 private:
-  Splashed (const Splashed&);
-  Splashed& operator= (const Splashed&);
+  Splashed(const Splashed&);
+  Splashed& operator=(const Splashed&);
 };
 
 } // namespace Actions

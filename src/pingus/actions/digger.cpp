@@ -5,12 +5,12 @@
 //  it under the terms of the GNU General Public License as published by
 //  the Free Software Foundation, either version 3 of the License, or
 //  (at your option) any later version.
-//  
+//
 //  This program is distributed in the hope that it will be useful,
 //  but WITHOUT ANY WARRANTY; without even the implied warranty of
 //  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //  GNU General Public License for more details.
-//  
+//
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -24,29 +24,18 @@
 
 namespace Actions {
 
-Digger::Digger(Pingu* p) :
-  PinguAction(p),
-  digger_radius("pingus/common/digger_radius_gfx", "pingus/common/digger_radius"),
-  digger_radius_final("pingus/common/digger_radius_final_gfx", "pingus/common/digger_radius_final_gfx"),
-  sprite()
-{
-  sprite = Sprite("pingus/player" + pingu->get_owner_str() + "/digger/left");
-}
-
-void Digger::update() {}
-
 bool
 Digger::have_something_to_dig()
 {
   if(rel_getpixel(0, -1) == Groundtype::GP_NOTHING)
     return false;
-  
+
   if(rel_getpixel(0, -1) == Groundtype::GP_SOLID) {
     Sound::PingusSound::play_sound("chink");
     return false;
   }
 
-  return true;  
+  return true;
 }
 
 void
@@ -65,12 +54,6 @@ Digger::dig(bool final)
                                   pingu->get_yi() - digger_radius.get_height() + 2);
   }
   pingu->set_pos(pingu->get_xi(), pingu->get_yi() + 1);
-}
-
-void
-Digger::draw(SceneContext& gc)
-{
-  gc.color().draw(sprite, pingu->get_pos());
 }
 
 } // namespace Actions

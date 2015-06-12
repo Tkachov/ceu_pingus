@@ -30,8 +30,6 @@ private:
 public:
   Boarder(Pingu* p): PinguAction(p), sprite() {};
   ActionName::Enum get_type() const { return ActionName::BOARDER; }
-  void draw(SceneContext& gc) {};
-  void update() {};
 
 private:
   Boarder(const Boarder&);

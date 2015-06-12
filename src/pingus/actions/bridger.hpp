@@ -24,8 +24,7 @@
 
 namespace Actions {
 
-class Bridger : public PinguAction
-{
+class Bridger: public PinguAction {
 private:
   enum { MAX_BRICKS = 15 };
   enum { brick_length = 16 };
@@ -44,20 +43,17 @@ private:
 public:
   Bridger(Pingu*);
 
-  std::string get_name () const;
-  ActionName::Enum get_type () const { return ActionName::BRIDGER; }
+  std::string get_name() const;
+  ActionName::Enum get_type() const { return ActionName::BRIDGER; }
 
-  void update() {};
-  void draw(SceneContext& gc) {};
-
-  bool   way_is_free ();
-  bool   brick_placement_allowed (void);
-  void   place_a_brick ();
-  void   walk_one_step_up ();
+  bool   way_is_free();
+  bool   brick_placement_allowed(void);
+  void   place_a_brick();
+  void   walk_one_step_up();
 
 private:
-  Bridger (const Bridger&);
-  Bridger& operator= (const Bridger&);
+  Bridger(const Bridger&);
+  Bridger& operator=(const Bridger&);
 };
 
 } // namespace Actions

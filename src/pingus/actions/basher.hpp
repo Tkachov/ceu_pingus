@@ -23,11 +23,10 @@
 
 namespace Actions {
 
-class Basher : public PinguAction
-{
+class Basher: public PinguAction {
 private:
   StateSprite   sprite;
-  CollisionMask bash_radius;  
+  CollisionMask bash_radius;
   bool first_bash;
 
   /** The no. of pixels ahead that a Basher checks for something bashable.
@@ -47,20 +46,16 @@ private:
   static const int max_steps_down = 3;
 
 public:
-  Basher (Pingu* p);
+  Basher(Pingu* p);
+  ActionName::Enum get_type() const { return ActionName::BASHER; }
 
-  ActionName::Enum get_type () const { return ActionName::BASHER; }
-
-  void draw (SceneContext& gc);
-  void update ();
-
-  bool have_something_to_dig ();
-  bool walk_forward ();
-  void bash ();
+  bool have_something_to_dig();
+  bool walk_forward();
+  void bash();
 
 private:
-  Basher (const Basher&);
-  Basher& operator= (const Basher&);
+  Basher(const Basher&);
+  Basher& operator=(const Basher&);
 };
 
 } // namespace Actions

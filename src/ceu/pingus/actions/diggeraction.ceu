@@ -3,9 +3,10 @@
 
 #include "../../c.ceu"
 #include "../../sdl.ceu"
+#include "../../engine/display/scene_context.ceu"
 #include "../iaction.ceu"
 #include "../ipingu.ceu"
-
+#include "../state_sprite.ceu"
 native/pre do
     ##include "pingus/actions/digger.hpp"
     ##define ADigger Actions::Digger
@@ -17,9 +18,13 @@ do
     var _ADigger&? digger = _PTR2REF((_ADigger*)pingu.set_ptr(_A_DIGGER));
     var int delay_count = 0;
 
+    finalize
+        digger.sprite = _make_sprite("pingus/player", digger.pingu:get_owner_str(), "/digger/left");
+    with end;
+
     par do
         every gc in pingu.e_DRAW_CALLED do
-            _call_draw(digger, gc);
+            _gc_color_draw(gc, digger.sprite, digger.pingu:get_pos());
         end
     with
         every pingu.e_UPDATE_CALLED do

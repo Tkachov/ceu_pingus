@@ -22,27 +22,21 @@
 
 namespace Actions {
 
-class Climber : public PinguAction
-{
+class Climber: public PinguAction {
 private:
   StateSprite sprite;
 
 public:
-  Climber (Pingu*);
-
+  Climber(Pingu* p): PinguAction(p), sprite() {};
   ActionName::Enum get_type () const { return ActionName::CLIMBER; }
-
-  void draw (SceneContext& gc);
-
-  void update() {};
 
   bool change_allowed(ActionName::Enum new_action);
 
   Vector3f get_center_pos() const;
 
 private:
-  Climber (const Climber&);
-  Climber& operator= (const Climber&);
+  Climber(const Climber&);
+  Climber& operator=(const Climber&);
 };
 
 } // namespace Actions

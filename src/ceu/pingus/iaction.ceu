@@ -26,16 +26,6 @@ native/pre do
     ##define ActionName_Enum ActionName::Enum
 end
 
-//TODO: remove as fast as you can /////////
-
-native/pre do
-    ##define call_draw(a, gc) a->draw(*gc)
-end
-
-native @pure _call_draw();
-
-///////////////////////////////////////////
-
 #include "ipingu.ceu"
 
 interface IAction with

@@ -31,8 +31,6 @@ private:
 public:
   LaserKill(Pingu* p): PinguAction(p), sprite() {};
   ActionName::Enum get_type () const { return ActionName::LASERKILL; }
-  void draw(SceneContext& gc) {};
-  void update() {};
 
   bool catchable() { return false; }
 
