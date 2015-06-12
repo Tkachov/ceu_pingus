@@ -42,10 +42,8 @@ std::string to_screenname(Enum action)
     case LASERKILL      : return _("Laserkill");
     case MINER          : return _("Miner");
     case SLIDER         : return _("Slider");
-    case SMASHED        : { log_error("SMASHED is deprecated"); return _("Smashed"); }
     case SPLASHED       : return _("Splashed");
     case SUPERMAN       : return _("Superman");
-    case TELEPORTED     : return _("Teleported");
     case WAITER         : return _("Waiter");
     case WALKER         : return _("Walker");
     default             : return "Unknown ActionName";
@@ -72,10 +70,8 @@ std::string to_string(Enum action)
     case LASERKILL      : return "laserkill";
     case MINER          : return "miner";
     case SLIDER         : return "slider";
-    case SMASHED        : { log_error("SMASHED is deprecated"); return "smashed"; }
     case SPLASHED       : return "splashed";
     case SUPERMAN       : return "superman";
-    case TELEPORTED     : return "teleported";
     case WAITER         : return "waiter";
     case WALKER         : return "walker";
     default             : return "Unknown ActionName";
@@ -100,10 +96,8 @@ Enum from_string(const std::string& action)
   if (action == "laserkill")      return LASERKILL;
   if (action == "miner")          return MINER;
   if (action == "slider")         return SLIDER;
-  if (action == "smashed")        { log_error("SMASHED is deprecated"); return SMASHED; }
   if (action == "splashed")       return SPLASHED;
   if (action == "superman")       return SUPERMAN;
-  if (action == "teleported")     return TELEPORTED;
   if (action == "waiter")         return WAITER;
   if (action == "walker")         return WALKER;
 

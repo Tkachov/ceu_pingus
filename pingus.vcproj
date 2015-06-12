@@ -930,10 +930,6 @@
 				Name="actions"
 				>
 				<File
-					RelativePath=".\src\actions\angel.cpp"
-					>
-				</File>
-				<File
 					RelativePath=".\src\actions\angel.hpp"
 					>
 				</File>
@@ -1002,10 +998,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\actions\exiter.cpp"
-					>
-				</File>
-				<File
 					RelativePath=".\src\actions\exiter.hpp"
 					>
 				</File>
@@ -1050,29 +1042,13 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\actions\rocket_launcher.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\actions\rocket_launcher.hpp"
-					>
-				</File>
-				<File
 					RelativePath=".\src\actions\slider.cpp"
 					>
 				</File>
 				<File
 					RelativePath=".\src\actions\slider.hpp"
 					>
-				</File>
-				<File
-					RelativePath=".\src\actions\smashed.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\actions\smashed.hpp"
-					>
-				</File>
+				</File>				
 				<File
 					RelativePath=".\src\actions\splashed.cpp"
 					>
@@ -1082,31 +1058,11 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\actions\superman.cpp"
-					>
-				</File>
-				<File
 					RelativePath=".\src\actions\superman.hpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\actions\teleported.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\actions\teleported.hpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\actions\waiter.cpp"
-					>
-				</File>
-				<File
 					RelativePath=".\src\actions\waiter.hpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\actions\walker.cpp"
 					>
 				</File>
 				<File
