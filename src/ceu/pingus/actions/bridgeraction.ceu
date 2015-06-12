@@ -56,11 +56,7 @@ do
                 );
             end
         with
-            every pingu.e_UPDATE_CALLED do
-                if bridger.build_sprite[bridger.pingu:direction].get_current_frame () >= 7 then
-                    break;
-                end
-            end
+            await pingu.e_UPDATE_CALLED until (bridger.build_sprite[bridger.pingu:direction].get_current_frame () >= 7);
 
             if bridger.bricks > 0 then
                 if bridger.brick_placement_allowed() then
@@ -73,13 +69,7 @@ do
                 escape _A_WAITER;
             end
 
-            if not bridger.build_sprite[bridger.pingu:direction].is_finished() then
-                every pingu.e_UPDATE_CALLED do
-                    if bridger.build_sprite[bridger.pingu:direction].is_finished() then
-                        break;
-                    end
-                end
-            end
+            PRE_CONDITION_AWAIT(pingu.e_UPDATE_CALLED, bridger.build_sprite[bridger.pingu:direction].is_finished());
 
             bridger.build_sprite[bridger.pingu:direction].restart();
         end

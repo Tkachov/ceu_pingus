@@ -78,7 +78,7 @@ do
             end
         end
     with
-        every gc in PINGU_DRAW_WALKER do
+        every gc in PINGU_DRAW_OTHERS do
             if me_.status != _PS_ALIVE then
                 continue;
             end

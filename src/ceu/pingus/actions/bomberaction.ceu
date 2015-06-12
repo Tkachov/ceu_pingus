@@ -3,9 +3,11 @@
 
 #include "../../c.ceu"
 #include "../../sdl.ceu"
+#include "../../engine/display/scene_context.ceu"
 #include "../../math/vector3f.ceu"
 #include "../iaction.ceu"
 #include "../ipingu.ceu"
+#include "../state_sprite.ceu"
 
 native/pre do
     ##include "pingus/actions/bomber.hpp"
@@ -18,20 +20,25 @@ native/pre do
     ##include "pingus/worldobj.hpp"
     ##define WorldObj__get_world WorldObj::get_world
     ##define WorldObj__get_world_remove WorldObj::get_world()->remove
+    ##define WorldObj__get_world_play_sound WorldObj::get_world()->play_sound
     ##define Colliders__PinguCollider Colliders::PinguCollider
     ##define Math__abs Math::abs
 end
 
 native @pure _Colliders__PinguCollider(),
              _WorldObj__get_world(),
-             _WorldObj__get_world_remove();
+             _WorldObj__get_world_remove(),
+             _WorldObj__get_world_play_sound();
 
 class BomberAction with
     interface IAction;
 do
     var _ABomber&? bomber = _PTR2REF((_ABomber*)pingu.set_ptr(_A_BOMBER));
 
-    par/or do
+    load_directions(bomber.sprite, bomber, "/bomber/");
+    _WorldObj__get_world_play_sound("ohno", bomber.pingu:get_pos());
+
+    par do
         every pingu.e_UPDATE_CALLED do
             bomber.sprite.update();
 
@@ -39,6 +46,15 @@ do
             bomber.mover.reset(bomber.pingu:get_pos());
             bomber.mover.update(bomber.pingu:get_velocity(), _Colliders__PinguCollider(_pingu_height));
             bomber.pingu:set_pos(bomber.mover.get_pos());
+        end
+    with
+        par do
+            var _SceneContext* gc = await pingu.e_DRAW_CALLED until bomber.sprite[bomber.pingu:direction].get_current_frame() >= 13;
+            _gc_color_draw(gc, bomber.explo_surf, _Vector3f(bomber.pingu:get_x()-32, bomber.pingu:get_y()-48));
+        with
+            every gc in pingu.e_DRAW_CALLED do
+                _gc_color_draw(gc, bomber.sprite[bomber.pingu:direction], bomber.pingu:get_pos());
+            end
         end
     with
         // If the Bomber hasn't 'exploded' yet...
@@ -62,11 +78,7 @@ do
         _WorldObj__get_world():play_sound("plop", bomber.pingu:get_pos());
 
         //Wait for 13th frame to throw particles
-        every pingu.e_UPDATE_CALLED do
-            if bomber.sprite[bomber.pingu:direction].get_current_frame() > 12 then
-                break;
-            end
-        end
+        await pingu.e_UPDATE_CALLED until (bomber.sprite[bomber.pingu:direction].get_current_frame() > 12);
 
         // Throwing particles
         _WorldObj__get_world():get_pingu_particle_holder():add_particle(
@@ -74,13 +86,7 @@ do
         );
 
         //Wait for 13th frame again?..
-        if bomber.sprite[bomber.pingu:direction].get_current_frame() < 13 then
-            every pingu.e_UPDATE_CALLED do
-                if bomber.sprite[bomber.pingu:direction].get_current_frame() >= 13 then
-                    break;
-                end
-            end
-        end
+        PRE_CONDITION_AWAIT(pingu.e_UPDATE_CALLED, bomber.sprite[bomber.pingu:direction].get_current_frame() >= 13);
 
         _WorldObj__get_world_remove(
             bomber.bomber_radius,
@@ -89,13 +95,7 @@ do
         );
 
         // The pingu explode
-        if not bomber.sprite[bomber.pingu:direction].is_finished() then
-            every pingu.e_UPDATE_CALLED do
-                if bomber.sprite[bomber.pingu:direction].is_finished() then
-                    break;
-                end
-            end
-        end
+        PRE_CONDITION_AWAIT(pingu.e_UPDATE_CALLED, bomber.sprite[bomber.pingu:direction].is_finished());
 
         //Be dead forever
         loop do

@@ -29,4 +29,14 @@ native @pure _PTR2REF; //convert any pointer (*) to any reference (&?)
 
 native @pure _print_message(); //this could be used to write message in log -- with filename and line
 
+#define AWAIT_N(e, n) \
+    loop i in n do \
+        await e; \
+    end
+
+#define PRE_CONDITION_AWAIT(e, c) \
+    if not (c) then \
+        await e until (c); \
+    end
+
 #endif
