@@ -16,6 +16,7 @@ native/pre do
     ##define A_FALLER ActionName::FALLER
     ##define A_FLOATER ActionName::FLOATER
     ##define A_JUMPER ActionName::JUMPER
+    ##define A_LASERKILL ActionName::LASERKILL
     ##define A_MINER ActionName::MINER
     ##define A_SPLASHED ActionName::SPLASHED
     ##define A_SUPERMAN ActionName::SUPERMAN

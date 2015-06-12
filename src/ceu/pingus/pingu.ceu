@@ -16,6 +16,7 @@
 #include "actions/falleraction.ceu"
 #include "actions/floateraction.ceu"
 #include "actions/jumperaction.ceu"
+#include "actions/laserkillaction.ceu"
 #include "actions/mineraction.ceu"
 #include "actions/splashedaction.ceu"
 #include "actions/supermanaction.ceu"
@@ -123,6 +124,7 @@ do
                     DO_ACTION(_A_FALLER, FallerAction)
                     DO_ACTION(_A_FLOATER, FloaterAction)
                     DO_ACTION(_A_JUMPER, JumperAction)
+                    DO_ACTION(_A_LASERKILL, LaserKillAction)
                     DO_ACTION(_A_MINER, MinerAction)
                     DO_ACTION(_A_SPLASHED, SplashedAction)
                     DO_ACTION(_A_SUPERMAN, SupermanAction)
