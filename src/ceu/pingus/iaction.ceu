@@ -5,8 +5,9 @@ native/pre do
     ##include "pingus/pingu_action.hpp"
     ##define A_ANGEL ActionName::ANGEL
     ##define A_BASHER ActionName::BASHER
-    ##define A_BOMBER ActionName::BOMBER
     ##define A_BLOCKER ActionName::BLOCKER
+    ##define A_BOARDER ActionName::BOARDER
+    ##define A_BOMBER ActionName::BOMBER
     ##define A_BRIDGER ActionName::BRIDGER
     ##define A_CLIMBER ActionName::CLIMBER
     ##define A_DIGGER ActionName::DIGGER

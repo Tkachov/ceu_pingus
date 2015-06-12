@@ -5,8 +5,9 @@
 #include "../sdl.ceu"
 #include "actions/angelaction.ceu"
 #include "actions/basheraction.ceu"
-#include "actions/bomberaction.ceu"
 #include "actions/blockeraction.ceu"
+#include "actions/boarderaction.ceu"
+#include "actions/bomberaction.ceu"
 #include "actions/bridgeraction.ceu"
 #include "actions/climberaction.ceu"
 #include "actions/diggeraction.ceu"
@@ -110,8 +111,9 @@ do
                     //this looks strange, but that macro is just an else/if block
                     DO_ACTION(_A_ANGEL, AngelAction)
                     DO_ACTION(_A_BASHER, BasherAction)
-                    DO_ACTION(_A_BOMBER, BomberAction)
                     DO_ACTION(_A_BLOCKER, BlockerAction)
+                    DO_ACTION(_A_BOARDER, BoarderAction)
+                    DO_ACTION(_A_BOMBER, BomberAction)
                     DO_ACTION(_A_BRIDGER, BridgerAction)
                     DO_ACTION(_A_CLIMBER, ClimberAction)
                     DO_ACTION(_A_DIGGER, DiggerAction)

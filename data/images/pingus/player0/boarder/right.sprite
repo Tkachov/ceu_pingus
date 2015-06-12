@@ -1,4 +1,6 @@
 (pingus-sprite 
   (image "../boarder.png")
   (position 0 30)
+  (offset 0 0)
+  (origin "bottom_center")
   (size 30 30))
