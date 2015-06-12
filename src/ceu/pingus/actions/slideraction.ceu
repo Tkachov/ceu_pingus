@@ -1,0 +1,66 @@
+#ifndef SLIDERACTION_CEU
+#define SLIDERACTION_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../../engine/display/scene_context.ceu"
+#include "../../math/vector3f.ceu"
+#include "../iaction.ceu"
+#include "../ipingu.ceu"
+#include "../state_sprite.ceu"
+
+native/pre do
+    ##include "pingus/actions/slider.hpp"
+    ##define ASlider Actions::Slider
+end
+
+class SliderAction with
+    interface IAction;
+do
+    var _ASlider&? slider = _PTR2REF((_ASlider*)pingu.set_ptr(_A_SLIDER));
+
+    load_directions(slider.sprite, slider, "/slider/");
+
+    var float speed = 10;
+
+    par do
+        every gc in pingu.e_DRAW_CALLED do
+            _gc_color_draw(gc, slider.sprite[slider.pingu:direction], slider.pingu:get_pos() + _Vector3f(0, -2));
+        end
+    with
+        every pingu.e_UPDATE_CALLED do
+            slider.sprite[slider.pingu:direction].update();
+
+            loop i in speed do
+                if slider.rel_getpixel(1, 0) != _GT_NOTHING then
+                    break;
+                end
+
+                slider.pingu:set_x(slider.pingu:get_x() + (float)slider.pingu:direction);
+
+                if slider.rel_getpixel(0, -1) == _GT_NOTHING then
+                    if speed > 5 then
+                        speed = 5;
+                    end
+
+                    var float x_speed = speed;
+                    if not slider.pingu:direction.is_right() then
+                        x_speed = -speed;
+                    end
+
+                    slider.pingu:set_velocity(slider.pingu:get_velocity() + _Vector3f(x_speed, 0));
+
+                    escape _A_FALLER;
+                end
+            end
+
+            speed = speed - 7*0.025;
+
+            if speed < 1 then
+                escape _A_WALKER;
+            end
+        end
+    end
+end
+
+#endif
