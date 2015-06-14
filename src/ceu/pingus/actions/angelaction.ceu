@@ -4,14 +4,11 @@
 #include "../../c.ceu"
 #include "../../sdl.ceu"
 #include "../../engine/display/scene_context.ceu"
+#include "../../engine/display/sprite.ceu"
 #include "../iaction.ceu"
 #include "../ipingu.ceu"
-#include "../state_sprite.ceu"
 
 native/pre do
-    ##include "pingus/actions/angel.hpp"
-    ##define AAngel Actions::Angel
-
     ##include "engine/sound/sound.hpp"
     ##define Sound_PingusSound_play_sound Sound::PingusSound::play_sound
 
@@ -23,17 +20,17 @@ end
 class AngelAction with
     interface IAction;
 do
-    var _AAngel&? angel = _PTR2REF((_AAngel*)pingu.set_ptr(_A_ANGEL));
+    var _PinguAction&? angel = _PTR2REF(pingu.set_ptr(_A_ANGEL));
+
+    var _Sprite&? sprite = _PTR2REF(_new_SpriteA(_combine("pingus/player", angel.pingu:get_owner_str(), "/angel")));
+    finalize with _delete_Sprite(sprite); end;
 
     var float counter = 0;
     var float x_pos = angel.pingu:get_x();
-    finalize
-        angel.sprite = _make_sprite("pingus/player", angel.pingu:get_owner_str(), "/angel");
-    with end;
 
     par do
         every pingu.e_UPDATE_CALLED do
-            angel.sprite.update();
+            sprite.update();
 
             counter = counter + (float)_globals__game_speed;
             //angel.pingu:set_pos(x_pos + 20*_Math__sin(counter*3.0), angel.pingu:get_y() - 50.0*0.025);
@@ -46,7 +43,7 @@ do
         end
     with
         every gc in pingu.e_DRAW_CALLED do
-            _gc_color_draw(gc, angel.sprite, angel.pingu:get_pos());
+            _gc_color_draw2(gc, sprite, angel.pingu:get_pos());
         end
     end
 end

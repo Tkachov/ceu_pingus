@@ -26,7 +26,6 @@
 #include "pingus/worldobj.hpp"
 #include "pingus/pingu_enums.hpp"
 
-#include "pingus/actions/angel.hpp"
 #include "pingus/actions/basher.hpp"
 #include "pingus/actions/blocker.hpp"
 #include "pingus/actions/bomber.hpp"
@@ -39,8 +38,6 @@
 #include "pingus/actions/laser_kill.hpp"
 #include "pingus/actions/miner.hpp"
 #include "pingus/actions/splashed.hpp"
-#include "pingus/actions/superman.hpp"
-#include "pingus/actions/waiter.hpp"
 
 #include "util/log.hpp"
 
@@ -360,7 +357,6 @@ Pingu::create_action(ActionName::Enum action_)
 {
   switch(action_)
   {
-    case ActionName::ANGEL:     return std::make_shared<Angel>(this);
     case ActionName::BASHER:    return std::make_shared<Basher>(this);
     case ActionName::BLOCKER:   return std::make_shared<Blocker>(this);
     case ActionName::BOMBER:    return std::make_shared<Bomber>(this);
@@ -373,13 +369,14 @@ Pingu::create_action(ActionName::Enum action_)
     case ActionName::LASERKILL: return std::make_shared<LaserKill>(this);
     case ActionName::MINER:     return std::make_shared<Miner>(this);
     case ActionName::SPLASHED:  return std::make_shared<Splashed>(this);
-    case ActionName::SUPERMAN:  return std::make_shared<Superman>(this);
-    case ActionName::WAITER:    return std::make_shared<Waiter>(this);
 
+    case ActionName::ANGEL:
     case ActionName::BOARDER:
     case ActionName::EXITER:
     case ActionName::JUMPER:
     case ActionName::SLIDER:
+    case ActionName::SUPERMAN:
+    case ActionName::WAITER:
     case ActionName::WALKER:    return std::make_shared<PinguAction>(this, action_);
 
     default: assert(!"Invalid action name provied");
@@ -388,26 +385,26 @@ Pingu::create_action(ActionName::Enum action_)
 
 PinguAction* Pingu::create_action2(ActionName::Enum action_) {
   switch(action_) {
-    case ActionName::ANGEL:     return new Angel(this);
     case ActionName::BASHER:    return new Basher(this);
     case ActionName::BLOCKER:   return new Blocker(this);
     case ActionName::BOMBER:    return new Bomber(this);
     case ActionName::BRIDGER:   return new Bridger(this);
     case ActionName::CLIMBER:   return new Climber(this);
     case ActionName::DIGGER:    return new Digger(this);
-    case ActionName::DROWN:     return new Drown(this);    
+    case ActionName::DROWN:     return new Drown(this);
     case ActionName::FALLER:    return new Faller(this);
     case ActionName::FLOATER:   return new Floater(this);
     case ActionName::LASERKILL: return new LaserKill(this);
     case ActionName::MINER:     return new Miner(this);
     case ActionName::SPLASHED:  return new Splashed(this);
-    case ActionName::SUPERMAN:  return new Superman(this);
-    case ActionName::WAITER:    return new Waiter(this);
 
+    case ActionName::ANGEL:
     case ActionName::BOARDER:
     case ActionName::EXITER:
     case ActionName::JUMPER:
     case ActionName::SLIDER:
+    case ActionName::SUPERMAN:
+    case ActionName::WAITER:
     case ActionName::WALKER:    return new PinguAction(this, action_);
 
     default: assert(!"Invalid action name provied");

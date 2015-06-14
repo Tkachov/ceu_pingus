@@ -4,31 +4,25 @@
 #include "../../c.ceu"
 #include "../../sdl.ceu"
 #include "../../engine/display/scene_context.ceu"
+#include "../../engine/display/sprite.ceu"
 #include "../iaction.ceu"
 #include "../ipingu.ceu"
-#include "../state_sprite.ceu"
-
-native/pre do
-    ##include "pingus/actions/waiter.hpp"
-    ##define AWaiter Actions::Waiter
-end
 
 class WaiterAction with
     interface IAction;
 do
-    var _AWaiter& waiter = _PTR2REF((_AWaiter*)pingu.set_ptr(_A_WAITER));
+    var _PinguAction&? waiter = _PTR2REF(pingu.set_ptr(_A_WAITER));
 
-    finalize
-        waiter.sprite = _make_sprite("pingus/player", waiter.pingu:get_owner_str(), "/waiter/left");
-    with end;
+    var _Sprite&? sprite = _PTR2REF(_new_SpriteA(_combine("pingus/player", waiter.pingu:get_owner_str(), "/waiter/left")));
+    finalize with _delete_Sprite(sprite); end;
 
     par do
         every pingu.e_UPDATE_CALLED do
-              waiter.sprite.update();
+              sprite.update();
         end
     with
         every gc in pingu.e_DRAW_CALLED do
-            _gc_color_draw(gc, waiter.sprite, waiter.pingu:get_pos());
+            _gc_color_draw2(gc, sprite, waiter.pingu:get_pos());
         end
     with
         //in C++ there was a countdown from 2 to 0 with step 0.025 per frame - that's 80 frames

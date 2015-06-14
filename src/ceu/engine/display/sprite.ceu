@@ -1,0 +1,17 @@
+#ifndef SPRITE_CEU
+#define SPRITE_CEU
+
+native/pre do
+    ##include "engine/display/sprite.hpp"
+    ##define combine(a, b, c) (a+b+c)
+
+    ##define new_Sprite() new Sprite()
+    ##define new_SpriteA(a) new Sprite(a)
+    ##define delete_Sprite(s) delete s;
+end
+
+native @pure _new_Sprite(),
+             _new_SpriteA(),
+             _delete_Sprite();
+
+#endif
