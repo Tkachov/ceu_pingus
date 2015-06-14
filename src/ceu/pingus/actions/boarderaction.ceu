@@ -19,17 +19,18 @@ class BoarderAction with
 do
     var _ABoarder&? boarder = _PTR2REF((_ABoarder*)pingu.set_ptr(_A_BOARDER));
 
-    load_directions(boarder.sprite, boarder, "/boarder/");
-    
+    var StateSprite sprite;
+    load_file_directions(sprite, boarder, "/boarder/");
+
     var float speed = 0;
 
     par do
         every gc in pingu.e_DRAW_CALLED do
-            _gc_color_draw(gc, boarder.sprite[boarder.pingu:direction], boarder.pingu:get_pos());
+            _gc_color_draw2(gc, sprite.get(boarder.pingu:direction), boarder.pingu:get_pos());
         end
     with
         every pingu.e_UPDATE_CALLED do
-            boarder.sprite[boarder.pingu:direction].update();
+            sprite.get(boarder.pingu:direction):update();
 
             //not on ground
             if not boarder.pingu:rel_getpixel(0, -1) and not boarder.pingu:rel_getpixel(0, -2) then

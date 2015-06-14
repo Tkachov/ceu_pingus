@@ -18,17 +18,14 @@
 #define HEADER_PINGUS_PINGUS_ACTIONS_BOARDER_HPP
 
 #include "pingus/pingu_action.hpp"
-#include "pingus/state_sprite.hpp"
 
 namespace Actions {
 
 /** The Boarder action causes a pingu to use a skateboard to move
     forward. */
 class Boarder: public PinguAction {
-private:
-  StateSprite sprite;
 public:
-  Boarder(Pingu* p): PinguAction(p), sprite() {};
+  Boarder(Pingu* p): PinguAction(p) {};
   ActionName::Enum get_type() const { return ActionName::BOARDER; }
 
 private:

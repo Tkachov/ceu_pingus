@@ -19,13 +19,11 @@
 
 #include "pingus/collision_mask.hpp"
 #include "pingus/pingu_action.hpp"
-#include "pingus/state_sprite.hpp"
 
 namespace Actions {
 
 class Basher: public PinguAction {
-private:
-  StateSprite   sprite;
+private:  
   CollisionMask bash_radius;
   bool first_bash;
 

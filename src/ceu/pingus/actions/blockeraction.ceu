@@ -18,7 +18,8 @@ class BlockerAction with
 do
     var _ABlocker&? blocker = _PTR2REF((_ABlocker*)pingu.set_ptr(_A_BLOCKER));
 
-    load_directions(blocker.sprite, blocker, "/blocker/");
+    var StateSprite sprite;
+    load_file_directions(sprite, blocker, "/blocker/");
 
     if blocker.rel_getpixel(0, -1) == _GT_NOTHING then
         if blocker.rel_getpixel(0, -2) == _GT_GROUND then
@@ -30,7 +31,7 @@ do
 
     par do
         every gc in pingu.e_DRAW_CALLED do
-            _gc_color_draw(gc, blocker.sprite[blocker.pingu:direction], blocker.pingu:get_pos());
+            _gc_color_draw2(gc, sprite.get(blocker.pingu:direction), blocker.pingu:get_pos());
         end
     with
         every pingu.e_UPDATE_CALLED do
@@ -39,7 +40,7 @@ do
             end
 
             blocker.catch_pingus();
-            blocker.sprite.update();
+            sprite.update();
         end
     end
 end

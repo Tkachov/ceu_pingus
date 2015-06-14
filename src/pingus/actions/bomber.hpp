@@ -28,8 +28,7 @@ namespace Actions {
     Pingu leaves a hole inside the ground. */
 class Bomber: public PinguAction {
 private:
-  CollisionMask bomber_radius;
-  StateSprite sprite;
+  CollisionMask bomber_radius;  
 
   Sprite explo_surf;
   Movers::LinearMover mover;

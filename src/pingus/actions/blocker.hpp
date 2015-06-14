@@ -18,16 +18,12 @@
 #define HEADER_PINGUS_PINGUS_ACTIONS_BLOCKER_HPP
 
 #include "pingus/pingu_action.hpp"
-#include "pingus/state_sprite.hpp"
 
 namespace Actions {
 
 class Blocker: public PinguAction {
-private:
-  StateSprite sprite;
-
 public:
-  Blocker(Pingu* p): PinguAction(p), sprite() {};
+  Blocker(Pingu* p): PinguAction(p) {};
   ActionName::Enum get_type() const { return ActionName::BLOCKER; }
 
 private:

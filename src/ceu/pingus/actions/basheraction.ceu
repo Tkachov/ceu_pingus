@@ -23,15 +23,16 @@ do
     var _ABasher&? basher = _PTR2REF((_ABasher*)pingu.set_ptr(_A_BASHER));
     var bool odd_frame = true; //-1th, I hope first block will execute not odd_frame faster
 
-    load_directions(basher.sprite, basher, "/basher/");
+    var StateSprite sprite;
+    load_file_directions(sprite, basher, "/basher/");
 
     par do
         every gc in pingu.e_DRAW_CALLED do
-            _gc_color_draw(gc, basher.sprite[basher.pingu:direction], basher.pingu:get_pos());
+            _gc_color_draw2(gc, sprite.get(basher.pingu:direction), basher.pingu:get_pos());
         end
     with
         every pingu.e_UPDATE_CALLED do
-            basher.sprite[basher.pingu:direction].update();
+            sprite.get(basher.pingu:direction):update();
             odd_frame = not odd_frame;
         end
     with
@@ -53,7 +54,7 @@ do
             // If walking on to something (i.e. hasn't fallen)
             else/if basher.rel_getpixel(0, -1) != _GT_NOTHING then
                 //original FIXME: Game logic must be separate from Sprite
-                var float progress = (float)(basher.sprite[basher.pingu:direction].get_current_frame())/(float)(basher.sprite[basher.pingu:direction].get_frame_count());
+                var float progress = (float)(sprite.get(basher.pingu:direction):get_current_frame())/(float)(sprite.get(basher.pingu:direction):get_frame_count());
 
                 // If the Basher has walked into something that it won't be able to
                 // bash

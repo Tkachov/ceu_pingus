@@ -28,8 +28,7 @@
 namespace Actions {
 
 Basher::Basher (Pingu* p) :
-  PinguAction(p),
-  sprite(),
+  PinguAction(p),  
   bash_radius("pingus/common/bash_radius_gfx", "pingus/common/bash_radius"),  
   first_bash(true),
   bash_reach()

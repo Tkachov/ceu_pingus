@@ -4,8 +4,10 @@
 native/pre do
     ##include "engine/display/scene_context.hpp"
     ##define gc_color_draw(gc, s, p) gc->color().draw(s, p)
+    ##define gc_color_draw2(gc, s, p) gc->color().draw(*(Sprite*)s, p)
 end
 
-native @pure _gc_color_draw();
+native @pure _gc_color_draw(),
+			 _gc_color_draw2();
 
 #endif
