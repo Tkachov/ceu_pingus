@@ -31,7 +31,6 @@
 #include "pingus/actions/bomber.hpp"
 #include "pingus/actions/bridger.hpp"
 #include "pingus/actions/climber.hpp"
-#include "pingus/actions/digger.hpp"
 #include "pingus/actions/faller.hpp"
 #include "pingus/actions/floater.hpp"
 #include "pingus/actions/miner.hpp"
@@ -359,13 +358,13 @@ Pingu::create_action(ActionName::Enum action_)
     case ActionName::BOMBER:    return std::make_shared<Bomber>(this);
     case ActionName::BRIDGER:   return std::make_shared<Bridger>(this);
     case ActionName::CLIMBER:   return std::make_shared<Climber>(this);
-    case ActionName::DIGGER:    return std::make_shared<Digger>(this);    
     case ActionName::FALLER:    return std::make_shared<Faller>(this);
     case ActionName::FLOATER:   return std::make_shared<Floater>(this);    
     case ActionName::MINER:     return std::make_shared<Miner>(this);    
 
     case ActionName::ANGEL:
     case ActionName::BOARDER:
+    case ActionName::DIGGER:
     case ActionName::DROWN:
     case ActionName::EXITER:
     case ActionName::JUMPER:
@@ -386,14 +385,14 @@ PinguAction* Pingu::create_action2(ActionName::Enum action_) {
     case ActionName::BLOCKER:   return new Blocker(this);
     case ActionName::BOMBER:    return new Bomber(this);
     case ActionName::BRIDGER:   return new Bridger(this);
-    case ActionName::CLIMBER:   return new Climber(this);
-    case ActionName::DIGGER:    return new Digger(this);         
+    case ActionName::CLIMBER:   return new Climber(this);        
     case ActionName::FALLER:    return new Faller(this);
     case ActionName::FLOATER:   return new Floater(this);    
     case ActionName::MINER:     return new Miner(this);      
 
     case ActionName::ANGEL:
     case ActionName::BOARDER:
+    case ActionName::DIGGER:
     case ActionName::DROWN:
     case ActionName::EXITER:
     case ActionName::JUMPER:

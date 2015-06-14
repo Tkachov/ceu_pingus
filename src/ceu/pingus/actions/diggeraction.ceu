@@ -7,38 +7,82 @@
 #include "../iaction.ceu"
 #include "../ipingu.ceu"
 #include "../state_sprite.ceu"
+
 native/pre do
-    ##include "pingus/actions/digger.hpp"
-    ##define ADigger Actions::Digger
+    ##include "engine/sound/sound.hpp"
+    ##include "pingus/world.hpp"
+    ##include "pingus/worldobj.hpp"
+    ##include "pingus/collision_mask.hpp"
+
+    ##define Sound_PingusSound_play_sound Sound::PingusSound::play_sound
+    ##define WorldObj_get_world_remove(a, b, c) CollisionMask& __msk = *a; WorldObj::get_world()->remove(__msk, b, c)
+    
+    ##define new_CollisionMask(a, b) new CollisionMask(a, b)
+    ##define delete_CollisionMask(m) delete m
 end
+
+native @pure _new_CollisionMask(), _delete_CollisionMask(),
+             _WorldObj_get_world_remove();
 
 class DiggerAction with
     interface IAction;
 do
-    var _ADigger&? digger = _PTR2REF((_ADigger*)pingu.set_ptr(_A_DIGGER));
+    var _PinguAction&? digger = _PTR2REF(pingu.set_ptr(_A_DIGGER));
     var int delay_count = 0;
 
-    finalize
-        digger.sprite = _make_sprite("pingus/player", digger.pingu:get_owner_str(), "/digger/left");
-    with end;
+    var _Sprite&? sprite = _PTR2REF(_new_SpriteA(_combine("pingus/player", digger.pingu:get_owner_str(), "/digger/left")));
+    finalize with _delete_Sprite(sprite); end;
+
+    var _CollisionMask&? digger_radius = _new_CollisionMask("pingus/common/digger_radius_gfx", "pingus/common/digger_radius");
+    finalize with _delete_CollisionMask(digger_radius); end;
+
+    var _CollisionMask&? digger_radius_final = _new_CollisionMask("pingus/common/digger_radius_final_gfx", "pingus/common/digger_radius_final_gfx");
+    finalize with _delete_CollisionMask(digger_radius_final); end;
+
+    function (void) => bool have_something_to_dig do
+        if digger.rel_getpixel(0, -1) == _GT_NOTHING then
+            return false;
+        end
+
+        if digger.rel_getpixel(0, -1) == _GT_SOLID then
+            _Sound_PingusSound_play_sound("chink");
+            return false;
+        end
+
+        return true;
+    end
+
+    function (bool final) => void dig do        
+        if not final then
+            _WorldObj_get_world_remove(digger_radius,
+                                       digger.pingu:get_xi() - digger_radius.get_width() / 2,
+                                       digger.pingu:get_yi() - digger_radius.get_height() + 2);
+        else
+            _WorldObj_get_world_remove(digger_radius_final,
+                                       digger.pingu:get_xi() - digger_radius.get_width() / 2,
+                                       digger.pingu:get_yi() - digger_radius.get_height() + 2);
+        end
+
+        digger.pingu:set_pos(digger.pingu:get_xi(), digger.pingu:get_yi()+1);
+    end
 
     par do
         every gc in pingu.e_DRAW_CALLED do
-            _gc_color_draw(gc, digger.sprite, digger.pingu:get_pos());
+            _gc_color_draw2(gc, sprite, digger.pingu:get_pos());
         end
     with
         every pingu.e_UPDATE_CALLED do
-            digger.sprite.update();
+            sprite.update();
             delay_count = delay_count + 1;
 
             if digger.rel_getpixel(0, -1) == _GT_WATER or digger.rel_getpixel(0, -1) == _GT_LAVA then
                 escape _A_DROWN;
             else
-                if not digger.have_something_to_dig() then
-                    digger.dig(true);
+                if not have_something_to_dig() then
+                    dig(true);
                     escape _A_WALKER;
                 else/if delay_count % 4 == 0 then
-                    digger.dig(false);
+                    dig(false);
                 end
             end
         end

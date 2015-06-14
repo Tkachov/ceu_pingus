@@ -53,36 +53,6 @@ Basher::bash()
 }
 
 bool
-Basher::walk_forward()
-{
-  int y_inc = 0;
-
-  // Find the correct y position to go to next
-  for (y_inc = 0; y_inc >= -max_steps_down; --y_inc)
-  {
-    // If there is something below, get out of this loop
-    if (rel_getpixel(0, y_inc - 1) != Groundtype::GP_NOTHING)
-      break;
-  }
-
-  if (y_inc < -max_steps_down)
-  {
-    // The step down is too much.  So stop being a Basher and be a Faller.
-    pingu->set_action(ActionName::FALLER);
-    return false;
-  }
-  else
-  {
-    // Note that Pingu::set_pos() is the 'reverse' of the y co-ords of
-    // rel_getpixel()
-    pingu->set_pos(pingu->get_x() + static_cast<float>(pingu->direction),
-                   pingu->get_y() - static_cast<float>(y_inc));
-  }
-
-  return true;
-}
-
-bool
 Basher::have_something_to_dig()
 {
   if (first_bash)

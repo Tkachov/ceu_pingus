@@ -23,7 +23,7 @@
 namespace Actions {
 
 class Basher: public PinguAction {
-private:  
+public:  
   CollisionMask bash_radius;
   bool first_bash;
 
@@ -39,15 +39,12 @@ private:
       pingu_height). */
   static const int max_bash_height = 33;
 
-  /** Defines the maximum no. of steps down a Basher can go down before it
-      stops being a Basher and turns into a Faller. */
-  static const int max_steps_down = 3;
+
 
 public:
   Basher(Pingu* p);
 
-  bool have_something_to_dig();
-  bool walk_forward();
+  bool have_something_to_dig();  
   void bash();
 
 private:

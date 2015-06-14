@@ -39,14 +39,36 @@ do
         loop do
             await pingu.e_UPDATE_CALLED;
 
-            if not basher.walk_forward() then
-                //original FIXME: set_action() in walk_forward() makes the Basher object
-                // invalid, thus making all further access illegal and thus
-                // forces the return here
+            /// WALK_FORWARD ///   
+            //Basher turns into a Faller if it goes down more than <max_steps_down>
+            var int max_steps_down = 3;
 
-                //TODO: actually, we don't like invalid objects either
-                continue;
+            var int y_inc = 0;
+
+            // Find the correct y position to go to next
+            loop do
+                if y_inc < -max_steps_down then break; end
+
+                // If there is something below, get out of this loop
+                if basher.rel_getpixel(0, y_inc-1) != _GT_NOTHING then
+                    break;
+                end
+
+                y_inc = y_inc-1;
             end
+
+            if y_inc < -max_steps_down then        
+                // The step down is too much.  So stop being a Basher and return false to be a Faller.    
+                escape _A_FALLER;
+            else
+                // Note that Pingu::set_pos() is the 'reverse' of the y co-ords of
+                // rel_getpixel()
+                basher.pingu:set_pos(
+                    basher.pingu:get_x() + (float)basher.pingu:direction,
+                    basher.pingu:get_y() - (float)y_inc
+                );
+            end
+            ////////////////////
 
             // If on walking forward the Basher has now walked on to water or lava
             if basher.rel_getpixel(0, -1) == _GT_WATER or basher.rel_getpixel(0, -1) == _GT_LAVA then
