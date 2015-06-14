@@ -39,6 +39,7 @@ class PinguAction
 {
 private:
   ActionName::Enum type;
+  bool CATCHABLE, CHANGE_ALLOWED;
 
 protected:
   /** A pointer to the pingu, which hold the action. */
@@ -61,7 +62,7 @@ public:
   int  rel_getpixel (int x, int y);
 
   /** Checks if this action allows to be overwritten with the given new action */
-  virtual bool change_allowed (ActionName::Enum action) { return true; }
+  virtual bool change_allowed (ActionName::Enum action) { return CHANGE_ALLOWED; }
 
   virtual Vector3f get_center_pos() const;
 
@@ -81,7 +82,7 @@ public:
   /** Return true if the pingu can be caught with the mouse and
       another action can be applied, false otherwise (exiter,
       splashed, etc.) */
-  virtual bool catchable () { return true; }
+  virtual bool catchable () { return CATCHABLE; }
 
   /// True if Pingu in specified position would bang its head if it were walking
   bool head_collision_on_walk (int x, int y);

@@ -32,12 +32,9 @@
 #include "pingus/actions/bridger.hpp"
 #include "pingus/actions/climber.hpp"
 #include "pingus/actions/digger.hpp"
-#include "pingus/actions/drown.hpp"
 #include "pingus/actions/faller.hpp"
 #include "pingus/actions/floater.hpp"
-#include "pingus/actions/laser_kill.hpp"
 #include "pingus/actions/miner.hpp"
-#include "pingus/actions/splashed.hpp"
 
 #include "util/log.hpp"
 
@@ -362,19 +359,19 @@ Pingu::create_action(ActionName::Enum action_)
     case ActionName::BOMBER:    return std::make_shared<Bomber>(this);
     case ActionName::BRIDGER:   return std::make_shared<Bridger>(this);
     case ActionName::CLIMBER:   return std::make_shared<Climber>(this);
-    case ActionName::DIGGER:    return std::make_shared<Digger>(this);
-    case ActionName::DROWN:     return std::make_shared<Drown>(this);
+    case ActionName::DIGGER:    return std::make_shared<Digger>(this);    
     case ActionName::FALLER:    return std::make_shared<Faller>(this);
-    case ActionName::FLOATER:   return std::make_shared<Floater>(this);
-    case ActionName::LASERKILL: return std::make_shared<LaserKill>(this);
-    case ActionName::MINER:     return std::make_shared<Miner>(this);
-    case ActionName::SPLASHED:  return std::make_shared<Splashed>(this);
+    case ActionName::FLOATER:   return std::make_shared<Floater>(this);    
+    case ActionName::MINER:     return std::make_shared<Miner>(this);    
 
     case ActionName::ANGEL:
     case ActionName::BOARDER:
+    case ActionName::DROWN:
     case ActionName::EXITER:
     case ActionName::JUMPER:
+    case ActionName::LASERKILL:
     case ActionName::SLIDER:
+    case ActionName::SPLASHED:
     case ActionName::SUPERMAN:
     case ActionName::WAITER:
     case ActionName::WALKER:    return std::make_shared<PinguAction>(this, action_);
@@ -390,19 +387,19 @@ PinguAction* Pingu::create_action2(ActionName::Enum action_) {
     case ActionName::BOMBER:    return new Bomber(this);
     case ActionName::BRIDGER:   return new Bridger(this);
     case ActionName::CLIMBER:   return new Climber(this);
-    case ActionName::DIGGER:    return new Digger(this);
-    case ActionName::DROWN:     return new Drown(this);
+    case ActionName::DIGGER:    return new Digger(this);         
     case ActionName::FALLER:    return new Faller(this);
-    case ActionName::FLOATER:   return new Floater(this);
-    case ActionName::LASERKILL: return new LaserKill(this);
-    case ActionName::MINER:     return new Miner(this);
-    case ActionName::SPLASHED:  return new Splashed(this);
+    case ActionName::FLOATER:   return new Floater(this);    
+    case ActionName::MINER:     return new Miner(this);      
 
     case ActionName::ANGEL:
     case ActionName::BOARDER:
+    case ActionName::DROWN:
     case ActionName::EXITER:
     case ActionName::JUMPER:
+    case ActionName::LASERKILL:
     case ActionName::SLIDER:
+    case ActionName::SPLASHED:
     case ActionName::SUPERMAN:
     case ActionName::WAITER:
     case ActionName::WALKER:    return new PinguAction(this, action_);

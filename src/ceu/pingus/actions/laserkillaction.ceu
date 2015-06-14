@@ -8,30 +8,27 @@
 #include "../ipingu.ceu"
 #include "../state_sprite.ceu"
 
-native/pre do
-    ##include "pingus/actions/laser_kill.hpp"
-    ##define ALaserKill Actions::LaserKill
-end
-
 class LaserKillAction with
     interface IAction;
 do
-    var _ALaserKill&? laserkill = _PTR2REF((_ALaserKill*)pingu.set_ptr(_A_LASERKILL));
+    var _PinguAction&? laserkill = _PTR2REF(pingu.set_ptr(_A_LASERKILL));
+    laserkill.CATCHABLE = false;
 
-    laserkill.sprite.load(_D_LEFT,  _Sprite("other/laser_kill/left"));
-    laserkill.sprite.load(_D_RIGHT, _Sprite("other/laser_kill/right"));
+    var StateSprite sprite;
+    sprite.load_file(_D_LEFT,  "other/laser_kill/left");
+    sprite.load_file(_D_RIGHT, "other/laser_kill/right");
 
     par do
         every pingu.e_UPDATE_CALLED do
-            if laserkill.sprite[laserkill.pingu:direction].is_finished() then
+            if sprite.get(laserkill.pingu:direction):is_finished() then
                 laserkill.pingu:set_status(_PS_DEAD);
             else
-                laserkill.sprite[laserkill.pingu:direction].update();
+                sprite.get(laserkill.pingu:direction):update();
             end
         end
     with
         every gc in pingu.e_DRAW_CALLED do
-            _gc_color_draw(gc, laserkill.sprite[laserkill.pingu:direction], laserkill.pingu:get_pos() + _Vector3f(0, 2));
+            _gc_color_draw2(gc, sprite.get(laserkill.pingu:direction), laserkill.pingu:get_pos() + _Vector3f(0, 2));
         end
     end
 end

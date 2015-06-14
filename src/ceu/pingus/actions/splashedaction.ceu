@@ -4,15 +4,12 @@
 #include "../../c.ceu"
 #include "../../sdl.ceu"
 #include "../../engine/display/scene_context.ceu"
+#include "../../engine/display/sprite.ceu"
 #include "../../math/vector3f.ceu"
 #include "../iaction.ceu"
 #include "../ipingu.ceu"
-#include "../state_sprite.ceu"
 
 native/pre do
-    ##include "pingus/actions/splashed.hpp"
-    ##define ASplashed Actions::Splashed
-
     ##include "pingus/worldobj.hpp"
     ##define WorldObj__get_world WorldObj::get_world
 end
@@ -22,21 +19,22 @@ native @pure _WorldObj__get_world();
 class SplashedAction with
     interface IAction;
 do
-    var _ASplashed&? splashed = _PTR2REF((_ASplashed*)pingu.set_ptr(_A_SPLASHED));
+    var _PinguAction&? splashed = _PTR2REF(pingu.set_ptr(_A_SPLASHED));
+    splashed.CATCHABLE = false;
+    splashed.CHANGE_ALLOWED = false;
 
-    finalize
-        splashed.sprite = _make_sprite("pingus/player", splashed.pingu:get_owner_str(), "/splat");
-    with end;
+    var _Sprite&? sprite = _PTR2REF(_new_SpriteA(_combine("pingus/player", splashed.pingu:get_owner_str(), "/splat")));
+    finalize with _delete_Sprite(sprite); end;
 
     par do
         every gc in pingu.e_DRAW_CALLED do
-            _gc_color_draw(gc, splashed.sprite, splashed.pingu:get_pos());
+            _gc_color_draw2(gc, sprite, splashed.pingu:get_pos());
         end
     with
         every pingu.e_UPDATE_CALLED do
-            splashed.sprite.update();
+            sprite.update();
 
-            if splashed.sprite.is_finished() then
+            if sprite.is_finished() then
                 splashed.pingu:set_status(_PS_DEAD);
             end
         end

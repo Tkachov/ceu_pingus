@@ -8,27 +8,24 @@
 #include "../ipingu.ceu"
 #include "../state_sprite.ceu"
 
-native/pre do
-    ##include "pingus/actions/drown.hpp"
-    ##define ADrown Actions::Drown
-end
-
 class DrownAction with
     interface IAction;
 do
-    var _ADrown&? drown = _PTR2REF((_ADrown*)pingu.set_ptr(_A_DROWN));
+    var _PinguAction&? drown = _PTR2REF(pingu.set_ptr(_A_DROWN));
+    drown.CATCHABLE = false;
 
-    load_directions(drown.sprite, drown, "/drownfall/");
+    var StateSprite sprite;
+    load_file_directions(sprite, drown, "/drownfall/");
 
     par do
         every gc in pingu.e_DRAW_CALLED do
-            _gc_color_draw(gc, drown.sprite[drown.pingu:direction], drown.pingu:get_pos());
+            _gc_color_draw2(gc, sprite.get(drown.pingu:direction), drown.pingu:get_pos());
         end
     with
         every pingu.e_UPDATE_CALLED do
-            drown.sprite[drown.pingu:direction].update();
+            sprite.get(drown.pingu:direction):update();
 
-            if drown.sprite[drown.pingu:direction].is_finished() then
+            if sprite.get(drown.pingu:direction):is_finished() then
                 drown.pingu:set_status(_PS_DEAD);
             end
         end

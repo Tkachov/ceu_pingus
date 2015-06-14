@@ -23,7 +23,10 @@
 #include "pingus/world.hpp"
 #include "pingus/worldobj.hpp"
 
-PinguAction::PinguAction(Pingu* p, ActionName::Enum t): pingu(p), type(t) {}
+PinguAction::PinguAction(Pingu* p, ActionName::Enum t): pingu(p), type(t) {
+  CATCHABLE = true;
+  CHANGE_ALLOWED = true;
+}
 
 PinguAction::~PinguAction ()
 {
