@@ -4,33 +4,58 @@
 #include "../../c.ceu"
 #include "../../sdl.ceu"
 #include "../../engine/display/scene_context.ceu"
+#include "../../engine/sound/sound.ceu"
+#include "../collision_mask.ceu"
 #include "../iaction.ceu"
 #include "../ipingu.ceu"
 #include "../state_sprite.ceu"
-
-native/pre do
-    ##include "pingus/actions/miner.hpp"
-    ##define AMiner Actions::Miner
-
-    ##include "engine/sound/sound.hpp"
-    ##define Sound_PingusSound_play_sound Sound::PingusSound::play_sound
-end
+#include "../worldobj.ceu"
 
 class MinerAction with
     interface IAction;
 do
-    var _AMiner&? miner = _PTR2REF((_AMiner*)pingu.set_ptr(_A_MINER));
+    var _PinguAction&? miner = _PTR2REF(pingu.set_ptr(_A_MINER));
     var int delay_count = 0;
 
-    load_directions(miner.sprite, miner, "/miner/");
+    var StateSprite sprite;
+    load_file_directions(sprite, miner, "/miner/");
+
+    var _CollisionMask&? miner_radius = _new_CollisionMask("pingus/common/miner_radius_gfx", "pingus/common/miner_radius");
+    finalize with _delete_CollisionMask(miner_radius); end;
+
+    var _CollisionMask&? miner_radius_left = _new_CollisionMask("pingus/common/miner_radius_left_gfx", "pingus/common/miner_radius_left");
+    finalize with _delete_CollisionMask(miner_radius_left); end;
+
+    var _CollisionMask&? miner_radius_right = _new_CollisionMask("pingus/common/miner_radius_right_gfx", "pingus/common/miner_radius_right");
+    finalize with _delete_CollisionMask(miner_radius_right); end;
+
+    function (bool final) => void mine do
+        if not final then
+            // regular mine action
+            _WorldObj__get_world_remove(miner_radius,
+                                        miner.pingu:get_xi() - (miner_radius.get_width() / 2) + miner.pingu:direction,
+                                        miner.pingu:get_yi() - miner_radius.get_height() + 2);
+        else
+            // the last mine action before switching to another action
+            if miner.pingu:direction == _D_LEFT then                
+                _WorldObj__get_world_remove(miner_radius_left,
+                                            miner.pingu:get_xi() - (miner_radius_left.get_width() / 2) + miner.pingu:direction,
+                                            miner.pingu:get_yi() - miner_radius_left.get_height() + 2);
+            else
+                _WorldObj__get_world_remove(miner_radius_right,
+                                            miner.pingu:get_xi() - (miner_radius_right.get_width() / 2) + miner.pingu:direction,
+                                            miner.pingu:get_yi() - miner_radius_right.get_height() + 2);
+            end;
+        end;
+    end
 
     par do
         every gc in pingu.e_DRAW_CALLED do
-            _gc_color_draw(gc, miner.sprite[miner.pingu:direction], miner.pingu:get_pos());
+            _gc_color_draw2(gc, sprite.get(miner.pingu:direction), miner.pingu:get_pos());
         end
     with
         every pingu.e_UPDATE_CALLED do
-            miner.sprite[miner.pingu:direction].update();
+            sprite.get(miner.pingu:direction):update();
         end
     with
         loop do
@@ -38,7 +63,7 @@ do
 
             if miner.rel_getpixel(0, -1) == _GT_NOTHING then
                 // stop mining when in the air
-                miner.mine(true);
+                mine(true);
                 escape _A_WALKER;
             else/if miner.rel_getpixel(0, -1) == _GT_SOLID or miner.rel_getpixel(0, _pingu_height) == _GT_SOLID then
                 // stop mining when hitting solid ground
@@ -46,7 +71,7 @@ do
                     _Sound_PingusSound_play_sound("chink");
                 end
 
-                miner.mine(true);
+                mine(true);
 
                 // stop pingu from walking further into the solid.
                 miner.pingu:direction.change();
@@ -54,7 +79,7 @@ do
                 escape _A_WALKER;
             else
                 // mine and walk forward
-                miner.mine(false);
+                mine(false);
                 miner.pingu:set_pos(
                     miner.pingu:get_xi() + miner.pingu:direction,
                     miner.pingu:get_yi() + 1
