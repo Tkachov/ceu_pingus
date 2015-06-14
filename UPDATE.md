@@ -1,14 +1,39 @@
-# Week 3 (08/06--15/06)
+# Week 4 (15/06--21/06)
+
+## What I was supposed to do the past week?
+
+Port actions and Pingu completely (this will require partial porting of other classes).
+Transfer SDL events?
+
+## What I actually did the past week?
+
+## What I'll do this week?
+
+# Week 3 (08/06--14/06)
 
 ## What I was supposed to do the past week?
 
 Work on more actions;  
 May be port some code from classes which control the game (Server, World, etc);  
-May be transfer SDL events directly to Ceu and react on some of those in already ported classes.
+May be transfer SDL events directly to Céu and react on some of those in already ported classes.
 
 ## What I actually did the past week?
 
+* closed issue #5 (BomberAction state machine);
+* ported all actions `draw()` and `update()` to Céu;
+* removed `update()` and `draw()` from C++ Pingu and PinguAction;
+* completely ported all the actions but Basher, Blocker, Bridger, Climber, Faller and Floater.
+
+Less important stuff:
+* removed Smashed and Telepored;
+* converted sounds and some textures;
+* added `type`, `CATCHABLE` & `CHANGE_ALLOWED` fields in PinguAction;
+* made a StateSprite wrapper and added some functions to work with Sprite, CollisionMask, Sound, WorldObj and Movers::LinearMover;
+
 ## What I'll do this week?
+
+Port actions and Pingu completely (this will require partial porting of other classes).
+Transfer SDL events?
 
 # Week-2 (01/06--07/06)
 
@@ -19,7 +44,7 @@ Falling, normal walk, maybe digging.
 
 ## What I actually did the past week?
 
-* ported a part of Pingu, so it can start actions inside Ceu;
+* ported a part of Pingu, so it can start actions inside Céu;
 * ported 5 actions' `update()` (falling, walking, digging, exploding and floating).
 
 Less important stuff:
@@ -32,7 +57,7 @@ Less important stuff:
 
 Work on more actions;  
 May be port some code from classes which control the game (Server, World, etc);  
-May be transfer SDL events directly to Ceu and react on some of those in already ported classes.
+May be transfer SDL events directly to Céu and react on some of those in already ported classes.
 
 # Week-1 (25/05--31/05)
 
@@ -46,7 +71,7 @@ I've converted .jpg to .png and .it to .wav.
 
 I've fixed fade_over(), at least it looks like a transition effect now.
 
-Added C++-to-Ceu proxy events and a few Ceu classes which react to those.
+Added C++-to-Céu proxy events and a few Céu classes which react to those.
 
 Ported some mouse reacting behavior of MenuButton, ArmageddonButton and 
 ForwardButton.
