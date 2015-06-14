@@ -9,15 +9,10 @@
 #include "../ipingu.ceu"
 #include "../state_sprite.ceu"
 
-native/pre do
-    ##include "pingus/actions/boarder.hpp"
-    ##define ABoarder Actions::Boarder
-end
-
 class BoarderAction with
     interface IAction;
 do
-    var _ABoarder&? boarder = _PTR2REF((_ABoarder*)pingu.set_ptr(_A_BOARDER));
+    var _PinguAction&? boarder = _PTR2REF(pingu.set_ptr(_A_BOARDER));
 
     var StateSprite sprite;
     load_file_directions(sprite, boarder, "/boarder/");

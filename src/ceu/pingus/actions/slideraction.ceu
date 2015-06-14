@@ -9,27 +9,23 @@
 #include "../ipingu.ceu"
 #include "../state_sprite.ceu"
 
-native/pre do
-    ##include "pingus/actions/slider.hpp"
-    ##define ASlider Actions::Slider
-end
-
 class SliderAction with
     interface IAction;
 do
-    var _ASlider&? slider = _PTR2REF((_ASlider*)pingu.set_ptr(_A_SLIDER));
+    var _PinguAction&? slider = _PTR2REF(pingu.set_ptr(_A_SLIDER));
 
-    load_directions(slider.sprite, slider, "/slider/");
+    var StateSprite sprite;
+    load_file_directions(sprite, slider, "/slider/");
 
     var float speed = 10;
 
     par do
         every gc in pingu.e_DRAW_CALLED do
-            _gc_color_draw(gc, slider.sprite[slider.pingu:direction], slider.pingu:get_pos() + _Vector3f(0, -2));
+            _gc_color_draw2(gc, sprite.get(slider.pingu:direction), slider.pingu:get_pos() + _Vector3f(0, -2));
         end
     with
         every pingu.e_UPDATE_CALLED do
-            slider.sprite[slider.pingu:direction].update();
+            sprite.get(slider.pingu:direction):update();
 
             loop i in speed do
                 if slider.rel_getpixel(1, 0) != _GT_NOTHING then

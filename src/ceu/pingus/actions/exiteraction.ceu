@@ -9,9 +9,6 @@
 #include "../state_sprite.ceu"
 
 native/pre do
-    ##include "pingus/actions/exiter.hpp"
-    ##define AExiter Actions::Exiter
-
     ##include "engine/sound/sound.hpp"
     ##define Sound_PingusSound_play_sound Sound::PingusSound::play_sound
 end
@@ -19,14 +16,15 @@ end
 class ExiterAction with
     interface IAction;
 do
-    var _AExiter&? exiter = _PTR2REF((_AExiter*)pingu.set_ptr(_A_EXITER));
-    load_directions(exiter.sprite, exiter, "/exit/");
+    var _PinguAction&? exiter = _PTR2REF(pingu.set_ptr(_A_EXITER));
+    var StateSprite sprite;
+    load_file_directions(sprite, exiter, "/exit/");
 
     par do
         every pingu.e_UPDATE_CALLED do
-            exiter.sprite[exiter.pingu:direction].update();
+            sprite.get(exiter.pingu:direction):update();
 
-            if exiter.sprite[exiter.pingu:direction].is_finished() then
+            if sprite.get(exiter.pingu:direction):is_finished() then
                 if exiter.pingu:get_status() != _PS_EXITED then
                     exiter.pingu:set_status(_PS_EXITED);
                 end
@@ -34,7 +32,7 @@ do
         end
     with
         every gc in pingu.e_DRAW_CALLED do
-            _gc_color_draw(gc, exiter.sprite[exiter.pingu:direction], exiter.pingu:get_pos());
+            _gc_color_draw2(gc, sprite.get(exiter.pingu:direction), exiter.pingu:get_pos());
         end
     with
         await pingu.e_UPDATE_CALLED;

@@ -8,21 +8,17 @@
 #include "../ipingu.ceu"
 #include "../state_sprite.ceu"
 
-native/pre do
-    ##include "pingus/actions/jumper.hpp"
-    ##define AJumper Actions::Jumper
-end
-
 class JumperAction with
     interface IAction;
 do
-    var _AJumper&? jumper = _PTR2REF((_AJumper*)pingu.set_ptr(_A_JUMPER));
+    var _PinguAction&? jumper = _PTR2REF(pingu.set_ptr(_A_JUMPER));
 
-    load_directions(jumper.sprite, jumper, "/jumper/");
+    var StateSprite sprite;
+    load_file_directions(sprite, jumper, "/jumper/");
 
     par do
         every gc in pingu.e_DRAW_CALLED do
-            _gc_color_draw(gc, jumper.sprite[jumper.pingu:direction], jumper.pingu:get_pos());
+            _gc_color_draw2(gc, sprite.get(jumper.pingu:direction), jumper.pingu:get_pos());
         end
     with
         await pingu.e_UPDATE_CALLED;

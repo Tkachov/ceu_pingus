@@ -9,35 +9,35 @@
 #include "../ipingu.ceu"
 #include "../state_sprite.ceu"
 
-native/pre do
-    ##include "pingus/actions/walker.hpp"
-    ##define AWalker Actions::Walker
-end
-
 class WalkerAction with
     interface IAction;
 do
-    var _AWalker& walker = _PTR2REF((_AWalker*)pingu.set_ptr(_A_WALKER));
+    var _PinguAction&? walker = _PTR2REF(pingu.set_ptr(_A_WALKER));
 
-    load_directions(walker.walker, walker, "/walker/");
-    walker.floaterlayer.load(_D_LEFT,  "other/floaterlayer/left");
-    walker.floaterlayer.load(_D_RIGHT, "other/floaterlayer/right");
+    var StateSprite sprite;
+    load_file_directions(sprite, walker, "/walker/");
+
+    var StateSprite floaterlayer;
+    floaterlayer.load_file(_D_LEFT,  "other/floaterlayer/left");
+    floaterlayer.load_file(_D_RIGHT, "other/floaterlayer/right");
+
+    var int max_steps = 5;
 
     // Reset the velocity
     walker.pingu:set_velocity(_Vector3f());
 
     par do
         every gc in pingu.e_DRAW_CALLED do
-            _gc_color_draw(gc, walker.walker[walker.pingu:direction], walker.pingu:get_pos());
+            _gc_color_draw2(gc, sprite.get(walker.pingu:direction), walker.pingu:get_pos());
 
             if walker.pingu:has_fall_action() and walker.pingu:get_fall_action() == _A_FLOATER then
-                _gc_color_draw(gc, walker.floaterlayer[walker.pingu:direction], walker.pingu:get_pos());
+                _gc_color_draw2(gc, floaterlayer.get(walker.pingu:direction), walker.pingu:get_pos());
             end
         end
     with
         every pingu.e_UPDATE_CALLED do
-            walker.walker[walker.pingu:direction].update(0.033);
-            walker.floaterlayer[walker.pingu:direction].update(0.033);
+            sprite.get(walker.pingu:direction):update(0.033);
+            floaterlayer.get(walker.pingu:direction):update(0.033);
 
             /* How should this code work?
 
@@ -116,8 +116,8 @@ do
                 var bool found_next_step = false;
 
                 //-max_steps .. 0 .. max_steps
-                loop i in walker.max_steps*2+1 do
-                    y_inc = -walker.max_steps + i;
+                loop i in max_steps*2+1 do
+                    y_inc = -max_steps + i;
 
                     // up/down-hill scan
                     if (walker.rel_getpixel(1, y_inc) == _GT_NOTHING or
