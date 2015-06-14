@@ -27,8 +27,7 @@ private:
   StateSprite sprite;
 
 public:
-  Jumper(Pingu* p): PinguAction(p), sprite() {};
-  ActionName::Enum get_type() const { return ActionName::JUMPER; }
+  Jumper(Pingu* p): PinguAction(p, ActionName::JUMPER), sprite() {};  
 
 private:
   Jumper(const Jumper&);

@@ -27,8 +27,7 @@ private:
   Sprite sprite;
 
 public:
-  Splashed(Pingu* p): PinguAction(p), sprite() {};
-  ActionName::Enum get_type() const { return ActionName::SPLASHED; }
+  Splashed(Pingu* p): PinguAction(p, ActionName::SPLASHED), sprite() {};  
 
   bool catchable() { return false; }
   bool change_allowed(ActionName::Enum) { return false; }

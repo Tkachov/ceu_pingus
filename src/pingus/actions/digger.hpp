@@ -31,12 +31,10 @@ private:
 
 public:
   Digger(Pingu* p):
-    PinguAction(p),
+    PinguAction(p, ActionName::DIGGER),
     digger_radius("pingus/common/digger_radius_gfx", "pingus/common/digger_radius"),
     digger_radius_final("pingus/common/digger_radius_final_gfx", "pingus/common/digger_radius_final_gfx"),
-    sprite() {};
-
-  ActionName::Enum get_type() const { return ActionName::DIGGER; }
+    sprite() {};  
 
   bool have_something_to_dig();
   void dig(bool final);

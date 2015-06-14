@@ -27,8 +27,7 @@ private:
   StateSprite sprite;
 
 public:
-  Climber(Pingu* p): PinguAction(p), sprite() {};
-  ActionName::Enum get_type () const { return ActionName::CLIMBER; }
+  Climber(Pingu* p): PinguAction(p, ActionName::CLIMBER), sprite() {};  
 
   bool change_allowed(ActionName::Enum new_action);
 

@@ -23,8 +23,7 @@ namespace Actions {
 
 class Blocker: public PinguAction {
 public:
-  Blocker(Pingu* p): PinguAction(p) {};
-  ActionName::Enum get_type() const { return ActionName::BLOCKER; }
+  Blocker(Pingu* p): PinguAction(p, ActionName::BLOCKER) {};  
 
 private:
   bool standing_on_ground();

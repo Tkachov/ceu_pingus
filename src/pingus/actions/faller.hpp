@@ -36,7 +36,6 @@ public:
 
   bool change_allowed(ActionName::Enum new_action);
 
-  ActionName::Enum get_type() const { return ActionName::FALLER; }
   bool is_tumbling() const;
 
 private:

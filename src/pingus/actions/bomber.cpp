@@ -26,7 +26,7 @@
 namespace Actions {
 
 Bomber::Bomber(Pingu* p):
-  PinguAction(p),
+  PinguAction(p, ActionName::BOMBER),
   bomber_radius("other/bomber_radius_gfx", "other/bomber_radius"),  
   explo_surf(Sprite("pingus/player" + pingu->get_owner_str() + "/explo")),
   mover(WorldObj::get_world(), Vector3f(0, 0, 0))

@@ -30,10 +30,7 @@ private:
   Sprite sprite;
 
 public:
-  Waiter(Pingu* p): PinguAction(p), sprite() {};
-  void draw (SceneContext& gc) {};
-  void update() {};
-  ActionName::Enum get_type () const { return ActionName::WAITER; }
+  Waiter(Pingu* p): PinguAction(p, ActionName::WAITER), sprite() {}; 
 
 private:
   Waiter (const Waiter&);

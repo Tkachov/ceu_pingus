@@ -30,8 +30,7 @@ private:
   enum { max_steps = 5 }; // max nr. of pixels that pingu can walk up/down
 
 public:
-  Walker(Pingu* p): PinguAction(p), walker(), floaterlayer() {};
-  ActionName::Enum get_type() const { return ActionName::WALKER; }
+  Walker(Pingu* p): PinguAction(p, ActionName::WALKER), walker(), floaterlayer() {};  
 
 private:
   Walker (const Walker&);

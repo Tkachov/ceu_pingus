@@ -28,7 +28,7 @@
 namespace Actions {
 
 Faller::Faller (Pingu* p) :
-  PinguAction(p),
+  PinguAction(p, ActionName::FALLER),
   faller(),
   tumbler(),
   mover(WorldObj::get_world(), Vector3f(0, 0, 0))

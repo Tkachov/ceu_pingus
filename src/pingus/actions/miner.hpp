@@ -35,8 +35,6 @@ public:
   Miner (Pingu* p);
   virtual ~Miner() {};
 
-  ActionName::Enum get_type() const { return ActionName::MINER; }
-
 private:
   void mine(bool final);
 

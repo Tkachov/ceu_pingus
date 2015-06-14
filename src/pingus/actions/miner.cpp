@@ -28,7 +28,7 @@
 namespace Actions {
 
 Miner::Miner (Pingu* p) :
-  PinguAction(p),
+  PinguAction(p, ActionName::MINER),
   miner_radius("pingus/common/miner_radius_gfx", "pingus/common/miner_radius"),
   miner_radius_left("pingus/common/miner_radius_left_gfx", "pingus/common/miner_radius_left"),
   miner_radius_right("pingus/common/miner_radius_right_gfx", "pingus/common/miner_radius_right"),

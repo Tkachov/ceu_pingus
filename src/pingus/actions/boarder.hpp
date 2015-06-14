@@ -25,8 +25,7 @@ namespace Actions {
     forward. */
 class Boarder: public PinguAction {
 public:
-  Boarder(Pingu* p): PinguAction(p) {};
-  ActionName::Enum get_type() const { return ActionName::BOARDER; }
+  Boarder(Pingu* p): PinguAction(p, ActionName::BOARDER) {};  
 
 private:
   Boarder(const Boarder&);

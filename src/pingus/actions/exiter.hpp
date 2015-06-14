@@ -27,8 +27,7 @@ private:
   StateSprite sprite;
 
 public:
-  Exiter(Pingu* p): PinguAction(p), sprite() {};
-  ActionName::Enum get_type() const { return ActionName::EXITER; }
+  Exiter(Pingu* p): PinguAction(p, ActionName::EXITER), sprite() {};  
 
 private:
   Exiter(const Exiter&);

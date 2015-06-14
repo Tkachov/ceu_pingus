@@ -29,8 +29,7 @@ private:
   StateSprite sprite;
 
 public:
-  LaserKill(Pingu* p): PinguAction(p), sprite() {};
-  ActionName::Enum get_type () const { return ActionName::LASERKILL; }
+  LaserKill(Pingu* p): PinguAction(p, ActionName::LASERKILL), sprite() {};  
 
   bool catchable() { return false; }
 

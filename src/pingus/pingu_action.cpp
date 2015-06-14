@@ -23,9 +23,7 @@
 #include "pingus/world.hpp"
 #include "pingus/worldobj.hpp"
 
-PinguAction::PinguAction (Pingu* p)
-  : pingu (p)
-{}
+PinguAction::PinguAction(Pingu* p, ActionName::Enum t): pingu(p), type(t) {}
 
 PinguAction::~PinguAction ()
 {

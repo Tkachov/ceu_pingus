@@ -44,7 +44,6 @@ public:
   Bridger(Pingu*);
 
   std::string get_name() const;
-  ActionName::Enum get_type() const { return ActionName::BRIDGER; }
 
   bool   way_is_free();
   bool   brick_placement_allowed(void);

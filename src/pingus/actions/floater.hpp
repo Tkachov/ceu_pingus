@@ -27,8 +27,7 @@ private:
   Sprite sprite;
 
 public:
-  Floater(Pingu* p): PinguAction(p), sprite() {};
-  ActionName::Enum get_type() const { return ActionName::FLOATER; }
+  Floater(Pingu* p): PinguAction(p, ActionName::FLOATER), sprite() {};  
 
   bool change_allowed(ActionName::Enum action) { return action == ActionName::BOMBER; }
 

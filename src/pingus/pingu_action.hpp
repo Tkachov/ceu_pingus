@@ -37,12 +37,15 @@ enum ActionType
     examples. */
 class PinguAction
 {
+private:
+  ActionName::Enum type;
+
 protected:
   /** A pointer to the pingu, which hold the action. */
   Pingu*      pingu;
 
 public:
-  PinguAction(Pingu* p);
+  PinguAction(Pingu* p, ActionName::Enum t);
   virtual ~PinguAction();
 
   /// Gives the PinguAction class access to the data of the Pingu.
@@ -67,7 +70,7 @@ public:
   virtual std::string get_name () const;
 
   /// The type of the action
-  virtual ActionName::Enum get_type () const =0;
+  ActionName::Enum get_type () const { return type; }
 
   /// Catch another pingu and act on it (see blocker.hxx)
   virtual bool  need_catch();

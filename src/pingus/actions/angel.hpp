@@ -27,8 +27,7 @@ private:
   Sprite sprite;
 
 public:
-  Angel(Pingu* p): PinguAction(p), sprite() {};
-  ActionName::Enum get_type() const { return ActionName::ANGEL; }
+  Angel(Pingu* p): PinguAction(p, ActionName::ANGEL), sprite() {};  
 
 private:
   Angel(const Angel&);

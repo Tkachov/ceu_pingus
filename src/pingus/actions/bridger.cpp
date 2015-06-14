@@ -27,7 +27,7 @@
 namespace Actions {
 
 Bridger::Bridger(Pingu* p):
-  PinguAction(p),
+  PinguAction(p, ActionName::BRIDGER),
   walk_sprite(),
   build_sprite(),
   brick_l("other/brick_left"),

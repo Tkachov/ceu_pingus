@@ -27,8 +27,7 @@ private:
   StateSprite sprite;
 
 public:
-  Drown(Pingu* p): PinguAction(p), sprite() {};
-  ActionName::Enum get_type() const { return ActionName::DROWN; }
+  Drown(Pingu* p): PinguAction(p, ActionName::DROWN), sprite() {};  
 
   bool catchable() { return false; }
 
