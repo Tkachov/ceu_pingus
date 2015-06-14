@@ -1,0 +1,18 @@
+#ifndef WORLDOBJ_CEU
+#define WORLDOBJ_CEU
+
+native/pre do
+    ##include "pingus/world.hpp"
+    ##include "pingus/worldobj.hpp"
+    ##include "pingus/collision_mask.hpp"
+
+    ##define WorldObj__get_world WorldObj::get_world
+    ##define WorldObj__get_world_remove(a, b, c) {CollisionMask& __msk = *a; WorldObj::get_world()->remove(__msk, b, c);}
+    ##define WorldObj__get_world_play_sound WorldObj::get_world()->play_sound
+end
+
+native @pure _WorldObj__get_world(),
+             _WorldObj__get_world_remove(),
+             _WorldObj__get_world_play_sound();
+
+#endif

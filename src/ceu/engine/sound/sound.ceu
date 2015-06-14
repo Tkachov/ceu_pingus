@@ -1,0 +1,9 @@
+#ifndef SOUND_CEU
+#define SOUND_CEU
+
+native/pre do
+    ##include "engine/sound/sound.hpp"
+    ##define Sound_PingusSound_play_sound Sound::PingusSound::play_sound
+end
+
+#endif

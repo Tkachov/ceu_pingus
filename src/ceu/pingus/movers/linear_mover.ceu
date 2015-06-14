@@ -1,0 +1,13 @@
+#ifndef LINEAR_MOVER_CEU
+#define LINEAR_MOVER_CEU
+
+native/pre do
+    ##include "pingus/movers/linear_mover.hpp"
+    ##define Movers_LinearMover Movers::LinearMover
+    ##define new_LinearMover() new Movers::LinearMover(WorldObj::get_world(), Vector3f(0, 0, 0))
+    ##define delete_LinearMover(l) delete l
+end
+
+native @pure _new_LinearMover(), _delete_LinearMover();
+
+#endif

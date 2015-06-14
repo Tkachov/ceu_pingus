@@ -4,39 +4,45 @@
 #include "../../c.ceu"
 #include "../../sdl.ceu"
 #include "../../engine/display/scene_context.ceu"
+#include "../../engine/display/sprite.ceu"
+#include "../../engine/sound/sound.ceu"
 #include "../../math/vector3f.ceu"
+#include "../collision_mask.ceu"
 #include "../iaction.ceu"
 #include "../ipingu.ceu"
 #include "../state_sprite.ceu"
+#include "../worldobj.ceu"
+#include "../movers/linear_mover.ceu"
 
 native/pre do
-    ##include "pingus/actions/bomber.hpp"
-    ##define ABomber Actions::Bomber
-
     ##include "pingus/particles/pingu_particle_holder.hpp"
     ##include "pingus/colliders/pingu_collider.hpp"
     ##include "pingus/movers/linear_mover.hpp"
     ##include "pingus/pingu_enums.hpp"
-    ##include "pingus/worldobj.hpp"
-    ##define WorldObj__get_world WorldObj::get_world
-    ##define WorldObj__get_world_remove WorldObj::get_world()->remove
-    ##define WorldObj__get_world_play_sound WorldObj::get_world()->play_sound
     ##define Colliders__PinguCollider Colliders::PinguCollider
     ##define Math__abs Math::abs
 end
 
-native @pure _Colliders__PinguCollider(),
-             _WorldObj__get_world(),
-             _WorldObj__get_world_remove(),
-             _WorldObj__get_world_play_sound();
+native @pure _Colliders__PinguCollider();
 
 class BomberAction with
     interface IAction;
 do
-    var _ABomber&? bomber = _PTR2REF((_ABomber*)pingu.set_ptr(_A_BOMBER));
+    var _PinguAction&? bomber = _PTR2REF(pingu.set_ptr(_A_BOMBER));
+    bomber.CHANGE_ALLOWED = false;
 
     var StateSprite sprite;
     load_file_directions(sprite, bomber, "/bomber/");
+
+    var _Sprite&? explo_surf = _new_SpriteA(_combine("pingus/player", bomber.pingu:get_owner_str(), "/explo"));
+    finalize with _delete_Sprite(explo_surf); end;
+
+    var _CollisionMask&? bomber_radius = _new_CollisionMask("other/bomber_radius_gfx", "other/bomber_radius");
+    finalize with _delete_CollisionMask(bomber_radius); end;
+
+    var _Movers_LinearMover&? mover = _new_LinearMover();
+    finalize with _delete_LinearMover(mover); end;
+
     _WorldObj__get_world_play_sound("ohno", bomber.pingu:get_pos());
 
     par do
@@ -44,14 +50,14 @@ do
             sprite.update();
 
             // Move the Pingu
-            bomber.mover.reset(bomber.pingu:get_pos());
-            bomber.mover.update(bomber.pingu:get_velocity(), _Colliders__PinguCollider(_pingu_height));
-            bomber.pingu:set_pos(bomber.mover.get_pos());
+            mover.reset(bomber.pingu:get_pos());
+            mover.update(bomber.pingu:get_velocity(), _Colliders__PinguCollider(_pingu_height));
+            bomber.pingu:set_pos(mover.get_pos());
         end
     with
         par do
             var _SceneContext* gc = await pingu.e_DRAW_CALLED until sprite.get(bomber.pingu:direction):get_current_frame() >= 13;
-            _gc_color_draw(gc, bomber.explo_surf, _Vector3f(bomber.pingu:get_x()-32, bomber.pingu:get_y()-48));
+            _gc_color_draw2(gc, explo_surf, _Vector3f(bomber.pingu:get_x()-32, bomber.pingu:get_y()-48));
         with
             every gc in pingu.e_DRAW_CALLED do
                 _gc_color_draw2(gc, sprite.get(bomber.pingu:direction), bomber.pingu:get_pos());
@@ -90,9 +96,9 @@ do
         PRE_CONDITION_AWAIT(pingu.e_UPDATE_CALLED, sprite.get(bomber.pingu:direction):get_current_frame() >= 13);
 
         _WorldObj__get_world_remove(
-            bomber.bomber_radius,
-            (int)((int)bomber.pingu:get_x() - (bomber.bomber_radius.get_width()/2)),
-            (int)((int)bomber.pingu:get_y() - 16 - (bomber.bomber_radius.get_width()/2))
+            bomber_radius,
+            (int)((int)bomber.pingu:get_x() - (bomber_radius.get_width()/2)),
+            (int)((int)bomber.pingu:get_y() - 16 - (bomber_radius.get_width()/2))
         );
 
         // The pingu explode

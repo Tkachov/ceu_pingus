@@ -1,0 +1,13 @@
+#ifndef COLLISION_MASK_CEU
+#define COLLISION_MASK_CEU
+
+native/pre do
+    ##include "pingus/collision_mask.hpp"
+
+    ##define new_CollisionMask(a, b) new CollisionMask(a, b)
+    ##define delete_CollisionMask(m) delete m
+end
+
+native @pure _new_CollisionMask(), _delete_CollisionMask();
+
+#endif

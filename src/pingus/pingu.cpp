@@ -28,7 +28,6 @@
 
 #include "pingus/actions/basher.hpp"
 #include "pingus/actions/blocker.hpp"
-#include "pingus/actions/bomber.hpp"
 #include "pingus/actions/bridger.hpp"
 #include "pingus/actions/climber.hpp"
 #include "pingus/actions/faller.hpp"
@@ -355,15 +354,15 @@ Pingu::create_action(ActionName::Enum action_)
   {
     case ActionName::BASHER:    return std::make_shared<Basher>(this);
     case ActionName::BLOCKER:   return std::make_shared<Blocker>(this);
-    case ActionName::BOMBER:    return std::make_shared<Bomber>(this);
     case ActionName::BRIDGER:   return std::make_shared<Bridger>(this);
     case ActionName::CLIMBER:   return std::make_shared<Climber>(this);
     case ActionName::FALLER:    return std::make_shared<Faller>(this);
-    case ActionName::FLOATER:   return std::make_shared<Floater>(this);    
-    case ActionName::MINER:     return std::make_shared<Miner>(this);    
+    case ActionName::FLOATER:   return std::make_shared<Floater>(this);
+    case ActionName::MINER:     return std::make_shared<Miner>(this);
 
     case ActionName::ANGEL:
     case ActionName::BOARDER:
+    case ActionName::BOMBER:
     case ActionName::DIGGER:
     case ActionName::DROWN:
     case ActionName::EXITER:
@@ -383,15 +382,15 @@ PinguAction* Pingu::create_action2(ActionName::Enum action_) {
   switch(action_) {
     case ActionName::BASHER:    return new Basher(this);
     case ActionName::BLOCKER:   return new Blocker(this);
-    case ActionName::BOMBER:    return new Bomber(this);
     case ActionName::BRIDGER:   return new Bridger(this);
-    case ActionName::CLIMBER:   return new Climber(this);        
+    case ActionName::CLIMBER:   return new Climber(this);
     case ActionName::FALLER:    return new Faller(this);
-    case ActionName::FLOATER:   return new Floater(this);    
-    case ActionName::MINER:     return new Miner(this);      
+    case ActionName::FLOATER:   return new Floater(this);
+    case ActionName::MINER:     return new Miner(this);
 
     case ActionName::ANGEL:
     case ActionName::BOARDER:
+    case ActionName::BOMBER:
     case ActionName::DIGGER:
     case ActionName::DROWN:
     case ActionName::EXITER:
