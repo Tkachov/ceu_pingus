@@ -42,7 +42,7 @@ private:
 
   /** A list holding all Pingus, the PinguHolder itself has only the
       active (not dead) ones */
-  std::list<Pingu*> pingus;
+  std::list<Pingu*> pingus, deads;
 
 public:
   PinguHolder(const PingusLevel&);
@@ -120,7 +120,12 @@ public:
   unsigned int get_end_id();
 
   // FIXME: Dirty cruft, needs cleanup
-  std::list<Pingu*>::iterator  begin () { return pingus.begin (); }
+  std::list<Pingu*>::iterator  begin () {
+    for(PinguIter i = deads.begin(); i != deads.end(); ++i)
+      pingus.remove(*i);
+    deads.clear();
+    return pingus.begin();
+  }
   std::list<Pingu*>::iterator  end ()   { return pingus.end (); }
   std::list<Pingu*>::size_type size ()  { return pingus.size (); }
 

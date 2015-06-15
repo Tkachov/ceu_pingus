@@ -2,8 +2,6 @@ native/pre do
     ##define private public
     ##define protected public
 end
-native do
-end
 
 #include "c.ceu"
 #include "sdl.ceu"
@@ -12,13 +10,18 @@ end
 #include "pingus/components/forwardbutton.ceu"
 #include "pingus/components/pausebutton.ceu"
 #include "pingus/pingu_holder.ceu"
+#include "pingus/pingu_holder_listener.ceu"
+#include "pingus/world.ceu"
 #include "proxies/proxyeventlist.ceu"
+
+event _Pingu* e_PINGU_DIED;
+event _Pingu* e_PINGU_EXITED;
 
 input _MenuButton* NEW_MENUBUTTON;
 input _ArmageddonButton* NEW_ARMAGEDDONBUTTON;
 input _ForwardButton* NEW_FORWARDBUTTON;
 input _PauseButton* NEW_PAUSEBUTTON;
-input _PinguHolder* NEW_PINGU_HOLDER;
+input _World* NEW_WORLD;
 
 par/or do
     await SDL_QUIT;
@@ -47,9 +50,9 @@ with
         end;
     end
 with
-    every new_pingu_holder in NEW_PINGU_HOLDER do
-        spawn PinguHolder with
-            this.me = _PTR2REF(new_pingu_holder);
+    every new_world in NEW_WORLD do
+        spawn World with
+            this.me = _PTR2REF(new_world);
         end;
     end
 with

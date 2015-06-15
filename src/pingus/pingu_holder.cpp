@@ -24,17 +24,9 @@
 PinguHolder::PinguHolder(const PingusLevel& plf) :
   number_of_allowed(plf.get_number_of_pingus()),
   dead(0), exited(0), released(0),
-  pingus()
-{
-  PinguHolder* self = this;
-  ceu_out_go(&CEUapp, CEU_IN_NEW_PINGU_HOLDER, &self);
-}
+  pingus(), deads() {}
 
-PinguHolder::~PinguHolder()
-{
-  PinguHolder* self = this;
-  ceu_out_go(&CEUapp, CEU_IN_DELETE_PINGU_HOLDER, &self);
-}
+PinguHolder::~PinguHolder() {}
 
 Pingu*
 PinguHolder::create_pingu (const Vector3f& pos, int owner_id)
@@ -57,11 +49,13 @@ PinguHolder::draw (SceneContext& gc)
 }
 
 void PinguHolder::update() {
+  begin(); //cleans up
   ceu_out_go(&CEUapp, CEU_IN_PINGU_UPDATE_ALL, 0);
 }
 
 void PinguHolder::erase(Pingu* p) {
-  pingus.remove(p);
+  //pingus.remove(p);
+  deads.push_back(p);
 }
 
 Pingu* PinguHolder::get_pingu(unsigned int id_) {

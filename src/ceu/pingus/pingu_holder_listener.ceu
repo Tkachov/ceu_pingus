@@ -5,11 +5,9 @@ native/pre do
     ##include "pingus/pingu.hpp"
 end
 
-class PinguHolderListener with
+interface Global with
     event _Pingu* e_PINGU_DIED;
     event _Pingu* e_PINGU_EXITED;
-do
-	await FOREVER;
 end
 
 #endif

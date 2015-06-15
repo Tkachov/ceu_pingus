@@ -33,6 +33,8 @@
 #include "pingus/worldobjs/entrance.hpp"
 #include "util/log.hpp"
 
+#include "ceuvars.h"
+
 static
 bool WorldObj_less (WorldObj* a, WorldObj* b)
 {
@@ -72,6 +74,9 @@ World::World(const PingusLevel& plf) :
   world_obj.push_back(snow_particle_holder);
 
   init_worldobjs(plf);
+
+  World* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_NEW_WORLD, &self);
 }
 
 void
@@ -116,6 +121,9 @@ World::~World()
   for (WorldObjIter it = world_obj.begin(); it != world_obj.end(); ++it) {
     delete *it;
   }
+
+  World* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_DELETE_WORLD, &self);
 }
 
 void
@@ -149,28 +157,8 @@ World::update()
 
   game_time += 1;
 
-  if (do_armageddon)
-  {
-    if (game_time % 4 == 0)
-    {
-      while (armageddon_count < pingus->get_end_id())
-      {
-        Pingu* pingu = pingus->get_pingu(armageddon_count); //one of two places where get_pingu(id) is used
-
-        if (pingu)
-        {
-          pingu->request_set_action(ActionName::BOMBER);
-          break;
-        }
-        else
-        {
-          ++armageddon_count;
-        }
-      }
-
-      ++armageddon_count;
-    }
-  }
+  World* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_WORLD_UPDATE, &self);
 
   // Let all pingus move and
   // Let the pingus catch each other and

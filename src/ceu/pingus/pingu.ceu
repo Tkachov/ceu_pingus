@@ -50,7 +50,6 @@ native @pure _delete_Pingu();
 class Pingu with
     interface IPingu;
     event int e_CHANGE_ACTION;
-    var PinguHolderListener& holder;
 do
     function (int a) => _PinguAction* set_ptr do
         action = _PTR2REF(me.create_action2((ActionName_Enum)a));
@@ -129,10 +128,10 @@ do
                     DO_ACTION(_A_WAITER, WaiterAction)
                     DO_ACTION(_A_WALKER, WalkerAction)
                 else/if current_action == _A_DEAD then
-                    emit holder.e_PINGU_DIED => &me;
+                    emit global:e_PINGU_DIED => &me;
                     escape 1;
                 else/if current_action == _A_EXITED then
-                    emit holder.e_PINGU_EXITED => &me;
+                    emit global:e_PINGU_EXITED => &me;
                     escape 2;
                 else
                     await FOREVER;

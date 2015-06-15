@@ -1,0 +1,46 @@
+#ifndef WORLD_CEU
+#define WORLD_CEU
+
+#include "../c.ceu"
+#include "../sdl.ceu"
+#include "pingu.ceu"
+#include "pingu_holder.ceu"
+
+native/pre do
+    ##include "pingus/world.hpp"
+end
+
+input _World* DELETE_WORLD;
+input _World* WORLD_UPDATE;
+
+class World with
+    var _World& me;
+do
+    var _World&? me_ = _PTR2REF((_World*)&this.me);
+    var PinguHolder holder with
+        this.me = me_.pingus;
+    end;
+
+    par/or do
+        every w in WORLD_UPDATE do
+            if w != &me_ then
+                continue;
+            end
+
+            if me_.do_armageddon and me_.game_time%4 == 0 then
+                loop pingu in holder.all_pingus do
+                    if pingu:me.get_action() == _A_BOMBER then
+                        continue;
+                    end
+
+                    emit pingu:e_CHANGE_ACTION => _A_BOMBER;
+                    break;
+                end
+            end
+        end
+    with
+        var _World* p = await DELETE_WORLD until (p == &me_);
+    end
+end
+
+#endif

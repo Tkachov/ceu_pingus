@@ -24,12 +24,11 @@ class PinguHolder with
     pool Pingu[] all_pingus;
 do
     var _PinguHolder&? me_ = _PTR2REF((_PinguHolder*)&this.me);
-    var PinguHolderListener listener;
     var int pingus_emitted = 0;
     var int pingus_exited = 0;
     var int pingus_dead = 0;
 
-    par/or do
+    par do
         every package in NEW_PINGU do
             if package:holder != &me_ then
                 continue;
@@ -39,7 +38,6 @@ do
                 // We use all_pingus.size() as pingu_id, so that id == array index
                 spawn Pingu in all_pingus with
                     this.me = _new_Pingu(pingus_emitted, package:pos, package:owner);
-                    this.holder = _PTR2REF(listener);
                     package:result = &this.me;
                 end;
 
@@ -50,13 +48,13 @@ do
             end
         end
     with
-        every p in listener.e_PINGU_DIED do
+        every p in global:e_PINGU_DIED do
             pingus_dead = pingus_dead + 1;
             me_.dead = pingus_dead;
             me_.erase(_PTR2REF(p));
         end
     with
-        every p in listener.e_PINGU_EXITED do
+        every p in global:e_PINGU_EXITED do
             pingus_exited = pingus_exited + 1;
             me_.exited = pingus_exited;
             me_.erase(_PTR2REF(p));
@@ -76,8 +74,6 @@ do
                 end
             end
         end
-    with
-        var _PinguHolder* p = await DELETE_PINGU_HOLDER until (p == &me_);
     end
 end
 
