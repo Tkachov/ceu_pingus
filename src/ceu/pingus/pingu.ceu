@@ -29,6 +29,7 @@
 native/pre do
     ##include "pingus/pingu.hpp"
     ##define A_Enum(x) (ActionName::Enum)(x)
+    ##define delete_Pingu(p) delete p
 end
 
 input _PinguAction* PINGU_SET_ACTION;
@@ -36,6 +37,8 @@ input void PINGU_UPDATE_ALL;
 input _SceneContext* PINGU_DRAW_WALKER;
 input _SceneContext* PINGU_DRAW_OTHERS;
 input _Pingu* DELETE_PINGU;
+
+native @pure _delete_Pingu();
 
 #define DO_ACTION(n, c) \
     else/if current_action == n then \
@@ -54,10 +57,12 @@ do
     end
 
     var _Pingu&? me_ = _PTR2REF((_Pingu*)&this.me);
+    finalize with _delete_Pingu(me_); end
+
     var int current_action = _A_FALLER;
     set_ptr(_A_FALLER);
 
-    par/or do
+    par do
         //pass update() call
         every PINGU_UPDATE_ALL do
             if me_.status == _PS_DEAD then
@@ -133,8 +138,6 @@ do
                 await PINGU_UPDATE_ALL; //hack
             end
         end
-    with
-        var _Pingu* p = await DELETE_PINGU until (p == &me_);
     end
 end
 

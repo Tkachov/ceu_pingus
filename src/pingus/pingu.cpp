@@ -56,18 +56,9 @@ Pingu::Pingu (int arg_id, const Vector3f& arg_pos, int owner):
   direction.left();
 
   ceu_action = create_action2(ActionName::FALLER); //so get_ceu_action() never fails
-
-  //create Ceu Pingu
-  Pingu* self = this;
-  ceu_out_go(&CEUapp, CEU_IN_NEW_PINGU, &self);
-
-  //ceu_pingu should be already set now from Ceu Pingu
 }
 
-Pingu::~Pingu() {
-  Pingu* self = this;
-  ceu_out_go(&CEUapp, CEU_IN_DELETE_PINGU, &self);
-}
+Pingu::~Pingu() {}
 
 void Pingu::replace_action(PinguAction* a) {
   PinguAction* backup_action = ceu_action;
@@ -349,7 +340,7 @@ Pingu::create_action(ActionName::Enum action_)
 {
   switch(action_)
   {
-    case ActionName::BASHER:    return std::make_shared<Basher>(this);    
+    case ActionName::BASHER:    return std::make_shared<Basher>(this);
     case ActionName::CLIMBER:   return std::make_shared<Climber>(this);
     case ActionName::FALLER:    return std::make_shared<Faller>(this);
     case ActionName::FLOATER:   return std::make_shared<Floater>(this);
@@ -377,7 +368,7 @@ Pingu::create_action(ActionName::Enum action_)
 
 PinguAction* Pingu::create_action2(ActionName::Enum action_) {
   switch(action_) {
-    case ActionName::BASHER:    return new Basher(this);       
+    case ActionName::BASHER:    return new Basher(this);
     case ActionName::CLIMBER:   return new Climber(this);
     case ActionName::FALLER:    return new Faller(this);
     case ActionName::FLOATER:   return new Floater(this);

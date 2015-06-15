@@ -7,11 +7,15 @@
 
 native/pre do
     ##include "pingus/pingu_holder.hpp"
+    ##define Package PinguHolder::PinguPackage
+    ##define new_Pingu new Pingu
 end
 
-input _Pingu* NEW_PINGU;
+input _Package* NEW_PINGU;
 input _PinguHolder* DELETE_PINGU_HOLDER;
-    
+
+native @pure _new_Pingu();
+
 class PinguHolder with
     var _PinguHolder& me;
     pool Pingu[] all_pingus;
@@ -19,9 +23,14 @@ do
     var _PinguHolder&? me_ = _PTR2REF((_PinguHolder*)&this.me);
 
     par/or do
-        every new_pingu in NEW_PINGU do
+        every package in NEW_PINGU do
+            if package:holder != &me_ then
+                continue;
+            end
+
             spawn Pingu in all_pingus with
-                this.me = _PTR2REF(new_pingu);
+                this.me = _new_Pingu(package:id, package:pos, package:owner);
+                package:result = &this.me;
             end;
         end
     with

@@ -33,10 +33,6 @@ PinguHolder::PinguHolder(const PingusLevel& plf) :
 
 PinguHolder::~PinguHolder()
 {
-  for(std::vector<Pingu*>::iterator i = all_pingus.begin();
-      i != all_pingus.end(); ++i)
-    delete *i;
-
   PinguHolder* self = this;
   ceu_out_go(&CEUapp, CEU_IN_DELETE_PINGU_HOLDER, &self);
 }
@@ -46,17 +42,18 @@ PinguHolder::create_pingu (const Vector3f& pos, int owner_id)
 {
   if (number_of_allowed > get_number_of_released())
   {
-    // We use all_pingus.size() as pingu_id, so that id == array
-    // index
-    Pingu* pingu = new Pingu (static_cast<int>(all_pingus.size()), pos, owner_id);
+    // We use all_pingus.size() as pingu_id, so that id == array index
+    PinguPackage package(this, static_cast<int>(all_pingus.size()), pos, owner_id);
+    PinguPackage* pp = &package;
+    ceu_out_go(&CEUapp, CEU_IN_NEW_PINGU, &pp);
 
     // This list will deleted
-    all_pingus.push_back (pingu);
+    all_pingus.push_back(package.result);
 
     // This list holds the active pingus
-    pingus.push_back(pingu);
+    pingus.push_back(package.result);
 
-    return pingu;
+    return package.result;
   }
   else
   {
