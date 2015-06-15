@@ -5,12 +5,12 @@
 //  it under the terms of the GNU General Public License as published by
 //  the Free Software Foundation, either version 3 of the License, or
 //  (at your option) any later version.
-//  
+//
 //  This program is distributed in the hope that it will be useful,
 //  but WITHOUT ANY WARRANTY; without even the implied warranty of
 //  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //  GNU General Public License for more details.
-//  
+//
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -76,8 +76,15 @@ public:
   /// Catch another pingu and act on it (see blocker.hxx)
   virtual bool  need_catch();
 
-  ///
-  virtual void  catch_pingu (Pingu*) { /* do nothing */}
+  ///catching Pingus:
+  void catch_pingus();
+
+  virtual void catch_pingu(Pingu*);
+
+  struct CatchedPingu {
+    PinguAction* action;
+    Pingu* pingu;
+  };
 
   /** Return true if the pingu can be caught with the mouse and
       another action can be applied, false otherwise (exiter,

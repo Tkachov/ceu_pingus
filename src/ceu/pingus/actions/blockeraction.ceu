@@ -6,17 +6,13 @@
 #include "../../engine/display/scene_context.ceu"
 #include "../iaction.ceu"
 #include "../ipingu.ceu"
+#include "../pingu_action.ceu"
 #include "../state_sprite.ceu"
-
-native/pre do
-    ##include "pingus/actions/blocker.hpp"
-    ##define ABlocker Actions::Blocker
-end
 
 class BlockerAction with
     interface IAction;
 do
-    var _ABlocker&? blocker = _PTR2REF((_ABlocker*)pingu.set_ptr(_A_BLOCKER));
+    var _PinguAction&? blocker = _PTR2REF(pingu.set_ptr(_A_BLOCKER));
 
     var StateSprite sprite;
     load_file_directions(sprite, blocker, "/blocker/");
@@ -35,12 +31,34 @@ do
         end
     with
         every pingu.e_UPDATE_CALLED do
-            if not blocker.standing_on_ground() then
+            if blocker.rel_getpixel(0,-1) == _GT_NOTHING then
                 escape _A_FALLER;
             end
 
             blocker.catch_pingus();
             sprite.update();
+        end
+    with
+        every catched in CATCH_PINGU do
+            if &blocker != catched:action then
+                continue;
+            end
+
+            // avoid 'self' catch
+            if catched:pingu == blocker.pingu then
+                continue;
+            end
+
+            if catched:pingu:get_x() > blocker.pingu:get_x()-16 and
+               catched:pingu:get_x() < blocker.pingu:get_x()+16 and
+               catched:pingu:get_y() > blocker.pingu:get_y()-32 and
+               catched:pingu:get_y() < blocker.pingu:get_y()+5 then
+                if catched:pingu:get_x() > blocker.pingu:get_x() then
+                    catched:pingu:direction.right();
+                else
+                    catched:pingu:direction.left();
+                end
+            end
         end
     end
 end
