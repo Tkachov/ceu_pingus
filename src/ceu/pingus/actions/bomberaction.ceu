@@ -103,12 +103,8 @@ do
 
         // The pingu explode
         PRE_CONDITION_AWAIT(pingu.e_UPDATE_CALLED, sprite.get(bomber.pingu:direction):is_finished());
-
-        //Be dead forever
-        loop do
-            bomber.pingu:set_status(_PS_DEAD);
-            await pingu.e_UPDATE_CALLED;
-        end
+        
+        escape _A_DEAD;
     end
 end
 

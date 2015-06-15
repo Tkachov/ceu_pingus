@@ -35,7 +35,7 @@ do
             sprite.update();
 
             if sprite.is_finished() then
-                splashed.pingu:set_status(_PS_DEAD);
+                escape _A_DEAD;
             end
         end
     with

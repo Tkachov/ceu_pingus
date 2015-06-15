@@ -35,13 +35,10 @@ private:
       level */
   int number_of_allowed;
 
-  /** Number of pingus that made it to the exit, we cache this, since
-      else we would have to iterate over the whole list and count them
-      each time they are requested. */
-  int number_of_exited;
-
-  /** Number of pingus in Ceu pool (synced by Ceu PinguHolder) */
-  int all_pingus_size;
+  /** Number of pingus in Ceu (synced by Ceu PinguHolder) */  
+  int dead;
+  int exited;
+  int released;
 
   /** A list holding all Pingus, the PinguHolder itself has only the
       active (not dead) ones */
@@ -76,6 +73,8 @@ public:
   /** Update all Pingus (this calls Pingu::update() which then calls
       PinguAction::update()) */
   void update();
+
+  void erase(Pingu*);
 
   /** The z-pos at which the pingus gets draw.
       @return 50 */

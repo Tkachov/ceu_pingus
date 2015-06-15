@@ -32,16 +32,6 @@ class SceneContext;
     objects. */
 class Pingu
 {
-public:
-  /** The Pingus Status shows the current status of a Pingu, as
-      displayed in the PingusCounter pannel. PS_DEAD are pingus that got
-      killed, PS_ALIVE are pingus that are still active in the world and
-      PS_EXITED are pingus that successfully finished a level
-
-      FIXME: different subvalues of PS_DEAD might be usefull (drowned,
-      FIXME: splashed, smashed, etc.) */
-  enum PinguStatus { PS_ALIVE, PS_EXITED, PS_DEAD };
-
 private:
 
   PinguAction* ceu_action;
@@ -68,9 +58,6 @@ private:
   /** The id of the owner of the pingus, used in multiplayer matches */
   int owner_id;
 
-  /** The stat of the pingu, these can be modified by PinguActions */
-  PinguStatus status;
-
   float pos_x;
   float pos_y;
 
@@ -94,6 +81,8 @@ public:
 
   /** Destruct the pingu... */
   ~Pingu ();
+
+  void die(); //notify Ceu to terminate the instance (reason: death)
 
   PinguAction* get_ceu_action();
 
@@ -120,14 +109,6 @@ public:
 
   /** Checks if this action allows to be overwritten with the given new action */
   bool change_allowed (ActionName::Enum new_action);
-
-  /// Check if the pingu is still alive
-  bool is_alive (void);
-
-  /// Return the status of the pingu
-  PinguStatus get_status (void) const;
-
-  PinguStatus set_status (PinguStatus);
 
   /** The descriptive name of the action, this is used in the
       CaputreRectangle, so it can contain more than just the name

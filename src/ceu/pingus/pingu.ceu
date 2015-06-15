@@ -25,6 +25,7 @@
 #include "actions/walkeraction.ceu"
 #include "iaction.ceu"
 #include "ipingu.ceu"
+#include "pingu_holder_listener.ceu"
 
 native/pre do
     ##include "pingus/pingu.hpp"
@@ -36,7 +37,7 @@ input _PinguAction* PINGU_SET_ACTION;
 input void PINGU_UPDATE_ALL;
 input _SceneContext* PINGU_DRAW_WALKER;
 input _SceneContext* PINGU_DRAW_OTHERS;
-input _Pingu* DELETE_PINGU;
+input _Pingu* PINGU_DIE;
 
 native @pure _delete_Pingu();
 
@@ -49,6 +50,7 @@ native @pure _delete_Pingu();
 class Pingu with
     interface IPingu;
     event int e_CHANGE_ACTION;
+    var PinguHolderListener& holder;
 do
     function (int a) => _PinguAction* set_ptr do
         action = _PTR2REF(me.create_action2((ActionName_Enum)a));
@@ -65,34 +67,29 @@ do
     par do
         //pass update() call
         every PINGU_UPDATE_ALL do
-            if me_.status == _PS_DEAD then
-                continue;
-            end
-
             // original FIXME: Out of screen check is ugly
             // The Pingu has hit the edge of the screen, a good time to let him die.
             if me_.rel_getpixel(0, -1) == _GT_OUTOFSCREEN then
                 //Sound::PingusSound::play_sound("die");
-                me_.status = _PS_DEAD;
-                continue;
+                emit e_CHANGE_ACTION => _A_DEAD;
             end
 
             emit e_UPDATE_CALLED;
         end
     with
-        every gc in PINGU_DRAW_WALKER do
-            if me_.status != _PS_ALIVE then
-                continue;
+        every p in PINGU_DIE do
+            if p == &me_ then
+               emit e_CHANGE_ACTION => _A_DEAD;
             end
+        end
+    with
+        every gc in PINGU_DRAW_WALKER do
             if current_action == _A_WALKER then
                 emit e_DRAW_CALLED => gc;
             end
         end
     with
         every gc in PINGU_DRAW_OTHERS do
-            if me_.status != _PS_ALIVE then
-                continue;
-            end
             if current_action != _A_WALKER then
                 emit e_DRAW_CALLED => gc;
             end
@@ -131,6 +128,12 @@ do
                     DO_ACTION(_A_SUPERMAN, SupermanAction)
                     DO_ACTION(_A_WAITER, WaiterAction)
                     DO_ACTION(_A_WALKER, WalkerAction)
+                else/if current_action == _A_DEAD then
+                    emit holder.e_PINGU_DIED => &me;
+                    escape 1;
+                else/if current_action == _A_EXITED then
+                    emit holder.e_PINGU_EXITED => &me;
+                    escape 2;
                 else
                     await FOREVER;
                 end

@@ -22,7 +22,7 @@ do
             superman.pingu:set_pos((float)(superman.pingu:get_x() + 40.0*0.025), superman.pingu:get_y() - 200.0*0.025);
 
             if superman.pingu:get_y() < -32 then
-                superman.pingu:set_status(_PS_DEAD);
+                escape _A_DEAD;
             end
         end
     with

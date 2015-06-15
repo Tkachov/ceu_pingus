@@ -23,8 +23,7 @@
 
 PinguHolder::PinguHolder(const PingusLevel& plf) :
   number_of_allowed(plf.get_number_of_pingus()),
-  number_of_exited(0),
-  all_pingus_size(0),
+  dead(0), exited(0), released(0),
   pingus()
 {
   PinguHolder* self = this;
@@ -59,26 +58,10 @@ PinguHolder::draw (SceneContext& gc)
 
 void PinguHolder::update() {
   ceu_out_go(&CEUapp, CEU_IN_PINGU_UPDATE_ALL, 0);
+}
 
-  PinguIter pingu = pingus.begin();
-  while(pingu != pingus.end()) {
-    switch((*pingu)->get_status()) {
-      case Pingu::PS_EXITED:
-        number_of_exited += 1;
-      //no break;
-
-      case Pingu::PS_DEAD:
-        // Removing the pingu and setting the iterator back to
-        // the correct position, no memory hole since pingus will
-        // keep track of the allocated Pingus
-        pingu = pingus.erase(pingu);
-      break;
-
-      default:
-        // move to the next Pingu
-        ++pingu;
-    }
-  }
+void PinguHolder::erase(Pingu* p) {
+  pingus.remove(p);
 }
 
 Pingu* PinguHolder::get_pingu(unsigned int id_) {
@@ -94,40 +77,16 @@ PinguHolder::get_z_pos() const
   return 50;
 }
 
-int
-PinguHolder::get_number_of_exited()
-{
-  return number_of_exited;
-}
+int PinguHolder::get_number_of_exited() { return exited; }
 
-int
-PinguHolder::get_number_of_killed()
-{
-  return all_pingus_size - static_cast<int>(pingus.size()) - get_number_of_exited();
-}
+int PinguHolder::get_number_of_killed() { return dead; }
 
-int
-PinguHolder::get_number_of_alive()
-{
-  return static_cast<int>(pingus.size());
-}
+int PinguHolder::get_number_of_alive() { return released - dead - exited; }
 
-int
-PinguHolder::get_number_of_released()
-{
-  return all_pingus_size;
-}
+int PinguHolder::get_number_of_released() { return released; }
 
-int
-PinguHolder::get_number_of_allowed()
-{
-  return number_of_allowed;
-}
+int PinguHolder::get_number_of_allowed() { return number_of_allowed; }
 
-unsigned int
-PinguHolder::get_end_id()
-{
-  return all_pingus_size;
-}
+unsigned int PinguHolder::get_end_id() { return released; }
 
 /* EOF */
