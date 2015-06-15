@@ -40,21 +40,13 @@ PinguHolder::~PinguHolder()
 Pingu*
 PinguHolder::create_pingu (const Vector3f& pos, int owner_id)
 {
-  if (number_of_allowed > get_number_of_released())
-  {
-    PinguPackage package(this, pos, owner_id);
-    PinguPackage* pp = &package;
-    ceu_out_go(&CEUapp, CEU_IN_NEW_PINGU, &pp);
+  PinguPackage package(this, pos, owner_id);
+  PinguPackage* pp = &package;
+  ceu_out_go(&CEUapp, CEU_IN_NEW_PINGU, &pp);
 
-    // This list holds the active pingus
-    pingus.push_back(package.result);
-
-    return package.result;
-  }
-  else
-  {
-    return 0;
-  }
+  // This list holds the active pingus
+  if(package.result) pingus.push_back(package.result);
+  return package.result;
 }
 
 void

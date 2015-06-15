@@ -34,14 +34,18 @@ do
                 continue;
             end
 
-            // We use all_pingus.size() as pingu_id, so that id == array index
-            spawn Pingu in all_pingus with
-                this.me = _new_Pingu(all_pingus_size, package:pos, package:owner);
-                package:result = &this.me;
-            end;
+            if me_.number_of_allowed > all_pingus_size then
+                // We use all_pingus.size() as pingu_id, so that id == array index
+                spawn Pingu in all_pingus with
+                    this.me = _new_Pingu(all_pingus_size, package:pos, package:owner);
+                    package:result = &this.me;
+                end;
 
-            all_pingus_size = all_pingus_size + 1;
-            me_.all_pingus_size = all_pingus_size;
+                all_pingus_size = all_pingus_size + 1;
+                me_.all_pingus_size = all_pingus_size;
+            else
+                package:result = 0;
+            end
         end
     with
         every package in GET_PINGU do
