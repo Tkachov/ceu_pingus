@@ -166,7 +166,7 @@ ServerEvent::send(Server* server)
 
     case PINGU_ACTION_EVENT:
     {
-      Pingu* pingu = server->get_world()->get_pingus()->get_pingu(pingu_id);
+      Pingu* pingu = server->get_world()->get_pingus()->get_pingu(pingu_id); //one of two places where get_pingu(id) is used
       if (pingu)
       {
         if (pos.x != pingu->get_pos().x ||

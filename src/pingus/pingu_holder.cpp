@@ -24,7 +24,7 @@
 PinguHolder::PinguHolder(const PingusLevel& plf) :
   number_of_allowed(plf.get_number_of_pingus()),
   number_of_exited(0),
-  all_pingus(),
+  all_pingus_size(0),
   pingus()
 {
   PinguHolder* self = this;
@@ -42,13 +42,9 @@ PinguHolder::create_pingu (const Vector3f& pos, int owner_id)
 {
   if (number_of_allowed > get_number_of_released())
   {
-    // We use all_pingus.size() as pingu_id, so that id == array index
-    PinguPackage package(this, static_cast<int>(all_pingus.size()), pos, owner_id);
+    PinguPackage package(this, pos, owner_id);
     PinguPackage* pp = &package;
     ceu_out_go(&CEUapp, CEU_IN_NEW_PINGU, &pp);
-
-    // This list will deleted
-    all_pingus.push_back(package.result);
 
     // This list holds the active pingus
     pingus.push_back(package.result);
@@ -93,24 +89,11 @@ void PinguHolder::update() {
   }
 }
 
-Pingu*
-PinguHolder::get_pingu(unsigned int id_)
-{
-  if (id_ < all_pingus.size())
-  {
-    Pingu* pingu = all_pingus[id_];
-
-    assert(pingu->get_id() == id_);
-
-    if (pingu->get_status() == Pingu::PS_ALIVE)
-      return pingu;
-    else
-      return 0;
-  }
-  else
-  {
-    return 0;
-  }
+Pingu* PinguHolder::get_pingu(unsigned int id_) {
+  GetPinguPackage package(this, id_);
+  GetPinguPackage* pp = &package;
+  ceu_out_go(&CEUapp, CEU_IN_GET_PINGU, &pp);
+  return pp->result;
 }
 
 float
@@ -128,7 +111,7 @@ PinguHolder::get_number_of_exited()
 int
 PinguHolder::get_number_of_killed()
 {
-  return static_cast<int>(all_pingus.size()) - static_cast<int>(pingus.size()) - get_number_of_exited();
+  return all_pingus_size - static_cast<int>(pingus.size()) - get_number_of_exited();
 }
 
 int
@@ -140,7 +123,7 @@ PinguHolder::get_number_of_alive()
 int
 PinguHolder::get_number_of_released()
 {
-  return static_cast<int>(all_pingus.size());
+  return all_pingus_size;
 }
 
 int
@@ -152,7 +135,7 @@ PinguHolder::get_number_of_allowed()
 unsigned int
 PinguHolder::get_end_id()
 {
-  return static_cast<unsigned int>(all_pingus.size());
+  return all_pingus_size;
 }
 
 /* EOF */
