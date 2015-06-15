@@ -34,7 +34,7 @@ do
     var StateSprite sprite;
     load_file_directions(sprite, bomber, "/bomber/");
 
-    var _Sprite&? explo_surf = _new_SpriteA(_combine("pingus/player", bomber.pingu:get_owner_str(), "/explo"));
+    var _Sprite&? explo_surf = _new_SpriteA(_scc3("pingus/player", bomber.pingu:get_owner_str(), "/explo"));
     finalize with _delete_Sprite(explo_surf); end;
 
     var _CollisionMask&? bomber_radius = _new_CollisionMask("other/bomber_radius_gfx", "other/bomber_radius");

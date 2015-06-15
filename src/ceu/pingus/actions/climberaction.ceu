@@ -11,10 +11,7 @@
 native/pre do
     ##include "pingus/actions/climber.hpp"
     ##define AClimber Actions::Climber
-    ##define climber_head_collision_on_walk(c, x, y) (c)->head_collision_on_walk(x, y)
 end
-
-native @pure _climber_head_collision_on_walk();
 
 class ClimberAction with
     interface IAction;
@@ -44,7 +41,7 @@ do
             end
 
             // If Pingu able to get to new position without head collision
-            if not _climber_head_collision_on_walk(climber, climber.pingu:direction, 1) then
+            if not _action_head_collision_on_walk(climber, climber.pingu:direction, 1) then
                 // Get ready to walk
                 climber.pingu:set_pos(
                     climber.pingu:get_x() + (float)climber.pingu:direction,

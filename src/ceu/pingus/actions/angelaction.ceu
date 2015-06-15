@@ -22,7 +22,7 @@ class AngelAction with
 do
     var _PinguAction&? angel = _PTR2REF(pingu.set_ptr(_A_ANGEL));
 
-    var _Sprite&? sprite = _PTR2REF(_new_SpriteA(_combine("pingus/player", angel.pingu:get_owner_str(), "/angel")));
+    var _Sprite&? sprite = _PTR2REF(_new_SpriteA(_scc3("pingus/player", angel.pingu:get_owner_str(), "/angel")));
     finalize with _delete_Sprite(sprite); end;
 
     var float counter = 0;

@@ -4,35 +4,110 @@
 #include "../../c.ceu"
 #include "../../sdl.ceu"
 #include "../../engine/display/scene_context.ceu"
+#include "../../engine/sound/sound.ceu"
+#include "../collision_mask.ceu"
 #include "../iaction.ceu"
 #include "../ipingu.ceu"
+#include "../pingu_action.ceu"
 #include "../state_sprite.ceu"
+#include "../worldobj.ceu"
 
 native/pre do
-    ##include "pingus/actions/bridger.hpp"
-    ##define ABridger Actions::Bridger
-    ##define AB_MAX_BRICKS Actions::Bridger::MAX_BRICKS
+    ##include "pingus/gettext.h"
+    ##include "util/string_util.hpp"
+    ##define make_name(b) _("Bridger") + std::string(" (" + StringUtil::to_string(b) + ")")
 end
+
+native @pure _make_name();
+
+//I want constants =(
+#define MAX_BRICKS 15
+//const int brick_length = 16;
 
 class BridgerAction with
     interface IAction;
 do
-    var _ABridger&? bridger = _PTR2REF((_ABridger*)pingu.set_ptr(_A_BRIDGER));
+    var _PinguAction&? bridger = _PTR2REF(pingu.set_ptr(_A_BRIDGER));
+    var int bricks = MAX_BRICKS;
+    bridger.name = _make_name(bricks);
 
-    load_directions(bridger.walk_sprite, bridger, "/bridger_walk/");
-    load_directions(bridger.build_sprite, bridger, "/bridger/");
+    var StateSprite walk_sprite;
+    var StateSprite build_sprite;
+    load_file_directions(walk_sprite, bridger, "/bridger_walk/");
+    load_file_directions(build_sprite, bridger, "/bridger/");
+
+    var _CollisionMask&? brick_l = _new_CollisionMask("other/brick_left");
+    finalize with _delete_CollisionMask(brick_l); end;
+
+    var _CollisionMask&? brick_r = _new_CollisionMask("other/brick_right");
+    finalize with _delete_CollisionMask(brick_r); end;
+
+    // way_is_free() needs to stop BRIDGERS from getting stuck between a brick
+    // and the ceiling.  The routine also stops cases of Bridgers building up but
+    // then not being able to walk all the way down the bridge the it has built.
+    // Even though the routine may be the same as brick_placement_allowed(), it is
+    // best to keep them apart as they may need to be independent of each other if
+    // there needs to be a patch.
+    function (void) => bool way_is_free do
+        loop i in 4 do
+            var int x_inc = i+1;
+
+            if bridger.rel_getpixel(x_inc, 2) != _GT_NOTHING
+            or _action_head_collision_on_walk(bridger, x_inc, 2) then
+                return false;
+            end
+        end
+
+        return true;
+    end
+
+    // brick_placement_allowed() is mainly for stopping WALKERS from getting stuck
+    // between a brick and the ceiling.  Even though the routine may be the same,
+    // as way_is_free() it is best to keep them apart as they may need to be
+    // independent of each other if there needs to be a patch.
+    function (void) => bool brick_placement_allowed do
+        return not _action_head_collision_on_walk(bridger, 0, 2);
+    end
+
+    function (void) => void place_a_brick do
+        bricks = bricks-1;
+        bridger.name = _make_name(bricks);
+
+        if bricks < 4 then
+            _Sound_PingusSound_play_sound("ting");
+        end
+
+        if bridger.pingu:direction.is_right() then
+            _WorldObj__get_world_put(brick_r,
+                                     (int)(bridger.pingu:get_pos().x + 10.0 - (float)brick_r.get_width()),
+                                     (int)bridger.pingu:get_pos().y,
+                                     _GT_BRIDGE);
+        else
+            _WorldObj__get_world_put(brick_l,
+                                     (int)(bridger.pingu:get_pos().x - 10.0),
+                                     (int)bridger.pingu:get_pos().y,
+                                     _GT_BRIDGE);
+        end
+    end
+
+    function (void) => void walk_one_step_up do
+        bridger.pingu:set_pos(
+            bridger.pingu:get_pos().x + 4.0*(float)(bridger.pingu:direction),
+            bridger.pingu:get_pos().y - 2
+        );
+    end
 
     loop do
         var float x_offset = 6;
         var float y_offset = 4;
 
-        if bridger.bricks == _AB_MAX_BRICKS then
+        if bricks == MAX_BRICKS then
             x_offset = -4;
             y_offset = 0;
-        else/if bridger.bricks == _AB_MAX_BRICKS-1 then
+        else/if bricks == MAX_BRICKS-1 then
             x_offset = 0;
             y_offset = 1;
-        else/if bridger.bricks == _AB_MAX_BRICKS-2 then
+        else/if bricks == MAX_BRICKS-2 then
             x_offset = 3;
             y_offset = 2;
         end
@@ -42,13 +117,13 @@ do
         //building step
         par/or do
             every pingu.e_UPDATE_CALLED do
-                bridger.build_sprite[bridger.pingu:direction].update();
+                build_sprite.get(bridger.pingu:direction):update();
             end
         with
             every gc in pingu.e_DRAW_CALLED do
-                _gc_color_draw(
+                _gc_color_draw2(
                     gc,
-                    bridger.build_sprite[bridger.pingu:direction],
+                    build_sprite.get(bridger.pingu:direction),
                     _Vector3f(
                         bridger.pingu:get_pos().x - x_offset,
                         bridger.pingu:get_pos().y + y_offset
@@ -56,11 +131,11 @@ do
                 );
             end
         with
-            await pingu.e_UPDATE_CALLED until (bridger.build_sprite[bridger.pingu:direction].get_current_frame () >= 7);
+            await pingu.e_UPDATE_CALLED until (build_sprite.get(bridger.pingu:direction):get_current_frame () >= 7);
 
-            if bridger.bricks > 0 then
-                if bridger.brick_placement_allowed() then
-                    bridger.place_a_brick();
+            if bricks > 0 then
+                if brick_placement_allowed() then
+                    place_a_brick();
                 else
                     bridger.pingu:direction.change();
                     escape _A_WALKER;
@@ -69,26 +144,26 @@ do
                 escape _A_WAITER;
             end
 
-            PRE_CONDITION_AWAIT(pingu.e_UPDATE_CALLED, bridger.build_sprite[bridger.pingu:direction].is_finished());
+            PRE_CONDITION_AWAIT(pingu.e_UPDATE_CALLED, build_sprite.get(bridger.pingu:direction):is_finished());
 
-            bridger.build_sprite[bridger.pingu:direction].restart();
+            build_sprite.get(bridger.pingu:direction):restart();
         end
 
         //walking step
         par/or do
             every pingu.e_UPDATE_CALLED do
                 //original FIXME: Dangerous! might not be fixed timing
-                if bridger.walk_sprite[bridger.pingu:direction].is_finished() then
+                if walk_sprite.get(bridger.pingu:direction):is_finished() then
                     break;
                 end
 
-                bridger.walk_sprite.update();
+                walk_sprite.update();
             end
         with
             every gc in pingu.e_DRAW_CALLED do
-                _gc_color_draw(
+                _gc_color_draw2(
                     gc,
-                    bridger.walk_sprite[bridger.pingu:direction],
+                    walk_sprite.get(bridger.pingu:direction),
                     _Vector3f(
                         bridger.pingu:get_pos().x - x_offset,
                         bridger.pingu:get_pos().y + y_offset
@@ -97,9 +172,9 @@ do
             end
         end
 
-        if bridger.way_is_free() then
-            bridger.walk_sprite[bridger.pingu:direction].restart();
-            bridger.walk_one_step_up();
+        if way_is_free() then
+            walk_sprite.get(bridger.pingu:direction):restart();
+            walk_one_step_up();
         else // We reached a wall...
             bridger.pingu:direction.change();
             escape _A_WALKER;

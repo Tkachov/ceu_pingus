@@ -4,7 +4,7 @@
 native/pre do
     ##include "pingus/collision_mask.hpp"
 
-    ##define new_CollisionMask(a, b) new CollisionMask(a, b)
+    ##define new_CollisionMask new CollisionMask
     ##define delete_CollisionMask(m) delete m
 end
 

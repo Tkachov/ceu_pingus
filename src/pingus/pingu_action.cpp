@@ -27,7 +27,7 @@
 
 #include "ceuvars.h"
 
-PinguAction::PinguAction(Pingu* p, ActionName::Enum t): pingu(p), type(t) {
+PinguAction::PinguAction(Pingu* p, ActionName::Enum t): pingu(p), type(t), name(ActionName::to_screenname(t)) {
   CATCHABLE = true;
   CHANGE_ALLOWED = true;
 }
@@ -107,10 +107,8 @@ PinguAction::collision_on_walk (int x, int y)
   return collision;
 }
 
-std::string
-PinguAction::get_name () const
-{
-  return ActionName::to_screenname(get_type());
+std::string PinguAction::get_name() const {
+  return name;
 }
 
 void

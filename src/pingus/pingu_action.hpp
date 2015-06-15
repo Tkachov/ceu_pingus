@@ -40,6 +40,7 @@ class PinguAction
 private:
   ActionName::Enum type;
   bool CATCHABLE, CHANGE_ALLOWED;
+  std::string name;
 
 protected:
   /** A pointer to the pingu, which hold the action. */
@@ -68,7 +69,7 @@ public:
 
   /** The name of the action, this is used in the CaputreRectangle, so
       it can contain more than just the name */
-  virtual std::string get_name () const;
+  std::string get_name() const;
 
   /// The type of the action
   ActionName::Enum get_type () const { return type; }

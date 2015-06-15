@@ -13,7 +13,7 @@ class WaiterAction with
 do
     var _PinguAction&? waiter = _PTR2REF(pingu.set_ptr(_A_WAITER));
 
-    var _Sprite&? sprite = _PTR2REF(_new_SpriteA(_combine("pingus/player", waiter.pingu:get_owner_str(), "/waiter/left")));
+    var _Sprite&? sprite = _PTR2REF(_new_SpriteA(_scc3("pingus/player", waiter.pingu:get_owner_str(), "/waiter/left")));
     finalize with _delete_Sprite(sprite); end;
 
     par do

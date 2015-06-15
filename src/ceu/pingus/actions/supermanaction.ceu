@@ -13,7 +13,7 @@ class SupermanAction with
 do
     var _PinguAction&? superman = _PTR2REF(pingu.set_ptr(_A_SUPERMAN));
 
-    var _Sprite&? sprite = _PTR2REF(_new_SpriteA(_combine("pingus/player", superman.pingu:get_owner_str(), "/superman")));
+    var _Sprite&? sprite = _PTR2REF(_new_SpriteA(_scc3("pingus/player", superman.pingu:get_owner_str(), "/superman")));
     finalize with _delete_Sprite(sprite); end;
 
     par do

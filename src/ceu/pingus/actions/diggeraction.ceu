@@ -4,25 +4,12 @@
 #include "../../c.ceu"
 #include "../../sdl.ceu"
 #include "../../engine/display/scene_context.ceu"
+#include "../../engine/sound/sound.ceu"
+#include "../collision_mask.ceu"
 #include "../iaction.ceu"
 #include "../ipingu.ceu"
 #include "../state_sprite.ceu"
-
-native/pre do
-    ##include "engine/sound/sound.hpp"
-    ##include "pingus/world.hpp"
-    ##include "pingus/worldobj.hpp"
-    ##include "pingus/collision_mask.hpp"
-
-    ##define Sound_PingusSound_play_sound Sound::PingusSound::play_sound
-    ##define WorldObj_get_world_remove(a, b, c) CollisionMask& __msk = *a; WorldObj::get_world()->remove(__msk, b, c)
-    
-    ##define new_CollisionMask(a, b) new CollisionMask(a, b)
-    ##define delete_CollisionMask(m) delete m
-end
-
-native @pure _new_CollisionMask(), _delete_CollisionMask(),
-             _WorldObj_get_world_remove();
+#include "../worldobj.ceu"
 
 class DiggerAction with
     interface IAction;
@@ -30,7 +17,7 @@ do
     var _PinguAction&? digger = _PTR2REF(pingu.set_ptr(_A_DIGGER));
     var int delay_count = 0;
 
-    var _Sprite&? sprite = _PTR2REF(_new_SpriteA(_combine("pingus/player", digger.pingu:get_owner_str(), "/digger/left")));
+    var _Sprite&? sprite = _PTR2REF(_new_SpriteA(_scc3("pingus/player", digger.pingu:get_owner_str(), "/digger/left")));
     finalize with _delete_Sprite(sprite); end;
 
     var _CollisionMask&? digger_radius = _new_CollisionMask("pingus/common/digger_radius_gfx", "pingus/common/digger_radius");
@@ -54,11 +41,11 @@ do
 
     function (bool final) => void dig do        
         if not final then
-            _WorldObj_get_world_remove(digger_radius,
+            _WorldObj__get_world_remove(digger_radius,
                                        digger.pingu:get_xi() - digger_radius.get_width() / 2,
                                        digger.pingu:get_yi() - digger_radius.get_height() + 2);
         else
-            _WorldObj_get_world_remove(digger_radius_final,
+            _WorldObj__get_world_remove(digger_radius_final,
                                        digger.pingu:get_xi() - digger_radius.get_width() / 2,
                                        digger.pingu:get_yi() - digger_radius.get_height() + 2);
         end

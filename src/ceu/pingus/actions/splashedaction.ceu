@@ -23,7 +23,7 @@ do
     splashed.CATCHABLE = false;
     splashed.CHANGE_ALLOWED = false;
 
-    var _Sprite&? sprite = _PTR2REF(_new_SpriteA(_combine("pingus/player", splashed.pingu:get_owner_str(), "/splat")));
+    var _Sprite&? sprite = _PTR2REF(_new_SpriteA(_scc3("pingus/player", splashed.pingu:get_owner_str(), "/splat")));
     finalize with _delete_Sprite(sprite); end;
 
     par do
