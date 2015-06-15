@@ -11,14 +11,14 @@ end
 #include "pingus/components/armageddonbutton.ceu"
 #include "pingus/components/forwardbutton.ceu"
 #include "pingus/components/pausebutton.ceu"
-#include "pingus/pingu.ceu"
+#include "pingus/pingu_holder.ceu"
 #include "proxies/proxyeventlist.ceu"
 
 input _MenuButton* NEW_MENUBUTTON;
 input _ArmageddonButton* NEW_ARMAGEDDONBUTTON;
 input _ForwardButton* NEW_FORWARDBUTTON;
 input _PauseButton* NEW_PAUSEBUTTON;
-input _Pingu* NEW_PINGU;
+input _PinguHolder* NEW_PINGU_HOLDER;
 
 par/or do
     await SDL_QUIT;
@@ -47,9 +47,9 @@ with
         end;
     end
 with
-    every new_pingu in NEW_PINGU do
-        spawn Pingu with
-            this.me = _PTR2REF(new_pingu);
+    every new_pingu_holder in NEW_PINGU_HOLDER do
+        spawn PinguHolder with
+            this.me = _PTR2REF(new_pingu_holder);
         end;
     end
 with

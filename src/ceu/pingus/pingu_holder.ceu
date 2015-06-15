@@ -1,0 +1,32 @@
+#ifndef PINGU_HOLDER_CEU
+#define PINGU_HOLDER_CEU
+
+#include "../c.ceu"
+#include "../sdl.ceu"
+#include "pingu.ceu"
+
+native/pre do
+    ##include "pingus/pingu_holder.hpp"
+end
+
+input _Pingu* NEW_PINGU;
+input _PinguHolder* DELETE_PINGU_HOLDER;
+    
+class PinguHolder with
+    var _PinguHolder& me;
+    pool Pingu[] all_pingus;
+do
+    var _PinguHolder&? me_ = _PTR2REF((_PinguHolder*)&this.me);
+
+    par/or do
+        every new_pingu in NEW_PINGU do
+            spawn Pingu in all_pingus with
+                this.me = _PTR2REF(new_pingu);
+            end;
+        end
+    with
+        var _PinguHolder* p = await DELETE_PINGU_HOLDER until (p == &me_);
+    end
+end
+
+#endif
