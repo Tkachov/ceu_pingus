@@ -40,9 +40,8 @@ private:
       each time they are requested. */
   int number_of_exited;
 
-  /** This vector holds all pingus which are ever allocated in the
-      world, its used to free them all on the end of this class. */
-  std::vector<Pingu*> all_pingus;
+  /** Number of pingus in Ceu pool (synced by Ceu PinguHolder) */
+  int all_pingus_size;
 
   /** A list holding all Pingus, the PinguHolder itself has only the
       active (not dead) ones */
@@ -53,13 +52,20 @@ public:
   ~PinguHolder();
 
   struct PinguPackage {
-    PinguHolder* holder;
-    int id;
+    PinguHolder* holder;    
     const Vector3f& pos;
     int owner;
     Pingu* result;
 
-    PinguPackage(PinguHolder* h, int i, const Vector3f& p, int o): holder(h), id(i), pos(p), owner(o), result(0) {};
+    PinguPackage(PinguHolder* h, const Vector3f& p, int o): holder(h), pos(p), owner(o), result(0) {};
+  };
+
+  struct GetPinguPackage {
+    PinguHolder* holder;    
+    int id;
+    Pingu* result;
+
+    GetPinguPackage(PinguHolder* h, int i): holder(h), id(i), result(0) {};
   };
 
   /*@{

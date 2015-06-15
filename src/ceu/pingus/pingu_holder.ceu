@@ -8,10 +8,12 @@
 native/pre do
     ##include "pingus/pingu_holder.hpp"
     ##define Package PinguHolder::PinguPackage
+    ##define GetPackage PinguHolder::GetPinguPackage
     ##define new_Pingu new Pingu
 end
 
 input _Package* NEW_PINGU;
+input _GetPackage* GET_PINGU;
 input _PinguHolder* DELETE_PINGU_HOLDER;
 
 native @pure _new_Pingu();
@@ -21,6 +23,7 @@ class PinguHolder with
     pool Pingu[] all_pingus;
 do
     var _PinguHolder&? me_ = _PTR2REF((_PinguHolder*)&this.me);
+    var int all_pingus_size = 0;
 
     par/or do
         every package in NEW_PINGU do
@@ -28,10 +31,35 @@ do
                 continue;
             end
 
+            // We use all_pingus.size() as pingu_id, so that id == array index
             spawn Pingu in all_pingus with
-                this.me = _new_Pingu(package:id, package:pos, package:owner);
+                this.me = _new_Pingu(all_pingus_size, package:pos, package:owner);
                 package:result = &this.me;
             end;
+
+            all_pingus_size = all_pingus_size + 1;
+            me_.all_pingus_size = all_pingus_size;
+        end
+    with
+        every package in GET_PINGU do
+            if package:holder != &me_ then
+                continue;
+            end
+
+            package:result = 0;
+            if package:id < all_pingus_size then
+                var int i = 0;
+                loop pingu in all_pingus do
+                    if i == package:id then
+                        var _Pingu&? png = _PTR2REF((_Pingu*)&pingu:me);
+                        if png.status == _PS_ALIVE then
+                            package:result = png;
+                        end
+                    end
+
+                    i = i+1;
+                end
+            end
         end
     with
         var _PinguHolder* p = await DELETE_PINGU_HOLDER until (p == &me_);
