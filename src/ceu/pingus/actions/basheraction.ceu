@@ -4,27 +4,72 @@
 #include "../../c.ceu"
 #include "../../sdl.ceu"
 #include "../../engine/display/scene_context.ceu"
+#include "../../engine/sound/sound.ceu"
 #include "../../math/vector3f.ceu"
+#include "../collision_mask.ceu"
 #include "../iaction.ceu"
 #include "../ipingu.ceu"
 #include "../state_sprite.ceu"
-
-native/pre do
-    ##include "pingus/actions/basher.hpp"
-    ##define ABasher Actions::Basher
-
-    ##include "engine/sound/sound.hpp"
-    ##define Sound_PingusSound_play_sound Sound::PingusSound::play_sound
-end
+#include "../worldobj.ceu"
 
 class BasherAction with
     interface IAction;
 do
-    var _ABasher&? basher = _PTR2REF((_ABasher*)pingu.set_ptr(_A_BASHER));
+    var _PinguAction&? basher = _PTR2REF(pingu.set_ptr(_A_BASHER));
     var bool odd_frame = true; //-1th, I hope first block will execute not odd_frame faster
+    var bool first_bash = true;
 
     var StateSprite sprite;
     load_file_directions(sprite, basher, "/basher/");
+
+    var _CollisionMask&? bash_radius = _new_CollisionMask("pingus/common/bash_radius_gfx", "pingus/common/bash_radius");
+    finalize with _delete_CollisionMask(bash_radius); end;
+
+    _assert(bash_radius.get_width() % 2 == 0);
+    var int bash_reach = bash_radius.get_width();
+
+    /* Defines the minimum "wall" height needed for a bash to happen. */
+    var int min_bash_height = 5;
+
+    /* Defines the maximum height up to which a check is made to see if there
+       is anything to bash.  Best to make this at least (min_bash_height +
+       pingu_height). */
+    var int max_bash_height = 33;
+
+    function (void) => void bash do
+        _WorldObj__get_world_remove(bash_radius,
+                                    basher.pingu:get_xi() - bash_radius.get_width()/2,
+                                    basher.pingu:get_yi() - bash_radius.get_height()+1);
+    end
+
+    function (void) => bool have_something_to_dig do
+        if first_bash then
+            first_bash = false;
+            return true;
+        end
+
+        // Check that there is something "within" the Basher's reach
+        loop/1000 x in bash_reach+1 do
+            var int y = min_bash_height;
+            loop/1000 do
+                if y > max_bash_height then
+                    break;
+                end
+
+                if basher.rel_getpixel(x, y) == _GT_GROUND then
+                    _log_debug("Basher: Found something to dig...");
+                    return true;
+                end
+
+                y = y+1;
+            end
+        end
+
+        return false;
+    end
+
+    // Start a bash even if the action will stop instantly after the first bash
+    bash();
 
     par do
         every gc in pingu.e_DRAW_CALLED do
@@ -39,14 +84,14 @@ do
         loop do
             await pingu.e_UPDATE_CALLED;
 
-            /// WALK_FORWARD ///   
+            /// WALK_FORWARD ///
             //Basher turns into a Faller if it goes down more than <max_steps_down>
             var int max_steps_down = 3;
 
             var int y_inc = 0;
 
             // Find the correct y position to go to next
-            loop do
+            loop/100 do
                 if y_inc < -max_steps_down then break; end
 
                 // If there is something below, get out of this loop
@@ -57,8 +102,8 @@ do
                 y_inc = y_inc-1;
             end
 
-            if y_inc < -max_steps_down then        
-                // The step down is too much.  So stop being a Basher and return false to be a Faller.    
+            if y_inc < -max_steps_down then
+                // The step down is too much.  So stop being a Basher and return false to be a Faller.
                 escape _A_FALLER;
             else
                 // Note that Pingu::set_pos() is the 'reverse' of the y co-ords of
@@ -85,11 +130,11 @@ do
                     _Sound_PingusSound_play_sound("chink");
                     basher.pingu:direction.change();
                     escape _A_WALKER;
-                else/if basher.have_something_to_dig() then
+                else/if have_something_to_dig() then
                     // We only bash every second step, cause the Pingus would
                     // get trapped otherwise in the bashing area.
                     if not odd_frame then
-                        basher.bash();
+                        bash();
                     end
                 else/if progress > 0.6 then
                     //original FIXME: EVIL! Engine must not relay on graphic

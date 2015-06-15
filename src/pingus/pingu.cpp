@@ -26,7 +26,6 @@
 #include "pingus/worldobj.hpp"
 #include "pingus/pingu_enums.hpp"
 
-#include "pingus/actions/basher.hpp"
 #include "pingus/actions/climber.hpp"
 #include "pingus/actions/faller.hpp"
 #include "pingus/actions/floater.hpp"
@@ -340,12 +339,12 @@ Pingu::create_action(ActionName::Enum action_)
 {
   switch(action_)
   {
-    case ActionName::BASHER:    return std::make_shared<Basher>(this);
     case ActionName::CLIMBER:   return std::make_shared<Climber>(this);
     case ActionName::FALLER:    return std::make_shared<Faller>(this);
     case ActionName::FLOATER:   return std::make_shared<Floater>(this);
 
     case ActionName::ANGEL:
+    case ActionName::BASHER:
     case ActionName::BLOCKER:
     case ActionName::BOARDER:
     case ActionName::BOMBER:
@@ -368,12 +367,12 @@ Pingu::create_action(ActionName::Enum action_)
 
 PinguAction* Pingu::create_action2(ActionName::Enum action_) {
   switch(action_) {
-    case ActionName::BASHER:    return new Basher(this);
     case ActionName::CLIMBER:   return new Climber(this);
     case ActionName::FALLER:    return new Faller(this);
     case ActionName::FLOATER:   return new Floater(this);
 
     case ActionName::ANGEL:
+    case ActionName::BASHER:
     case ActionName::BLOCKER:
     case ActionName::BOARDER:
     case ActionName::BOMBER:

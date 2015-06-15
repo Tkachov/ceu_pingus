@@ -10,10 +10,7 @@ native/pre do
     ##define Package PinguHolder::PinguPackage
     ##define GetPackage PinguHolder::GetPinguPackage
     ##define new_Pingu new Pingu
-    ##define get_it(x, y) if(x->me->status == PS_ALIVE) { y = x->me; }
 end
-
-native @pure _get_it();
 
 input _Package* NEW_PINGU;
 input _GetPackage* GET_PINGU;
@@ -53,15 +50,14 @@ do
                 continue;
             end
 
-            package:result = 0;            
-            if package:id < all_pingus_size then
-                var int i = 0;
+            package:result = 0;
+            if package:id < all_pingus_size then                
                 loop pingu in all_pingus do
-                    if i == package:id then
-                        _get_it(pingu, package:result); //TODO: somehow fix that strange behavior when I can't use <pingu>
+                    if pingu:me.id == package:id then
+                        if pingu:me.status == _PS_ALIVE then
+                            package:result = _PTR2REF(&pingu:me);
+                        end
                     end
-
-                    i = i+1;
                 end
             end
         end
