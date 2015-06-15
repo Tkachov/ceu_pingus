@@ -4,6 +4,7 @@
 #include "../c.ceu"
 #include "../sdl.ceu"
 #include "pingu.ceu"
+#include "pingu_holder_listener.ceu"
 
 native/pre do
     ##include "pingus/pingu_holder.hpp"
@@ -23,7 +24,10 @@ class PinguHolder with
     pool Pingu[] all_pingus;
 do
     var _PinguHolder&? me_ = _PTR2REF((_PinguHolder*)&this.me);
-    var int all_pingus_size = 0;
+    var PinguHolderListener listener;
+    var int pingus_emitted = 0;
+    var int pingus_exited = 0;
+    var int pingus_dead = 0;
 
     par/or do
         every package in NEW_PINGU do
@@ -31,18 +35,31 @@ do
                 continue;
             end
 
-            if me_.number_of_allowed > all_pingus_size then
+            if me_.number_of_allowed > pingus_emitted then
                 // We use all_pingus.size() as pingu_id, so that id == array index
                 spawn Pingu in all_pingus with
-                    this.me = _new_Pingu(all_pingus_size, package:pos, package:owner);
+                    this.me = _new_Pingu(pingus_emitted, package:pos, package:owner);
+                    this.holder = _PTR2REF(listener);
                     package:result = &this.me;
                 end;
 
-                all_pingus_size = all_pingus_size + 1;
-                me_.all_pingus_size = all_pingus_size;
+                pingus_emitted = pingus_emitted + 1;
+                me_.released = pingus_emitted;
             else
                 package:result = 0;
             end
+        end
+    with
+        every p in listener.e_PINGU_DIED do
+            pingus_dead = pingus_dead + 1;
+            me_.dead = pingus_dead;
+            me_.erase(_PTR2REF(p));
+        end
+    with
+        every p in listener.e_PINGU_EXITED do
+            pingus_exited = pingus_exited + 1;
+            me_.exited = pingus_exited;
+            me_.erase(_PTR2REF(p));
         end
     with
         every package in GET_PINGU do
@@ -51,12 +68,10 @@ do
             end
 
             package:result = 0;
-            if package:id < all_pingus_size then                
+            if package:id < pingus_emitted then
                 loop pingu in all_pingus do
                     if pingu:me.id == package:id then
-                        if pingu:me.status == _PS_ALIVE then
-                            package:result = _PTR2REF(&pingu:me);
-                        end
+                        package:result = _PTR2REF(&pingu:me);
                     end
                 end
             end

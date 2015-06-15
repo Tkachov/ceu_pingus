@@ -38,7 +38,7 @@ do
 
             // Out of screen, let the pingu die
             if angel.pingu:get_y() < -32 then
-                angel.pingu:set_status(_PS_DEAD);
+                escape _A_DEAD;
             end
         end
     with

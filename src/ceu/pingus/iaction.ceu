@@ -24,6 +24,9 @@ native/pre do
     ##define A_WAITER ActionName::WAITER
     ##define A_WALKER ActionName::WALKER
     ##define ActionName_Enum ActionName::Enum
+
+    ##define A_DEAD 1337
+    ##define A_EXITED 31337
 end
 
 #include "ipingu.ceu"

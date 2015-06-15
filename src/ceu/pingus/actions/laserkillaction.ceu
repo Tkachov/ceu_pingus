@@ -21,7 +21,7 @@ do
     par do
         every pingu.e_UPDATE_CALLED do
             if sprite.get(laserkill.pingu:direction):is_finished() then
-                laserkill.pingu:set_status(_PS_DEAD);
+                escape _A_DEAD;
             else
                 sprite.get(laserkill.pingu:direction):update();
             end

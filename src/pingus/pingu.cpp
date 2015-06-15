@@ -46,7 +46,6 @@ Pingu::Pingu (int arg_id, const Vector3f& arg_pos, int owner):
   previous_action(ActionName::FALLER),
   id(arg_id),
   owner_id(owner),
-  status(PS_ALIVE),
   pos_x(arg_pos.x),
   pos_y(arg_pos.y),
   velocity(0, 0, 0),
@@ -124,11 +123,6 @@ Pingu::set_velocity (const Vector3f& velocity_)
 // When you select a function on the button panel and click on a
 // pingu, this action will be called with the action name
 bool Pingu::request_set_action(ActionName::Enum action_name) {
-  if(status == PS_DEAD) {
-    log_debug("Setting action to a dead pingu");
-    return false;
-  }
-
   switch(PinguAction::get_activation_mode(action_name)) {
     case INSTANT:
       if(action_name == get_ceu_action()->get_type()) {
@@ -204,16 +198,9 @@ Pingu::set_action(PinguAction* act)
   ceu_out_go(&CEUapp, CEU_IN_PINGU_SET_ACTION, &p);  */
 }
 
-Pingu::PinguStatus
-Pingu::get_status (void) const
-{
-  return status;
-}
-
-Pingu::PinguStatus
-Pingu::set_status (PinguStatus s)
-{
-  return (status = s);
+void Pingu::die() {
+  Pingu* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_PINGU_DIE, &self);
 }
 
 // Returns true if the given koordinates are above the pingu
@@ -263,9 +250,6 @@ Pingu::catch_pingu (Pingu* pingu)
 bool
 Pingu::need_catch ()
 {
-  if (status == PS_DEAD || status == PS_EXITED)
-    return false;
-
   return get_ceu_action()->need_catch();
 }
 
@@ -273,12 +257,6 @@ void
 Pingu::set_direction (Direction d)
 {
   direction = d;
-}
-
-bool
-Pingu::is_alive (void)
-{
-  return (status != PS_DEAD && status != PS_EXITED);
 }
 
 std::string

@@ -26,7 +26,7 @@ do
             sprite.get(drown.pingu:direction):update();
 
             if sprite.get(drown.pingu:direction):is_finished() then
-                drown.pingu:set_status(_PS_DEAD);
+                escape _A_DEAD;
             end
         end
     end
