@@ -241,12 +241,6 @@ Pingu::catch_pingu (Pingu* pingu)
   get_ceu_action()->catch_pingu(pingu);
 }
 
-bool
-Pingu::need_catch ()
-{
-  return get_ceu_action()->need_catch();
-}
-
 void
 Pingu::set_direction (Direction d)
 {

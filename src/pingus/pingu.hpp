@@ -166,9 +166,6 @@ public:
       pingu) */
   void catch_pingu (Pingu* pingu);
 
-  /** Returns true if the pingu needs to catch another pingu */
-  bool need_catch ();
-
   void apply_force (Vector3f);
 
   /** Indicate if the pingu's speed is above the deadly velocity */

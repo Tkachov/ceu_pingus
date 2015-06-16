@@ -92,9 +92,6 @@ public:
   /// The type of the action
   ActionName::Enum get_type () const { return type; }
 
-  /// Catch another pingu and act on it (see blocker.hxx)
-  virtual bool  need_catch();
-
   ///catching Pingus:
   void catch_pingus();
 

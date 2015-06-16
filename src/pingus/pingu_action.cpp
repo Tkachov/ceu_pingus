@@ -59,14 +59,6 @@ void PinguAction::catch_pingu(Pingu* p) {
   ceu_out_go(&CEUapp, CEU_IN_CATCH_PINGU, &c);
 }
 
-// Checks if the pingu action needs to catch another pingu (needed for
-// example by the blocker)
-bool
-PinguAction::need_catch ()
-{
-  return false;
-}
-
 Vector3f PinguAction::get_center_pos() const {  
   GetCenterPosPackage package(this, pingu->get_pos() + Vector3f(0, -16));
   GetCenterPosPackage* p = &package;
