@@ -5,12 +5,12 @@
 //  it under the terms of the GNU General Public License as published by
 //  the Free Software Foundation, either version 3 of the License, or
 //  (at your option) any later version.
-//  
+//
 //  This program is distributed in the hope that it will be useful,
 //  but WITHOUT ANY WARRANTY; without even the implied warranty of
 //  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //  GNU General Public License for more details.
-//  
+//
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -88,8 +88,8 @@ Exit::update ()
       if (   (*pingu)->get_pos().x > pos.x - 1 && (*pingu)->get_pos().x < pos.x + 1
              && (*pingu)->get_pos().y > pos.y - 5 && (*pingu)->get_pos().y < pos.y + 5)
       {
-        // Now, make sure the pingu isn't already exiting, gone, or dead
-        if (  (*pingu)->get_action() != ActionName::EXITER)
+        // Now, make sure the pingu isn't already exiting, gone, or dead [or is dying because of apocalypse/bomber action]
+        if((*pingu)->get_action() != ActionName::EXITER && (*pingu)->get_action() != ActionName::BOMBER)
         {
           // Pingu actually exits
           (*pingu)->set_action(ActionName::EXITER);

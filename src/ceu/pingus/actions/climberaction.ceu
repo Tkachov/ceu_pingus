@@ -8,25 +8,47 @@
 #include "../ipingu.ceu"
 #include "../state_sprite.ceu"
 
-native/pre do
-    ##include "pingus/actions/climber.hpp"
-    ##define AClimber Actions::Climber
-end
-
 class ClimberAction with
     interface IAction;
 do
-    var _AClimber&? climber = _PTR2REF((_AClimber*)pingu.set_ptr(_A_CLIMBER));
+    var _PinguAction&? climber = _PTR2REF(pingu.set_ptr(_A_CLIMBER));
 
-    load_directions(climber.sprite, climber, "/climber/");
+    var StateSprite sprite;
+    load_file_directions(sprite, climber, "/climber/");
 
     par do
+        every package in ACTION_CHANGE_ALLOWED do
+            if package:action != &climber then
+                continue;
+            end
+
+            package:result = (package:new_action == _A_FLOATER or
+                              package:new_action == _A_BOMBER or
+                              package:new_action == _A_JUMPER);
+        end
+    with
+        every package in ACTION_GET_CENTER_POS do
+            if package:action != &climber then
+                continue;
+            end
+
+            finalize
+                package:result = climber.pingu:get_pos();
+            with end;
+
+            if climber.pingu:direction.is_left() then
+                package:result.x = package:result.x + 16;
+            else
+                package:result.x = package:result.x - 16;
+            end
+        end
+    with
         every gc in pingu.e_DRAW_CALLED do
-            _gc_color_draw(gc, climber.sprite[climber.pingu:direction], climber.pingu:get_pos());
+            _gc_color_draw2(gc, sprite.get(climber.pingu:direction), climber.pingu:get_pos());
         end
     with
         every pingu.e_UPDATE_CALLED do
-            climber.sprite[climber.pingu:direction].update();
+            sprite.get(climber.pingu:direction):update();
 
             //there's something above
             if climber.rel_getpixel(0, 1) != _GT_NOTHING and climber.rel_getpixel(0, 1) != _GT_BRIDGE then

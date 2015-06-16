@@ -27,7 +27,13 @@ native/pre do
 
     ##define A_DEAD 1337
     ##define A_EXITED 31337
+
+    ##define ChangeAllowedPackage PinguAction::ChangeAllowedPackage
+    ##define GetCenterPosPackage PinguAction::GetCenterPosPackage
 end
+
+input _ChangeAllowedPackage* ACTION_CHANGE_ALLOWED;
+input _GetCenterPosPackage* ACTION_GET_CENTER_POS;
 
 #include "ipingu.ceu"
 

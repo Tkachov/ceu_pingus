@@ -63,9 +63,27 @@ public:
   int  rel_getpixel (int x, int y);
 
   /** Checks if this action allows to be overwritten with the given new action */
-  virtual bool change_allowed (ActionName::Enum action) { return CHANGE_ALLOWED; }
+  bool change_allowed(ActionName::Enum action);
 
-  virtual Vector3f get_center_pos() const;
+  struct ChangeAllowedPackage {
+    PinguAction* action;
+    ActionName::Enum new_action;
+    bool result;
+
+    ChangeAllowedPackage(PinguAction* a, ActionName::Enum n, bool r):
+      action(a), new_action(n), result(r) {};
+  };
+
+  Vector3f get_center_pos() const;
+
+  struct GetCenterPosPackage {
+    const PinguAction* action;
+    Vector3f result;
+
+    GetCenterPosPackage(const PinguAction* a, Vector3f v):
+      action(a), result(v) {};
+  };
+
 
   /** The name of the action, this is used in the CaputreRectangle, so
       it can contain more than just the name */

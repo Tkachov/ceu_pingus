@@ -8,13 +8,10 @@
 #include "../iaction.ceu"
 #include "../ipingu.ceu"
 #include "../state_sprite.ceu"
+#include "../movers/linear_mover.ceu"
 
 native/pre do
-    ##include "pingus/actions/faller.hpp"
-    ##define AFaller Actions::Faller
-
     ##include "pingus/colliders/pingu_collider.hpp"
-    ##include "pingus/movers/linear_mover.hpp"
     ##include "pingus/pingu_enums.hpp"
     ##include "pingus/worldobj.hpp"
     ##define WorldObj__get_world WorldObj::get_world
@@ -28,25 +25,46 @@ native @pure _Colliders__PinguCollider(),
 class FallerAction with
     interface IAction;
 do
-    var _AFaller& faller = _PTR2REF((_AFaller*)pingu.set_ptr(_A_FALLER));
+    var _PinguAction& faller = _PTR2REF(pingu.set_ptr(_A_FALLER));
 
-    load_directions(faller.faller, faller, "/faller/");
-    load_directions(faller.tumbler, faller, "/tumbler/");
+    var StateSprite sprite;
+    var StateSprite tumbler;
+    load_file_directions(sprite, faller, "/faller/");
+    load_file_directions(tumbler, faller, "/tumbler/");
+
+    var _Movers_LinearMover&? mover = _new_LinearMover();
+    finalize with _delete_LinearMover(mover); end;
+
+    function (void) => bool is_tumbling do
+        // If we are going fast enough to get smashed, start tumbling
+        return (_Math__abs(faller.pingu:get_velocity().x) > _deadly_velocity or
+                _Math__abs(faller.pingu:get_velocity().y) > _deadly_velocity);
+    end
 
     par do
+        every package in ACTION_CHANGE_ALLOWED do
+            if package:action != &faller then
+                continue;
+            end
+
+            package:result = (package:new_action == _A_FLOATER or
+                              package:new_action == _A_CLIMBER or
+                              package:new_action == _A_BOMBER);
+        end
+    with
         every gc in pingu.e_DRAW_CALLED do
-            if faller.is_tumbling() then
-                _gc_color_draw(gc, faller.tumbler[faller.pingu:direction], faller.pingu:get_pos());
+            if is_tumbling() then
+                _gc_color_draw2(gc, tumbler.get(faller.pingu:direction), faller.pingu:get_pos());
             else
-                _gc_color_draw(gc, faller.faller[faller.pingu:direction], faller.pingu:get_pos());
+                _gc_color_draw2(gc, sprite.get(faller.pingu:direction), faller.pingu:get_pos());
             end
         end
     with
         every pingu.e_UPDATE_CALLED do
-            if faller.is_tumbling() then
-                faller.tumbler[faller.pingu:direction].update();
+            if is_tumbling() then
+                tumbler.get(faller.pingu:direction):update();
             else
-                faller.faller[faller.pingu:direction].update();
+                sprite.get(faller.pingu:direction):update();
             end
 
             /* original Pingus FIXME:
@@ -65,11 +83,11 @@ do
               + _Vector3f(0, _WorldObj__get_world():get_gravity()) );
 
             // Move the Pingu as far is it can go
-            faller.mover.reset(faller.pingu:get_pos());
-            faller.mover.update(faller.pingu:get_velocity(), _Colliders__PinguCollider(_pingu_height));
-            faller.pingu:set_pos(faller.mover.get_pos());
+            mover.reset(faller.pingu:get_pos());
+            mover.update(faller.pingu:get_velocity(), _Colliders__PinguCollider(_pingu_height));
+            faller.pingu:set_pos(mover.get_pos());
 
-            var bool collided = faller.mover.collided();
+            var bool collided = mover.collided();
             var Vector3f velocity;
             velocity.x = faller.pingu:get_velocity().x;
             velocity.y = faller.pingu:get_velocity().y;

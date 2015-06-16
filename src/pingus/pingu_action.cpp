@@ -36,6 +36,13 @@ PinguAction::~PinguAction ()
 {
 }
 
+bool PinguAction::change_allowed(ActionName::Enum action) {
+  ChangeAllowedPackage package(this, action, CHANGE_ALLOWED);
+  ChangeAllowedPackage* p = &package;
+  ceu_out_go(&CEUapp, CEU_IN_ACTION_CHANGE_ALLOWED, &p);
+  return p->result;
+}
+
 void PinguAction::catch_pingus() {
   // FIXME: PinguHolder iterations should be handled otherwise ?
   PinguHolder* pingus = WorldObj::get_world()->get_pingus();
@@ -60,10 +67,11 @@ PinguAction::need_catch ()
   return false;
 }
 
-Vector3f
-PinguAction::get_center_pos() const
-{
-  return pingu->get_pos() + Vector3f(0, -16);
+Vector3f PinguAction::get_center_pos() const {  
+  GetCenterPosPackage package(this, pingu->get_pos() + Vector3f(0, -16));
+  GetCenterPosPackage* p = &package;
+  ceu_out_go(&CEUapp, CEU_IN_ACTION_GET_CENTER_POS, &p);
+  return p->result;
 }
 
 // Wrapper around the colmap, to get the pixels infront of the pingu,

@@ -26,15 +26,9 @@
 #include "pingus/worldobj.hpp"
 #include "pingus/pingu_enums.hpp"
 
-#include "pingus/actions/climber.hpp"
-#include "pingus/actions/faller.hpp"
-#include "pingus/actions/floater.hpp"
-
 #include "util/log.hpp"
 
 #include "ceuvars.h"
-
-using namespace Actions;
 
 // Init a pingu at the given position while falling
 Pingu::Pingu (int arg_id, const Vector3f& arg_pos, int owner):
@@ -312,24 +306,20 @@ Pingu::catchable ()
   return get_ceu_action()->catchable ();
 }
 
-std::shared_ptr<PinguAction>
-Pingu::create_action(ActionName::Enum action_)
-{
-  switch(action_)
-  {
-    case ActionName::CLIMBER:   return std::make_shared<Climber>(this);
-    case ActionName::FALLER:    return std::make_shared<Faller>(this);
-    case ActionName::FLOATER:   return std::make_shared<Floater>(this);
-
+std::shared_ptr<PinguAction> Pingu::create_action(ActionName::Enum action_) {
+  switch(action_) {
     case ActionName::ANGEL:
     case ActionName::BASHER:
     case ActionName::BLOCKER:
     case ActionName::BOARDER:
     case ActionName::BOMBER:
     case ActionName::BRIDGER:
+    case ActionName::CLIMBER:
     case ActionName::DIGGER:
     case ActionName::DROWN:
     case ActionName::EXITER:
+    case ActionName::FALLER:
+    case ActionName::FLOATER:
     case ActionName::JUMPER:
     case ActionName::LASERKILL:
     case ActionName::MINER:
@@ -345,19 +335,18 @@ Pingu::create_action(ActionName::Enum action_)
 
 PinguAction* Pingu::create_action2(ActionName::Enum action_) {
   switch(action_) {
-    case ActionName::CLIMBER:   return new Climber(this);
-    case ActionName::FALLER:    return new Faller(this);
-    case ActionName::FLOATER:   return new Floater(this);
-
     case ActionName::ANGEL:
     case ActionName::BASHER:
     case ActionName::BLOCKER:
     case ActionName::BOARDER:
     case ActionName::BOMBER:
     case ActionName::BRIDGER:
+    case ActionName::CLIMBER:
     case ActionName::DIGGER:
     case ActionName::DROWN:
     case ActionName::EXITER:
+    case ActionName::FALLER:
+    case ActionName::FLOATER:
     case ActionName::JUMPER:
     case ActionName::LASERKILL:
     case ActionName::MINER:

@@ -4,14 +4,10 @@
 #include "../../c.ceu"
 #include "../../sdl.ceu"
 #include "../../engine/display/scene_context.ceu"
+#include "../../engine/sound/sound.ceu"
 #include "../iaction.ceu"
 #include "../ipingu.ceu"
 #include "../state_sprite.ceu"
-
-native/pre do
-    ##include "engine/sound/sound.hpp"
-    ##define Sound_PingusSound_play_sound Sound::PingusSound::play_sound
-end
 
 class ExiterAction with
     interface IAction;
