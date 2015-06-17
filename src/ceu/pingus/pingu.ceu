@@ -49,7 +49,6 @@ native @pure _delete_Pingu();
 
 class Pingu with
     interface IPingu;
-    event int e_CHANGE_ACTION;
 do
     function (int a) => _PinguAction* set_ptr do
         action = _PTR2REF(me.create_action2((ActionName_Enum)a));

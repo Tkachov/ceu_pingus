@@ -5,12 +5,13 @@ native/pre do
     ##include "pingus/pingu.hpp"
 end
 
+#include "pingu_holder.ceu"
 #include "iworld.ceu"
 
 interface Global with
     event _Pingu* e_PINGU_DIED;
     event _Pingu* e_PINGU_EXITED;
-    var IWorld&? world;
+    var IWorld* world;
 end
 
 #endif

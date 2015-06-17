@@ -3,7 +3,7 @@
 
 #include "../c.ceu"
 #include "../sdl.ceu"
-#include "pingu_holder.ceu"
+#include "ipingu_holder.ceu"
 
 native/pre do
     ##include "pingus/world.hpp"
@@ -12,7 +12,7 @@ end
 input _World* WORLD_UPDATE;
 
 interface IWorld with
-    function (void) => PinguHolder* get_pingus;
+    function (void) => IPinguHolder* get_pingus;
 end
 
 #endif

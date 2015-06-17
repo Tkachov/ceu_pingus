@@ -20,7 +20,7 @@ do
         this.me = me_.pingus;
     end;
 
-    function (void) => PinguHolder* get_pingus do
+    function (void) => IPinguHolder* get_pingus do
         return holder;
     end
 
@@ -45,7 +45,6 @@ do
         every new_entrance in NEW_ENTRANCE do
             spawn Entrance with
                 this.me = _PTR2REF(new_entrance);
-                this.world = outer;
             end;
         end
     with

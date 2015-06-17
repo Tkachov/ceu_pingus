@@ -1,0 +1,27 @@
+#ifndef IPINGU_HOLDER_CEU
+#define IPINGU_HOLDER_CEU
+
+#include "../c.ceu"
+#include "../sdl.ceu"
+#include "ipingu.ceu"
+
+native/pre do
+    ##include "pingus/worldobjs/entrance.hpp"
+    ##define WEntrance WorldObjs::Entrance
+
+    struct PHPackage {
+        WorldObjs::Entrance* entrance;
+        bool left;
+    };
+
+    ##define new_PHPackage new PHPackage
+end
+
+native @pure _new_PHPackage();
+
+interface IPinguHolder with
+    pool IPingu[] all_pingus;
+    event _PHPackage* e_MAKE_PINGU;
+end
+
+#endif

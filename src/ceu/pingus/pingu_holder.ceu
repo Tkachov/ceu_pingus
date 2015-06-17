@@ -3,6 +3,7 @@
 
 #include "../c.ceu"
 #include "../sdl.ceu"
+#include "ipingu_holder.ceu"
 #include "pingu.ceu"
 #include "pingu_holder_listener.ceu"
 
@@ -12,28 +13,14 @@ native/pre do
     ##define new_Pingu(a, b, c) new Pingu(a, b, c)
 end
 
-native/pre do
-    ##include "pingus/worldobjs/entrance.hpp"
-    ##define WEntrance WorldObjs::Entrance
-
-    struct PHPackage {
-        WorldObjs::Entrance* entrance;
-        bool left;
-    };
-
-    ##define new_PHPackage new PHPackage
-end
-
 input _GetPackage* GET_PINGU;
 input _PinguHolder* DELETE_PINGU_HOLDER;
 
-native @pure _new_Pingu(),
-             _new_PHPackage();
+native @pure _new_Pingu();
 
 class PinguHolder with
+    interface IPinguHolder;
     var _PinguHolder& me;
-    pool Pingu[] all_pingus;
-    event _PHPackage* e_MAKE_PINGU;
 do
     var _PinguHolder&? me_ = _PTR2REF((_PinguHolder*)&this.me);
     var int pingus_emitted = 0;

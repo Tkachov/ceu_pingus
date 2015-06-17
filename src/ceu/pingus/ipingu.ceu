@@ -20,6 +20,8 @@ interface IPingu with
     event void e_UPDATE_CALLED;
     event _SceneContext* e_DRAW_CALLED;
 
+    event int e_CHANGE_ACTION;
+
     function (int) => _PinguAction* set_ptr;
 end
 
