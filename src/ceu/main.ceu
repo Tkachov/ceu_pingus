@@ -23,6 +23,8 @@ input _ForwardButton* NEW_FORWARDBUTTON;
 input _PauseButton* NEW_PAUSEBUTTON;
 input _World* NEW_WORLD;
 
+var IWorld&? world;
+
 par/or do
     await SDL_QUIT;
 with
@@ -53,6 +55,7 @@ with
     every new_world in NEW_WORLD do
         spawn World with
             this.me = _PTR2REF(new_world);
+            world = this;
         end;
     end
 with

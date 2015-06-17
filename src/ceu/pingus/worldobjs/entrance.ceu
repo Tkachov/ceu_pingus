@@ -6,6 +6,7 @@
 #include "../iworld.ceu"
 #include "../worldobj.ceu"
 #include "../pingu_holder.ceu"
+#include "../pingu_holder_listener.ceu"
 
 native/pre do
     ##include "pingus/worldobjs/entrance.hpp"
@@ -48,7 +49,7 @@ do
                 var _PHPackage* package = _new_PHPackage();
                 package:entrance = &entrance;
                 package:left = go_left;
-                emit world.get_pingus():e_MAKE_PINGU => package;
+                emit global:world.get_pingus():e_MAKE_PINGU => package;
 
                 if entrance.direction == _ED_MISC then
                     go_left = not go_left;
