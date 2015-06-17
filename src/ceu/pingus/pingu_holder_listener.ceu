@@ -5,7 +5,6 @@ native/pre do
     ##include "pingus/pingu.hpp"
 end
 
-#include "pingu_holder.ceu"
 #include "iworld.ceu"
 
 interface Global with

@@ -1,0 +1,100 @@
+#ifndef CAPTURE_RECTANGLE_CEU
+#define CAPTURE_RECTANGLE_CEU
+
+#include "../c.ceu"
+#include "../sdl.ceu"
+#include "../engine/display/scene_context.ceu"
+#include "../engine/display/sprite.ceu"
+#include "ipingu.ceu"
+
+native/pre do
+    ##define AN_get_char ActionName::get_persistent_char
+    ##define streq(x, y) *x = y
+    ##define stradd(x, y) *x += y
+    ##define devmode globals::developer_mode
+    ##define strutil_to_string StringUtil::to_string
+    ##define Fonts__courier_small Fonts::courier_small
+    ##define std__string std::string
+    ##define new_std__string() new std::string()
+    ##define delete_std__string(s) delete s
+end
+
+native @pure _new_CaptureRectangle(), _AN_get_char(), _streq(), _stradd(), _strutil_to_string(), _new_std__string(), _delete_std__string();
+
+class CaptureRectangle with
+    var _GameSession* session;
+    function (IPingu*) => void set_pingu;
+    event _SceneContext* draw;
+do
+    var IPingu* pingu = null;
+    var _std__string&? action_str = _new_std__string();
+    finalize with _delete_std__string(action_str); end;
+
+    var _Sprite&? good = _PTR2REF(_new_SpriteA("game/cursors/capgood"));
+    var _Sprite&? bad = _PTR2REF(_new_SpriteA("game/cursors/capbad"));
+    var _Sprite&? arrow_left = _PTR2REF(_new_SpriteA("game/cursors/arrow_left"));
+    var _Sprite&? arrow_right = _PTR2REF(_new_SpriteA("game/cursors/arrow_right"));
+    finalize with _delete_Sprite(good); end;
+    finalize with _delete_Sprite(bad); end;
+    finalize with _delete_Sprite(arrow_left); end;
+    finalize with _delete_Sprite(arrow_right); end;
+
+    function (IPingu* p) => void set_pingu do
+        pingu = p;
+
+        if pingu then
+            _streq(action_str, _PTR2REF(pingu:me.get_name()));
+
+            if pingu:me.has_wall_action() or pingu:me.has_fall_action() then
+                _stradd(action_str, "[");
+
+                if pingu:me.has_wall_action() then
+                    _stradd(action_str, _AN_get_char(pingu:me.get_wall_action()));
+                end
+
+                if pingu:me.has_fall_action() then
+                    _stradd(action_str, _AN_get_char(pingu:me.get_fall_action()));
+                end
+
+                _stradd(action_str, "]");
+            end
+
+            if _devmode then
+                _stradd(action_str, " Id: ");
+                _stradd(action_str, _strutil_to_string(pingu:me.get_id()));
+            end
+        end
+    end
+
+    par do
+        await FOREVER;
+    with
+        every gc in draw do
+            if pingu then
+                var _Pingu&? p = _PTR2REF(&pingu:me);
+
+                if p.catchable() then
+                    // Draw the capture rectangle
+                    if session and p.change_allowed(session:get_action_name()) then
+                        _gc_color_draw2(gc, good, p.get_center_pos() + _Vector3f(0, 0, 1000));
+                    else
+                        _gc_color_draw2(gc, bad, p.get_center_pos() + _Vector3f(0, 0, 1000));
+                    end
+
+                    // Paint the direction arrow
+                    if p.direction.is_left() then
+                        _gc_color_draw2(gc, arrow_left, p.get_center_pos() + _Vector3f(0, 2, 1000));
+                    else
+                        _gc_color_draw2(gc, arrow_right, p.get_center_pos() + _Vector3f(0, 2, 1000));
+                    end
+
+                    _gc_color_print_center(gc, _Fonts__courier_small,
+                        _Vector2i((int)p.get_center_pos().x, (int)p.get_center_pos().y - 46),
+                        action_str, 1000);
+                end
+            end
+        end
+    end
+end
+
+#endif

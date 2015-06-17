@@ -21,7 +21,6 @@
 
 #include "engine/display/graphic_context_state.hpp"
 #include "engine/gui/rect_component.hpp"
-#include "pingus/capture_rectangle.hpp"
 
 class Pingu;
 class World;
@@ -37,16 +36,14 @@ class Playfield : public GUI::RectComponent
 private:
   Server* server;
   GameSession* session;
-
-  Pingu* current_pingu;
+  
   bool mouse_scrolling;
   int  scroll_speed;
 
   Vector2i scroll_center;
 
   std::unique_ptr<SceneContext> scene_context;
-  GraphicContextState state;
-  CaptureRectangle capture_rectangle;
+  GraphicContextState state;  
 
   std::vector<Rect> clipping_rectangles;
   
