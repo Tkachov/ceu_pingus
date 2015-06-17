@@ -59,7 +59,7 @@ void PinguAction::catch_pingu(Pingu* p) {
   ceu_out_go(&CEUapp, CEU_IN_CATCH_PINGU, &c);
 }
 
-Vector3f PinguAction::get_center_pos() const {  
+Vector3f PinguAction::get_center_pos() const {
   GetCenterPosPackage package(this, pingu->get_pos() + Vector3f(0, -16));
   GetCenterPosPackage* p = &package;
   ceu_out_go(&CEUapp, CEU_IN_ACTION_GET_CENTER_POS, &p);

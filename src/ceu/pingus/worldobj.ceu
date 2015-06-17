@@ -17,4 +17,8 @@ native @pure _WorldObj__get_world(),
              _WorldObj__get_world_remove(),
              _WorldObj__get_world_play_sound();
 
+interface IWorldObj with
+    var _WorldObj* me;
+end
+
 #endif

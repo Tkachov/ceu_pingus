@@ -1,0 +1,63 @@
+#ifndef ENTRANCE_CEU
+#define ENTRANCE_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../iworld.ceu"
+#include "../worldobj.ceu"
+#include "../ipingu_holder.ceu"
+#include "../pingu_holder_listener.ceu"
+
+native/pre do
+    ##include "pingus/worldobjs/entrance.hpp"
+    ##define WEntrance WorldObjs::Entrance
+    ##define ED_MISC WorldObjs::Entrance::EntranceDirection::MISC
+    ##define ED_LEFT WorldObjs::Entrance::EntranceDirection::LEFT
+end
+
+input _WEntrance* DELETE_ENTRANCE;
+
+class Entrance with
+    interface IWorldObj;
+do
+    var _WEntrance&? entrance = _PTR2REF((_WEntrance*)me);
+
+    var int last_release = 150 - entrance.release_rate;
+    var bool go_left = true;
+
+    if entrance.direction != _ED_LEFT then
+        go_left = false;
+    end
+
+    function (void) => bool pingu_ready do
+        if (last_release + entrance.release_rate) < entrance.world:get_time() then
+            last_release = _PTR2REF(entrance.world:get_time()); //that's not a pointer even
+            return true;
+        end
+
+        return false;
+    end
+
+    par/or do
+        every w in WORLD_UPDATE do
+            if w != entrance.world then
+                continue;
+            end
+
+            if pingu_ready() and not entrance.world:check_armageddon() then
+                var _PHPackage* package = _new_PHPackage();
+                package:entrance = &entrance;
+                package:left = go_left;
+                emit global:world:get_pingus():e_MAKE_PINGU => package;
+
+                if entrance.direction == _ED_MISC then
+                    go_left = not go_left;
+                end
+            end
+        end
+    with
+        var _WEntrance* e = await DELETE_ENTRANCE until (e == &entrance);
+    end
+end
+
+#endif

@@ -5,12 +5,12 @@
 //  it under the terms of the GNU General Public License as published by
 //  the Free Software Foundation, either version 3 of the License, or
 //  (at your option) any later version.
-//  
+//
 //  This program is distributed in the hope that it will be useful,
 //  but WITHOUT ANY WARRANTY; without even the implied warranty of
 //  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //  GNU General Public License for more details.
-//  
+//
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -23,6 +23,8 @@
 #include "pingus/world.hpp"
 #include "util/log.hpp"
 
+#include "ceuvars.h"
+
 namespace WorldObjs {
 
 Entrance::Entrance(const FileReader& reader) :
@@ -31,9 +33,7 @@ Entrance::Entrance(const FileReader& reader) :
   release_rate(150),
   owner_id(0),
   smallmap_symbol("core/misc/smallmap_entrance"),
-  surface(),
-  last_release(),
-  last_direction(0)
+  surface()
 {
   reader.read_int   ("owner-id",     owner_id);
   reader.read_vector("position",     pos);
@@ -57,88 +57,19 @@ Entrance::Entrance(const FileReader& reader) :
     direction = MISC;
   }
 
-  last_release = 150 - release_rate; // wait ~2sec at startup to allow a 'lets go' sound
+  Entrance* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_NEW_ENTRANCE, &self);
 }
 
-Entrance::~Entrance ()
-{
+Entrance::~Entrance() {
+  Entrance* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_DELETE_ENTRANCE, &self);
 }
 
 float
 Entrance::get_z_pos () const
 {
   return pos.z;
-}
-
-bool
-Entrance::pingu_ready ()
-{
-  if (last_release + release_rate < (world->get_time())) {
-    last_release = world->get_time();
-    return true;
-  } else {
-    return false;
-  }
-}
-
-void
-Entrance::create_pingu ()
-{
-  Direction d;
-
-  Pingu* pingu = world->get_pingus()->create_pingu(pos, owner_id);
-
-  if (pingu) // still pingus in the pool
-  {
-    switch (direction)
-    {
-      case LEFT:
-        d.left();
-        pingu->set_direction(d);
-        break;
-
-      case MISC:
-        if (last_direction)
-        {
-          d.left();
-          last_direction = 0;
-        }
-        else
-        {
-          d.right();
-          last_direction = 1;
-        }
-        pingu->set_direction(d);
-        break;
-
-      case RIGHT:
-        d.right();
-        pingu->set_direction(d);
-        break;
-
-      default:
-        log_error("warning direction is wrong: %1%", direction);
-        d.right();
-        pingu->set_direction(d);
-        break;
-    }
-
-    // FIXME: Find the "oing" sound
-    //world->play_sound("oing", pos);
-  }
-  else
-  {
-    //log_error("entrance: pingu couldn't get created");
-  }
-}
-
-void
-Entrance::update ()
-{
-  if (pingu_ready() && (! world->check_armageddon()))
-  {
-    create_pingu();
-  }
 }
 
 void

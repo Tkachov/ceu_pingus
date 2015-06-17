@@ -5,9 +5,11 @@ native/pre do
     ##include "engine/display/scene_context.hpp"
     ##define gc_color_draw(gc, s, p) gc->color().draw(s, p)
     ##define gc_color_draw2(gc, s, p) gc->color().draw(*(Sprite*)s, p)
+    ##define gc_color_print_center(gc, f, p, t, v) gc->color().print_center(f, p, *(std::string*)t, v);
 end
 
 native @pure _gc_color_draw(),
-			 _gc_color_draw2();
+			 _gc_color_draw2(),
+			 _gc_color_print_center();
 
 #endif

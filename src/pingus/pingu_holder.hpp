@@ -48,15 +48,6 @@ public:
   PinguHolder(const PingusLevel&);
   ~PinguHolder();
 
-  struct PinguPackage {
-    PinguHolder* holder;    
-    const Vector3f& pos;
-    int owner;
-    Pingu* result;
-
-    PinguPackage(PinguHolder* h, const Vector3f& p, int o): holder(h), pos(p), owner(o), result(0) {};
-  };
-
   struct GetPinguPackage {
     PinguHolder* holder;    
     int id;
@@ -103,11 +94,7 @@ public:
       this level */
   int get_number_of_allowed();
 
-  /** @return a reference to a newly create Pingu, the PinguHolder
-      will take care of the deletion. The caller *must* not delete the
-      Pingu. Might return 0 if all available pingus are already
-      released */
-  Pingu* create_pingu(const Vector3f& pos, int owner_id);
+  void push_pingu_back(Pingu*);
 
   /** Get a pingu by id, references to dead or exited Pingus are not
       returned, but 0 instead

@@ -73,35 +73,24 @@ World::World(const PingusLevel& plf) :
   world_obj.push_back(smoke_particle_holder);
   world_obj.push_back(snow_particle_holder);
 
-  init_worldobjs(plf);
-
   World* self = this;
   ceu_out_go(&CEUapp, CEU_IN_NEW_WORLD, &self);
+
+  init_worldobjs(plf);  
 }
 
-void
-World::add_object (WorldObj* obj)
-{
-  world_obj.push_back(obj);
+void World::add_object(WorldObj* obj) {
+  if(obj) world_obj.push_back(obj);
 }
 
 void
 World::init_worldobjs(const PingusLevel& plf)
 {
   const std::vector<FileReader>& objects = plf.get_objects();
-
-  for (std::vector<FileReader>::const_iterator i = objects.begin();
-       i != objects.end ();
-       ++i)
-  {
-    std::vector<WorldObj*> objs = WorldObjFactory::instance()->create(*i);
-    for(auto obj = objs.begin(); obj != objs.end(); ++obj)
-    {
-      if (*obj)
-      {
-        add_object(*obj);
-      }
-    }
+  for(auto i: objects) {
+    std::vector<WorldObj*> objs = WorldObjFactory::instance()->create(i);
+    for(auto obj: objs)
+      add_object(obj);
   }
 
   world_obj.push_back(pingus);

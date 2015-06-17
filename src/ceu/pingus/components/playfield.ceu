@@ -1,0 +1,84 @@
+#ifndef PLAYFIELD_CEU
+#define PLAYFIELD_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../capture_rectangle.ceu"
+#include "../pingu_holder_listener.ceu"
+
+native/pre do
+    ##include "pingus/components/playfield.hpp"
+    ##define send_pingu_action_event(playfield, pingu) playfield->server->send_pingu_action_event(pingu, playfield->session->get_action_name())
+end
+
+input _Playfield* PLAYFIELD_UPDATE;
+input _Playfield* DELETE_PLAYFIELD;
+input _SceneContext* PLAYFIELD_DRAW;
+input _Vector2i* PLAYFIELD_CLICK;
+
+native @pure _send_pingu_action_event();
+
+class Playfield with
+    var _Playfield& me;
+do
+    var _Playfield&? playfield = _PTR2REF((_Playfield*)&this.me);
+    var CaptureRectangle capture_rectangle with
+        this.session = playfield.session;
+    end;
+
+    var IPingu* current_pingu = null;
+
+    function @rec (int mx, int my) => IPingu* current_pingu_find do
+        var float min_dist = 500.0;
+        var float dist;
+        var IPingu* c_pingu = null;
+
+        loop pingu in global:world:get_pingus():all_pingus do
+            if pingu:me.is_over(mx, my) then
+                dist = pingu:me.dist(mx, my);
+
+                if dist < min_dist then
+                    min_dist = dist;
+                    c_pingu = pingu;
+                end
+            end
+        end
+
+        return c_pingu;
+    end
+
+    function @rec (void) => IPingu* current_pingu_find_mouse do
+        var int mx = playfield.state.screen2world(playfield.mouse_pos).x;
+        var int my = playfield.state.screen2world(playfield.mouse_pos).y;
+        return call/rec current_pingu_find(mx, my);
+    end
+
+    par/or do
+        every p in PLAYFIELD_UPDATE do
+            if p != &playfield then
+                continue;
+            end
+
+            //find a current pingu & pass it to capture rectangle
+            current_pingu = _PTR2REF(call/rec current_pingu_find_mouse());
+            capture_rectangle.set_pingu(current_pingu);
+        end
+    with
+        every gc in PLAYFIELD_DRAW do
+            capture_rectangle.set_pingu(current_pingu);
+            emit capture_rectangle.draw => gc;
+        end
+    with
+        every pos in PLAYFIELD_CLICK do
+            current_pingu = _PTR2REF(call/rec current_pingu_find(pos:x, pos:y));
+
+            if current_pingu then
+                _send_pingu_action_event(playfield, &current_pingu:me);
+            end
+        end
+    with
+        var _Playfield* p = await DELETE_PLAYFIELD until (p == &playfield);
+    end
+end
+
+#endif
