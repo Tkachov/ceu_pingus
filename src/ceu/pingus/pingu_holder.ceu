@@ -24,12 +24,11 @@ native/pre do
     ##define new_PHPackage new PHPackage
 end
 
-native @pure _new_PHPackage();
-
 input _GetPackage* GET_PINGU;
 input _PinguHolder* DELETE_PINGU_HOLDER;
 
-native @pure _new_Pingu();
+native @pure _new_Pingu(),
+             _new_PHPackage();
 
 class PinguHolder with
     var _PinguHolder& me;

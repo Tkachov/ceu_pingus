@@ -8,12 +8,7 @@
 #include "pingu_holder.ceu"
 #include "worldobjs/entrance.ceu"
 
-native/pre do
-    ##include "pingus/world.hpp"
-end
-
 input _World* DELETE_WORLD;
-input _World* WORLD_UPDATE;
 input _WEntrance* NEW_ENTRANCE;
 
 class World with
