@@ -31,6 +31,11 @@ native/pre do
     ##include "pingus/pingu.hpp"
     ##define A_Enum(x) (ActionName::Enum)(x)
     ##define delete_Pingu(p) delete p
+    ##define RSA_Package Pingu::RequestSetActionPackage
+    ##define PA_get_activation_mode(x) PinguAction::get_activation_mode(x)
+    ##define PA_INSTANT ActionType::INSTANT
+    ##define PA_WALL_TRIGGERED ActionType::WALL_TRIGGERED
+    ##define PA_FALL_TRIGGERED ActionType::FALL_TRIGGERED
 end
 
 input _PinguAction* PINGU_SET_ACTION;
@@ -38,8 +43,9 @@ input void PINGU_UPDATE_ALL;
 input _SceneContext* PINGU_DRAW_WALKER;
 input _SceneContext* PINGU_DRAW_OTHERS;
 input _Pingu* PINGU_DIE;
+input _RSA_Package* PINGU_REQUEST_SET_ACTION;
 
-native @pure _delete_Pingu();
+native @pure _delete_Pingu(), _PA_get_activation_mode();
 
 #define DO_ACTION(n, c) \
     else/if current_action == n then \
@@ -61,6 +67,27 @@ do
 
     var int current_action = _A_FALLER;
     set_ptr(_A_FALLER);
+
+    var int fall_action;
+    var bool fall_action_set = false;
+    var int wall_action;
+    var bool wall_action_set = false;
+
+    function (void) => bool has_fall_action do
+        return fall_action_set;
+    end
+
+    function (void) => bool has_wall_action do
+        return wall_action_set;
+    end
+
+    function (void) => int get_fall_action do
+        return fall_action;
+    end
+
+    function (void) => int get_wall_action do
+        return wall_action;
+    end
 
     par do
         //pass update() call
@@ -98,6 +125,47 @@ do
             var _PinguAction&? a = _PTR2REF(a_);
             if a.pingu == &me_ then
                 emit e_CHANGE_ACTION => a.get_type();
+            end
+        end
+    with
+        every package in PINGU_REQUEST_SET_ACTION do
+            if package:pingu != &me_ then
+                continue;
+            end;
+
+            var int mode = _PA_get_activation_mode(package:action);
+
+            if mode == _PA_INSTANT then
+                if package:action == current_action then
+                    _log_debug("Pingu: Already have action");
+                else/if action:change_allowed(_PTR2REF(package:action)) then
+                    _log_debug("setting instant action");
+                    package:result = true;
+                    emit e_CHANGE_ACTION => package:action;
+                else
+                    _log_debug("change from action %1% not allowed", action:get_name());
+                end
+            else/if mode == _PA_WALL_TRIGGERED then
+                if wall_action_set and wall_action == package:action then
+                    _log_debug("Not using wall action, we have already");
+                else
+                    _log_debug("Setting wall action");
+                    wall_action = _PTR2REF(package:action);
+                    wall_action_set = true;
+                    package:result = true;
+                end
+            else/if mode == _PA_FALL_TRIGGERED then
+                if fall_action_set and fall_action == package:action then
+                    _log_debug("Not using fall action, we have already");
+                else
+                    _log_debug("Setting fall action");
+                    fall_action = _PTR2REF(package:action);
+                    fall_action_set = true;
+                    package:result = true;
+                end
+            else
+                _log_debug("unknown action activation_mode");
+                _assert(0);
             end
         end
     with

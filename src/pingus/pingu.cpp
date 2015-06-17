@@ -33,10 +33,6 @@
 // Init a pingu at the given position while falling
 Pingu::Pingu (int arg_id, const Vector3f& arg_pos, int owner):
   ceu_action(0),
-  wall_action(),
-  wall_action_set(false),
-  fall_action(),
-  fall_action_set(false),
   previous_action(ActionName::FALLER),
   id(arg_id),
   owner_id(owner),
@@ -117,53 +113,10 @@ Pingu::set_velocity (const Vector3f& velocity_)
 // When you select a function on the button panel and click on a
 // pingu, this action will be called with the action name
 bool Pingu::request_set_action(ActionName::Enum action_name) {
-  switch(PinguAction::get_activation_mode(action_name)) {
-    case INSTANT:
-      if(action_name == get_ceu_action()->get_type()) {
-        log_debug("Pingu: Already have action");
-        return false;
-      } else if(get_ceu_action()->change_allowed(action_name)) {
-        log_debug("setting instant action");
-        set_action(action_name);
-        return true;
-      } else {
-        log_debug("change from action %1% not allowed", get_ceu_action()->get_name());
-        return false;
-      }
-    break;
-
-    case WALL_TRIGGERED:
-      if(wall_action_set && wall_action == action_name) {
-        log_debug("Not using wall action, we have already");
-        return false;
-      } else {
-        log_debug("Setting wall action");
-        wall_action = action_name;
-        wall_action_set = true;
-        return true;
-      }
-    break;
-
-    case FALL_TRIGGERED:
-      if(fall_action_set && fall_action == action_name) {
-        log_debug("Not using fall action, we have already");
-        return false;
-      } else {
-        log_debug("Setting fall action");
-        fall_action = action_name;
-        fall_action_set = true;
-        return true;
-      }
-    break;
-
-    default:
-      log_debug("unknown action activation_mode");
-      assert(0);
-      return false;
-    break;
-  }
-
-  return false;
+  RequestSetActionPackage package(this, action_name);
+  RequestSetActionPackage* p = &package;
+  ceu_out_go(&CEUapp, CEU_IN_PINGU_REQUEST_SET_ACTION, &p);
+  return package.result;
 }
 
 void

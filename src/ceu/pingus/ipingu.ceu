@@ -23,6 +23,10 @@ interface IPingu with
     event int e_CHANGE_ACTION;
 
     function (int) => _PinguAction* set_ptr;
+    function (void) => bool has_fall_action;
+    function (void) => bool has_wall_action;
+    function (void) => int get_fall_action;
+    function (void) => int get_wall_action;
 end
 
 #endif

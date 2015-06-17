@@ -61,11 +61,11 @@ do
 
             //find a current pingu & pass it to capture rectangle
             current_pingu = _PTR2REF(call/rec current_pingu_find_mouse());
-            capture_rectangle.set_pingu(current_pingu);
+            call/rec capture_rectangle.set_pingu(current_pingu);
         end
     with
         every gc in PLAYFIELD_DRAW do
-            capture_rectangle.set_pingu(current_pingu);
+            call/rec capture_rectangle.set_pingu(current_pingu);
             emit capture_rectangle.draw => gc;
         end
     with

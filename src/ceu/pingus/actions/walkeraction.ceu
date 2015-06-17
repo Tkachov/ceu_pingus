@@ -30,7 +30,7 @@ do
         every gc in pingu.e_DRAW_CALLED do
             _gc_color_draw2(gc, sprite.get(walker.pingu:direction), walker.pingu:get_pos());
 
-            if walker.pingu:has_fall_action() and walker.pingu:get_fall_action() == _A_FLOATER then
+            if pingu.has_fall_action() and pingu.get_fall_action() == _A_FLOATER then
                 _gc_color_draw2(gc, floaterlayer.get(walker.pingu:direction), walker.pingu:get_pos());
             end
         end
@@ -116,7 +116,7 @@ do
                 var bool found_next_step = false;
 
                 //-max_steps .. 0 .. max_steps
-                loop i in max_steps*2+1 do
+                loop/100 i in max_steps*2+1 do
                     y_inc = -max_steps + i;
 
                     // up/down-hill scan
@@ -139,9 +139,9 @@ do
                 else
                     if walker.rel_getpixel(1, 0) != _GT_NOTHING then
                         // We reached a wall
-                        if walker.pingu:has_wall_action() then
+                        if pingu.has_wall_action() then
                             _log_debug("Pingu: We are in front of a wall, setting persistant action");
-                            escape walker.pingu:get_wall_action();
+                            escape pingu.get_wall_action();
                         end
 
                         // No persitent action found, so change the direction

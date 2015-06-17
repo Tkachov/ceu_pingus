@@ -38,14 +38,6 @@ private:
 
   void replace_action(PinguAction* a);
 
-  /** the action that gets triggered when the pingu hits a wall */
-  ActionName::Enum wall_action;
-  bool wall_action_set;
-
-  /** the action that gets triggered when the pingu falls */
-  ActionName::Enum fall_action;
-  bool fall_action_set;
-
   /** The previous_action contains the action type that was in action
       before action got applied, its here to enable action to behave
       differently depending on the previous action */
@@ -69,6 +61,14 @@ private:
   std::shared_ptr<PinguAction> create_action(ActionName::Enum action);
 
 public:
+
+  struct RequestSetActionPackage {
+    Pingu* pingu;
+    ActionName::Enum action;
+    bool result;
+
+    RequestSetActionPackage(Pingu* p, ActionName::Enum a): pingu(p), action(a), result(false) {};
+  };
 
   //FIXME make me private
   Direction direction;
@@ -147,12 +147,6 @@ public:
   void set_action (ActionName::Enum action_name);
 
   PinguAction* create_action2(ActionName::Enum action_);
-
-  bool has_fall_action() { return fall_action_set; }
-  ActionName::Enum get_fall_action () { return fall_action; }
-
-  bool has_wall_action() { return wall_action_set; }
-  ActionName::Enum get_wall_action () { return wall_action; }
 
   /** Returns the `color' of the colmap in the walking direction
       Examples:

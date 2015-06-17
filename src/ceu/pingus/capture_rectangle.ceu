@@ -8,7 +8,7 @@
 #include "ipingu.ceu"
 
 native/pre do
-    ##define AN_get_char ActionName::get_persistent_char
+    ##define AN_get_char(x) ActionName::get_persistent_char((ActionName::Enum)x)
     ##define streq(x, y) *x = y
     ##define stradd(x, y) *x += y
     ##define devmode globals::developer_mode
@@ -23,7 +23,7 @@ native @pure _new_CaptureRectangle(), _AN_get_char(), _streq(), _stradd(), _stru
 
 class CaptureRectangle with
     var _GameSession* session;
-    function (IPingu*) => void set_pingu;
+    function @rec (IPingu*) => void set_pingu;
     event _SceneContext* draw;
 do
     var IPingu* pingu = null;
@@ -39,21 +39,21 @@ do
     finalize with _delete_Sprite(arrow_left); end;
     finalize with _delete_Sprite(arrow_right); end;
 
-    function (IPingu* p) => void set_pingu do
+    function @rec (IPingu* p) => void set_pingu do
         pingu = p;
 
         if pingu then
             _streq(action_str, _PTR2REF(pingu:me.get_name()));
 
-            if pingu:me.has_wall_action() or pingu:me.has_fall_action() then
+            if pingu:has_wall_action() or pingu:has_fall_action() then
                 _stradd(action_str, "[");
 
-                if pingu:me.has_wall_action() then
-                    _stradd(action_str, _AN_get_char(pingu:me.get_wall_action()));
+                if pingu:has_wall_action() then
+                    _stradd(action_str, _AN_get_char(pingu:get_wall_action()));
                 end
 
-                if pingu:me.has_fall_action() then
-                    _stradd(action_str, _AN_get_char(pingu:me.get_fall_action()));
+                if pingu:has_fall_action() then
+                    _stradd(action_str, _AN_get_char(pingu:get_fall_action()));
                 end
 
                 _stradd(action_str, "]");
