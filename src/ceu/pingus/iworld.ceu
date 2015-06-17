@@ -1,0 +1,12 @@
+#ifndef IWORLD_CEU
+#define IWORLD_CEU
+
+#include "../c.ceu"
+#include "../sdl.ceu"
+#include "pingu_holder.ceu"
+
+interface IWorld with    
+    function (void) => PinguHolder* get_pingus;
+end
+
+#endif

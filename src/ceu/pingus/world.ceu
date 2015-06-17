@@ -3,8 +3,10 @@
 
 #include "../c.ceu"
 #include "../sdl.ceu"
+#include "iworld.ceu"
 #include "pingu.ceu"
 #include "pingu_holder.ceu"
+#include "worldobjs/entrance.ceu"
 
 native/pre do
     ##include "pingus/world.hpp"
@@ -12,14 +14,20 @@ end
 
 input _World* DELETE_WORLD;
 input _World* WORLD_UPDATE;
+input _WEntrance* NEW_ENTRANCE;
 
 class World with
-    var _World& me;
+    interface IWorld;
+    var _World& me;    
 do
     var _World&? me_ = _PTR2REF((_World*)&this.me);
     var PinguHolder holder with
         this.me = me_.pingus;
     end;
+
+    function (void) => PinguHolder* get_pingus do
+        return holder;
+    end
 
     par/or do
         every w in WORLD_UPDATE do
@@ -37,6 +45,13 @@ do
                     break;
                 end
             end
+        end
+    with
+        every new_entrance in NEW_ENTRANCE do
+            spawn Entrance with
+                this.me = _PTR2REF(new_entrance);
+                this.world = outer;
+            end;
         end
     with
         var _World* p = await DELETE_WORLD until (p == &me_);

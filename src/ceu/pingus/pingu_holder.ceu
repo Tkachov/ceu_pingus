@@ -10,7 +10,12 @@ native/pre do
     ##include "pingus/pingu_holder.hpp"
     ##define Package PinguHolder::PinguPackage
     ##define GetPackage PinguHolder::GetPinguPackage
-    ##define new_Pingu new Pingu
+    ##define new_Pingu(a, b, c) new Pingu(a, b, c)
+end
+
+native/pre do
+    ##include "pingus/worldobjs/entrance.hpp"
+    ##define WEntrance WorldObjs::Entrance    
 end
 
 input _Package* NEW_PINGU;
@@ -22,11 +27,29 @@ native @pure _new_Pingu();
 class PinguHolder with
     var _PinguHolder& me;
     pool Pingu[] all_pingus;
+    function (_Package* package) => _Pingu* create_pingu;
 do
     var _PinguHolder&? me_ = _PTR2REF((_PinguHolder*)&this.me);
     var int pingus_emitted = 0;
     var int pingus_exited = 0;
     var int pingus_dead = 0;
+
+    function (_Package* package) => _Pingu* create_pingu do
+        var _Pingu* p = null;
+
+        if me_.number_of_allowed > pingus_emitted then
+            // We use all_pingus.size() as pingu_id, so that id == array index            
+            spawn Pingu in all_pingus with
+                this.me = _new_Pingu(pingus_emitted, package:pos, package:owner);
+                p = &this.me;
+            end;
+
+            pingus_emitted = pingus_emitted + 1;
+            me_.released = pingus_emitted;
+        end
+
+        return p;
+    end
 
     par do
         every package in NEW_PINGU do

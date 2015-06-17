@@ -1,0 +1,111 @@
+#ifndef ENTRANCE_CEU
+#define ENTRANCE_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../iworld.ceu"
+#include "../worldobj.ceu"
+#include "../pingu_holder.ceu"
+
+native/pre do
+    ##include "pingus/worldobjs/entrance.hpp"
+    ##define WEntrance WorldObjs::Entrance    
+end
+
+native/pre do
+    ##include "pingus/pingu_holder.hpp"
+    ##define Package PinguHolder::PinguPackage
+    ##define new_Package new PinguHolder::PinguPackage
+    //##define make_pingu(p, e) p->create_pingu(new PinguHolder::PinguPackage(0, e->pos, e->owner_id));
+end
+
+input _World* WORLD_UPDATE;
+input _WEntrance* DELETE_ENTRANCE;
+
+native @pure _new_Package();//, _make_pingu();
+
+class Entrance with
+    interface IWorldObj;
+    var IWorld& world;
+do    
+    var _WEntrance&? entrance = _PTR2REF((_WEntrance*)&me);    
+
+    function (void) => bool pingu_ready do
+        if entrance.last_release + entrance.release_rate < entrance.world:get_time() then
+            entrance.last_release = _PTR2REF(entrance.world:get_time()); //that's not a pointer even
+            return true;
+        end
+
+        return false;
+    end
+
+//////move create_pingu() here
+function @rec (void) => void create_pingu do
+    var _Package* package = _new_Package(0, entrance.pos, entrance.owner_id);    
+    var _Pingu&? pingu = world.get_pingus():create_pingu(package);
+    /*
+    Direction d;
+
+    Pingu* pingu = world->get_pingus()->create_pingu(pos, owner_id);
+
+    if (pingu) // still pingus in the pool
+    {
+        switch (direction)
+        {
+          case LEFT:
+            d.left();
+            pingu->set_direction(d);
+            break;
+
+          case MISC:
+            if (last_direction)
+            {
+              d.left();
+              last_direction = 0;
+            }
+            else
+            {
+              d.right();
+              last_direction = 1;
+            }
+            pingu->set_direction(d);
+            break;
+
+          case RIGHT:
+            d.right();
+            pingu->set_direction(d);
+            break;
+
+          default:
+            log_error("warning direction is wrong: %1%", direction);
+            d.right();
+            pingu->set_direction(d);
+            break;
+        }
+
+        // FIXME: Find the "oing" sound
+        //world->play_sound("oing", pos);
+    }
+    else
+    {
+        //log_error("entrance: pingu couldn't get created");
+    }
+    */
+end
+
+    par/or do
+        every w in WORLD_UPDATE do
+            if w != entrance.world then
+                continue;
+            end
+
+            if pingu_ready() and not entrance.world:check_armageddon() then
+                call/rec create_pingu();                
+            end
+        end
+    with
+        var _WEntrance* e = await DELETE_ENTRANCE until (e == &entrance);
+    end
+end
+
+#endif
