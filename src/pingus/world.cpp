@@ -73,10 +73,10 @@ World::World(const PingusLevel& plf) :
   world_obj.push_back(smoke_particle_holder);
   world_obj.push_back(snow_particle_holder);
 
-  init_worldobjs(plf);
-
   World* self = this;
   ceu_out_go(&CEUapp, CEU_IN_NEW_WORLD, &self);
+
+  init_worldobjs(plf);  
 }
 
 void

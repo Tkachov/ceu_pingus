@@ -8,17 +8,24 @@
 
 native/pre do
     ##include "pingus/pingu_holder.hpp"
-    ##define Package PinguHolder::PinguPackage
     ##define GetPackage PinguHolder::GetPinguPackage
     ##define new_Pingu(a, b, c) new Pingu(a, b, c)
 end
 
 native/pre do
     ##include "pingus/worldobjs/entrance.hpp"
-    ##define WEntrance WorldObjs::Entrance    
+    ##define WEntrance WorldObjs::Entrance
+
+    struct PHPackage {
+        WorldObjs::Entrance* entrance;
+        bool left;
+    };
+
+    ##define new_PHPackage new PHPackage
 end
 
-input _Package* NEW_PINGU;
+native @pure _new_PHPackage();
+
 input _GetPackage* GET_PINGU;
 input _PinguHolder* DELETE_PINGU_HOLDER;
 
@@ -27,47 +34,35 @@ native @pure _new_Pingu();
 class PinguHolder with
     var _PinguHolder& me;
     pool Pingu[] all_pingus;
-    function (_Package* package) => _Pingu* create_pingu;
+    event _PHPackage* e_MAKE_PINGU;
 do
     var _PinguHolder&? me_ = _PTR2REF((_PinguHolder*)&this.me);
     var int pingus_emitted = 0;
     var int pingus_exited = 0;
     var int pingus_dead = 0;
 
-    function (_Package* package) => _Pingu* create_pingu do
-        var _Pingu* p = null;
-
-        if me_.number_of_allowed > pingus_emitted then
-            // We use all_pingus.size() as pingu_id, so that id == array index            
-            spawn Pingu in all_pingus with
-                this.me = _new_Pingu(pingus_emitted, package:pos, package:owner);
-                p = &this.me;
-            end;
-
-            pingus_emitted = pingus_emitted + 1;
-            me_.released = pingus_emitted;
-        end
-
-        return p;
-    end
-
     par do
-        every package in NEW_PINGU do
-            if package:holder != &me_ then
-                continue;
-            end
-
+        every package in e_MAKE_PINGU do
             if me_.number_of_allowed > pingus_emitted then
                 // We use all_pingus.size() as pingu_id, so that id == array index
+                var _Pingu* p = null;
                 spawn Pingu in all_pingus with
-                    this.me = _new_Pingu(pingus_emitted, package:pos, package:owner);
-                    package:result = &this.me;
+                    this.me = _new_Pingu(pingus_emitted, package:entrance:pos, package:entrance:owner_id);
+                    p = &this.me;
                 end;
+
+                if package:left then
+                    p:direction.left();
+                else
+                    p:direction.right();
+                end
+
+                // FIXME: Find the "oing" sound
+                //world->play_sound("oing", pos);
 
                 pingus_emitted = pingus_emitted + 1;
                 me_.released = pingus_emitted;
-            else
-                package:result = 0;
+                me_.push_pingu_back(_PTR2REF(p));
             end
         end
     with

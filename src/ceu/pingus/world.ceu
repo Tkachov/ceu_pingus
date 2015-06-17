@@ -18,7 +18,7 @@ input _WEntrance* NEW_ENTRANCE;
 
 class World with
     interface IWorld;
-    var _World& me;    
+    var _World& me;
 do
     var _World&? me_ = _PTR2REF((_World*)&this.me);
     var PinguHolder holder with

@@ -28,16 +28,9 @@ PinguHolder::PinguHolder(const PingusLevel& plf) :
 
 PinguHolder::~PinguHolder() {}
 
-Pingu*
-PinguHolder::create_pingu (const Vector3f& pos, int owner_id)
-{
-  PinguPackage package(this, pos, owner_id);
-  PinguPackage* pp = &package;
-  ceu_out_go(&CEUapp, CEU_IN_NEW_PINGU, &pp);
-
+void PinguHolder::push_pingu_back(Pingu* p) {  
   // This list holds the active pingus
-  if(package.result) pingus.push_back(package.result);
-  return package.result;
+  if(p) pingus.push_back(p);  
 }
 
 void
