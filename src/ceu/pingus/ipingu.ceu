@@ -27,6 +27,7 @@ interface IPingu with
     function (void) => bool has_wall_action;
     function (void) => int get_fall_action;
     function (void) => int get_wall_action;
+    function (void) => int get_previous_action;
 end
 
 #endif

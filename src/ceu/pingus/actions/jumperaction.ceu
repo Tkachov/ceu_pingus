@@ -24,7 +24,7 @@ do
         await pingu.e_UPDATE_CALLED;
 
         // if climber, do a wall-jump, else just jump forward
-        if jumper.pingu:get_previous_action() == _A_CLIMBER then
+        if pingu.get_previous_action() == _A_CLIMBER then
             jumper.pingu:direction.change();
         end
 

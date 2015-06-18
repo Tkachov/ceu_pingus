@@ -32,8 +32,7 @@
 
 // Init a pingu at the given position while falling
 Pingu::Pingu (int arg_id, const Vector3f& arg_pos, int owner):
-  ceu_action(0),
-  previous_action(ActionName::FALLER),
+  ceu_action(0),  
   id(arg_id),
   owner_id(owner),
   pos_x(arg_pos.x),
@@ -133,16 +132,6 @@ Pingu::set_action(PinguAction* act)
   printf("C++ set_action\n");
   PinguAction* p = act;
   ceu_out_go(&CEUapp, CEU_IN_PINGU_SET_ACTION, &p);
-/*
-  PinguAction* backup = get_ceu_action();
-  set_ceu_action(act);
-
-  previous_action = backup->get_type();
-  delete backup;
-
-  //notify Ceu that it need new action to be created
-  PinguAction* p = get_ceu_action();
-  ceu_out_go(&CEUapp, CEU_IN_PINGU_SET_ACTION, &p);  */
 }
 
 void Pingu::die() {

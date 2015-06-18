@@ -124,8 +124,8 @@ do
                     else
                         // This is where the jumper bug happens
                         //log_info("Reached the unreachable: " << pingu:get_velocity().y);
-                        if faller.pingu:get_previous_action() == _A_BLOCKER then
-                            escape faller.pingu:get_previous_action();
+                        if pingu.get_previous_action() == _A_BLOCKER then
+                            escape pingu.get_previous_action();
                         else
                             escape _A_WALKER;
                         end
