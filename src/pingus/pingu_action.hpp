@@ -95,7 +95,7 @@ public:
   ///catching Pingus:
   void catch_pingus();
 
-  virtual void catch_pingu(Pingu*);
+  void catch_pingu(Pingu*);
 
   struct CatchedPingu {
     PinguAction* action;

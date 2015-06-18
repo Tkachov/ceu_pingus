@@ -105,11 +105,6 @@ public:
   /** Checks if this action allows to be overwritten with the given new action */
   bool change_allowed (ActionName::Enum new_action);
 
-  /** The descriptive name of the action, this is used in the
-      CaputreRectangle, so it can contain more than just the name
-      (number of blocks, etc.) */
-  std::string get_name();
-
   /// Returns the unique id of the pingu
   unsigned int  get_id (void);
 
@@ -127,9 +122,6 @@ public:
   Vector3f get_velocity () const { return velocity; }
 
   void set_velocity (const Vector3f& velocity_);
-
-  // Set the pingu in the gives direction
-  void set_direction (Direction d);
 
   /** Request an action to be set to the pingu, if its a persistent
       action, it will be hold back for later execution, same with a
@@ -149,11 +141,6 @@ public:
       (1, 0)  is the pixel in front of the pingu
   */
   int  rel_getpixel (int x, int y);
-
-  /** Let the pingu catch another pingu, so that an action can be
-      applied (i.e. let a blocker change the direction f another
-      pingu) */
-  void catch_pingu (Pingu* pingu);
 
   void apply_force (Vector3f);
 
@@ -175,12 +162,6 @@ public:
   bool   is_inside (int x1, int y1, int x2, int y2);
 
   float dist (int x, int y);
-
-  /** Return true if the pingu can be caught with the mouse and
-      another action can be applied, false otherwise (exiter,
-      splashed, etc.) */
-  bool catchable ();
-
   /** @return the name of the action the Pingu currently has */
   ActionName::Enum get_action ();
 

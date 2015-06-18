@@ -43,7 +43,7 @@ do
         pingu = p;
 
         if pingu then
-            _streq(action_str, _PTR2REF(pingu:me.get_name()));
+            _streq(action_str, _PTR2REF(pingu:action:get_name()));
 
             if pingu:has_wall_action() or pingu:has_fall_action() then
                 _stradd(action_str, "[");
@@ -70,7 +70,7 @@ do
         if pingu then
             var _Pingu&? p = _PTR2REF(&pingu:me);
 
-            if p.catchable() then
+            if pingu:action:catchable() then
                 // Draw the capture rectangle
                 if session and p.change_allowed(session:get_action_name()) then
                     _gc_color_draw2(gc, good, p.get_center_pos() + _Vector3f(0, 0, 1000));

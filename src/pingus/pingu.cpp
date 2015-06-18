@@ -32,7 +32,7 @@
 
 // Init a pingu at the given position while falling
 Pingu::Pingu (int arg_id, const Vector3f& arg_pos, int owner):
-  ceu_action(0),  
+  ceu_action(0),
   id(arg_id),
   owner_id(owner),
   pos_x(arg_pos.x),
@@ -177,24 +177,6 @@ Pingu::rel_getpixel(int x, int y)
                                                        static_cast<int>(pos_y - static_cast<float>(y)));
 }
 
-void
-Pingu::catch_pingu (Pingu* pingu)
-{
-  get_ceu_action()->catch_pingu(pingu);
-}
-
-void
-Pingu::set_direction (Direction d)
-{
-  direction = d;
-}
-
-std::string
-Pingu::get_name()
-{
-  return get_ceu_action()->get_name();
-}
-
 ActionName::Enum
 Pingu::get_action ()
 {
@@ -234,12 +216,6 @@ Pingu::get_owner_str ()
   std::ostringstream ostr;
   ostr << owner_id;
   return ostr.str();
-}
-
-bool
-Pingu::catchable ()
-{
-  return get_ceu_action()->catchable ();
 }
 
 std::shared_ptr<PinguAction> Pingu::create_action(ActionName::Enum action_) {
