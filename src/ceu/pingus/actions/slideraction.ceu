@@ -27,7 +27,7 @@ do
         every pingu.e_UPDATE_CALLED do
             sprite.get(slider.pingu:direction):update();
 
-            loop i in speed do
+            loop/100 i in speed do
                 if slider.rel_getpixel(1, 0) != _GT_NOTHING then
                     break;
                 end

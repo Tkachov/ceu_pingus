@@ -44,7 +44,7 @@ do
             new_pos.x = boarder.pingu:get_pos().x + (float)(boarder.pingu:direction)*speed;
             new_pos.y = boarder.pingu:get_pos().y;
 
-            loop do
+            loop/100 do
                 if (int)new_pos.x == (int)boarder.pingu:get_pos().x then
                     break;
                 end

@@ -53,6 +53,10 @@ do
         return call/rec current_pingu_find(mx, my);
     end
 
+    function (void) => IPingu* get_current_pingu do
+        return current_pingu;
+    end
+
     par/or do
         every p in PLAYFIELD_UPDATE do
             if p != &playfield then
@@ -65,7 +69,7 @@ do
         end
     with
         every gc in PLAYFIELD_DRAW do
-            call/rec capture_rectangle.set_pingu(current_pingu);
+            call/rec capture_rectangle.set_pingu(get_current_pingu()); //another no-"access across `await`"-hack
             emit capture_rectangle.draw => gc;
         end
     with

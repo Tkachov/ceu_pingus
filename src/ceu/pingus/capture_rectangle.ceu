@@ -66,33 +66,37 @@ do
         end
     end
 
+    function (_SceneContext* gc) => void f_draw do
+        if pingu then
+            var _Pingu&? p = _PTR2REF(&pingu:me);
+
+            if p.catchable() then
+                // Draw the capture rectangle
+                if session and p.change_allowed(session:get_action_name()) then
+                    _gc_color_draw2(gc, good, p.get_center_pos() + _Vector3f(0, 0, 1000));
+                else
+                    _gc_color_draw2(gc, bad, p.get_center_pos() + _Vector3f(0, 0, 1000));
+                end
+
+                // Paint the direction arrow
+                if p.direction.is_left() then
+                    _gc_color_draw2(gc, arrow_left, p.get_center_pos() + _Vector3f(0, 2, 1000));
+                else
+                    _gc_color_draw2(gc, arrow_right, p.get_center_pos() + _Vector3f(0, 2, 1000));
+                end
+
+                _gc_color_print_center(gc, _Fonts__courier_small,
+                    _Vector2i((int)p.get_center_pos().x, (int)p.get_center_pos().y - 46),
+                    action_str, 1000);
+            end
+        end
+    end
+
     par do
         await FOREVER;
     with
         every gc in draw do
-            if pingu then
-                var _Pingu&? p = _PTR2REF(&pingu:me);
-
-                if p.catchable() then
-                    // Draw the capture rectangle
-                    if session and p.change_allowed(session:get_action_name()) then
-                        _gc_color_draw2(gc, good, p.get_center_pos() + _Vector3f(0, 0, 1000));
-                    else
-                        _gc_color_draw2(gc, bad, p.get_center_pos() + _Vector3f(0, 0, 1000));
-                    end
-
-                    // Paint the direction arrow
-                    if p.direction.is_left() then
-                        _gc_color_draw2(gc, arrow_left, p.get_center_pos() + _Vector3f(0, 2, 1000));
-                    else
-                        _gc_color_draw2(gc, arrow_right, p.get_center_pos() + _Vector3f(0, 2, 1000));
-                    end
-
-                    _gc_color_print_center(gc, _Fonts__courier_small,
-                        _Vector2i((int)p.get_center_pos().x, (int)p.get_center_pos().y - 46),
-                        action_str, 1000);
-                end
-            end
+            f_draw(gc); //no "access across `await`" message even when there is one
         end
     end
 end
