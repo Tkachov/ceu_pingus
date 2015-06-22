@@ -21,13 +21,14 @@
 #include "pingus/pingu_holder.hpp"
 #include "pingus/world.hpp"
 
+#include "ceuvars.h"
+
 namespace WorldObjs {
 
 Guillotine::Guillotine(const FileReader& reader) :
   sprite_kill_right("traps/guillotinekill/right"),
   sprite_kill_left("traps/guillotinekill/left"),
   sprite_idle("traps/guillotineidle"),
-  pos(),
   direction(),
   killing(false)
 {
@@ -36,65 +37,14 @@ Guillotine::Guillotine(const FileReader& reader) :
   sprite_kill_right.set_play_loop(false);
   sprite_kill_left.set_play_loop(false);
   sprite_idle.set_play_loop(true);
+
+  Guillotine* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_NEW_GUILLOTINE, &self);
 }
 
-void
-Guillotine::draw (SceneContext& gc)
-{
-  if (killing) {
-    if (direction.is_left())
-      gc.color().draw (sprite_kill_left, pos);
-    else
-      gc.color().draw (sprite_kill_right, pos);
-  } else {
-    gc.color().draw (sprite_idle, pos);
-  }
-}
-
-float
-Guillotine::get_z_pos () const
-{
-  return pos.z;
-}
-
-void
-Guillotine::update ()
-{
-  // Only have to check one sprite because they update simultaneously
-  if (sprite_kill_left.is_finished())
-    killing = false;
-
-  PinguHolder* holder = world->get_pingus();
-  for (PinguIter pingu = holder->begin (); pingu != holder->end (); ++pingu)
-    catch_pingu(*pingu);
-
-  if (killing) {
-    // Update both sprites so they finish at the same time.
-    sprite_kill_left.update();
-    sprite_kill_right.update();
-    // FIXME: Should be a different sound
-    if (sprite_kill_left.get_current_frame() == 7)
-      WorldObj::get_world()->play_sound("splash", pos);
-  } else {
-    sprite_idle.update();
-  }
-}
-
-void
-Guillotine::catch_pingu (Pingu* pingu)
-{
-  if (!killing)
-  {
-    if (pingu->is_inside (static_cast<int>(pos.x + 38), static_cast<int>(pos.y + 90),
-                          static_cast<int>(pos.x + 42), static_cast<int>(pos.y + 98)))
-    {
-      killing = true;
-      pingu->die();
-      direction = pingu->direction;
-      sprite_kill_left.restart();
-      sprite_kill_right.restart();
-    }
-  }
+Guillotine::~Guillotine() {
+  Guillotine* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_DELETE_GUILLOTINE, &self);
 }
 
 } // namespace WorldObjs

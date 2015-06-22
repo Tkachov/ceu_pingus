@@ -7,9 +7,11 @@
 #include "pingu.ceu"
 #include "pingu_holder.ceu"
 #include "worldobjs/entrance.ceu"
+#include "worldobjs/guillotine.ceu"
 
 input _World* DELETE_WORLD;
 input _WEntrance* NEW_ENTRANCE;
+input _WGuillotine* NEW_GUILLOTINE;
 
 class World with
     interface IWorld;
@@ -45,6 +47,12 @@ do
         every new_entrance in NEW_ENTRANCE do
             spawn Entrance with
                 this.me = _PTR2REF(new_entrance);
+            end;
+        end
+    with
+        every new_guillotine in NEW_GUILLOTINE do
+            spawn Guillotine with
+                this.me = _PTR2REF(new_guillotine);
             end;
         end
     with

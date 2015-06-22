@@ -5,12 +5,12 @@
 //  it under the terms of the GNU General Public License as published by
 //  the Free Software Foundation, either version 3 of the License, or
 //  (at your option) any later version.
-//  
+//
 //  This program is distributed in the hope that it will be useful,
 //  but WITHOUT ANY WARRANTY; without even the implied warranty of
 //  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //  GNU General Public License for more details.
-//  
+//
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -36,7 +36,8 @@ class WorldObj
 protected:
   /** The World all WorldObjects live in. */
   static World*  world;
-  
+  Vector3f  pos;
+
 public:
   /** Set the world pointer for all world objects */
   static void   set_world(World*);
@@ -61,14 +62,20 @@ public:
   std::string get_id() const { return id; }
 
   /** Returns the $z$-position of this object. */
-  virtual float get_z_pos () const =0;
-
-  virtual void set_pos(const Vector3f& p) = 0;
-  virtual Vector3f get_pos() const = 0;
+  virtual float get_z_pos() const { return pos.z; }
+  virtual void set_pos(const Vector3f& p) { pos = p; }
+  virtual Vector3f get_pos() const { return pos; }
 
   /** Draw the WorldObj to the given SceneContext */
-  virtual void draw(SceneContext& gc) = 0;
+  virtual void draw(SceneContext& gc);
   virtual void draw_smallmap(SmallMap* smallmap);
+
+  struct WorldObjPackage {
+    WorldObj* worldobj;
+    SceneContext* gc;
+
+    WorldObjPackage(WorldObj* w, SceneContext* g): worldobj(w), gc(g) {};
+  };
 
   /** Draws the objects collision map to the main collision map, draws
       stuff onto the gfx map or do other manipulations to the World */

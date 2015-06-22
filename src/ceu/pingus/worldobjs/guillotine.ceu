@@ -1,0 +1,81 @@
+#ifndef GUILLOTINE_CEU
+#define GUILLOTINE_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../iworld.ceu"
+#include "../worldobj.ceu"
+#include "../ipingu_holder.ceu"
+#include "../pingu_holder_listener.ceu"
+
+native/pre do
+    ##include "pingus/worldobjs/guillotine.hpp"
+    ##define WGuillotine WorldObjs::Guillotine
+end
+
+input _WGuillotine* DELETE_GUILLOTINE;
+
+class Guillotine with
+    interface IWorldObj;
+do
+    var _WGuillotine&? guillotine = _PTR2REF((_WGuillotine*)me);
+
+    par/or do
+        every package in WORLDOBJ_DRAW do
+            if package:worldobj != &guillotine then
+                continue;
+            end
+
+            if guillotine.killing then
+                if guillotine.direction.is_left() then
+                    _gc_color_draw2(package:gc, &guillotine.sprite_kill_left, guillotine.pos);
+                else
+                    _gc_color_draw2(package:gc, &guillotine.sprite_kill_right, guillotine.pos);
+                end
+            else
+                _gc_color_draw2(package:gc, &guillotine.sprite_idle, guillotine.pos);
+            end
+        end
+    with
+        every w in WORLD_UPDATE do
+            if w != guillotine.world then
+                continue;
+            end
+
+            // Only have to check one sprite because they update simultaneously
+            if guillotine.sprite_kill_left.is_finished() then
+                guillotine.killing = false;
+            end
+
+            if not guillotine.killing then
+                loop pingu in global:world:get_pingus():all_pingus do
+                    if pingu:me.is_inside((int)(guillotine.pos.x + 38), (int)(guillotine.pos.y + 90), (int)(guillotine.pos.x + 42), (int)(guillotine.pos.y + 98)) then
+                        guillotine.killing = true;
+                        guillotine.direction = _PTR2REF(pingu:me.direction);
+                        emit pingu:e_CHANGE_ACTION => _A_DEAD;
+                        guillotine.sprite_kill_left.restart();
+                        guillotine.sprite_kill_right.restart();
+                        break;
+                    end
+                end
+            end
+
+            if guillotine.killing then
+                // Update both sprites so they finish at the same time.
+                guillotine.sprite_kill_left.update();
+                guillotine.sprite_kill_right.update();
+
+                // original FIXME: Should be a different sound
+                if guillotine.sprite_kill_left.get_current_frame() == 7 then
+                    _WorldObj__get_world_play_sound("splash", guillotine.pos);
+                end
+            else
+                guillotine.sprite_idle.update();
+            end
+        end
+    with
+        var _WGuillotine* e = await DELETE_GUILLOTINE until (e == &guillotine);
+    end
+end
+
+#endif
