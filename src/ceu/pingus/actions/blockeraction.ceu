@@ -8,6 +8,7 @@
 #include "../ipingu.ceu"
 #include "../pingu_action.ceu"
 #include "../state_sprite.ceu"
+#include "../pingu_holder_listener.ceu"
 
 class BlockerAction with
     interface IAction;
@@ -43,30 +44,25 @@ do
                 escape _A_FALLER;
             end
 
-            blocker.catch_pingus();
-            sprite.update();
-        end
-    with
-        every catched in CATCH_PINGU do
-            if &blocker != catched:action then
-                continue;
-            end
+            loop catched in global:world:get_pingus():all_pingus do
+                // avoid 'self' catch
+                if catched == &pingu then
+                    continue;
+                end
 
-            // avoid 'self' catch
-            if catched:pingu == blocker.pingu then
-                continue;
-            end
-
-            if catched:pingu:get_x() > blocker.pingu:get_x()-16 and
-               catched:pingu:get_x() < blocker.pingu:get_x()+16 and
-               catched:pingu:get_y() > blocker.pingu:get_y()-32 and
-               catched:pingu:get_y() < blocker.pingu:get_y()+5 then
-                if catched:pingu:get_x() > blocker.pingu:get_x() then
-                    catched:pingu:direction.right();
-                else
-                    catched:pingu:direction.left();
+                if catched:me.get_x() > blocker.pingu:get_x()-16 and
+                   catched:me.get_x() < blocker.pingu:get_x()+16 and
+                   catched:me.get_y() > blocker.pingu:get_y()-32 and
+                   catched:me.get_y() < blocker.pingu:get_y()+5 then
+                    if catched:me.get_x() > blocker.pingu:get_x() then
+                        catched:me.direction.right();
+                    else
+                        catched:me.direction.left();
+                    end
                 end
             end
+
+            sprite.update();
         end
     end
 end

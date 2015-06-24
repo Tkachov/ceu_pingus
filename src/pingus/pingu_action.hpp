@@ -47,7 +47,7 @@ protected:
 
 public:
   PinguAction(Pingu* p, ActionName::Enum t);
-  virtual ~PinguAction();
+  virtual ~PinguAction() {};
 
   /** Get the pixel from the colmap, relative to the pingu position.
 
@@ -75,16 +75,6 @@ public:
 
   /// The type of the action
   ActionName::Enum get_type () const { return type; }
-
-  ///catching Pingus:
-  void catch_pingus();
-
-  void catch_pingu(Pingu*);
-
-  struct CatchedPingu {
-    PinguAction* action;
-    Pingu* pingu;
-  };
 
   /// True if Pingu in specified position would bang its head if it were walking
   bool head_collision_on_walk (int x, int y);

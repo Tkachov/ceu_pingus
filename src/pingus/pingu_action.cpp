@@ -29,26 +29,6 @@
 
 PinguAction::PinguAction(Pingu* p, ActionName::Enum t): pingu(p), type(t), name(ActionName::to_screenname(t)) {}
 
-PinguAction::~PinguAction ()
-{
-}
-
-void PinguAction::catch_pingus() {
-  // FIXME: PinguHolder iterations should be handled otherwise ?
-  PinguHolder* pingus = WorldObj::get_world()->get_pingus();
-  for(PinguIter i = pingus->begin(); i != pingus->end(); ++i)
-    catch_pingu(*i);
-}
-
-void PinguAction::catch_pingu(Pingu* p) {
-  CatchedPingu catched;
-  catched.action = this;
-  catched.pingu = p;
-
-  CatchedPingu* c = &catched;
-  ceu_out_go(&CEUapp, CEU_IN_CATCH_PINGU, &c);
-}
-
 Vector3f PinguAction::get_center_pos() const {
   GetCenterPosPackage package(this, pingu->get_pos() + Vector3f(0, -16));
   GetCenterPosPackage* p = &package;
