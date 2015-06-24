@@ -113,23 +113,19 @@ do
         return collision;
     end
 
-    // Returns true if the given koordinates are above the pingu
-    function (int x, int y) => bool is_over do
-        var Vector3f center;
-        center.x = me.get_center_pos().x;
-        center.y = me.get_center_pos().y;
-        center.z = me.get_center_pos().z;
+    function @rec (void) => Vector3f get_center_pos do
+        return ceu_action:get_center_pos();
+    end
 
+    // Returns true if the given koordinates are above the pingu
+    function @rec (int x, int y) => bool is_over do
+        var Vector3f center = call/rec get_center_pos();
         return (center.x+16 > x and center.x-16 < x and center.y+16 > y and center.y-16 < y);
     end
 
     // Returns the distance between the Pingu and a given coordinate
-    function (int x, int y) => float dist do
-        var Vector3f p;
-        p.x = me.get_center_pos().x;
-        p.y = me.get_center_pos().y;
-        p.z = me.get_center_pos().z;
-
+    function @rec (int x, int y) => float dist do
+        var Vector3f p = call/rec get_center_pos();
         return _Math__sqrt( (p.x - (float)x)*(p.x - (float)x) + (p.y - (float)y)*(p.y - (float)y) );
     end
 

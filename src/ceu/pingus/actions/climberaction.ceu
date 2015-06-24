@@ -21,26 +21,22 @@ do
 
     catchable = true;
 
+    function (void) => Vector3f get_center_pos do
+        var Vector3f result;
+        if climber.pingu:direction.is_left() then
+            result.x = pingu.me.get_pos().x + 16;
+        else
+            result.x = pingu.me.get_pos().x - 16;
+        end
+        result.y = pingu.me.get_pos().y;
+        result.z = pingu.me.get_pos().z;
+        return result;
+    end
+
     var StateSprite sprite;
     load_file_directions(sprite, climber, "/climber/");
 
     par do
-        every package in ACTION_GET_CENTER_POS do
-            if package:action != &climber then
-                continue;
-            end
-
-            finalize
-                package:result = climber.pingu:get_pos();
-            with end;
-
-            if climber.pingu:direction.is_left() then
-                package:result.x = package:result.x + 16;
-            else
-                package:result.x = package:result.x - 16;
-            end
-        end
-    with
         every gc in pingu.e_DRAW_CALLED do
             _gc_color_draw2(gc, sprite.get(climber.pingu:direction), climber.pingu:get_pos());
         end

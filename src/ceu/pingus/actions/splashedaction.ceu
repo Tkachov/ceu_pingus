@@ -29,6 +29,14 @@ do
 
     catchable = false;
 
+    function (void) => Vector3f get_center_pos do
+        var Vector3f result;
+        result.x = pingu.me.get_pos().x;
+        result.y = pingu.me.get_pos().y - 16;
+        result.z = pingu.me.get_pos().z;
+        return result;
+    end
+
     var _Sprite&? sprite = _PTR2REF(_new_SpriteA(_scc3("pingus/player", splashed.pingu:get_owner_str(), "/splat")));
     finalize with _delete_Sprite(sprite); end;
 

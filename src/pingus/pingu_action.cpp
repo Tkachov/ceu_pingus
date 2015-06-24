@@ -29,13 +29,6 @@
 
 PinguAction::PinguAction(Pingu* p, ActionName::Enum t): pingu(p), type(t), name(ActionName::to_screenname(t)) {}
 
-Vector3f PinguAction::get_center_pos() const {
-  GetCenterPosPackage package(this, pingu->get_pos() + Vector3f(0, -16));
-  GetCenterPosPackage* p = &package;
-  ceu_out_go(&CEUapp, CEU_IN_ACTION_GET_CENTER_POS, &p);
-  return p->result;
-}
-
 std::string PinguAction::get_name() const {
   return name;
 }

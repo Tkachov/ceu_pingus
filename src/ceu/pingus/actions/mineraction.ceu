@@ -24,6 +24,14 @@ do
 
     catchable = true;
 
+    function (void) => Vector3f get_center_pos do
+        var Vector3f result;
+        result.x = pingu.me.get_pos().x;
+        result.y = pingu.me.get_pos().y - 16;
+        result.z = pingu.me.get_pos().z;
+        return result;
+    end
+
     var int delay_count = 0;
 
     var StateSprite sprite;

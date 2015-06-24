@@ -73,20 +73,22 @@ do
             if pingu:ceu_action:catchable then
                 // Draw the capture rectangle
                 if session and pingu:ceu_action:change_allowed(session:get_action_name()) then
-                    _gc_color_draw2(gc, good, p.get_center_pos() + _Vector3f(0, 0, 1000));
+                    _gc_color_draw2(gc, good, _toVector3f(call/rec pingu:get_center_pos()) + _Vector3f(0, 0, 1000));
                 else
-                    _gc_color_draw2(gc, bad, p.get_center_pos() + _Vector3f(0, 0, 1000));
+                    _gc_color_draw2(gc, bad, _toVector3f(call/rec pingu:get_center_pos()) + _Vector3f(0, 0, 1000));
                 end
 
                 // Paint the direction arrow
                 if p.direction.is_left() then
-                    _gc_color_draw2(gc, arrow_left, p.get_center_pos() + _Vector3f(0, 2, 1000));
+                    _gc_color_draw2(gc, arrow_left, _toVector3f(call/rec pingu:get_center_pos()) + _Vector3f(0, 2, 1000));
                 else
-                    _gc_color_draw2(gc, arrow_right, p.get_center_pos() + _Vector3f(0, 2, 1000));
+                    _gc_color_draw2(gc, arrow_right, _toVector3f(call/rec pingu:get_center_pos()) + _Vector3f(0, 2, 1000));
                 end
 
+                var Vector3f pc = call/rec pingu:get_center_pos();
+
                 _gc_color_print_center(gc, _Fonts__courier_small,
-                    _Vector2i((int)p.get_center_pos().x, (int)p.get_center_pos().y - 46),
+                    _Vector2i((int)pc.x, (int)pc.y - 46),
                     action_str, 1000);
             end
         end

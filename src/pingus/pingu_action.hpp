@@ -42,17 +42,6 @@ public:
   PinguAction(Pingu* p, ActionName::Enum t);
   virtual ~PinguAction() {};
 
-  Vector3f get_center_pos() const;
-
-  struct GetCenterPosPackage {
-    const PinguAction* action;
-    Vector3f result;
-
-    GetCenterPosPackage(const PinguAction* a, Vector3f v):
-      action(a), result(v) {};
-  };
-
-
   /** The name of the action, this is used in the CaputreRectangle, so
       it can contain more than just the name */
   std::string get_name() const;

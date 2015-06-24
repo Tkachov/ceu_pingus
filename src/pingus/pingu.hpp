@@ -81,10 +81,6 @@ public:
       feet) */
   Vector3f get_pos () const;
 
-  /** Returns the visible position of the pingu, the graphical center
-      of the pingu. */
-  Vector3f get_center_pos ();
-
   /** Returns the x position of the pingu
    * For backward comp. only
    */
@@ -124,9 +120,6 @@ public:
   PinguAction* create_action2(ActionName::Enum action_);
 
   void apply_force (Vector3f);
-
-  /** Indicate if the pingu's speed is above the deadly velocity */
-  //bool is_tumbling () const;
 
   float get_z_pos () const { return 0; }
 

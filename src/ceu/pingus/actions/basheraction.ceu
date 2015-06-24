@@ -25,6 +25,14 @@ do
 
     catchable = true;
 
+    function (void) => Vector3f get_center_pos do
+        var Vector3f result;
+        result.x = pingu.me.get_pos().x;
+        result.y = pingu.me.get_pos().y - 16;
+        result.z = pingu.me.get_pos().z;
+        return result;
+    end
+
     var bool odd_frame = true; //-1th, I hope first block will execute not odd_frame faster
     var bool first_bash = true;
 

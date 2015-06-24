@@ -147,12 +147,6 @@ Pingu::get_pos () const
   return Vector3f(pos_x, pos_y, 0);
 }
 
-Vector3f
-Pingu::get_center_pos ()
-{
-  return get_ceu_action()->get_center_pos();
-}
-
 int
 Pingu::get_owner ()
 {
