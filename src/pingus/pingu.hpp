@@ -51,8 +51,6 @@ private:
   Vector3f velocity;
 
 private:
-  void set_action(PinguAction*);
-
   std::shared_ptr<PinguAction> create_action(ActionName::Enum action);
 
 public:
@@ -125,10 +123,6 @@ public:
       timed action, normal action will be applied if the current
       action allows that. */
   bool request_set_action (ActionName::Enum action_name);
-
-  /** Set an action without any checking, the action will take
-      instantly control. */
-  void set_action (ActionName::Enum action_name);
 
   PinguAction* create_action2(ActionName::Enum action_);
 

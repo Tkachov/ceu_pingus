@@ -37,7 +37,6 @@ native/pre do
     ##include "pingus/collision_map.hpp"
 end
 
-input _PinguAction* PINGU_SET_ACTION;
 input void PINGU_UPDATE_ALL;
 input _SceneContext* PINGU_DRAW_WALKER;
 input _SceneContext* PINGU_DRAW_OTHERS;
@@ -174,14 +173,6 @@ do
         every gc in PINGU_DRAW_OTHERS do
             if current_action != _A_WALKER then
                 emit e_DRAW_CALLED => gc;
-            end
-        end
-    with
-        //notify about set_action() call
-        every a_ in PINGU_SET_ACTION do
-            var _PinguAction&? a = _PTR2REF(a_);
-            if a.pingu == &me_ then
-                emit e_CHANGE_ACTION => a.get_type();
             end
         end
     with

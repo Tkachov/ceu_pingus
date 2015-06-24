@@ -110,22 +110,6 @@ bool Pingu::request_set_action(ActionName::Enum action_name) {
   return package.result;
 }
 
-void
-Pingu::set_action (ActionName::Enum action_name)
-{
-  set_action(create_action(action_name).get());
-}
-
-// Sets an action without any checking
-void
-Pingu::set_action(PinguAction* act)
-{
-  assert(act);
-  printf("C++ set_action\n");
-  PinguAction* p = act;
-  ceu_out_go(&CEUapp, CEU_IN_PINGU_SET_ACTION, &p);
-}
-
 void Pingu::die() {
   Pingu* self = this;
   ceu_out_go(&CEUapp, CEU_IN_PINGU_DIE, &self);
