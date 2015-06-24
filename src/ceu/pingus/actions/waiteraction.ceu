@@ -10,8 +10,16 @@
 
 class WaiterAction with
     interface IAction;
+    interface IPinguAction;
 do
     var _PinguAction&? waiter = _PTR2REF(pingu.set_ptr(_A_WAITER));
+    pingu.ceu_action = &this;
+
+    function (int a) => bool change_allowed do
+        return true;
+    end
+
+    catchable = true;
 
     var _Sprite&? sprite = _PTR2REF(_new_SpriteA(_scc3("pingus/player", waiter.pingu:get_owner_str(), "/waiter/left")));
     finalize with _delete_Sprite(sprite); end;

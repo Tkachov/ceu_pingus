@@ -11,8 +11,16 @@
 
 class BlockerAction with
     interface IAction;
+    interface IPinguAction;
 do
     var _PinguAction&? blocker = _PTR2REF(pingu.set_ptr(_A_BLOCKER));
+    pingu.ceu_action = &this;
+
+    function (int a) => bool change_allowed do
+        return true;
+    end
+
+    catchable = true;
 
     var StateSprite sprite;
     load_file_directions(sprite, blocker, "/blocker/");

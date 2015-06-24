@@ -24,8 +24,16 @@ native @pure _Colliders__PinguCollider(),
 
 class FallerAction with
     interface IAction;
+    interface IPinguAction;
 do
     var _PinguAction& faller = _PTR2REF(pingu.set_ptr(_A_FALLER));
+    pingu.ceu_action = &this;
+
+    function (int a) => bool change_allowed do
+        return (a==_A_FLOATER or a==_A_CLIMBER or a==_A_BOMBER);
+    end
+
+    catchable = true;
 
     var StateSprite sprite;
     var StateSprite tumbler;
@@ -42,16 +50,6 @@ do
     end
 
     par do
-        every package in ACTION_CHANGE_ALLOWED do
-            if package:action != &faller then
-                continue;
-            end
-
-            package:result = (package:new_action == _A_FLOATER or
-                              package:new_action == _A_CLIMBER or
-                              package:new_action == _A_BOMBER);
-        end
-    with
         every gc in pingu.e_DRAW_CALLED do
             if is_tumbling() then
                 _gc_color_draw2(gc, tumbler.get(faller.pingu:direction), faller.pingu:get_pos());

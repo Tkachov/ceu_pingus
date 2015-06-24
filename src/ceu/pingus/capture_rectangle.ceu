@@ -66,13 +66,13 @@ do
         end
     end
 
-    function (_SceneContext* gc) => void f_draw do
+    function @rec (_SceneContext* gc) => void f_draw do
         if pingu then
             var _Pingu&? p = _PTR2REF(&pingu:me);
 
-            if pingu:action:catchable() then
+            if pingu:ceu_action:catchable then
                 // Draw the capture rectangle
-                if session and p.change_allowed(session:get_action_name()) then
+                if session and pingu:ceu_action:change_allowed(session:get_action_name()) then
                     _gc_color_draw2(gc, good, p.get_center_pos() + _Vector3f(0, 0, 1000));
                 else
                     _gc_color_draw2(gc, bad, p.get_center_pos() + _Vector3f(0, 0, 1000));
@@ -96,7 +96,7 @@ do
         await FOREVER;
     with
         every gc in draw do
-            f_draw(gc); //no "access across `await`" message even when there is one
+            call/rec f_draw(gc); //no "access across `await`" message even when there is one
         end
     end
 end

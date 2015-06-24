@@ -63,14 +63,6 @@ Pingu::get_id ()
   return id;
 }
 
-bool
-Pingu::change_allowed(ActionName::Enum new_action)
-{
-  assert(ceu_action);
-  assert(get_ceu_action());
-  return get_ceu_action()->change_allowed (new_action);
-}
-
 void
 Pingu::set_x (float x)
 {

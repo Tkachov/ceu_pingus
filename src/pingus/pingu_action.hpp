@@ -39,7 +39,6 @@ class PinguAction
 {
 private:
   ActionName::Enum type;
-  bool CATCHABLE, CHANGE_ALLOWED;
   std::string name;
 
 protected:
@@ -50,9 +49,6 @@ public:
   PinguAction(Pingu* p, ActionName::Enum t);
   virtual ~PinguAction();
 
-  /// Gives the PinguAction class access to the data of the Pingu.
-  void set_pingu (Pingu*);
-
   /** Get the pixel from the colmap, relative to the pingu position.
 
       @param x x is relative to the direction, so 1 is the pixel
@@ -61,18 +57,6 @@ public:
       @param y 1 is up, -1 is down
   */
   int  rel_getpixel (int x, int y);
-
-  /** Checks if this action allows to be overwritten with the given new action */
-  bool change_allowed(ActionName::Enum action);
-
-  struct ChangeAllowedPackage {
-    PinguAction* action;
-    ActionName::Enum new_action;
-    bool result;
-
-    ChangeAllowedPackage(PinguAction* a, ActionName::Enum n, bool r):
-      action(a), new_action(n), result(r) {};
-  };
 
   Vector3f get_center_pos() const;
 
@@ -102,19 +86,11 @@ public:
     Pingu* pingu;
   };
 
-  /** Return true if the pingu can be caught with the mouse and
-      another action can be applied, false otherwise (exiter,
-      splashed, etc.) */
-  virtual bool catchable () { return CATCHABLE; }
-
   /// True if Pingu in specified position would bang its head if it were walking
   bool head_collision_on_walk (int x, int y);
 
   /// True if Pingu in specified position would have a collision if it were walking
   bool collision_on_walk (int x, int y);
-
-  /** Move Pingu according to the forces applied to it */
-  void move_with_forces ();
 
 public:
   static ActionType get_activation_mode(ActionName::Enum action_name);

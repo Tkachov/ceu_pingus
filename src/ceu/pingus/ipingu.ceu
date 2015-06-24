@@ -13,9 +13,12 @@ native/pre do
     ##define GT_SOLID Groundtype::GP_SOLID
 end
 
+#include "ipingu_action.ceu"
+
 interface IPingu with
     var _Pingu& me;
     var _PinguAction* action;
+    var IPinguAction* ceu_action;
 
     event void e_UPDATE_CALLED;
     event _SceneContext* e_DRAW_CALLED;

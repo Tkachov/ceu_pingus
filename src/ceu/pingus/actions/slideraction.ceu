@@ -11,8 +11,16 @@
 
 class SliderAction with
     interface IAction;
+    interface IPinguAction;
 do
     var _PinguAction&? slider = _PTR2REF(pingu.set_ptr(_A_SLIDER));
+    pingu.ceu_action = &this;
+
+    function (int a) => bool change_allowed do
+        return true;
+    end
+
+    catchable = true;
 
     var StateSprite sprite;
     load_file_directions(sprite, slider, "/slider/");

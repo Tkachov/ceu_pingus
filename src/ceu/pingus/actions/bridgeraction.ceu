@@ -26,8 +26,17 @@ native @pure _make_name();
 
 class BridgerAction with
     interface IAction;
+    interface IPinguAction;
 do
     var _PinguAction&? bridger = _PTR2REF(pingu.set_ptr(_A_BRIDGER));
+    pingu.ceu_action = &this;
+
+    function (int a) => bool change_allowed do
+        return true;
+    end
+
+    catchable = true;
+
     var int bricks = MAX_BRICKS;
     bridger.name = _make_name(bricks);
 

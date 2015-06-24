@@ -14,8 +14,17 @@
 
 class BasherAction with
     interface IAction;
+    interface IPinguAction;
 do
     var _PinguAction&? basher = _PTR2REF(pingu.set_ptr(_A_BASHER));
+    pingu.ceu_action = &this;
+
+    function (int a) => bool change_allowed do
+        return true;
+    end
+
+    catchable = true;
+
     var bool odd_frame = true; //-1th, I hope first block will execute not odd_frame faster
     var bool first_bash = true;
 

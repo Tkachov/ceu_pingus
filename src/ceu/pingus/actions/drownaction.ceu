@@ -10,9 +10,16 @@
 
 class DrownAction with
     interface IAction;
+    interface IPinguAction;
 do
     var _PinguAction&? drown = _PTR2REF(pingu.set_ptr(_A_DROWN));
-    drown.CATCHABLE = false;
+    pingu.ceu_action = &this;
+
+    function (int a) => bool change_allowed do
+        return true;
+    end
+
+    catchable = false;
 
     var StateSprite sprite;
     load_file_directions(sprite, drown, "/drownfall/");

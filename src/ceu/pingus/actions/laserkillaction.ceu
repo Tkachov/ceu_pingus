@@ -10,9 +10,16 @@
 
 class LaserKillAction with
     interface IAction;
+    interface IPinguAction;
 do
     var _PinguAction&? laserkill = _PTR2REF(pingu.set_ptr(_A_LASERKILL));
-    laserkill.CATCHABLE = false;
+    pingu.ceu_action = &this;
+
+    function (int a) => bool change_allowed do
+        return true;
+    end
+
+    catchable = false;
 
     var StateSprite sprite;
     sprite.load_file(_D_LEFT,  "other/laser_kill/left");

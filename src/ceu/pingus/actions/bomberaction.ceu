@@ -27,9 +27,16 @@ native @pure _Colliders__PinguCollider();
 
 class BomberAction with
     interface IAction;
+    interface IPinguAction;
 do
     var _PinguAction&? bomber = _PTR2REF(pingu.set_ptr(_A_BOMBER));
-    bomber.CHANGE_ALLOWED = false;
+    pingu.ceu_action = &this;
+
+    function (int a) => bool change_allowed do
+        return false;
+    end
+
+    catchable = true;
 
     var StateSprite sprite;
     load_file_directions(sprite, bomber, "/bomber/");
@@ -103,7 +110,7 @@ do
 
         // The pingu explode
         PRE_CONDITION_AWAIT(pingu.e_UPDATE_CALLED, sprite.get(bomber.pingu:direction):is_finished());
-        
+
         escape _A_DEAD;
     end
 end

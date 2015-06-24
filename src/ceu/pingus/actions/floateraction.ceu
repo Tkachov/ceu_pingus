@@ -11,21 +11,21 @@
 
 class FloaterAction with
     interface IAction;
+    interface IPinguAction;
 do
     var _PinguAction&? floater = _PTR2REF(pingu.set_ptr(_A_FLOATER));
+    pingu.ceu_action = &this;
+
+    function (int a) => bool change_allowed do
+        return (a == _A_BOMBER);
+    end
+
+    catchable = true;
 
     var _Sprite&? sprite = _new_SpriteA(_scc3("pingus/player", floater.pingu:get_owner_str(), "/floater/left"));
     finalize with _delete_Sprite(sprite); end;
 
     par do
-        every package in ACTION_CHANGE_ALLOWED do
-            if package:action != &floater then
-                continue;
-            end
-
-            package:result = (package:new_action == _A_BOMBER);
-        end
-    with
         every gc in pingu.e_DRAW_CALLED do
             _gc_color_draw2(gc, sprite, floater.pingu:get_pos());
         end

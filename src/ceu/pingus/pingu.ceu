@@ -65,6 +65,7 @@ do
     var _Pingu&? me_ = _PTR2REF((_Pingu*)&this.me);
     finalize with _delete_Pingu(me_); end
 
+    ceu_action = null;
     var int previous_action = _A_FALLER;
     var int current_action = _A_FALLER;
     set_ptr(_A_FALLER);
@@ -150,7 +151,7 @@ do
             if mode == _PA_INSTANT then
                 if package.action == current_action then
                     _log_debug("Pingu: Already have action");
-                else/if paction.change_allowed(_PTR2REF(package.action)) then
+                else/if ceu_action:change_allowed(_PTR2REF(package.action)) then
                     _log_debug("setting instant action");
                     package.result = true;
                     emit e_CHANGE_ACTION => package.action;

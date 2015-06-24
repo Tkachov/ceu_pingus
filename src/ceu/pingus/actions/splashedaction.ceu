@@ -18,10 +18,16 @@ native @pure _WorldObj__get_world();
 
 class SplashedAction with
     interface IAction;
+    interface IPinguAction;
 do
     var _PinguAction&? splashed = _PTR2REF(pingu.set_ptr(_A_SPLASHED));
-    splashed.CATCHABLE = false;
-    splashed.CHANGE_ALLOWED = false;
+    pingu.ceu_action = &this;
+
+    function (int a) => bool change_allowed do
+        return false;
+    end
+
+    catchable = false;
 
     var _Sprite&? sprite = _PTR2REF(_new_SpriteA(_scc3("pingus/player", splashed.pingu:get_owner_str(), "/splat")));
     finalize with _delete_Sprite(sprite); end;

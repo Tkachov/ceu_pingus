@@ -13,8 +13,17 @@
 
 class MinerAction with
     interface IAction;
+    interface IPinguAction;
 do
     var _PinguAction&? miner = _PTR2REF(pingu.set_ptr(_A_MINER));
+    pingu.ceu_action = &this;
+
+    function (int a) => bool change_allowed do
+        return true;
+    end
+
+    catchable = true;
+
     var int delay_count = 0;
 
     var StateSprite sprite;
@@ -37,7 +46,7 @@ do
                                         miner.pingu:get_yi() - miner_radius.get_height() + 2);
         else
             // the last mine action before switching to another action
-            if miner.pingu:direction == _D_LEFT then                
+            if miner.pingu:direction == _D_LEFT then
                 _WorldObj__get_world_remove(miner_radius_left,
                                             miner.pingu:get_xi() - (miner_radius_left.get_width() / 2) + miner.pingu:direction,
                                             miner.pingu:get_yi() - miner_radius_left.get_height() + 2);

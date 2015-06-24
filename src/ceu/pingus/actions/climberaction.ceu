@@ -10,23 +10,21 @@
 
 class ClimberAction with
     interface IAction;
+    interface IPinguAction;
 do
     var _PinguAction&? climber = _PTR2REF(pingu.set_ptr(_A_CLIMBER));
+    pingu.ceu_action = &this;
+
+    function (int a) => bool change_allowed do
+        return (a==_A_FLOATER or a==_A_BOMBER or a==_A_JUMPER);
+    end
+
+    catchable = true;
 
     var StateSprite sprite;
     load_file_directions(sprite, climber, "/climber/");
 
     par do
-        every package in ACTION_CHANGE_ALLOWED do
-            if package:action != &climber then
-                continue;
-            end
-
-            package:result = (package:new_action == _A_FLOATER or
-                              package:new_action == _A_BOMBER or
-                              package:new_action == _A_JUMPER);
-        end
-    with
         every package in ACTION_GET_CENTER_POS do
             if package:action != &climber then
                 continue;
