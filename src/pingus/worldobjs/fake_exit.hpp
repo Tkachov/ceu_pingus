@@ -34,7 +34,7 @@ namespace WorldObjs {
 class FakeExit : public WorldObj
 {
 private:
-  Sprite   surface;
+  Sprite   sprite;
   Sprite   smallmap_symbol;
 
   Vector3f pos;
@@ -43,6 +43,7 @@ private:
 
 public:
   FakeExit(const FileReader& reader);
+  ~FakeExit();
 
   float get_z_pos () const;
   void set_pos(const Vector3f& p) { pos = p; }

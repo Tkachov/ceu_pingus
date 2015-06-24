@@ -35,19 +35,19 @@ do
             end
 
             loop pingu in global:world:get_pingus():all_pingus do
-                if fake_exit.surface.is_finished() then
+                if fake_exit.sprite.is_finished() then
                     fake_exit.smashing = false;
                 end
 
-                if pingu:me.get_x() > pos.x+31 and pingu:me.get_x() < pos.x+31+15 and
-                   pingu:me.get_y() > pos.y+56 and pingu:me.get_y() < pos.y+56+56 then
+                if pingu:me.get_x() > fake_exit.pos.x+31 and pingu:me.get_x() < fake_exit.pos.x+31+15 and
+                   pingu:me.get_y() > fake_exit.pos.y+56 and pingu:me.get_y() < fake_exit.pos.y+56+56 then
                     if pingu:me.get_action() != _A_SPLASHED then
                         if not fake_exit.smashing then
-                            fake_exit.surface.restart();
+                            fake_exit.sprite.restart();
                             fake_exit.smashing = true;
                         end
 
-                        if fake_exit.surface.get_current_frame() == 4 then
+                        if fake_exit.sprite.get_current_frame() == 4 then
                             emit pingu:e_CHANGE_ACTION => _A_SPLASHED;
                         end
                     end
@@ -55,7 +55,7 @@ do
             end
 
             if fake_exit.smashing then
-                fake_exit.surface.update();
+                fake_exit.sprite.update();
             end
         end
     with

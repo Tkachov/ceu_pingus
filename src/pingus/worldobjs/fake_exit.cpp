@@ -22,16 +22,18 @@
 #include "pingus/pingu_holder.hpp"
 #include "pingus/world.hpp"
 
+#include "ceuvars.h"
+
 namespace WorldObjs {
 
-FakeExit::FakeExit(const FileReader& reader) :
-  surface("traps/fake_exit"),
+FakeExit::FakeExit(const FileReader& reader) :  
+  sprite("traps/fake_exit"),
   smallmap_symbol("core/misc/smallmap_exit"),
   pos(),
   smashing(false)
 {
   reader.read_vector("position", pos);
-  pos -= Vector3f(static_cast<float>(surface.get_width ())/2, static_cast<float>(surface.get_height()));
+  pos -= Vector3f(static_cast<float>(sprite.get_width ())/2, static_cast<float>(sprite.get_height()));
 
   FakeExit* self = this;
   ceu_out_go(&CEUapp, CEU_IN_NEW_FAKE_EXIT, &self);
@@ -51,7 +53,7 @@ FakeExit::get_z_pos () const
 void
 FakeExit::draw (SceneContext& gc)
 {
-  gc.color().draw (surface, pos);
+  gc.color().draw (sprite, pos);
 }
 
 void
