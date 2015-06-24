@@ -11,6 +11,7 @@
 #include "worldobjs/fake_exit.ceu"
 #include "worldobjs/guillotine.ceu"
 #include "worldobjs/hammer.ceu"
+#include "worldobjs/laser_exit.ceu"
 
 input _World* DELETE_WORLD;
 input _WEntrance* NEW_ENTRANCE;
@@ -18,6 +19,7 @@ input _WExit* NEW_EXIT;
 input _WFakeExit* NEW_FAKE_EXIT;
 input _WGuillotine* NEW_GUILLOTINE;
 input _WHammer* NEW_HAMMER;
+input _WLaserExit* NEW_LASER_EXIT;
 
 class World with
     interface IWorld;
@@ -77,6 +79,12 @@ do
         every new_hammer in NEW_HAMMER do
             spawn Hammer with
                 this.me = _PTR2REF(new_hammer);
+            end;
+        end
+    with
+        every new_laser_exit in NEW_LASER_EXIT do
+            spawn LaserExit with
+                this.me = _PTR2REF(new_laser_exit);
             end;
         end
     with

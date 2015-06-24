@@ -1,0 +1,67 @@
+#ifndef LASER_EXIT_CEU
+#define LASER_EXIT_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../iworld.ceu"
+#include "../worldobj.ceu"
+#include "../ipingu_holder.ceu"
+#include "../pingu_holder_listener.ceu"
+
+native/pre do
+    ##include "pingus/worldobjs/laser_exit.hpp"
+    ##define WLaserExit WorldObjs::LaserExit
+end
+
+input _WLaserExit* DELETE_LASER_EXIT;
+
+class LaserExit with
+    interface IWorldObj;
+do
+    var _WLaserExit&? exit = _PTR2REF((_WLaserExit*)me);
+    var bool killing = false;
+
+    par/or do
+        every package in WORLDOBJ_DRAW do
+            if package:worldobj != &exit then
+                continue;
+            end
+
+            _gc_color_draw2(package:gc, &exit.surface, exit.pos);
+        end
+    with
+        every w in WORLD_UPDATE do
+            if w != exit.world then
+                continue;
+            end
+
+            if not killing then
+                loop pingu in global:world:get_pingus():all_pingus do
+                    if pingu:me.get_x() <= exit.pos.x+34 or pingu:me.get_x() >= exit.pos.x+34+10 or
+                       pingu:me.get_y() <= exit.pos.y+43 or pingu:me.get_y() >= exit.pos.y+43+20 then
+                        continue;
+                    end
+
+                    if pingu:me.get_action() != _A_LASERKILL then
+                        killing = true;
+                        emit pingu:e_CHANGE_ACTION => _A_LASERKILL;
+                        break;
+                    end
+                end
+            end
+
+            if killing then
+                if exit.surface.is_finished() then
+                    exit.surface.restart();
+                    killing = false;
+                else
+                    exit.surface.update();
+                end
+            end
+        end
+    with
+        var _WLaserExit* e = await DELETE_LASER_EXIT until (e == &exit);
+    end
+end
+
+#endif
