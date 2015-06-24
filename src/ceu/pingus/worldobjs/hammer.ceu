@@ -1,0 +1,80 @@
+#ifndef HAMMER_CEU
+#define HAMMER_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../iworld.ceu"
+#include "../worldobj.ceu"
+#include "../ipingu_holder.ceu"
+#include "../pingu_holder_listener.ceu"
+
+native/pre do
+    ##include "pingus/worldobjs/hammer.hpp"
+    ##define WHammer WorldObjs::Hammer
+end
+
+input _WHammer* DELETE_HAMMER;
+
+class Hammer with
+    interface IWorldObj;
+do
+    var _WHammer&? hammer = _PTR2REF((_WHammer*)me);
+    var int current_frame = 0;
+
+    par/or do
+        every package in WORLDOBJ_DRAW do
+            if package:worldobj != &hammer then
+                continue;
+            end
+
+            _gc_color_draw2(package:gc, &hammer.sprite, hammer.pos);
+        end
+    with
+        loop do
+            loop do
+                var _World* w = await WORLD_UPDATE;
+                if w != hammer.world then
+                    continue;
+                end
+
+                current_frame = current_frame + 1;
+                hammer.sprite.set_frame(current_frame);
+
+                if current_frame == hammer.sprite.get_frame_count()-1 then
+                    loop pingu in global:world:get_pingus():all_pingus do
+                        if pingu:me.get_action() == _A_SPLASHED then
+                            continue;
+                        end
+
+                        if pingu:me.get_x() <= hammer.pos.x+55 or pingu:me.get_x() >= hammer.pos.x+77 or
+                           pingu:me.get_y() <= hammer.pos.y+146 or pingu:me.get_y() >= hammer.pos.y+185 then
+                            continue;
+                        end
+
+                        emit pingu:e_CHANGE_ACTION => _A_SPLASHED;
+                    end
+
+                    break;
+                end
+            end
+
+            //roll back
+            loop do
+                var _World* w = await WORLD_UPDATE;
+                if w != hammer.world then
+                    continue;
+                end
+
+                current_frame = current_frame - 1;
+                hammer.sprite.set_frame(current_frame);
+                if current_frame == 0 then
+                    break;
+                end
+            end
+        end
+    with
+        var _WHammer* e = await DELETE_HAMMER until (e == &hammer);
+    end
+end
+
+#endif

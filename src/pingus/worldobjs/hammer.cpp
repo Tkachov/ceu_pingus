@@ -21,64 +21,29 @@
 #include "pingus/pingu_holder.hpp"
 #include "pingus/world.hpp"
 
+#include "ceuvars.h"
+
 namespace WorldObjs {
 
 Hammer::Hammer(const FileReader& reader) :
   sprite("traps/hammer"),
-  pos(),
-  m_down(true),
-  m_count(0)
+  pos()
 {
   reader.read_vector("position", pos);
+
+  Hammer* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_NEW_HAMMER, &self);
+}
+
+Hammer::~Hammer() {
+  Hammer* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_DELETE_HAMMER, &self);
 }
 
 float
 Hammer::get_z_pos() const
 {
   return pos.z;
-}
-
-void
-Hammer::draw(SceneContext& gc)
-{
-  gc.color().draw(sprite, pos);
-}
-
-void
-Hammer::update()
-{
-  if (m_down)
-  {
-    m_count += 1;
-    sprite.set_frame(m_count);
-
-    if (m_count == sprite.get_frame_count()-1)
-    {
-      PinguHolder* holder = world->get_pingus();
-
-      for (PinguIter pingu_it = holder->begin (); pingu_it != holder->end (); ++pingu_it)
-      {
-        Pingu* pingu = *pingu_it;
-        if (pingu->get_action() != ActionName::SPLASHED)
-        {
-          if (pingu->get_x() > pos.x + 55  && pingu->get_x() < pos.x + 77
-              && pingu->get_y() > pos.y + 146 && pingu->get_y() < pos.y + 185)
-            pingu->set_action(ActionName::SPLASHED);
-        }
-      }
-
-      m_down = false;
-    }
-  }
-  else
-  {
-    m_count -= 1;
-    sprite.set_frame(m_count);
-    if (m_count == 0)
-    {
-      m_down = true;
-    }
-  }
 }
 
 } // namespace WorldObjs
