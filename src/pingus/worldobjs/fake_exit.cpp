@@ -5,12 +5,12 @@
 //  it under the terms of the GNU General Public License as published by
 //  the Free Software Foundation, either version 3 of the License, or
 //  (at your option) any later version.
-//  
+//
 //  This program is distributed in the hope that it will be useful,
 //  but WITHOUT ANY WARRANTY; without even the implied warranty of
 //  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //  GNU General Public License for more details.
-//  
+//
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -32,6 +32,14 @@ FakeExit::FakeExit(const FileReader& reader) :
 {
   reader.read_vector("position", pos);
   pos -= Vector3f(static_cast<float>(surface.get_width ())/2, static_cast<float>(surface.get_height()));
+
+  FakeExit* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_NEW_FAKE_EXIT, &self);
+}
+
+FakeExit::~FakeExit() {
+  FakeExit* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_DELETE_FAKE_EXIT, &self);
 }
 
 float
@@ -44,40 +52,6 @@ void
 FakeExit::draw (SceneContext& gc)
 {
   gc.color().draw (surface, pos);
-}
-
-void
-FakeExit::update ()
-{
-  PinguHolder* holder = world->get_pingus();
-  for (PinguIter pingu = holder->begin (); pingu != holder->end (); ++pingu)
-    catch_pingu(*pingu);
-
-  if (smashing)
-    surface.update();
-}
-
-void
-FakeExit::catch_pingu (Pingu* pingu)
-{
-  if (surface.is_finished())
-    smashing = false;
-
-  if (   pingu->get_pos().x > pos.x + 31 && pingu->get_pos().x < pos.x + 31 + 15
-         && pingu->get_pos().y > pos.y + 56 && pingu->get_pos().y < pos.y + 56 + 56)
-  {
-    if (pingu->get_action() != ActionName::SPLASHED)
-    {
-      if (!smashing) 
-      {
-        surface.restart();
-        smashing = true;
-      }
-        
-      if (surface.get_current_frame() == 4)
-        pingu->set_action(ActionName::SPLASHED);
-    }
-  }
 }
 
 void

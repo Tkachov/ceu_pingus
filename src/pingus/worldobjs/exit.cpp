@@ -24,6 +24,8 @@
 #include "pingus/world.hpp"
 #include "util/string_util.hpp"
 
+#include "ceuvars.h"
+
 namespace WorldObjs {
 
 Exit::Exit(const FileReader& reader) :
@@ -44,10 +46,14 @@ Exit::Exit(const FileReader& reader) :
   flag = Sprite("core/misc/flag" + StringUtil::to_string(owner_id));
 
   sprite = Sprite(desc);
+
+  Exit* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_NEW_EXIT, &self);
 }
 
-Exit::~Exit ()
-{
+Exit::~Exit() {
+  Exit* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_DELETE_EXIT, &self);
 }
 
 void
@@ -70,33 +76,6 @@ void
 Exit::draw_smallmap(SmallMap* smallmap)
 {
   smallmap->draw_sprite(smallmap_symbol, pos);
-}
-
-void
-Exit::update ()
-{
-  sprite.update();
-
-  PinguHolder* holder = world->get_pingus();
-
-  for (PinguIter pingu = holder->begin(); pingu != holder->end(); ++pingu)
-  {
-    // Make sure this particular exit is allowed for this pingu
-    if ((*pingu)->get_owner()  == owner_id)
-    {
-      // Now, make sure the pingu is within range
-      if (   (*pingu)->get_pos().x > pos.x - 1 && (*pingu)->get_pos().x < pos.x + 1
-             && (*pingu)->get_pos().y > pos.y - 5 && (*pingu)->get_pos().y < pos.y + 5)
-      {
-        // Now, make sure the pingu isn't already exiting, gone, or dead [or is dying because of apocalypse/bomber action]
-        if((*pingu)->get_action() != ActionName::EXITER && (*pingu)->get_action() != ActionName::BOMBER)
-        {
-          // Pingu actually exits
-          (*pingu)->set_action(ActionName::EXITER);
-        }
-      }
-    }
-  }
 }
 
 float

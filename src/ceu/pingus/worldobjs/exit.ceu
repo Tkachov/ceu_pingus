@@ -1,0 +1,63 @@
+#ifndef EXIT_CEU
+#define EXIT_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../iworld.ceu"
+#include "../worldobj.ceu"
+#include "../ipingu_holder.ceu"
+#include "../pingu_holder_listener.ceu"
+
+native/pre do
+    ##include "pingus/worldobjs/exit.hpp"
+    ##define WExit WorldObjs::Exit
+end
+
+input _WExit* DELETE_EXIT;
+
+class Exit with
+    interface IWorldObj;
+do
+    var _WExit&? exit = _PTR2REF((_WExit*)me);
+
+    par/or do
+        every package in WORLDOBJ_DRAW do
+            if package:worldobj != &exit then
+                continue;
+            end
+
+            /*_gc_color_draw2(package:gc, &exit.sprite_kill_left, exit.pos);*/
+        end
+    with
+        every w in WORLD_UPDATE do
+            if w != exit.world then
+                continue;
+            end
+
+            exit.sprite.update();
+
+            loop pingu in global:world:get_pingus():all_pingus do
+                // Make sure this particular exit is allowed for this pingu
+                if pingu:me.get_owner() != exit.owner_id then
+                    continue;
+                end
+
+                // Now, make sure the pingu is within range
+                if pingu:me.get_x() <= exit.pos.x-1 or pingu:me.get_x() >= exit.pos.x+1 or
+                   pingu:me.get_y() <= exit.pos.y-5 or pingu:me.get_y() >= exit.pos.y+5 then
+                    continue;
+                end
+
+                // Now, make sure the pingu isn't already exiting, gone, or dead [or is dying because of apocalypse/bomber action]
+                if pingu:me.get_action() != _A_EXITER and pingu:me.get_action() != _A_BOMBER then
+                    // Pingu actually exits
+                    emit pingu:e_CHANGE_ACTION => _A_EXITER;
+                end
+            end
+        end
+    with
+        var _WExit* e = await DELETE_EXIT until (e == &exit);
+    end
+end
+
+#endif

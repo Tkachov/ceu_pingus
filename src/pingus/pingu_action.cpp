@@ -40,18 +40,4 @@ std::string PinguAction::get_name() const {
   return name;
 }
 
-ActionType PinguAction::get_activation_mode(ActionName::Enum action_name) {
-  switch(action_name)
-  {
-    case ActionName::CLIMBER:
-      return WALL_TRIGGERED;
-
-    case ActionName::FLOATER:
-      return FALL_TRIGGERED;
-
-    default:
-      return INSTANT;
-  }
-}
-
 /* EOF */
