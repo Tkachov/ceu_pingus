@@ -132,13 +132,6 @@ public:
 
   PinguAction* create_action2(ActionName::Enum action_);
 
-  /** Returns the `color' of the colmap in the walking direction
-      Examples:
-      (0, -1) is the pixel under the pingu
-      (1, 0)  is the pixel in front of the pingu
-  */
-  int  rel_getpixel (int x, int y);
-
   void apply_force (Vector3f);
 
   /** Indicate if the pingu's speed is above the deadly velocity */

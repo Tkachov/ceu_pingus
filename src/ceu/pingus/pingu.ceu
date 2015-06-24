@@ -36,6 +36,8 @@ native/pre do
     ##define PA_INSTANT ActionType::INSTANT
     ##define PA_WALL_TRIGGERED ActionType::WALL_TRIGGERED
     ##define PA_FALL_TRIGGERED ActionType::FALL_TRIGGERED
+
+    ##include "pingus/collision_map.hpp"
 end
 
 input _PinguAction* PINGU_SET_ACTION;
@@ -75,6 +77,40 @@ do
     var int wall_action;
     var bool wall_action_set = false;
 
+
+    function (int x, int y) => int rel_getpixel do
+        return _WorldObj__get_world():get_colmap():getpixel(
+            me.get_x() + (float)(x * me.direction),
+            me.get_y() - (float)y
+        );
+    end
+
+    function @rec (int x, int y) => bool head_collision_on_walk do
+        var int pixel = rel_getpixel(x, y + _pingu_height);
+
+        if pixel != _GT_NOTHING and not (pixel & _GT_BRIDGE) then
+            return true;
+        end
+
+        return false;
+    end
+
+    function @rec (int x, int y) => bool collision_on_walk do
+        var bool collision = false;
+        var int pixel = _GT_NOTHING;
+
+        loop/100 pingu_y in _pingu_height+1 do
+            pixel = rel_getpixel(x, y + pingu_y);
+
+            if pixel != _GT_NOTHING and pixel != _GT_BRIDGE then
+                collision = true;
+                break;
+            end
+        end
+
+        return collision;
+    end
+
     function (void) => bool has_fall_action do
         return fall_action_set;
     end
@@ -104,7 +140,7 @@ do
         every PINGU_UPDATE_ALL do
             // original FIXME: Out of screen check is ugly
             // The Pingu has hit the edge of the screen, a good time to let him die.
-            if me_.rel_getpixel(0, -1) == _GT_OUTOFSCREEN then
+            if rel_getpixel(0, -1) == _GT_OUTOFSCREEN then
                 //Sound::PingusSound::play_sound("die");
                 emit e_CHANGE_ACTION => _A_DEAD;
             end

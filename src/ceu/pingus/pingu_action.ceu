@@ -3,12 +3,6 @@
 
 native/pre do
     ##include "pingus/pingu_action.hpp"
-    ##define PinguAction_CatchedPingu PinguAction::CatchedPingu
-    ##define action_head_collision_on_walk(a, x, y) (a)->head_collision_on_walk(x, y)
 end
-
-native @pure _action_head_collision_on_walk();
-
-input _PinguAction_CatchedPingu* CATCH_PINGU;
 
 #endif

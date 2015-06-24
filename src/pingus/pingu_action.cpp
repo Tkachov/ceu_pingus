@@ -36,47 +36,6 @@ Vector3f PinguAction::get_center_pos() const {
   return p->result;
 }
 
-// Wrapper around the colmap, to get the pixels infront of the pingu,
-// from is current position
-int
-PinguAction::rel_getpixel (int x, int y)
-{
-  // FIXME: Inline me
-  return WorldObj::get_world()->get_colmap()->getpixel(static_cast<int>(pingu->get_x() + static_cast<float>((x * pingu->direction))),
-                                                       static_cast<int>(pingu->get_y() - static_cast<float>(y)));
-}
-
-bool
-PinguAction::head_collision_on_walk (int x, int y)
-{
-  int pixel = rel_getpixel(x, y + pingu_height);
-
-  if (pixel != Groundtype::GP_NOTHING && !(pixel & Groundtype::GP_BRIDGE))
-    return true;
-
-  return false;
-}
-
-bool
-PinguAction::collision_on_walk (int x, int y)
-{
-  bool collision = false;
-  int pixel = Groundtype::GP_NOTHING;
-
-  for (int pingu_y = 0; pingu_y <= pingu_height; ++pingu_y)
-  {
-    pixel = rel_getpixel(x, y + pingu_y);
-
-    if (pixel != Groundtype::GP_NOTHING && pixel != Groundtype::GP_BRIDGE)
-    {
-      collision = true;
-      break;
-    }
-  }
-
-  return collision;
-}
-
 std::string PinguAction::get_name() const {
   return name;
 }

@@ -36,13 +36,13 @@ do
             sprite.get(slider.pingu:direction):update();
 
             loop/100 i in speed do
-                if slider.rel_getpixel(1, 0) != _GT_NOTHING then
+                if pingu.rel_getpixel(1, 0) != _GT_NOTHING then
                     break;
                 end
 
                 slider.pingu:set_x(slider.pingu:get_x() + (float)slider.pingu:direction);
 
-                if slider.rel_getpixel(0, -1) == _GT_NOTHING then
+                if pingu.rel_getpixel(0, -1) == _GT_NOTHING then
                     if speed > 5 then
                         speed = 5;
                     end

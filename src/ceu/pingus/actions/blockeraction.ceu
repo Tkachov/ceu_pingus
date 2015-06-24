@@ -26,10 +26,10 @@ do
     var StateSprite sprite;
     load_file_directions(sprite, blocker, "/blocker/");
 
-    if blocker.rel_getpixel(0, -1) == _GT_NOTHING then
-        if blocker.rel_getpixel(0, -2) == _GT_GROUND then
+    if pingu.rel_getpixel(0, -1) == _GT_NOTHING then
+        if pingu.rel_getpixel(0, -2) == _GT_GROUND then
             blocker.pingu:set_y(blocker.pingu:get_y() + 1);
-        else/if blocker.rel_getpixel(0, -2) == _GT_NOTHING and blocker.rel_getpixel(0, -3) == _GT_GROUND then
+        else/if pingu.rel_getpixel(0, -2) == _GT_NOTHING and pingu.rel_getpixel(0, -3) == _GT_GROUND then
             blocker.pingu:set_y(blocker.pingu:get_y() + 2);
         end
     end
@@ -40,7 +40,7 @@ do
         end
     with
         every pingu.e_UPDATE_CALLED do
-            if blocker.rel_getpixel(0,-1) == _GT_NOTHING then
+            if pingu.rel_getpixel(0,-1) == _GT_NOTHING then
                 escape _A_FALLER;
             end
 

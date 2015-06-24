@@ -70,13 +70,13 @@ do
         loop do
             await pingu.e_UPDATE_CALLED;
 
-            if miner.rel_getpixel(0, -1) == _GT_NOTHING then
+            if pingu.rel_getpixel(0, -1) == _GT_NOTHING then
                 // stop mining when in the air
                 mine(true);
                 escape _A_WALKER;
-            else/if miner.rel_getpixel(0, -1) == _GT_SOLID or miner.rel_getpixel(0, _pingu_height) == _GT_SOLID then
+            else/if pingu.rel_getpixel(0, -1) == _GT_SOLID or pingu.rel_getpixel(0, _pingu_height) == _GT_SOLID then
                 // stop mining when hitting solid ground
-                if miner.rel_getpixel(0, -1) == _GT_SOLID then
+                if pingu.rel_getpixel(0, -1) == _GT_SOLID then
                     _Sound_PingusSound_play_sound("chink");
                 end
 

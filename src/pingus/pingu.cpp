@@ -162,13 +162,6 @@ Pingu::dist(int x, int y)
                      (p.y - static_cast<float>(y)) * (p.y - static_cast<float>(y))));
 }
 
-int
-Pingu::rel_getpixel(int x, int y)
-{
-  return WorldObj::get_world()->get_colmap()->getpixel(static_cast<int>(pos_x + static_cast<float>(x * direction)),
-                                                       static_cast<int>(pos_y - static_cast<float>(y)));
-}
-
 ActionName::Enum
 Pingu::get_action ()
 {

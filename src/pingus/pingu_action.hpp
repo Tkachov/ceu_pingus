@@ -49,15 +49,6 @@ public:
   PinguAction(Pingu* p, ActionName::Enum t);
   virtual ~PinguAction() {};
 
-  /** Get the pixel from the colmap, relative to the pingu position.
-
-      @param x x is relative to the direction, so 1 is the pixel
-      infront of the pingu
-
-      @param y 1 is up, -1 is down
-  */
-  int  rel_getpixel (int x, int y);
-
   Vector3f get_center_pos() const;
 
   struct GetCenterPosPackage {
@@ -75,12 +66,6 @@ public:
 
   /// The type of the action
   ActionName::Enum get_type () const { return type; }
-
-  /// True if Pingu in specified position would bang its head if it were walking
-  bool head_collision_on_walk (int x, int y);
-
-  /// True if Pingu in specified position would have a collision if it were walking
-  bool collision_on_walk (int x, int y);
 
 public:
   static ActionType get_activation_mode(ActionName::Enum action_name);

@@ -35,12 +35,12 @@ do
     var _CollisionMask&? digger_radius_final = _new_CollisionMask("pingus/common/digger_radius_final_gfx", "pingus/common/digger_radius_final_gfx");
     finalize with _delete_CollisionMask(digger_radius_final); end;
 
-    function (void) => bool have_something_to_dig do
-        if digger.rel_getpixel(0, -1) == _GT_NOTHING then
+    function @rec (void) => bool have_something_to_dig do
+        if pingu.rel_getpixel(0, -1) == _GT_NOTHING then
             return false;
         end
 
-        if digger.rel_getpixel(0, -1) == _GT_SOLID then
+        if pingu.rel_getpixel(0, -1) == _GT_SOLID then
             _Sound_PingusSound_play_sound("chink");
             return false;
         end
@@ -71,10 +71,10 @@ do
             sprite.update();
             delay_count = delay_count + 1;
 
-            if digger.rel_getpixel(0, -1) == _GT_WATER or digger.rel_getpixel(0, -1) == _GT_LAVA then
+            if pingu.rel_getpixel(0, -1) == _GT_WATER or pingu.rel_getpixel(0, -1) == _GT_LAVA then
                 escape _A_DROWN;
             else
-                if not have_something_to_dig() then
+                if not call/rec have_something_to_dig() then
                     dig(true);
                     escape _A_WALKER;
                 else/if delay_count % 4 == 0 then

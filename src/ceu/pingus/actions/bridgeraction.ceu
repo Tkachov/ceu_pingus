@@ -57,12 +57,12 @@ do
     // Even though the routine may be the same as brick_placement_allowed(), it is
     // best to keep them apart as they may need to be independent of each other if
     // there needs to be a patch.
-    function (void) => bool way_is_free do
+    function @rec (void) => bool way_is_free do
         loop i in 4 do
             var int x_inc = i+1;
 
-            if bridger.rel_getpixel(x_inc, 2) != _GT_NOTHING
-            or _action_head_collision_on_walk(bridger, x_inc, 2) then
+            if pingu.rel_getpixel(x_inc, 2) != _GT_NOTHING
+            or pingu.head_collision_on_walk(x_inc, 2) then
                 return false;
             end
         end
@@ -74,8 +74,8 @@ do
     // between a brick and the ceiling.  Even though the routine may be the same,
     // as way_is_free() it is best to keep them apart as they may need to be
     // independent of each other if there needs to be a patch.
-    function (void) => bool brick_placement_allowed do
-        return not _action_head_collision_on_walk(bridger, 0, 2);
+    function @rec (void) => bool brick_placement_allowed do
+        return not pingu.head_collision_on_walk(0, 2);
     end
 
     function (void) => void place_a_brick do
@@ -143,7 +143,7 @@ do
             await pingu.e_UPDATE_CALLED until (build_sprite.get(bridger.pingu:direction):get_current_frame () >= 7);
 
             if bricks > 0 then
-                if brick_placement_allowed() then
+                if call/rec brick_placement_allowed() then
                     place_a_brick();
                 else
                     bridger.pingu:direction.change();
@@ -181,7 +181,7 @@ do
             end
         end
 
-        if way_is_free() then
+        if call/rec way_is_free() then
             walk_sprite.get(bridger.pingu:direction):restart();
             walk_one_step_up();
         else // We reached a wall...

@@ -62,12 +62,12 @@ do
 
              */
 
-            if walker.rel_getpixel(1, 0) == _GT_OUTOFSCREEN then
+            if pingu.rel_getpixel(1, 0) == _GT_OUTOFSCREEN then
                 walker.pingu:set_x(walker.pingu:get_x() + (float)(walker.pingu:direction));
                 continue;
             end
 
-            if walker.rel_getpixel(0, -1) == _GT_WATER then
+            if pingu.rel_getpixel(0, -1) == _GT_WATER then
                 escape _A_DROWN;
             end
 
@@ -78,7 +78,7 @@ do
 
             // The Pingu stands no longer on ground, the cause for this could be
             // a digger, miner or a bomber
-            if walker.rel_getpixel(0, -1) == _GT_NOTHING then
+            if pingu.rel_getpixel(0, -1) == _GT_NOTHING then
                 // We search for the nearest ground below the pingu, if we can't
                 // find anything within a few pixels, we will turn into a faller
                 var bool found_ground = false;
@@ -87,7 +87,7 @@ do
                 //-2 -3 -4
                 loop i in 3 do
                     level = -2-i;
-                    if not walker.rel_getpixel(0, level) == _GT_NOTHING then
+                    if not pingu.rel_getpixel(0, level) == _GT_NOTHING then
                         found_ground = true;
                         break;
                     end
@@ -101,7 +101,7 @@ do
             end
 
             // original FIXME: here we could/should scan more pixels
-            if walker.rel_getpixel(1, 0) == _GT_BRIDGE and not walker.head_collision_on_walk(1, 1) then  // bridge
+            if pingu.rel_getpixel(1, 0) == _GT_BRIDGE and not pingu.head_collision_on_walk(1, 1) then  // bridge
                 // simple, stupid, but working bridge code
                 // original FIXME: We don't check if we 'drift' into a solid ground block
                 walker.pingu:set_pos(
@@ -128,9 +128,9 @@ do
                     y_inc = -max_steps + i;
 
                     // up/down-hill scan
-                    if (walker.rel_getpixel(1, y_inc) == _GT_NOTHING or
-                        walker.rel_getpixel(1, y_inc) == _GT_BRIDGE) // original FIXME: This causes a rather huge step
-                      and walker.rel_getpixel(1, y_inc-1) != _GT_NOTHING then
+                    if (pingu.rel_getpixel(1, y_inc) == _GT_NOTHING or
+                        pingu.rel_getpixel(1, y_inc) == _GT_BRIDGE) // original FIXME: This causes a rather huge step
+                      and pingu.rel_getpixel(1, y_inc-1) != _GT_NOTHING then
                         // original FIXME:
                         found_next_step = true;
                         possible_y_step = y_inc;
@@ -145,7 +145,7 @@ do
                         walker.pingu:get_x() + (float)walker.pingu:direction,
                         walker.pingu:get_y() - (float)possible_y_step);
                 else
-                    if walker.rel_getpixel(1, 0) != _GT_NOTHING then
+                    if pingu.rel_getpixel(1, 0) != _GT_NOTHING then
                         // We reached a wall
                         if pingu.has_wall_action() then
                             _log_debug("Pingu: We are in front of a wall, setting persistant action");
@@ -167,7 +167,7 @@ do
             // This is moved here to fix the bug where pingu stuck turning both
             // sides indefinetely when a head collision occured. the fix needs the
             // above downhill walk being done before head collision check.
-            if walker.head_collision_on_walk(0, 0) then
+            if pingu.head_collision_on_walk(0, 0) then
                 _log_debug("Pingu: Head collision");
 
                 //if the new position causes a head collision, we are already

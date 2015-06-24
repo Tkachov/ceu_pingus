@@ -36,7 +36,7 @@ do
             sprite.get(boarder.pingu:direction):update();
 
             //not on ground
-            if not boarder.pingu:rel_getpixel(0, -1) and not boarder.pingu:rel_getpixel(0, -2) then
+            if not pingu.rel_getpixel(0, -1) and not pingu.rel_getpixel(0, -2) then
                 boarder.pingu:apply_force(_Vector3f(speed*(float)(boarder.pingu:direction), 0));
                 escape _A_WALKER;
             end
@@ -68,7 +68,7 @@ do
 
                 boarder.pingu:set_pos(_Vector3f(old_pos.x + offset, old_pos.y, old_pos.z));
 
-                if boarder.pingu:rel_getpixel(1, 0) then
+                if pingu.rel_getpixel(1, 0) then
                     // Hit a wall
                     boarder.pingu:set_pos(_toVector3f(old_pos));
                     boarder.pingu:apply_force(_Vector3f(
