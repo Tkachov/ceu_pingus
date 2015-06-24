@@ -34,8 +34,8 @@ do
         var IPingu* c_pingu = null;
 
         loop pingu in global:world:get_pingus():all_pingus do
-            if pingu:me.is_over(mx, my) then
-                dist = pingu:me.dist(mx, my);
+            if pingu:is_over(mx, my) then
+                dist = pingu:dist(mx, my);
 
                 if dist < min_dist then
                     min_dist = dist;

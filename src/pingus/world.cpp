@@ -5,12 +5,12 @@
 //  it under the terms of the GNU General Public License as published by
 //  the Free Software Foundation, either version 3 of the License, or
 //  (at your option) any later version.
-//  
+//
 //  This program is distributed in the hope that it will be useful,
 //  but WITHOUT ANY WARRANTY; without even the implied warranty of
 //  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //  GNU General Public License for more details.
-//  
+//
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -76,7 +76,7 @@ World::World(const PingusLevel& plf) :
   World* self = this;
   ceu_out_go(&CEUapp, CEU_IN_NEW_WORLD, &self);
 
-  init_worldobjs(plf);  
+  init_worldobjs(plf);
 }
 
 void World::add_object(WorldObj* obj) {
@@ -227,26 +227,6 @@ World::play_sound(std::string name, const Vector3f& pos, float volume)
   Sound::PingusSound::play_sound(name, volume, panning);
 }
 
-Pingu*
-World::get_pingu (const Vector3f& pos)
-{
-  Pingu* current_pingu = 0;
-  float distance = -1.0;
-
-  for (PinguIter i = pingus->begin (); i != pingus->end (); ++i) {
-    if ((*i)->is_over(int(pos.x), int(pos.y)))
-    {
-      if (distance == -1.0f || distance >= (*i)->dist(static_cast<int>(pos.x), static_cast<int>(pos.y)))
-      {
-        current_pingu = (*i);
-        distance = (*i)->dist(static_cast<int>(pos.x), static_cast<int>(pos.y));
-      }
-    }
-  }
-
-  return current_pingu;
-}
-
 float World::get_gravity()
 {
   return gravitational_acceleration;
@@ -276,7 +256,7 @@ World::get_worldobj(const std::string& id)
 {
   for(WorldObjIter obj = world_obj.begin(); obj != world_obj.end(); ++obj)
   {
-    if ((*obj)->get_id() == id) 
+    if ((*obj)->get_id() == id)
       return *obj;
   }
   return 0;
@@ -289,7 +269,7 @@ World::get_start_pos(int player_id)
   Vector2i pos;
   int num_entrances = 0;
   for(WorldObjIter obj = world_obj.begin(); obj != world_obj.end(); ++obj)
-  {  
+  {
     WorldObjs::Entrance* entrance = dynamic_cast<WorldObjs::Entrance*>(*obj);
     if (entrance && entrance->get_owner_id() == player_id)
     {

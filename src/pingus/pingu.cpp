@@ -115,16 +115,6 @@ void Pingu::die() {
   ceu_out_go(&CEUapp, CEU_IN_PINGU_DIE, &self);
 }
 
-// Returns true if the given koordinates are above the pingu
-bool
-Pingu::is_over (int x, int y)
-{
-  Vector3f center = get_center_pos ();
-
-  return (center.x + 16 > x && center.x - 16 < x &&
-          center.y + 16 > y && center.y - 16 < y);
-}
-
 bool
 Pingu::is_inside (int x1, int y1, int x2, int y2)
 {
@@ -134,16 +124,6 @@ Pingu::is_inside (int x1, int y1, int x2, int y2)
   return (pos_x > x1 && pos_x < x2
           &&
           pos_y > y1 && pos_y < y2);
-}
-
-// Returns the distance between the Pingu and a given coordinate
-float
-Pingu::dist(int x, int y)
-{
-  Vector3f p = get_center_pos ();
-
-  return Math::sqrt(((p.x - static_cast<float>(x)) * (p.x - static_cast<float>(x)) +
-                     (p.y - static_cast<float>(y)) * (p.y - static_cast<float>(y))));
 }
 
 ActionName::Enum

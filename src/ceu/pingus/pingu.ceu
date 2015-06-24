@@ -35,6 +35,8 @@ native/pre do
     ##define PA_get_activation_mode(x) PinguAction::get_activation_mode(x)
 
     ##include "pingus/collision_map.hpp"
+
+    ##define Math__sqrt Math::sqrt
 end
 
 input void PINGU_UPDATE_ALL;
@@ -109,6 +111,26 @@ do
         end
 
         return collision;
+    end
+
+    // Returns true if the given koordinates are above the pingu
+    function (int x, int y) => bool is_over do
+        var Vector3f center;
+        center.x = me.get_center_pos().x;
+        center.y = me.get_center_pos().y;
+        center.z = me.get_center_pos().z;
+
+        return (center.x+16 > x and center.x-16 < x and center.y+16 > y and center.y-16 < y);
+    end
+
+    // Returns the distance between the Pingu and a given coordinate
+    function (int x, int y) => float dist do
+        var Vector3f p;
+        p.x = me.get_center_pos().x;
+        p.y = me.get_center_pos().y;
+        p.z = me.get_center_pos().z;
+
+        return _Math__sqrt( (p.x - (float)x)*(p.x - (float)x) + (p.y - (float)y)*(p.y - (float)y) );
     end
 
     function (void) => bool has_fall_action do
