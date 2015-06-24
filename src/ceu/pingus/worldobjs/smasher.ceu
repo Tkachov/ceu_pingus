@@ -1,0 +1,108 @@
+#ifndef SMASHER_CEU
+#define SMASHER_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../../engine/sound/sound.ceu"
+#include "../iworld.ceu"
+#include "../worldobj.ceu"
+#include "../ipingu_holder.ceu"
+#include "../pingu_holder_listener.ceu"
+
+native/pre do
+    ##include "pingus/worldobjs/smasher.hpp"
+    ##include "pingus/particles/smoke_particle_holder.hpp"
+    ##define WSmasher WorldObjs::Smasher
+    ##define Math__frand Math::frand
+end
+
+input _WSmasher* DELETE_SMASHER;
+
+class Smasher with
+    interface IWorldObj;
+do
+    var _WSmasher&? smasher = _PTR2REF((_WSmasher*)me);
+
+    var bool smashing = false;
+    var bool downwards = false;
+    var int count = 0;
+
+    par/or do
+        every package in WORLDOBJ_DRAW do
+            if package:worldobj != &smasher then
+                continue;
+            end
+
+            _gc_color_draw2(package:gc, &smasher.sprite, smasher.pos);
+        end
+    with
+        every w in WORLD_UPDATE do
+            if w != smasher.world then
+                continue;
+            end
+
+            loop pingu in global:world:get_pingus():all_pingus do
+                if pingu:me.get_action() == _A_SPLASHED or smashing then
+                    continue;
+                end
+
+                if not (pingu:me.direction.is_left() and pingu:me.get_x() > smasher.pos.x+65 and pingu:me.get_x() < smasher.pos.x+85) and
+                   not (pingu:me.direction.is_right() and pingu:me.get_x() > smasher.pos.x+190 and pingu:me.get_x() < smasher.pos.x+210) then
+                    continue;
+                end
+
+                // Activate the smasher if a Pingu is under it
+                count = 0;
+                downwards = true;
+                smashing = true;
+            end
+
+            if not smashing then
+                continue;
+            end
+
+            smasher.sprite.set_frame(count);
+
+            if downwards then
+                if count < 5 then
+                    count = count + 1;
+                else
+                    // SMASH!!! The thing hitten earth and kills the pingus
+                    downwards = false;
+                    count = count - 1;
+                    _Sound_PingusSound_play_sound("tenton");
+
+                    loop i in 20 do
+                        smasher.world:get_smoke_particle_holder():add_particle(
+                            smasher.pos.x + 20 + (float)(_rand()%260),
+                            smasher.pos.y + 180,
+                            _Math__frand()-0.5,
+                            _Math__frand()-0.5
+                        );
+                    end
+
+                    loop pingu in global:world:get_pingus():all_pingus do
+                        if pingu:me.get_action() == _A_SPLASHED then
+                            continue;
+                        end
+
+                        if pingu:me.is_inside(smasher.pos.x + 30, smasher.pos.y + 90, smasher.pos.x + 250, smasher.pos.y + 190) then
+                            emit pingu:e_CHANGE_ACTION => _A_SPLASHED;
+                        end
+                    end
+                end
+            else
+                if count <= 0 then
+                    count = 0;
+                    smashing = false;
+                else
+                    count = count - 1;
+                end
+            end
+        end
+    with
+        var _WSmasher* e = await DELETE_SMASHER until (e == &smasher);
+    end
+end
+
+#endif
