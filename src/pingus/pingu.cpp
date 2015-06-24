@@ -187,33 +187,6 @@ Pingu::get_owner_str ()
   return ostr.str();
 }
 
-std::shared_ptr<PinguAction> Pingu::create_action(ActionName::Enum action_) {
-  switch(action_) {
-    case ActionName::ANGEL:
-    case ActionName::BASHER:
-    case ActionName::BLOCKER:
-    case ActionName::BOARDER:
-    case ActionName::BOMBER:
-    case ActionName::BRIDGER:
-    case ActionName::CLIMBER:
-    case ActionName::DIGGER:
-    case ActionName::DROWN:
-    case ActionName::EXITER:
-    case ActionName::FALLER:
-    case ActionName::FLOATER:
-    case ActionName::JUMPER:
-    case ActionName::LASERKILL:
-    case ActionName::MINER:
-    case ActionName::SLIDER:
-    case ActionName::SPLASHED:
-    case ActionName::SUPERMAN:
-    case ActionName::WAITER:
-    case ActionName::WALKER:    return std::make_shared<PinguAction>(this, action_);
-
-    default: assert(!"Invalid action name provied");
-  }
-}
-
 PinguAction* Pingu::create_action2(ActionName::Enum action_) {
   switch(action_) {
     case ActionName::ANGEL:

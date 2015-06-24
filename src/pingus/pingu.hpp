@@ -50,9 +50,6 @@ private:
 
   Vector3f velocity;
 
-private:
-  std::shared_ptr<PinguAction> create_action(ActionName::Enum action);
-
 public:
 
   struct RequestSetActionPackage {
