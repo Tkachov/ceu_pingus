@@ -13,6 +13,8 @@ native/pre do
     ##define WEntrance WorldObjs::Entrance
     ##define ED_MISC WorldObjs::Entrance::EntranceDirection::MISC
     ##define ED_LEFT WorldObjs::Entrance::EntranceDirection::LEFT
+
+    ##include "pingus/components/smallmap.hpp"
 end
 
 input _WEntrance* DELETE_ENTRANCE;
@@ -39,6 +41,23 @@ do
     end
 
     par/or do
+        every package in WORLDOBJ_DRAW do
+            if package:worldobj != &entrance then
+                continue;
+            end
+
+            //original FIXME: Why do we still have these hardcoded offsets?!
+            _gc_color_draw2(package:gc, &entrance.surface, _Vector3f(entrance.pos.x - 32, entrance.pos.y - 16));
+        end
+    with
+        every package in WORLDOBJ_DRAW_SMALLMAP do
+            if package:worldobj != &entrance then
+                continue;
+            end
+
+            package:smallmap:draw_sprite(_PTR2REF(entrance.smallmap_symbol), _PTR2REF(entrance.pos));
+        end
+    with
         every w in WORLD_UPDATE do
             if w != entrance.world then
                 continue;

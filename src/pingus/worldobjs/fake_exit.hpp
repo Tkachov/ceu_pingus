@@ -37,26 +37,13 @@ private:
   Sprite   sprite;
   Sprite   smallmap_symbol;
 
-  Vector3f pos;
-
   bool smashing;
 
 public:
   FakeExit(const FileReader& reader);
   ~FakeExit();
 
-  float get_z_pos () const;
-  void set_pos(const Vector3f& p) { pos = p; }
-  Vector3f get_pos() const { return pos; }
-
-  void draw (SceneContext& gc);
-
-  /** Draws an exit symbol on to the small map. */
-  void draw_smallmap(SmallMap* smallmap);
-
 private:
-  void catch_pingu (Pingu*);
-
   FakeExit (const FakeExit&);
   FakeExit& operator= (const FakeExit&);
 };

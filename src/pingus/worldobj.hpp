@@ -77,6 +77,13 @@ public:
     WorldObjPackage(WorldObj* w, SceneContext* g): worldobj(w), gc(g) {};
   };
 
+  struct WorldObjSmallMapPackage {
+    WorldObj* worldobj;
+    SmallMap* smallmap;
+
+    WorldObjSmallMapPackage(WorldObj* w, SmallMap* s): worldobj(w), smallmap(s) {};
+  };
+
   /** Draws the objects collision map to the main collision map, draws
       stuff onto the gfx map or do other manipulations to the World */
   virtual void on_startup ();

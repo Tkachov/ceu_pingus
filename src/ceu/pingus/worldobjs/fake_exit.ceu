@@ -11,6 +11,8 @@
 native/pre do
     ##include "pingus/worldobjs/fake_exit.hpp"
     ##define WFakeExit WorldObjs::FakeExit
+
+    ##include "pingus/components/smallmap.hpp"
 end
 
 input _WFakeExit* DELETE_FAKE_EXIT;
@@ -26,7 +28,15 @@ do
                 continue;
             end
 
-            /*_gc_color_draw2(package:gc, &fake_exit.sprite_kill_left, fake_exit.pos);*/
+            _gc_color_draw2(package:gc, &fake_exit.sprite, fake_exit.pos);
+        end
+    with
+        every package in WORLDOBJ_DRAW_SMALLMAP do
+            if package:worldobj != &fake_exit then
+                continue;
+            end
+
+            package:smallmap:draw_sprite(_PTR2REF(fake_exit.smallmap_symbol), _PTR2REF(fake_exit.pos + _Vector3f(0, 115)));
         end
     with
         every w in WORLD_UPDATE do

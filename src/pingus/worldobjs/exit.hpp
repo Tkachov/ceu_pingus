@@ -27,7 +27,6 @@ class Exit : public WorldObj
 {
 private:
   ResDescriptor desc;
-  Vector3f pos;
   int owner_id;
 
   Sprite sprite;
@@ -39,13 +38,6 @@ public:
   ~Exit();
 
   void  on_startup ();
-
-  void  draw (SceneContext& gc);
-  void  draw_smallmap(SmallMap* smallmap);
-
-  float get_z_pos () const;
-  void set_pos(const Vector3f& p) { pos = p; }
-  Vector3f get_pos() const { return pos; }
 
 private:
   Exit (const Exit&);

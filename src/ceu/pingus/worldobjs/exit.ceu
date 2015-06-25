@@ -11,6 +11,8 @@
 native/pre do
     ##include "pingus/worldobjs/exit.hpp"
     ##define WExit WorldObjs::Exit
+
+    ##include "pingus/components/smallmap.hpp"
 end
 
 input _WExit* DELETE_EXIT;
@@ -25,8 +27,17 @@ do
             if package:worldobj != &exit then
                 continue;
             end
+            
+            _gc_color_draw2(package:gc, &exit.sprite, exit.pos);
+            _gc_color_draw2(package:gc, &exit.flag, exit.pos + _Vector3f(40, 0));
+        end        
+    with
+        every package in WORLDOBJ_DRAW_SMALLMAP do
+            if package:worldobj != &exit then
+                continue;
+            end
 
-            /*_gc_color_draw2(package:gc, &exit.sprite_kill_left, exit.pos);*/
+            package:smallmap:draw_sprite(_PTR2REF(exit.smallmap_symbol), _PTR2REF(exit.pos));
         end
     with
         every w in WORLD_UPDATE do

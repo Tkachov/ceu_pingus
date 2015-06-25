@@ -17,7 +17,6 @@
 #include "pingus/worldobjs/fake_exit.hpp"
 
 #include "engine/display/scene_context.hpp"
-#include "pingus/components/smallmap.hpp"
 #include "pingus/pingu.hpp"
 #include "pingus/pingu_holder.hpp"
 #include "pingus/world.hpp"
@@ -28,8 +27,7 @@ namespace WorldObjs {
 
 FakeExit::FakeExit(const FileReader& reader) :  
   sprite("traps/fake_exit"),
-  smallmap_symbol("core/misc/smallmap_exit"),
-  pos(),
+  smallmap_symbol("core/misc/smallmap_exit"),  
   smashing(false)
 {
   reader.read_vector("position", pos);
@@ -42,24 +40,6 @@ FakeExit::FakeExit(const FileReader& reader) :
 FakeExit::~FakeExit() {
   FakeExit* self = this;
   ceu_out_go(&CEUapp, CEU_IN_DELETE_FAKE_EXIT, &self);
-}
-
-float
-FakeExit::get_z_pos () const
-{
-  return pos.z;
-}
-
-void
-FakeExit::draw (SceneContext& gc)
-{
-  gc.color().draw (sprite, pos);
-}
-
-void
-FakeExit::draw_smallmap(SmallMap* smallmap)
-{
-  smallmap->draw_sprite(smallmap_symbol, pos);
 }
 
 } // namespace WorldObjs

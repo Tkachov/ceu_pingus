@@ -17,7 +17,6 @@
 #include "pingus/worldobjs/entrance.hpp"
 
 #include "engine/display/scene_context.hpp"
-#include "pingus/components/smallmap.hpp"
 #include "pingus/pingu.hpp"
 #include "pingus/pingu_holder.hpp"
 #include "pingus/world.hpp"
@@ -28,8 +27,7 @@
 namespace WorldObjs {
 
 Entrance::Entrance(const FileReader& reader) :
-  direction(MISC),
-  pos(),
+  direction(MISC),  
   release_rate(150),
   owner_id(0),
   smallmap_symbol("core/misc/smallmap_entrance"),
@@ -64,32 +62,6 @@ Entrance::Entrance(const FileReader& reader) :
 Entrance::~Entrance() {
   Entrance* self = this;
   ceu_out_go(&CEUapp, CEU_IN_DELETE_ENTRANCE, &self);
-}
-
-float
-Entrance::get_z_pos () const
-{
-  return pos.z;
-}
-
-void
-Entrance::draw (SceneContext& gc)
-{
-  if (!surface)
-  {
-    // Entrances have only a surface for historical reasons
-    // log_error("entrance without a surface?!");
-    return;
-  }
-
-  // FIXME: Why do we still have these hardcoded offsets?!
-  gc.color().draw(surface, Vector3f(pos.x - 32, pos.y - 16));
-}
-
-void
-Entrance::draw_smallmap(SmallMap* smallmap)
-{
-  smallmap->draw_sprite(smallmap_symbol, pos);
 }
 
 } // namespace WorldObjs

@@ -18,7 +18,6 @@
 
 #include "engine/display/scene_context.hpp"
 #include "pingus/collision_map.hpp"
-#include "pingus/components/smallmap.hpp"
 #include "pingus/pingu.hpp"
 #include "pingus/pingu_holder.hpp"
 #include "pingus/world.hpp"
@@ -29,8 +28,7 @@
 namespace WorldObjs {
 
 Exit::Exit(const FileReader& reader) :
-  desc(),
-  pos(),
+  desc(),  
   owner_id(),
   sprite(),
   flag(),
@@ -63,25 +61,6 @@ Exit::on_startup ()
   world->get_colmap()->remove(mask,
                               static_cast<int>(pos.x) - sprite.get_width()/2,
                               static_cast<int>(pos.y) - sprite.get_height());
-}
-
-void
-Exit::draw (SceneContext& gc)
-{
-  gc.color().draw(sprite, pos);
-  gc.color().draw(flag, pos + Vector3f(40, 0));
-}
-
-void
-Exit::draw_smallmap(SmallMap* smallmap)
-{
-  smallmap->draw_sprite(smallmap_symbol, pos);
-}
-
-float
-Exit::get_z_pos () const
-{
-  return pos.z;
 }
 
 } // namespace WorldObjs

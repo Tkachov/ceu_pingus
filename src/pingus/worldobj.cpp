@@ -63,9 +63,10 @@ void WorldObj::draw(SceneContext& gc) {
   ceu_out_go(&CEUapp, CEU_IN_WORLDOBJ_DRAW, &pp);
 }
 
-void
-WorldObj::draw_smallmap(SmallMap* smallmap)
-{
+void WorldObj::draw_smallmap(SmallMap* smallmap) {
+  WorldObjSmallMapPackage package(this, smallmap);
+  WorldObjSmallMapPackage* pp = &package;
+  ceu_out_go(&CEUapp, CEU_IN_WORLDOBJ_DRAW_SMALLMAP, &pp);
 }
 
 /* EOF */

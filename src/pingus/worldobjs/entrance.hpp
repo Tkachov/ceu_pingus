@@ -37,7 +37,6 @@ public:
 
 protected:
   EntranceDirection direction;
-  Vector3f          pos;
   int               release_rate;
   int               owner_id;
 
@@ -47,14 +46,6 @@ protected:
 public:
   Entrance(const FileReader& reader);
   ~Entrance();
-
-  float get_z_pos () const;
-  void set_pos(const Vector3f& p) { pos = p; }
-  Vector3f get_pos() const { return pos; }
-
-  virtual void   draw (SceneContext& gc);
-
-  void  draw_smallmap(SmallMap* smallmap);
 
   int get_owner_id() { return owner_id; }
 private:
