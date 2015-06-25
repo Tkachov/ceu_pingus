@@ -88,11 +88,6 @@ bool Pingu::request_set_action(ActionName::Enum action_name) {
   return package.result;
 }
 
-void Pingu::die() {
-  Pingu* self = this;
-  ceu_out_go(&CEUapp, CEU_IN_PINGU_DIE, &self);
-}
-
 bool
 Pingu::is_inside (int x1, int y1, int x2, int y2)
 {

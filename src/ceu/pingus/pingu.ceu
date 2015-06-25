@@ -43,7 +43,6 @@ end
 input void PINGU_UPDATE_ALL;
 input _SceneContext* PINGU_DRAW_WALKER;
 input _SceneContext* PINGU_DRAW_OTHERS;
-input _Pingu* PINGU_DIE;
 input _RSA_Package* PINGU_REQUEST_SET_ACTION;
 
 native @pure _delete_Pingu(), _PA_get_activation_mode();
@@ -194,12 +193,6 @@ do
             end
 
             emit e_UPDATE_CALLED;
-        end
-    with
-        every p in PINGU_DIE do
-            if p == &me_ then
-               emit e_CHANGE_ACTION => _A_DEAD;
-            end
         end
     with
         every gc in PINGU_DRAW_WALKER do

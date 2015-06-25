@@ -64,8 +64,6 @@ public:
   /** Destruct the pingu... */
   ~Pingu ();
 
-  void die(); //notify Ceu to terminate the instance (reason: death)
-
   /** Return the logical pingus position, this is the position which
       is used for collision detection to the ground (the pingus
       feet) */
