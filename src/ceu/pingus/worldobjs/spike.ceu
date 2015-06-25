@@ -1,0 +1,69 @@
+#ifndef SPIKE_CEU
+#define SPIKE_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../iworld.ceu"
+#include "../worldobj.ceu"
+#include "../ipingu_holder.ceu"
+#include "../pingu_holder_listener.ceu"
+
+native/pre do
+    ##include "pingus/worldobjs/spike.hpp"
+    ##define WSpike WorldObjs::Spike
+end
+
+input _WSpike* DELETE_SPIKE;
+
+class Spike with
+    interface IWorldObj;
+do
+    var _WSpike&? spike = _PTR2REF((_WSpike*)me);
+    var bool killing = false;
+
+    par/or do
+        every package in WORLDOBJ_DRAW do
+            if package:worldobj != &spike then
+                continue;
+            end
+
+            if killing then
+                _gc_color_draw2(package:gc, &spike.surface, spike.pos);
+            end
+        end
+    with
+        every w in WORLD_UPDATE do
+            if w != spike.world then
+                continue;
+            end
+
+            if killing then
+                spike.surface.update();
+            end
+
+            loop pingu in global:world:get_pingus():all_pingus do
+                if not killing then
+                    if pingu:me.get_x() > spike.pos.x+16-5 and pingu:me.get_x() < spike.pos.x+16+5 and
+                       pingu:me.get_y() > spike.pos.y and pingu:me.get_y() < spike.pos.y+32 then
+                      spike.surface.restart();
+                      killing = true;
+                    end
+                else
+                    if spike.surface.get_current_frame() == 3 and
+                       pingu:me.get_x() > spike.pos.x+16-12 and pingu:me.get_x() < spike.pos.x+16+12 and
+                       pingu:me.get_y() > spike.pos.y and pingu:me.get_y() < spike.pos.y+32 then
+                      emit pingu:e_CHANGE_ACTION => _A_DEAD;
+                    end
+                end
+            end
+
+            if spike.surface.get_current_frame() == spike.surface.get_frame_count()-1 then
+                killing = false;
+            end
+        end
+    with
+        var _WSpike* e = await DELETE_SPIKE until (e == &spike);
+    end
+end
+
+#endif

@@ -13,6 +13,7 @@
 #include "worldobjs/hammer.ceu"
 #include "worldobjs/laser_exit.ceu"
 #include "worldobjs/smasher.ceu"
+#include "worldobjs/spike.ceu"
 
 input _World* DELETE_WORLD;
 input _WEntrance* NEW_ENTRANCE;
@@ -22,6 +23,7 @@ input _WGuillotine* NEW_GUILLOTINE;
 input _WHammer* NEW_HAMMER;
 input _WLaserExit* NEW_LASER_EXIT;
 input _WSmasher* NEW_SMASHER;
+input _WSpike* NEW_SPIKE;
 
 class World with
     interface IWorld;
@@ -94,6 +96,12 @@ do
         every new_smasher in NEW_SMASHER do
             spawn Smasher with
                 this.me = _PTR2REF(new_smasher);
+            end;
+        end
+    with
+        every new_spike in NEW_SPIKE do
+            spawn Spike with
+                this.me = _PTR2REF(new_spike);
             end;
         end
     with
