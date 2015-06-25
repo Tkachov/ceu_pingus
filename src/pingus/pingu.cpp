@@ -31,15 +31,14 @@
 #include "ceuvars.h"
 
 // Init a pingu at the given position while falling
-Pingu::Pingu (int arg_id, const Vector3f& arg_pos, int owner):  
+Pingu::Pingu (int arg_id, const Vector3f& arg_pos, int owner):
   id(arg_id),
   owner_id(owner),
   pos_x(arg_pos.x),
   pos_y(arg_pos.y),
-  velocity(0, 0, 0),
   direction()
 {
-  direction.left();  
+  direction.left();
 }
 
 Pingu::~Pingu() {}
@@ -76,15 +75,7 @@ Pingu::set_pos (const Vector3f& arg_pos)
   set_y (arg_pos.y);
 }
 
-void
-Pingu::set_velocity (const Vector3f& velocity_)
-{
-  velocity = velocity_;
 
-  // crude terminal velocity
-  velocity.x = Math::clamp(-terminal_velocity, velocity.x, terminal_velocity);
-  velocity.y = Math::clamp(-terminal_velocity, velocity.y, terminal_velocity);
-}
 
 // Set the action of the pingu (bridger, blocker, bomber, etc.)
 // This function is used by external stuff, like the ButtonPanel, etc
@@ -111,15 +102,6 @@ Pingu::is_inside (int x1, int y1, int x2, int y2)
   return (pos_x > x1 && pos_x < x2
           &&
           pos_y > y1 && pos_y < y2);
-}
-
-void
-Pingu::apply_force (Vector3f arg_v)
-{
-  velocity += arg_v;
-  // Moving the pingu on pixel up, so that the force can take effect
-  // FIXME: this should be handled by a state-machine
-  --pos_y;
 }
 
 Vector3f

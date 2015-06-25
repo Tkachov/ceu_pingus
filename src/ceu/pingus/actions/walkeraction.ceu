@@ -43,7 +43,11 @@ do
     var int max_steps = 5;
 
     // Reset the velocity
-    pingu.me.set_velocity(_Vector3f());
+    var Vector3f vel;
+    vel.x = 0;
+    vel.y = 0;
+    vel.z = 0;
+    pingu.set_velocity(vel);
 
     par do
         every gc in pingu.e_DRAW_CALLED do

@@ -25,7 +25,7 @@ native @pure _Colliders__PinguCollider(),
 class FallerAction with
     interface IAction;
     interface IPinguAction;
-do    
+do
     pingu.ceu_action = &this;
 
     function (int a) => bool change_allowed do
@@ -54,15 +54,15 @@ do
     var _Movers_LinearMover&? mover = _new_LinearMover();
     finalize with _delete_LinearMover(mover); end;
 
-    function (void) => bool is_tumbling do
+    function @rec (void) => bool is_tumbling do
         // If we are going fast enough to get smashed, start tumbling
-        return (_Math__abs(pingu.me.get_velocity().x) > _deadly_velocity or
-                _Math__abs(pingu.me.get_velocity().y) > _deadly_velocity);
+        return (_Math__abs(pingu.get_velocity().x) > _deadly_velocity or
+                _Math__abs(pingu.get_velocity().y) > _deadly_velocity);
     end
 
     par do
-        every gc in pingu.e_DRAW_CALLED do            
-            if is_tumbling() then
+        every gc in pingu.e_DRAW_CALLED do
+            if call/rec is_tumbling() then
                 _gc_color_draw2(gc, tumbler.get(pingu.me.direction), pingu.me.get_pos());
             else
                 _gc_color_draw2(gc, sprite.get(pingu.me.direction), pingu.me.get_pos());
@@ -70,7 +70,7 @@ do
         end
     with
         every pingu.e_UPDATE_CALLED do
-            if is_tumbling() then
+            if call/rec is_tumbling() then
                 tumbler.get(pingu.me.direction):update();
             else
                 sprite.get(pingu.me.direction):update();
@@ -82,24 +82,22 @@ do
                deadly_velocity or something like that. A translation
                animation for the floater might also help
              */
-            if pingu.me.get_velocity().y > 5.0 and pingu.has_fall_action() then
+            if pingu.get_velocity().y > 5.0 and pingu.has_fall_action() then
                 escape pingu.get_fall_action();
             end
 
             // Apply gravity
-            pingu.me.set_velocity(
-                pingu.me.get_velocity()
-              + _Vector3f(0, _WorldObj__get_world():get_gravity()) );
+            var Vector3f vel = pingu.get_velocity();
+            vel.y = vel.y + _WorldObj__get_world():get_gravity();
+            pingu.set_velocity(vel);
 
             // Move the Pingu as far is it can go
             mover.reset(pingu.me.get_pos());
-            mover.update(pingu.me.get_velocity(), _Colliders__PinguCollider(_pingu_height));
+            mover.update(_toVector3f(pingu.get_velocity()), _Colliders__PinguCollider(_pingu_height));
             pingu.me.set_pos(mover.get_pos());
 
             var bool collided = mover.collided();
-            var Vector3f velocity;
-            velocity.x = pingu.me.get_velocity().x;
-            velocity.y = pingu.me.get_velocity().y;
+            var Vector3f velocity = pingu.get_velocity();
 
             // If the Pingu collided with something...
             if collided then
@@ -118,7 +116,7 @@ do
                     if velocity.x > 0 then pingu.me.direction.right();
                     else pingu.me.direction.left(); end
 
-                    pingu.me.set_velocity(_Vector3f(velocity.x, velocity.y));
+                    pingu.set_velocity(velocity);
                 else/if velocity.y > 0.0 // If the Pingu collided into something while moving down...
                 then
                     // Ping is on ground/water/something
@@ -128,11 +126,11 @@ do
                         escape _A_DROWN;
                     // Did we stop too fast?
                     else/if _Math__abs(velocity.y) > _deadly_velocity then
-                        //log_info("Pingus splashed: " << pingu:get_velocity().y << " " << deadly_velocity);
+                        //log_info("Pingus splashed: " << pingu.get_velocity().y << " " << deadly_velocity);
                         escape _A_SPLASHED;
                     else
                         // This is where the jumper bug happens
-                        //log_info("Reached the unreachable: " << pingu:get_velocity().y);
+                        //log_info("Reached the unreachable: " << pingu.get_velocity().y);
                         if pingu.get_previous_action() == _A_BLOCKER then
                             escape pingu.get_previous_action();
                         else
@@ -145,7 +143,7 @@ do
                     velocity.y = 0;
                     velocity.x = velocity.x/3.0;
 
-                    pingu.me.set_velocity(_toVector3f(velocity));
+                    pingu.set_velocity(velocity);
                 end
             end
         end

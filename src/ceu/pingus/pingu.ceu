@@ -37,6 +37,7 @@ native/pre do
     ##include "pingus/collision_map.hpp"
 
     ##define Math__sqrt Math::sqrt
+    ##define Math__clamp Math::clamp
 end
 
 input void PINGU_UPDATE_ALL;
@@ -59,9 +60,14 @@ native @pure _delete_Pingu(), _PA_get_activation_mode();
 
 class Pingu with
     interface IPingu;
+    var Vector3f velocity;
 do
     var _Pingu&? me_ = _PTR2REF((_Pingu*)&this.me);
     finalize with _delete_Pingu(me_); end
+
+    velocity.x = 0;
+    velocity.y = 0;
+    velocity.z = 0;
 
     ceu_action = null;
     var int previous_action = _A_FALLER;
@@ -154,6 +160,27 @@ do
         end
 
         return PA_INSTANT;
+    end
+
+    function (void) => Vector3f get_velocity do
+        return velocity;
+    end
+
+    function (Vector3f v) => void set_velocity do
+        velocity = v;
+
+        // crude terminal velocity
+        velocity.x = _Math__clamp(-_terminal_velocity, velocity.x, _terminal_velocity);
+        velocity.y = _Math__clamp(-_terminal_velocity, velocity.y, _terminal_velocity);
+    end
+
+    function (Vector3f arg_v) => void apply_force do
+        velocity.x = velocity.x + arg_v.x;
+        velocity.y = velocity.y + arg_v.y;
+        velocity.z = velocity.z + arg_v.z;
+        // Moving the pingu on pixel up, so that the force can take effect
+        // original FIXME: this should be handled by a state-machine
+        me.pos_y = me.pos_y - 1;
     end
 
     par do

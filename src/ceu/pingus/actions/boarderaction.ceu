@@ -48,7 +48,11 @@ do
 
             //not on ground
             if not pingu.rel_getpixel(0, -1) and not pingu.rel_getpixel(0, -2) then
-                pingu.me.apply_force(_Vector3f(speed*(float)(pingu.me.direction), 0));
+                var Vector3f f;
+                f.x = speed*(float)(pingu.me.direction);
+                f.y = 0;
+                f.z = 0;
+                pingu.apply_force(f);
                 escape _A_WALKER;
             end
 
@@ -82,10 +86,12 @@ do
                 if pingu.rel_getpixel(1, 0) then
                     // Hit a wall
                     pingu.me.set_pos(_toVector3f(old_pos));
-                    pingu.me.apply_force(_Vector3f(
-                        (float)(speed*(float)(pingu.me.direction)*0.5),
-                        -(float)(speed*(float)(_abs(pingu.me.direction))*0.5)
-                    ));
+
+                    var Vector3f f;
+                    f.x = (float)(speed*(float)(pingu.me.direction)*0.5);
+                    f.y = -(float)(speed*(float)(_abs(pingu.me.direction))*0.5);
+                    f.z = 0;
+                    pingu.apply_force(f);
                     escape _A_WALKER;
                 end
             end

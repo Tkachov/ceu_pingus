@@ -28,7 +28,7 @@ native @pure _Colliders__PinguCollider();
 class BomberAction with
     interface IAction;
     interface IPinguAction;
-do    
+do
     pingu.ceu_action = &this;
 
     function (int a) => bool change_allowed do
@@ -69,7 +69,7 @@ do
 
             // Move the Pingu
             mover.reset(pingu.me.get_pos());
-            mover.update(pingu.me.get_velocity(), _Colliders__PinguCollider(_pingu_height));
+            mover.update(_toVector3f(pingu.get_velocity()), _Colliders__PinguCollider(_pingu_height));
             pingu.me.set_pos(mover.get_pos());
         end
     with
@@ -94,7 +94,7 @@ do
             end
 
             // ...and it has hit the ground too quickly
-            if pingu.rel_getpixel(0, -1) != _GT_NOTHING and pingu.me.get_velocity().y > _deadly_velocity then
+            if pingu.rel_getpixel(0, -1) != _GT_NOTHING and pingu.get_velocity().y > _deadly_velocity then
                 escape _A_SPLASHED;
             end
         end

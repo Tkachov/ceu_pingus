@@ -63,7 +63,9 @@ do
                         x_speed = -speed;
                     end
 
-                    pingu.me.set_velocity(pingu.me.get_velocity() + _Vector3f(x_speed, 0));
+                    var Vector3f newvel = pingu.get_velocity();
+                    newvel.x = newvel.x + x_speed;
+                    pingu.set_velocity(newvel);
 
                     escape _A_FALLER;
                 end

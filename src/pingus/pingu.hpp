@@ -42,8 +42,6 @@ private:
   float pos_x;
   float pos_y;
 
-  Vector3f velocity;
-
 public:
 
   struct RequestSetActionPackage {
@@ -99,17 +97,11 @@ public:
   /// Set the pingu to the given coordinates
   void set_pos (const Vector3f& arg_pos);
 
-  Vector3f get_velocity () const { return velocity; }
-
-  void set_velocity (const Vector3f& velocity_);
-
   /** Request an action to be set to the pingu, if its a persistent
       action, it will be hold back for later execution, same with a
       timed action, normal action will be applied if the current
       action allows that. */
   bool request_set_action (ActionName::Enum action_name);
-
-  void apply_force (Vector3f);
 
   float get_z_pos () const { return 0; }
 

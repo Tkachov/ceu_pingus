@@ -40,6 +40,10 @@ interface IPingu with
     function (void) => int get_wall_action;
     function (void) => int get_previous_action;
     function (void) => int get_current_action;
+    
+    function (void) => Vector3f get_velocity;
+    function (Vector3f) => void set_velocity;
+    function (Vector3f) => void apply_force;
 end
 
 #endif

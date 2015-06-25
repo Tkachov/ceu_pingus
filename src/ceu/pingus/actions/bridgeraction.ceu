@@ -25,7 +25,7 @@ native @pure _make_name();
 class BridgerAction with
     interface IAction;
     interface IPinguAction;
-do    
+do
     pingu.ceu_action = &this;
 
     function (int a) => bool change_allowed do
@@ -142,7 +142,6 @@ do
             end
         with
             every gc in pingu.e_DRAW_CALLED do
-                _printf("bridger %f %f %f\n", -x_offset, y_offset, (float)pingu.me.direction);
                 var Vector3f p;
                 p.x = pingu.me.get_pos().x - x_offset;
                 p.y = pingu.me.get_pos().y + y_offset;
@@ -185,7 +184,6 @@ do
             end
         with
             every gc in pingu.e_DRAW_CALLED do
-                _printf("bridger %f %f %f\n", -x_offset, y_offset, (float)pingu.me.direction);
                 var Vector3f p;
                 p.x = pingu.me.get_pos().x - x_offset;
                 p.y = pingu.me.get_pos().y + y_offset;

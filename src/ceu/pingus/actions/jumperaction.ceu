@@ -54,7 +54,10 @@ do
             x_velocity = x_velocity * -1;
         end
 
-        pingu.me.set_velocity(pingu.me.get_velocity() + _Vector3f(x_velocity, y_velocity));
+        var Vector3f newvel = pingu.get_velocity();
+        newvel.x = newvel.x + x_velocity;
+        newvel.y = newvel.y + y_velocity;
+        pingu.set_velocity(newvel);
 
         // Move the pingu in the air, so that it can start 'falling'
         pingu.me.set_y(pingu.me.get_y() - 1);
