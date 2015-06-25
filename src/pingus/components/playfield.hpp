@@ -22,7 +22,6 @@
 #include "engine/display/graphic_context_state.hpp"
 #include "engine/gui/rect_component.hpp"
 
-class Pingu;
 class World;
 class Server;
 class GameSession;
@@ -64,7 +63,6 @@ public:
 
   void draw(DrawingContext& gc);
   void update(float delta);
-  Pingu* current_pingu_find(const Vector2f& pos);
 
   void on_primary_button_press (int x, int y);
   void on_secondary_button_press (int x, int y);

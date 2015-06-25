@@ -31,7 +31,7 @@ interface IPingu with
     function @rec (void) => Vector3f get_center_pos;
 
     function @rec (int x, int y) => bool is_over;
-    //function (int x1, int y1, int x2, int y2) => bool is_inside;
+    function (int x1, int y1, int x2, int y2) => bool is_inside;
     function @rec (int x, int y) => float dist;
     
     function (void) => bool has_fall_action;

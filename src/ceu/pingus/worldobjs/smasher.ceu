@@ -88,7 +88,7 @@ do
                             continue;
                         end
 
-                        if pingu:me.is_inside(smasher.pos.x + 30, smasher.pos.y + 90, smasher.pos.x + 250, smasher.pos.y + 190) then
+                        if pingu:is_inside(smasher.pos.x + 30, smasher.pos.y + 90, smasher.pos.x + 250, smasher.pos.y + 190) then
                             emit pingu:e_CHANGE_ACTION => _A_SPLASHED;
                         end
                     end

@@ -70,7 +70,7 @@ do
 
     ceu_action = null;
     var int previous_action = _A_FALLER;
-    var int current_action = _A_FALLER;    
+    var int current_action = _A_FALLER;
 
     var int fall_action;
     var bool fall_action_set = false;
@@ -119,6 +119,13 @@ do
     function @rec (int x, int y) => bool is_over do
         var Vector3f center = call/rec get_center_pos();
         return (center.x+16 > x and center.x-16 < x and center.y+16 > y and center.y-16 < y);
+    end
+
+    function (int x1, int y1, int x2, int y2) => bool is_inside do
+        _assert(x1 < x2);
+        _assert(y1 < y2);
+
+        return (me.pos_x > x1 and me.pos_x < x2 and me.pos_y > y1 and me.pos_y < y2);
     end
 
     // Returns the distance between the Pingu and a given coordinate
@@ -208,7 +215,7 @@ do
         end
     with
         every p in PINGU_REQUEST_SET_ACTION do
-            var _RSA_Package&? package = _PTR2REF(p);            
+            var _RSA_Package&? package = _PTR2REF(p);
 
             if package.pingu != &me_ then
                 continue;

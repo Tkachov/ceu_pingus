@@ -75,8 +75,6 @@ Pingu::set_pos (const Vector3f& arg_pos)
   set_y (arg_pos.y);
 }
 
-
-
 // Set the action of the pingu (bridger, blocker, bomber, etc.)
 // This function is used by external stuff, like the ButtonPanel, etc
 // When you select a function on the button panel and click on a
@@ -86,17 +84,6 @@ bool Pingu::request_set_action(ActionName::Enum action_name) {
   RequestSetActionPackage* p = &package;
   ceu_out_go(&CEUapp, CEU_IN_PINGU_REQUEST_SET_ACTION, &p);
   return package.result;
-}
-
-bool
-Pingu::is_inside (int x1, int y1, int x2, int y2)
-{
-  assert (x1 < x2);
-  assert (y1 < y2);
-
-  return (pos_x > x1 && pos_x < x2
-          &&
-          pos_y > y1 && pos_y < y2);
 }
 
 Vector3f

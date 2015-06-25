@@ -101,8 +101,6 @@ public:
       action allows that. */
   bool request_set_action (ActionName::Enum action_name);
 
-  float get_z_pos () const { return 0; }
-
   /** @return The owner_id of the owner, only used in multiplayer
       configurations, ought to be 0 in single player */
   int get_owner ();
@@ -110,8 +108,6 @@ public:
   /** @return The owner_id as a string. Only used in multiplayer
       configurations, ought to be "0" in single player */
   std::string get_owner_str ();
-
-  bool   is_inside (int x1, int y1, int x2, int y2);
 
 private:
   Pingu (const Pingu&);

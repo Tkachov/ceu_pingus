@@ -18,7 +18,6 @@
 
 #include "engine/display/display.hpp"
 #include "pingus/globals.hpp"
-#include "pingus/pingu.hpp"
 #include "pingus/pingu_holder.hpp"
 #include "pingus/screens/game_session.hpp"
 #include "pingus/server.hpp"
