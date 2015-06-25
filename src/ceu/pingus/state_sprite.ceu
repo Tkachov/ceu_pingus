@@ -20,10 +20,10 @@ native @pure _new_StateSprite(),
              _delete_StateSprite(),
              _Sprite();
 
-#define load_directions(sprite, action, suffix) sprite.load(_D_LEFT, _make_player_sprite(pingu.me.get_owner_str(), _concat(suffix, "left"))); \
+#define load_directions(sprite, suffix) sprite.load(_D_LEFT, _make_player_sprite(pingu.me.get_owner_str(), _concat(suffix, "left"))); \
                                                 sprite.load(_D_RIGHT, _make_player_sprite(pingu.me.get_owner_str(), _concat(suffix, "right")));
 
-#define load_file_directions(sprite, action, suffix) sprite.load_file(_D_LEFT, _concat2(pingu.me.get_owner_str(), _concat(suffix, "left"))); \
+#define load_file_directions(sprite, suffix) sprite.load_file(_D_LEFT, _concat2(pingu.me.get_owner_str(), _concat(suffix, "left"))); \
                                                      sprite.load_file(_D_RIGHT, _concat2(pingu.me.get_owner_str(), _concat(suffix, "right")));
 
 class StateSprite with

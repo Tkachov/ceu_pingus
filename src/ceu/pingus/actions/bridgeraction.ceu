@@ -8,27 +8,24 @@
 #include "../collision_mask.ceu"
 #include "../iaction.ceu"
 #include "../ipingu.ceu"
-#include "../pingu_action.ceu"
 #include "../state_sprite.ceu"
 #include "../worldobj.ceu"
 
 native/pre do
     ##include "pingus/gettext.h"
     ##include "util/string_util.hpp"
-    ##define make_name(b) _("Bridger") + std::string(" (" + StringUtil::to_string(b) + ")")
+    ##define make_name(b) std::string(_("Bridger") + std::string(" (" + StringUtil::to_string(b) + ")")).c_str()
 end
 
 native @pure _make_name();
 
 //I want constants =(
 #define MAX_BRICKS 15
-//const int brick_length = 16;
 
 class BridgerAction with
     interface IAction;
     interface IPinguAction;
-do
-    var _PinguAction&? bridger = _PTR2REF(pingu.set_ptr(_A_BRIDGER));
+do    
     pingu.ceu_action = &this;
 
     function (int a) => bool change_allowed do
@@ -45,13 +42,20 @@ do
         return result;
     end
 
+    var float x_offset = 6;
+    var float y_offset = 4;
     var int bricks = MAX_BRICKS;
-    bridger.name = _make_name(bricks);
+    var String name;
+    name.set(_make_name(bricks));
+
+    function (void) => _const_char_string get_name do
+        return name.get();
+    end
 
     var StateSprite walk_sprite;
     var StateSprite build_sprite;
-    load_file_directions(walk_sprite, bridger, "/bridger_walk/");
-    load_file_directions(build_sprite, bridger, "/bridger/");
+    load_file_directions(walk_sprite, "/bridger_walk/");
+    load_file_directions(build_sprite, "/bridger/");
 
     var _CollisionMask&? brick_l = _new_CollisionMask("other/brick_left");
     finalize with _delete_CollisionMask(brick_l); end;
@@ -88,7 +92,7 @@ do
 
     function (void) => void place_a_brick do
         bricks = bricks-1;
-        bridger.name = _make_name(bricks);
+        name.set(_make_name(bricks));
 
         if bricks < 4 then
             _Sound_PingusSound_play_sound("ting");
@@ -115,8 +119,8 @@ do
     end
 
     loop do
-        var float x_offset = 6;
-        var float y_offset = 4;
+        x_offset = 6;
+        y_offset = 4;
 
         if bricks == MAX_BRICKS then
             x_offset = -4;
@@ -138,13 +142,16 @@ do
             end
         with
             every gc in pingu.e_DRAW_CALLED do
+                _printf("bridger %f %f %f\n", -x_offset, y_offset, (float)pingu.me.direction);
+                var Vector3f p;
+                p.x = pingu.me.get_pos().x - x_offset;
+                p.y = pingu.me.get_pos().y + y_offset;
+                p.z = pingu.me.get_pos().z;
+
                 _gc_color_draw2(
                     gc,
                     build_sprite.get(pingu.me.direction),
-                    _Vector3f(
-                        pingu.me.get_pos().x - x_offset,
-                        pingu.me.get_pos().y + y_offset
-                    )
+                    _toVector3f(p)
                 );
             end
         with
@@ -178,13 +185,16 @@ do
             end
         with
             every gc in pingu.e_DRAW_CALLED do
+                _printf("bridger %f %f %f\n", -x_offset, y_offset, (float)pingu.me.direction);
+                var Vector3f p;
+                p.x = pingu.me.get_pos().x - x_offset;
+                p.y = pingu.me.get_pos().y + y_offset;
+                p.z = pingu.me.get_pos().z;
+
                 _gc_color_draw2(
                     gc,
                     walk_sprite.get(pingu.me.direction),
-                    _Vector3f(
-                        pingu.me.get_pos().x - x_offset,
-                        pingu.me.get_pos().y + y_offset
-                    )
+                    _toVector3f(p)
                 );
             end
         end

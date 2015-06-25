@@ -1,0 +1,47 @@
+#ifndef STRING_CEU
+#define STRING_CEU
+
+native/pre do
+    ##include <string>
+
+    //##define concat(a, b) a "" b
+    //##define concat2(a, b) std::string("pingus/player"+a+b).c_str()
+    ##define const_char_string const char*
+
+    ##define new_String() new std::string()
+    ##define delete_String(s) delete s; 
+    ##define String std::string
+
+    ##define string_set(s, v) *s = v
+    ##define string_add(s, v) *s += v
+end
+
+native @pure _new_String(),
+             _delete_String(),
+             _string_set(),
+             _string_add();
+
+class String with
+    function (_const_char_string v) => void set;
+    function (_const_char_string v) => void add;
+    function (void) => _const_char_string get;
+do
+    var _String&? ss = _PTR2REF(_new_String());
+    finalize with _delete_String(ss); end;
+
+    function (_const_char_string v) => void set do
+        _string_set(ss, v);
+    end
+
+    function (_const_char_string v) => void add do
+        _string_add(ss, v);
+    end
+
+    function (void) => _const_char_string get do
+        return _PTR2REF(ss.c_str());
+    end
+
+    await FOREVER;
+end
+
+#endif

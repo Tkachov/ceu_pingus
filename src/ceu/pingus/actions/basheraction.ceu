@@ -15,8 +15,7 @@
 class BasherAction with
     interface IAction;
     interface IPinguAction;
-do
-    var _PinguAction&? basher = _PTR2REF(pingu.set_ptr(_A_BASHER));
+do  
     pingu.ceu_action = &this;
 
     function (int a) => bool change_allowed do
@@ -33,11 +32,15 @@ do
         return result;
     end
 
+    function (void) => _const_char_string get_name do
+        return _get_screenname(_A_BASHER);
+    end
+
     var bool odd_frame = true; //-1th, I hope first block will execute not odd_frame faster
     var bool first_bash = true;
 
     var StateSprite sprite;
-    load_file_directions(sprite, basher, "/basher/");
+    load_file_directions(sprite, "/basher/");
 
     var _CollisionMask&? bash_radius = _new_CollisionMask("pingus/common/bash_radius_gfx", "pingus/common/bash_radius");
     finalize with _delete_CollisionMask(bash_radius); end;

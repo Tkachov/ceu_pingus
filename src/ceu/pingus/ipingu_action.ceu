@@ -2,11 +2,13 @@
 #define IPINGUACTION_CEU
 
 #include "../math/vector3f.ceu"
+#include "../string.ceu"
 
-interface IPinguAction with
+interface IPinguAction with    
     var bool catchable;
     function (int a) => bool change_allowed;
     function (void) => Vector3f get_center_pos;
+    function (void) => _const_char_string get_name;
 end
 
 #endif

@@ -2,7 +2,7 @@
 #define IACTION_CEU
 
 native/pre do
-    ##include "pingus/pingu_action.hpp"
+    ##include "pingus/action_name.hpp"
     ##define A_ANGEL ActionName::ANGEL
     ##define A_BASHER ActionName::BASHER
     ##define A_BLOCKER ActionName::BLOCKER
@@ -27,13 +27,14 @@ native/pre do
 
     ##define A_DEAD 1337
     ##define A_EXITED 31337
+
+    ##define get_screenname(x) ActionName::to_screenname(x).c_str()
 end
 
 #include "ipingu.ceu"
 
 interface IAction with
     var IPingu& pingu;
-    var _PinguAction* me;
 end
 
 #endif

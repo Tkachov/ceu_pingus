@@ -13,7 +13,6 @@ class FloaterAction with
     interface IAction;
     interface IPinguAction;
 do
-    var _PinguAction&? floater = _PTR2REF(pingu.set_ptr(_A_FLOATER));
     pingu.ceu_action = &this;
 
     function (int a) => bool change_allowed do
@@ -28,6 +27,10 @@ do
         result.y = pingu.me.get_pos().y - 16;
         result.z = pingu.me.get_pos().z;
         return result;
+    end
+
+    function (void) => _const_char_string get_name do
+        return _get_screenname(_A_FLOATER);
     end
 
     var _Sprite&? sprite = _new_SpriteA(_scc3("pingus/player", pingu.me.get_owner_str(), "/floater/left"));

@@ -16,8 +16,7 @@ end
 #include "ipingu_action.ceu"
 
 interface IPingu with
-    var _Pingu& me;
-    var _PinguAction* action;
+    var _Pingu& me;    
     var IPinguAction* ceu_action;
 
     event void e_UPDATE_CALLED;
@@ -34,8 +33,7 @@ interface IPingu with
     function @rec (int x, int y) => bool is_over;
     //function (int x1, int y1, int x2, int y2) => bool is_inside;
     function @rec (int x, int y) => float dist;
-
-    function (int) => _PinguAction* set_ptr;
+    
     function (void) => bool has_fall_action;
     function (void) => bool has_wall_action;
     function (void) => int get_fall_action;

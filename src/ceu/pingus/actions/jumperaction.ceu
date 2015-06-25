@@ -12,7 +12,6 @@ class JumperAction with
     interface IAction;
     interface IPinguAction;
 do
-    var _PinguAction&? jumper = _PTR2REF(pingu.set_ptr(_A_JUMPER));
     pingu.ceu_action = &this;
 
     function (int a) => bool change_allowed do
@@ -29,8 +28,12 @@ do
         return result;
     end
 
+    function (void) => _const_char_string get_name do
+        return _get_screenname(_A_JUMPER);
+    end
+
     var StateSprite sprite;
-    load_file_directions(sprite, jumper, "/jumper/");
+    load_file_directions(sprite, "/jumper/");
 
     par do
         every gc in pingu.e_DRAW_CALLED do

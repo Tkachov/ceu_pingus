@@ -43,7 +43,7 @@ do
         pingu = p;
 
         if pingu then
-            _streq(action_str, _PTR2REF(pingu:action:get_name()));
+            _streq(action_str, _PTR2REF(pingu:ceu_action:get_name()));
 
             if pingu:has_wall_action() or pingu:has_fall_action() then
                 _stradd(action_str, "[");

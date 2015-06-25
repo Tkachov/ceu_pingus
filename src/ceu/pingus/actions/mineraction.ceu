@@ -14,8 +14,7 @@
 class MinerAction with
     interface IAction;
     interface IPinguAction;
-do
-    var _PinguAction&? miner = _PTR2REF(pingu.set_ptr(_A_MINER));
+do    
     pingu.ceu_action = &this;
 
     function (int a) => bool change_allowed do
@@ -32,10 +31,14 @@ do
         return result;
     end
 
+    function (void) => _const_char_string get_name do
+        return _get_screenname(_A_MINER);
+    end
+
     var int delay_count = 0;
 
     var StateSprite sprite;
-    load_file_directions(sprite, miner, "/miner/");
+    load_file_directions(sprite, "/miner/");
 
     var _CollisionMask&? miner_radius = _new_CollisionMask("pingus/common/miner_radius_gfx", "pingus/common/miner_radius");
     finalize with _delete_CollisionMask(miner_radius); end;

@@ -1,8 +1,0 @@
-#ifndef PINGU_ACTION_CEU
-#define PINGU_ACTION_CEU
-
-native/pre do
-    ##include "pingus/pingu_action.hpp"
-end
-
-#endif

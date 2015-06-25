@@ -11,8 +11,7 @@
 class SupermanAction with
     interface IAction;
     interface IPinguAction;
-do
-    var _PinguAction&? superman = _PTR2REF(pingu.set_ptr(_A_SUPERMAN));
+do    
     pingu.ceu_action = &this;
 
     function (int a) => bool change_allowed do
@@ -29,6 +28,10 @@ do
         return result;
     end
 
+    function (void) => _const_char_string get_name do
+        return _get_screenname(_A_SUPERMAN);
+    end
+    
     var _Sprite&? sprite = _PTR2REF(_new_SpriteA(_scc3("pingus/player", pingu.me.get_owner_str(), "/superman")));
     finalize with _delete_Sprite(sprite); end;
 

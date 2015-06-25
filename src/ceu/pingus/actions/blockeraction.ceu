@@ -6,15 +6,13 @@
 #include "../../engine/display/scene_context.ceu"
 #include "../iaction.ceu"
 #include "../ipingu.ceu"
-#include "../pingu_action.ceu"
 #include "../state_sprite.ceu"
 #include "../pingu_holder_listener.ceu"
 
 class BlockerAction with
     interface IAction;
     interface IPinguAction;
-do
-    var _PinguAction&? blocker = _PTR2REF(pingu.set_ptr(_A_BLOCKER));
+do   
     pingu.ceu_action = &this;
 
     function (int a) => bool change_allowed do
@@ -31,8 +29,12 @@ do
         return result;
     end
 
+    function (void) => _const_char_string get_name do
+        return _get_screenname(_A_BLOCKER);
+    end
+
     var StateSprite sprite;
-    load_file_directions(sprite, blocker, "/blocker/");
+    load_file_directions(sprite, "/blocker/");
 
     if pingu.rel_getpixel(0, -1) == _GT_NOTHING then
         if pingu.rel_getpixel(0, -2) == _GT_GROUND then

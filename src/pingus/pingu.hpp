@@ -24,7 +24,6 @@
 #include "pingus/action_name.hpp"
 
 class ActionHolder;
-class PinguAction;
 class SceneContext;
 
 /** The class for managing one of the many penguins which are walking
@@ -33,11 +32,6 @@ class SceneContext;
 class Pingu
 {
 private:
-
-  PinguAction* ceu_action;
-
-  void replace_action(PinguAction* a);
-
   /** The uniq id of the Pingu, this is used to refer to the Pingu in
       a demo file or in a network connection */
   unsigned int id;
@@ -73,8 +67,6 @@ public:
   ~Pingu ();
 
   void die(); //notify Ceu to terminate the instance (reason: death)
-
-  PinguAction* get_ceu_action();
 
   /** Return the logical pingus position, this is the position which
       is used for collision detection to the ground (the pingus
@@ -116,8 +108,6 @@ public:
       timed action, normal action will be applied if the current
       action allows that. */
   bool request_set_action (ActionName::Enum action_name);
-
-  PinguAction* create_action2(ActionName::Enum action_);
 
   void apply_force (Vector3f);
 

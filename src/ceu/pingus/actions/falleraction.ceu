@@ -25,8 +25,7 @@ native @pure _Colliders__PinguCollider(),
 class FallerAction with
     interface IAction;
     interface IPinguAction;
-do
-    var _PinguAction& faller = _PTR2REF(pingu.set_ptr(_A_FALLER));
+do    
     pingu.ceu_action = &this;
 
     function (int a) => bool change_allowed do
@@ -43,10 +42,14 @@ do
         return result;
     end
 
+    function (void) => _const_char_string get_name do
+        return _get_screenname(_A_FALLER);
+    end
+
     var StateSprite sprite;
     var StateSprite tumbler;
-    load_file_directions(sprite, faller, "/faller/");
-    load_file_directions(tumbler, faller, "/tumbler/");
+    load_file_directions(sprite, "/faller/");
+    load_file_directions(tumbler, "/tumbler/");
 
     var _Movers_LinearMover&? mover = _new_LinearMover();
     finalize with _delete_LinearMover(mover); end;
@@ -58,7 +61,7 @@ do
     end
 
     par do
-        every gc in pingu.e_DRAW_CALLED do
+        every gc in pingu.e_DRAW_CALLED do            
             if is_tumbling() then
                 _gc_color_draw2(gc, tumbler.get(pingu.me.direction), pingu.me.get_pos());
             else

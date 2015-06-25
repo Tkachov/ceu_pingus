@@ -31,8 +31,7 @@
 #include "ceuvars.h"
 
 // Init a pingu at the given position while falling
-Pingu::Pingu (int arg_id, const Vector3f& arg_pos, int owner):
-  ceu_action(0),
+Pingu::Pingu (int arg_id, const Vector3f& arg_pos, int owner):  
   id(arg_id),
   owner_id(owner),
   pos_x(arg_pos.x),
@@ -40,22 +39,10 @@ Pingu::Pingu (int arg_id, const Vector3f& arg_pos, int owner):
   velocity(0, 0, 0),
   direction()
 {
-  direction.left();
-
-  ceu_action = create_action2(ActionName::FALLER); //so get_ceu_action() never fails
+  direction.left();  
 }
 
 Pingu::~Pingu() {}
-
-void Pingu::replace_action(PinguAction* a) {
-  PinguAction* backup_action = ceu_action;
-  ceu_action = a;
-  delete backup_action;
-}
-
-PinguAction* Pingu::get_ceu_action() {
-  return ceu_action;
-}
 
 unsigned int
 Pingu::get_id ()
@@ -153,33 +140,6 @@ Pingu::get_owner_str ()
   std::ostringstream ostr;
   ostr << owner_id;
   return ostr.str();
-}
-
-PinguAction* Pingu::create_action2(ActionName::Enum action_) {
-  switch(action_) {
-    case ActionName::ANGEL:
-    case ActionName::BASHER:
-    case ActionName::BLOCKER:
-    case ActionName::BOARDER:
-    case ActionName::BOMBER:
-    case ActionName::BRIDGER:
-    case ActionName::CLIMBER:
-    case ActionName::DIGGER:
-    case ActionName::DROWN:
-    case ActionName::EXITER:
-    case ActionName::FALLER:
-    case ActionName::FLOATER:
-    case ActionName::JUMPER:
-    case ActionName::LASERKILL:
-    case ActionName::MINER:
-    case ActionName::SLIDER:
-    case ActionName::SPLASHED:
-    case ActionName::SUPERMAN:
-    case ActionName::WAITER:
-    case ActionName::WALKER:    return new PinguAction(action_);
-
-    default: assert(!"Invalid action name provied");
-  }
 }
 
 /* EOF */

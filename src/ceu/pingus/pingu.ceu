@@ -60,19 +60,12 @@ native @pure _delete_Pingu(), _PA_get_activation_mode();
 class Pingu with
     interface IPingu;
 do
-    function (int a) => _PinguAction* set_ptr do
-        action = _PTR2REF(me.create_action2((ActionName_Enum)a));
-        me.replace_action(action); //delete in there
-        return action;
-    end
-
     var _Pingu&? me_ = _PTR2REF((_Pingu*)&this.me);
     finalize with _delete_Pingu(me_); end
 
     ceu_action = null;
     var int previous_action = _A_FALLER;
-    var int current_action = _A_FALLER;
-    set_ptr(_A_FALLER);
+    var int current_action = _A_FALLER;    
 
     var int fall_action;
     var bool fall_action_set = false;
@@ -153,10 +146,6 @@ do
         return current_action;
     end
 
-    function (void) => _PinguAction* get_action do
-        return action;
-    end
-
     function (int name) => int get_activation_mode do
         if name == _A_CLIMBER then
             return PA_WALL_TRIGGERED;
@@ -199,8 +188,7 @@ do
         end
     with
         every p in PINGU_REQUEST_SET_ACTION do
-            var _RSA_Package&? package = _PTR2REF(p);
-            var _PinguAction&? paction = _PTR2REF(get_action()); //another no-"access across `await`"-hack
+            var _RSA_Package&? package = _PTR2REF(p);            
 
             if package.pingu != &me_ then
                 continue;
@@ -216,7 +204,7 @@ do
                     package.result = true;
                     emit e_CHANGE_ACTION => package.action;
                 else
-                    _log_debug("change from action %1% not allowed", paction.get_name());
+                    _log_debug("change from action %1% not allowed", ceu_action:get_name());
                 end
             else/if mode == PA_WALL_TRIGGERED then
                 if wall_action_set and wall_action == package.action then
