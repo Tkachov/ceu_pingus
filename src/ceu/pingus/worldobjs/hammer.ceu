@@ -42,7 +42,7 @@ do
 
                 if current_frame == hammer.sprite.get_frame_count()-1 then
                     loop pingu in global:world:get_pingus():all_pingus do
-                        if pingu:me.get_action() == _A_SPLASHED then
+                        if pingu:get_current_action() == _A_SPLASHED then
                             continue;
                         end
 

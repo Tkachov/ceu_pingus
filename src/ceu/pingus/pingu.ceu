@@ -149,6 +149,10 @@ do
         return previous_action;
     end
 
+    function (void) => int get_current_action do
+        return current_action;
+    end
+
     function (void) => _PinguAction* get_action do
         return action;
     end

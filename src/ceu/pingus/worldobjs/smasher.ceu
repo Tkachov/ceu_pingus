@@ -42,7 +42,7 @@ do
             end
 
             loop pingu in global:world:get_pingus():all_pingus do
-                if pingu:me.get_action() == _A_SPLASHED or smashing then
+                if pingu:get_current_action() == _A_SPLASHED or smashing then
                     continue;
                 end
 
@@ -82,7 +82,7 @@ do
                     end
 
                     loop pingu in global:world:get_pingus():all_pingus do
-                        if pingu:me.get_action() == _A_SPLASHED then
+                        if pingu:get_current_action() == _A_SPLASHED then
                             continue;
                         end
 

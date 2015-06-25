@@ -126,12 +126,6 @@ Pingu::is_inside (int x1, int y1, int x2, int y2)
           pos_y > y1 && pos_y < y2);
 }
 
-ActionName::Enum
-Pingu::get_action ()
-{
-  return get_ceu_action()->get_type();
-}
-
 void
 Pingu::apply_force (Vector3f arg_v)
 {

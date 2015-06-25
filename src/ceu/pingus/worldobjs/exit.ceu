@@ -60,7 +60,7 @@ do
                 end
 
                 // Now, make sure the pingu isn't already exiting, gone, or dead [or is dying because of apocalypse/bomber action]
-                if pingu:me.get_action() != _A_EXITER and pingu:me.get_action() != _A_BOMBER then
+                if pingu:get_current_action() != _A_EXITER and pingu:get_current_action() != _A_BOMBER then
                     // Pingu actually exits
                     emit pingu:e_CHANGE_ACTION => _A_EXITER;
                 end

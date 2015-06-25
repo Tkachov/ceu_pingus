@@ -42,7 +42,7 @@ do
                         continue;
                     end
 
-                    if pingu:me.get_action() != _A_LASERKILL then
+                    if pingu:get_current_action() != _A_LASERKILL then
                         killing = true;
                         emit pingu:e_CHANGE_ACTION => _A_LASERKILL;
                         break;

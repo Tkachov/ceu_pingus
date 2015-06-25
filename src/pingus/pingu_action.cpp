@@ -27,7 +27,7 @@
 
 #include "ceuvars.h"
 
-PinguAction::PinguAction(Pingu* p, ActionName::Enum t): pingu(p), type(t), name(ActionName::to_screenname(t)) {}
+PinguAction::PinguAction(Pingu* p, ActionName::Enum t): pingu(p), name(ActionName::to_screenname(t)) {}
 
 std::string PinguAction::get_name() const {
   return name;

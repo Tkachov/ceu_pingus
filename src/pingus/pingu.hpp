@@ -133,9 +133,6 @@ public:
 
   bool   is_inside (int x1, int y1, int x2, int y2);
 
-  /** @return the name of the action the Pingu currently has */
-  ActionName::Enum get_action ();
-
 private:
   Pingu (const Pingu&);
   Pingu& operator= (const Pingu&);

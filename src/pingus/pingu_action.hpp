@@ -31,7 +31,6 @@ class Pingu;
 class PinguAction
 {
 private:
-  ActionName::Enum type;
   std::string name;
 
 protected:
@@ -45,9 +44,6 @@ public:
   /** The name of the action, this is used in the CaputreRectangle, so
       it can contain more than just the name */
   std::string get_name() const;
-
-  /// The type of the action
-  ActionName::Enum get_type () const { return type; }
 
 private:
   PinguAction (const PinguAction&);

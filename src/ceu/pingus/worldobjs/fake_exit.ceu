@@ -51,7 +51,7 @@ do
 
                 if pingu:me.get_x() > fake_exit.pos.x+31 and pingu:me.get_x() < fake_exit.pos.x+31+15 and
                    pingu:me.get_y() > fake_exit.pos.y+56 and pingu:me.get_y() < fake_exit.pos.y+56+56 then
-                    if pingu:me.get_action() != _A_SPLASHED then
+                    if pingu:get_current_action() != _A_SPLASHED then
                         if not fake_exit.smashing then
                             fake_exit.sprite.restart();
                             fake_exit.smashing = true;
