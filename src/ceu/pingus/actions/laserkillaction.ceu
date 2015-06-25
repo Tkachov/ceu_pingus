@@ -35,15 +35,15 @@ do
 
     par do
         every pingu.e_UPDATE_CALLED do
-            if sprite.get(laserkill.pingu:direction):is_finished() then
+            if sprite.get(pingu.me.direction):is_finished() then
                 escape _A_DEAD;
             else
-                sprite.get(laserkill.pingu:direction):update();
+                sprite.get(pingu.me.direction):update();
             end
         end
     with
         every gc in pingu.e_DRAW_CALLED do
-            _gc_color_draw2(gc, sprite.get(laserkill.pingu:direction), laserkill.pingu:get_pos() + _Vector3f(0, 2));
+            _gc_color_draw2(gc, sprite.get(pingu.me.direction), pingu.me.get_pos() + _Vector3f(0, 2));
         end
     end
 end

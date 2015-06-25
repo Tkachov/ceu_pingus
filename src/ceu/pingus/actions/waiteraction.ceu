@@ -29,7 +29,7 @@ do
         return result;
     end
 
-    var _Sprite&? sprite = _PTR2REF(_new_SpriteA(_scc3("pingus/player", waiter.pingu:get_owner_str(), "/waiter/left")));
+    var _Sprite&? sprite = _PTR2REF(_new_SpriteA(_scc3("pingus/player", pingu.me.get_owner_str(), "/waiter/left")));
     finalize with _delete_Sprite(sprite); end;
 
     par do
@@ -38,7 +38,7 @@ do
         end
     with
         every gc in pingu.e_DRAW_CALLED do
-            _gc_color_draw2(gc, sprite, waiter.pingu:get_pos());
+            _gc_color_draw2(gc, sprite, pingu.me.get_pos());
         end
     with
         //in C++ there was a countdown from 2 to 0 with step 0.025 per frame - that's 80 frames

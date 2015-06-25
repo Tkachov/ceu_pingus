@@ -22,7 +22,6 @@
 
 class ActionHolder;
 class SceneContext;
-class Pingu;
 
 /** This class provides an abstract interface for pingu actions. It is
     used to inherit classes which represent the actions. The actions
@@ -33,12 +32,8 @@ class PinguAction
 private:
   std::string name;
 
-protected:
-  /** A pointer to the pingu, which hold the action. */
-  Pingu*      pingu;
-
 public:
-  PinguAction(Pingu* p, ActionName::Enum t);
+  PinguAction(ActionName::Enum t);
   virtual ~PinguAction() {};
 
   /** The name of the action, this is used in the CaputreRectangle, so

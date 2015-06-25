@@ -35,15 +35,15 @@ do
 
     par do
         every pingu.e_UPDATE_CALLED do
-            sprite.get(exiter.pingu:direction):update();
+            sprite.get(pingu.me.direction):update();
 
-            if sprite.get(exiter.pingu:direction):is_finished() then
+            if sprite.get(pingu.me.direction):is_finished() then
                 escape _A_EXITED;
             end
         end
     with
         every gc in pingu.e_DRAW_CALLED do
-            _gc_color_draw2(gc, sprite.get(exiter.pingu:direction), exiter.pingu:get_pos());
+            _gc_color_draw2(gc, sprite.get(pingu.me.direction), pingu.me.get_pos());
         end
     with
         await pingu.e_UPDATE_CALLED;

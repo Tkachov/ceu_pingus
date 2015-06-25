@@ -40,20 +40,20 @@ do
     var int max_steps = 5;
 
     // Reset the velocity
-    walker.pingu:set_velocity(_Vector3f());
+    pingu.me.set_velocity(_Vector3f());
 
     par do
         every gc in pingu.e_DRAW_CALLED do
-            _gc_color_draw2(gc, sprite.get(walker.pingu:direction), walker.pingu:get_pos());
+            _gc_color_draw2(gc, sprite.get(pingu.me.direction), pingu.me.get_pos());
 
             if pingu.has_fall_action() and pingu.get_fall_action() == _A_FLOATER then
-                _gc_color_draw2(gc, floaterlayer.get(walker.pingu:direction), walker.pingu:get_pos());
+                _gc_color_draw2(gc, floaterlayer.get(pingu.me.direction), pingu.me.get_pos());
             end
         end
     with
         every pingu.e_UPDATE_CALLED do
-            sprite.get(walker.pingu:direction):update(0.033);
-            floaterlayer.get(walker.pingu:direction):update(0.033);
+            sprite.get(pingu.me.direction):update(0.033);
+            floaterlayer.get(pingu.me.direction):update(0.033);
 
             /* How should this code work?
 
@@ -71,7 +71,7 @@ do
              */
 
             if pingu.rel_getpixel(1, 0) == _GT_OUTOFSCREEN then
-                walker.pingu:set_x(walker.pingu:get_x() + (float)(walker.pingu:direction));
+                pingu.me.set_x(pingu.me.get_x() + (float)(pingu.me.direction));
                 continue;
             end
 
@@ -80,9 +80,9 @@ do
             end
 
             var Vector3f last_pos;
-            last_pos.x = walker.pingu:get_pos().x;
-            last_pos.y = walker.pingu:get_pos().y;
-            last_pos.z = walker.pingu:get_pos().z;
+            last_pos.x = pingu.me.get_pos().x;
+            last_pos.y = pingu.me.get_pos().y;
+            last_pos.z = pingu.me.get_pos().z;
 
             // The Pingu stands no longer on ground, the cause for this could be
             // a digger, miner or a bomber
@@ -102,7 +102,7 @@ do
                 end
 
                 if found_ground then
-                    walker.pingu:set_y(walker.pingu:get_y() - (float)level);
+                    pingu.me.set_y(pingu.me.get_y() - (float)level);
                 else
                     escape _A_FALLER;
                 end
@@ -112,9 +112,9 @@ do
             if pingu.rel_getpixel(1, 0) == _GT_BRIDGE and not pingu.head_collision_on_walk(1, 1) then  // bridge
                 // simple, stupid, but working bridge code
                 // original FIXME: We don't check if we 'drift' into a solid ground block
-                walker.pingu:set_pos(
-                    walker.pingu:get_x() + (float)walker.pingu:direction,
-                    walker.pingu:get_y() - 1.0); // pingus 'float' through bridges
+                pingu.me.set_pos(
+                    pingu.me.get_x() + (float)pingu.me.direction,
+                    pingu.me.get_y() - 1.0); // pingus 'float' through bridges
 
             else
                 // Non of the trivial moves worked, so we do up-hill or down-hill walking
@@ -149,9 +149,9 @@ do
 
                 if found_next_step then
                     // pos.y has a reversed co-system to rel_getpixel()?
-                    walker.pingu:set_pos(
-                        walker.pingu:get_x() + (float)walker.pingu:direction,
-                        walker.pingu:get_y() - (float)possible_y_step);
+                    pingu.me.set_pos(
+                        pingu.me.get_x() + (float)pingu.me.direction,
+                        pingu.me.get_y() - (float)possible_y_step);
                 else
                     if pingu.rel_getpixel(1, 0) != _GT_NOTHING then
                         // We reached a wall
@@ -161,10 +161,10 @@ do
                         end
 
                         // No persitent action found, so change the direction
-                        walker.pingu:direction.change();
+                        pingu.me.direction.change();
                     else
                         // We take the step, so that we are in the air
-                        walker.pingu:set_x(walker.pingu:get_x() + (float)walker.pingu:direction);
+                        pingu.me.set_x(pingu.me.get_x() + (float)pingu.me.direction);
 
                         // We reached a cliff
                         escape _A_FALLER;
@@ -180,8 +180,8 @@ do
 
                 //if the new position causes a head collision, we are already
                 //stuck in a wall, so lets go back to the old position
-                walker.pingu:direction.change();
-                walker.pingu:set_pos(_toVector3f(last_pos));
+                pingu.me.direction.change();
+                pingu.me.set_pos(_toVector3f(last_pos));
                 continue;
             end
         end

@@ -37,15 +37,15 @@ do
 
     par do
         every gc in pingu.e_DRAW_CALLED do
-            _gc_color_draw2(gc, sprite.get(boarder.pingu:direction), boarder.pingu:get_pos());
+            _gc_color_draw2(gc, sprite.get(pingu.me.direction), pingu.me.get_pos());
         end
     with
         every pingu.e_UPDATE_CALLED do
-            sprite.get(boarder.pingu:direction):update();
+            sprite.get(pingu.me.direction):update();
 
             //not on ground
             if not pingu.rel_getpixel(0, -1) and not pingu.rel_getpixel(0, -2) then
-                boarder.pingu:apply_force(_Vector3f(speed*(float)(boarder.pingu:direction), 0));
+                pingu.me.apply_force(_Vector3f(speed*(float)(pingu.me.direction), 0));
                 escape _A_WALKER;
             end
 
@@ -57,31 +57,31 @@ do
 
             // Incremental update so that we don't skip pixels
             var Vector3f new_pos;
-            new_pos.x = boarder.pingu:get_pos().x + (float)(boarder.pingu:direction)*speed;
-            new_pos.y = boarder.pingu:get_pos().y;
+            new_pos.x = pingu.me.get_pos().x + (float)(pingu.me.direction)*speed;
+            new_pos.y = pingu.me.get_pos().y;
 
             loop/100 do
-                if (int)new_pos.x == (int)boarder.pingu:get_pos().x then
+                if (int)new_pos.x == (int)pingu.me.get_pos().x then
                     break;
                 end
 
                 var Vector3f old_pos;
-                old_pos.x = boarder.pingu:get_pos().x;
-                old_pos.y = boarder.pingu:get_pos().y;
+                old_pos.x = pingu.me.get_pos().x;
+                old_pos.y = pingu.me.get_pos().y;
 
                 var float offset = 1;
                 if old_pos.x >= new_pos.x then
                     offset = -1;
                 end;
 
-                boarder.pingu:set_pos(_Vector3f(old_pos.x + offset, old_pos.y, old_pos.z));
+                pingu.me.set_pos(_Vector3f(old_pos.x + offset, old_pos.y, old_pos.z));
 
                 if pingu.rel_getpixel(1, 0) then
                     // Hit a wall
-                    boarder.pingu:set_pos(_toVector3f(old_pos));
-                    boarder.pingu:apply_force(_Vector3f(
-                        (float)(speed*(float)(boarder.pingu:direction)*0.5),
-                        -(float)(speed*(float)(_abs(boarder.pingu:direction))*0.5)
+                    pingu.me.set_pos(_toVector3f(old_pos));
+                    pingu.me.apply_force(_Vector3f(
+                        (float)(speed*(float)(pingu.me.direction)*0.5),
+                        -(float)(speed*(float)(_abs(pingu.me.direction))*0.5)
                     ));
                     escape _A_WALKER;
                 end

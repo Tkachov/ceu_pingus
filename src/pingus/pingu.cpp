@@ -176,7 +176,7 @@ PinguAction* Pingu::create_action2(ActionName::Enum action_) {
     case ActionName::SPLASHED:
     case ActionName::SUPERMAN:
     case ActionName::WAITER:
-    case ActionName::WALKER:    return new PinguAction(this, action_);
+    case ActionName::WALKER:    return new PinguAction(action_);
 
     default: assert(!"Invalid action name provied");
   }

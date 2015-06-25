@@ -34,7 +34,7 @@ do
 
     var int delay_count = 0;
 
-    var _Sprite&? sprite = _PTR2REF(_new_SpriteA(_scc3("pingus/player", digger.pingu:get_owner_str(), "/digger/left")));
+    var _Sprite&? sprite = _PTR2REF(_new_SpriteA(_scc3("pingus/player", pingu.me.get_owner_str(), "/digger/left")));
     finalize with _delete_Sprite(sprite); end;
 
     var _CollisionMask&? digger_radius = _new_CollisionMask("pingus/common/digger_radius_gfx", "pingus/common/digger_radius");
@@ -59,20 +59,20 @@ do
     function (bool final) => void dig do
         if not final then
             _WorldObj__get_world_remove(digger_radius,
-                                       digger.pingu:get_xi() - digger_radius.get_width() / 2,
-                                       digger.pingu:get_yi() - digger_radius.get_height() + 2);
+                                       pingu.me.get_xi() - digger_radius.get_width() / 2,
+                                       pingu.me.get_yi() - digger_radius.get_height() + 2);
         else
             _WorldObj__get_world_remove(digger_radius_final,
-                                       digger.pingu:get_xi() - digger_radius.get_width() / 2,
-                                       digger.pingu:get_yi() - digger_radius.get_height() + 2);
+                                       pingu.me.get_xi() - digger_radius.get_width() / 2,
+                                       pingu.me.get_yi() - digger_radius.get_height() + 2);
         end
 
-        digger.pingu:set_pos(digger.pingu:get_xi(), digger.pingu:get_yi()+1);
+        pingu.me.set_pos(pingu.me.get_xi(), pingu.me.get_yi()+1);
     end
 
     par do
         every gc in pingu.e_DRAW_CALLED do
-            _gc_color_draw2(gc, sprite, digger.pingu:get_pos());
+            _gc_color_draw2(gc, sprite, pingu.me.get_pos());
         end
     with
         every pingu.e_UPDATE_CALLED do

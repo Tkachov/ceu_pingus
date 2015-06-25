@@ -16,9 +16,6 @@
 
 #include "pingus/pingu_action.hpp"
 
-#include "pingus/collision_map.hpp"
-#include "pingus/pingu.hpp"
-#include "pingus/pingu_enums.hpp"
 #include "pingus/action_name.hpp"
 #include "pingus/world.hpp"
 #include "pingus/worldobj.hpp"
@@ -27,7 +24,7 @@
 
 #include "ceuvars.h"
 
-PinguAction::PinguAction(Pingu* p, ActionName::Enum t): pingu(p), name(ActionName::to_screenname(t)) {}
+PinguAction::PinguAction(ActionName::Enum t): name(ActionName::to_screenname(t)) {}
 
 std::string PinguAction::get_name() const {
   return name;

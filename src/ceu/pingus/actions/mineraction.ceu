@@ -50,29 +50,29 @@ do
         if not final then
             // regular mine action
             _WorldObj__get_world_remove(miner_radius,
-                                        miner.pingu:get_xi() - (miner_radius.get_width() / 2) + miner.pingu:direction,
-                                        miner.pingu:get_yi() - miner_radius.get_height() + 2);
+                                        pingu.me.get_xi() - (miner_radius.get_width() / 2) + pingu.me.direction,
+                                        pingu.me.get_yi() - miner_radius.get_height() + 2);
         else
             // the last mine action before switching to another action
-            if miner.pingu:direction == _D_LEFT then
+            if pingu.me.direction == _D_LEFT then
                 _WorldObj__get_world_remove(miner_radius_left,
-                                            miner.pingu:get_xi() - (miner_radius_left.get_width() / 2) + miner.pingu:direction,
-                                            miner.pingu:get_yi() - miner_radius_left.get_height() + 2);
+                                            pingu.me.get_xi() - (miner_radius_left.get_width() / 2) + pingu.me.direction,
+                                            pingu.me.get_yi() - miner_radius_left.get_height() + 2);
             else
                 _WorldObj__get_world_remove(miner_radius_right,
-                                            miner.pingu:get_xi() - (miner_radius_right.get_width() / 2) + miner.pingu:direction,
-                                            miner.pingu:get_yi() - miner_radius_right.get_height() + 2);
+                                            pingu.me.get_xi() - (miner_radius_right.get_width() / 2) + pingu.me.direction,
+                                            pingu.me.get_yi() - miner_radius_right.get_height() + 2);
             end;
         end;
     end
 
     par do
         every gc in pingu.e_DRAW_CALLED do
-            _gc_color_draw2(gc, sprite.get(miner.pingu:direction), miner.pingu:get_pos());
+            _gc_color_draw2(gc, sprite.get(pingu.me.direction), pingu.me.get_pos());
         end
     with
         every pingu.e_UPDATE_CALLED do
-            sprite.get(miner.pingu:direction):update();
+            sprite.get(pingu.me.direction):update();
         end
     with
         loop do
@@ -91,15 +91,15 @@ do
                 mine(true);
 
                 // stop pingu from walking further into the solid.
-                miner.pingu:direction.change();
+                pingu.me.direction.change();
 
                 escape _A_WALKER;
             else
                 // mine and walk forward
                 mine(false);
-                miner.pingu:set_pos(
-                    miner.pingu:get_xi() + miner.pingu:direction,
-                    miner.pingu:get_yi() + 1
+                pingu.me.set_pos(
+                    pingu.me.get_xi() + pingu.me.direction,
+                    pingu.me.get_yi() + 1
                 );
             end
 

@@ -29,21 +29,21 @@ do
         return result;
     end
 
-    var _Sprite&? sprite = _PTR2REF(_new_SpriteA(_scc3("pingus/player", superman.pingu:get_owner_str(), "/superman")));
+    var _Sprite&? sprite = _PTR2REF(_new_SpriteA(_scc3("pingus/player", pingu.me.get_owner_str(), "/superman")));
     finalize with _delete_Sprite(sprite); end;
 
     par do
         every pingu.e_UPDATE_CALLED do
             sprite.update();
-            superman.pingu:set_pos((float)(superman.pingu:get_x() + 40.0*0.025), superman.pingu:get_y() - 200.0*0.025);
+            pingu.me.set_pos((float)(pingu.me.get_x() + 40.0*0.025), pingu.me.get_y() - 200.0*0.025);
 
-            if superman.pingu:get_y() < -32 then
+            if pingu.me.get_y() < -32 then
                 escape _A_DEAD;
             end
         end
     with
         every gc in pingu.e_DRAW_CALLED do
-            _gc_color_draw2(gc, sprite, superman.pingu:get_pos());
+            _gc_color_draw2(gc, sprite, pingu.me.get_pos());
         end
     end
 end

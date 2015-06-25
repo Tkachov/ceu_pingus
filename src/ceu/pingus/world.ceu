@@ -44,7 +44,8 @@ do
 
             if me_.do_armageddon and me_.game_time%4 == 0 then
                 loop pingu in holder.all_pingus do
-                    if pingu:get_current_action() == _A_BOMBER then
+                    if pingu:get_current_action() == _A_BOMBER or
+                       pingu:get_current_action() == _A_DEAD or pingu:get_current_action() == _A_EXITED then
                         continue;
                     end
 

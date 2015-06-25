@@ -34,27 +34,27 @@ do
 
     par do
         every gc in pingu.e_DRAW_CALLED do
-            _gc_color_draw2(gc, sprite.get(jumper.pingu:direction), jumper.pingu:get_pos());
+            _gc_color_draw2(gc, sprite.get(pingu.me.direction), pingu.me.get_pos());
         end
     with
         await pingu.e_UPDATE_CALLED;
 
         // if climber, do a wall-jump, else just jump forward
         if pingu.get_previous_action() == _A_CLIMBER then
-            jumper.pingu:direction.change();
+            pingu.me.direction.change();
         end
 
         var float y_velocity = -4.58;
         var float x_velocity = y_velocity; //left
 
-        if jumper.pingu:direction.is_right() then
+        if pingu.me.direction.is_right() then
             x_velocity = x_velocity * -1;
         end
 
-        jumper.pingu:set_velocity(jumper.pingu:get_velocity() + _Vector3f(x_velocity, y_velocity));
+        pingu.me.set_velocity(pingu.me.get_velocity() + _Vector3f(x_velocity, y_velocity));
 
         // Move the pingu in the air, so that it can start 'falling'
-        jumper.pingu:set_y(jumper.pingu:get_y() - 1);
+        pingu.me.set_y(pingu.me.get_y() - 1);
 
         escape _A_FALLER;
     end

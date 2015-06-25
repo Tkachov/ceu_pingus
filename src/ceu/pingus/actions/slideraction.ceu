@@ -37,18 +37,18 @@ do
 
     par do
         every gc in pingu.e_DRAW_CALLED do
-            _gc_color_draw2(gc, sprite.get(slider.pingu:direction), slider.pingu:get_pos() + _Vector3f(0, -2));
+            _gc_color_draw2(gc, sprite.get(pingu.me.direction), pingu.me.get_pos() + _Vector3f(0, -2));
         end
     with
         every pingu.e_UPDATE_CALLED do
-            sprite.get(slider.pingu:direction):update();
+            sprite.get(pingu.me.direction):update();
 
             loop/100 i in speed do
                 if pingu.rel_getpixel(1, 0) != _GT_NOTHING then
                     break;
                 end
 
-                slider.pingu:set_x(slider.pingu:get_x() + (float)slider.pingu:direction);
+                pingu.me.set_x(pingu.me.get_x() + (float)pingu.me.direction);
 
                 if pingu.rel_getpixel(0, -1) == _GT_NOTHING then
                     if speed > 5 then
@@ -56,11 +56,11 @@ do
                     end
 
                     var float x_speed = speed;
-                    if not slider.pingu:direction.is_right() then
+                    if not pingu.me.direction.is_right() then
                         x_speed = -speed;
                     end
 
-                    slider.pingu:set_velocity(slider.pingu:get_velocity() + _Vector3f(x_speed, 0));
+                    pingu.me.set_velocity(pingu.me.get_velocity() + _Vector3f(x_speed, 0));
 
                     escape _A_FALLER;
                 end

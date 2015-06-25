@@ -23,7 +23,7 @@ do
 
     function (void) => Vector3f get_center_pos do
         var Vector3f result;
-        if climber.pingu:direction.is_left() then
+        if pingu.me.direction.is_left() then
             result.x = pingu.me.get_pos().x + 16;
         else
             result.x = pingu.me.get_pos().x - 16;
@@ -38,34 +38,34 @@ do
 
     par do
         every gc in pingu.e_DRAW_CALLED do
-            _gc_color_draw2(gc, sprite.get(climber.pingu:direction), climber.pingu:get_pos());
+            _gc_color_draw2(gc, sprite.get(pingu.me.direction), pingu.me.get_pos());
         end
     with
         every pingu.e_UPDATE_CALLED do
-            sprite.get(climber.pingu:direction):update();
+            sprite.get(pingu.me.direction):update();
 
             //there's something above
             if pingu.rel_getpixel(0, 1) != _GT_NOTHING and pingu.rel_getpixel(0, 1) != _GT_BRIDGE then
-                climber.pingu:direction.change();
+                pingu.me.direction.change();
                 escape _A_WALKER;
             end
 
             //nothing above and there is still ground to walk on
             if pingu.rel_getpixel(1, 1) != _GT_NOTHING then
-                climber.pingu:set_pos(climber.pingu:get_x(), climber.pingu:get_y() - 1);
+                pingu.me.set_pos(pingu.me.get_x(), pingu.me.get_y() - 1);
                 continue;
             end
 
             // If Pingu able to get to new position without head collision
-            if not pingu.head_collision_on_walk(climber.pingu:direction, 1) then
+            if not pingu.head_collision_on_walk(pingu.me.direction, 1) then
                 // Get ready to walk
-                climber.pingu:set_pos(
-                    climber.pingu:get_x() + (float)climber.pingu:direction,
-                    climber.pingu:get_y() - 1.0
+                pingu.me.set_pos(
+                    pingu.me.get_x() + (float)pingu.me.direction,
+                    pingu.me.get_y() - 1.0
                 );
             else
                 // Get ready to fall
-                climber.pingu:direction.change();
+                pingu.me.direction.change();
             end
 
             // Finish climbing.

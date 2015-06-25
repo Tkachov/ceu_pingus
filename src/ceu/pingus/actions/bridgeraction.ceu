@@ -94,23 +94,23 @@ do
             _Sound_PingusSound_play_sound("ting");
         end
 
-        if bridger.pingu:direction.is_right() then
+        if pingu.me.direction.is_right() then
             _WorldObj__get_world_put(brick_r,
-                                     (int)(bridger.pingu:get_pos().x + 10.0 - (float)brick_r.get_width()),
-                                     (int)bridger.pingu:get_pos().y,
+                                     (int)(pingu.me.get_pos().x + 10.0 - (float)brick_r.get_width()),
+                                     (int)pingu.me.get_pos().y,
                                      _GT_BRIDGE);
         else
             _WorldObj__get_world_put(brick_l,
-                                     (int)(bridger.pingu:get_pos().x - 10.0),
-                                     (int)bridger.pingu:get_pos().y,
+                                     (int)(pingu.me.get_pos().x - 10.0),
+                                     (int)pingu.me.get_pos().y,
                                      _GT_BRIDGE);
         end
     end
 
     function (void) => void walk_one_step_up do
-        bridger.pingu:set_pos(
-            bridger.pingu:get_pos().x + 4.0*(float)(bridger.pingu:direction),
-            bridger.pingu:get_pos().y - 2
+        pingu.me.set_pos(
+            pingu.me.get_pos().x + 4.0*(float)(pingu.me.direction),
+            pingu.me.get_pos().y - 2
         );
     end
 
@@ -129,48 +129,48 @@ do
             y_offset = 2;
         end
 
-        x_offset = x_offset * (float)bridger.pingu:direction;
+        x_offset = x_offset * (float)pingu.me.direction;
 
         //building step
         par/or do
             every pingu.e_UPDATE_CALLED do
-                build_sprite.get(bridger.pingu:direction):update();
+                build_sprite.get(pingu.me.direction):update();
             end
         with
             every gc in pingu.e_DRAW_CALLED do
                 _gc_color_draw2(
                     gc,
-                    build_sprite.get(bridger.pingu:direction),
+                    build_sprite.get(pingu.me.direction),
                     _Vector3f(
-                        bridger.pingu:get_pos().x - x_offset,
-                        bridger.pingu:get_pos().y + y_offset
+                        pingu.me.get_pos().x - x_offset,
+                        pingu.me.get_pos().y + y_offset
                     )
                 );
             end
         with
-            await pingu.e_UPDATE_CALLED until (build_sprite.get(bridger.pingu:direction):get_current_frame () >= 7);
+            await pingu.e_UPDATE_CALLED until (build_sprite.get(pingu.me.direction):get_current_frame () >= 7);
 
             if bricks > 0 then
                 if call/rec brick_placement_allowed() then
                     place_a_brick();
                 else
-                    bridger.pingu:direction.change();
+                    pingu.me.direction.change();
                     escape _A_WALKER;
                 end
             else // Out of bricks
                 escape _A_WAITER;
             end
 
-            PRE_CONDITION_AWAIT(pingu.e_UPDATE_CALLED, build_sprite.get(bridger.pingu:direction):is_finished());
+            PRE_CONDITION_AWAIT(pingu.e_UPDATE_CALLED, build_sprite.get(pingu.me.direction):is_finished());
 
-            build_sprite.get(bridger.pingu:direction):restart();
+            build_sprite.get(pingu.me.direction):restart();
         end
 
         //walking step
         par/or do
             every pingu.e_UPDATE_CALLED do
                 //original FIXME: Dangerous! might not be fixed timing
-                if walk_sprite.get(bridger.pingu:direction):is_finished() then
+                if walk_sprite.get(pingu.me.direction):is_finished() then
                     break;
                 end
 
@@ -180,20 +180,20 @@ do
             every gc in pingu.e_DRAW_CALLED do
                 _gc_color_draw2(
                     gc,
-                    walk_sprite.get(bridger.pingu:direction),
+                    walk_sprite.get(pingu.me.direction),
                     _Vector3f(
-                        bridger.pingu:get_pos().x - x_offset,
-                        bridger.pingu:get_pos().y + y_offset
+                        pingu.me.get_pos().x - x_offset,
+                        pingu.me.get_pos().y + y_offset
                     )
                 );
             end
         end
 
         if call/rec way_is_free() then
-            walk_sprite.get(bridger.pingu:direction):restart();
+            walk_sprite.get(pingu.me.direction):restart();
             walk_one_step_up();
         else // We reached a wall...
-            bridger.pingu:direction.change();
+            pingu.me.direction.change();
             escape _A_WALKER;
         end
     end

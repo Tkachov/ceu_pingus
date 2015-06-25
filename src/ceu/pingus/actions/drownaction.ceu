@@ -34,13 +34,13 @@ do
 
     par do
         every gc in pingu.e_DRAW_CALLED do
-            _gc_color_draw2(gc, sprite.get(drown.pingu:direction), drown.pingu:get_pos());
+            _gc_color_draw2(gc, sprite.get(pingu.me.direction), pingu.me.get_pos());
         end
     with
         every pingu.e_UPDATE_CALLED do
-            sprite.get(drown.pingu:direction):update();
+            sprite.get(pingu.me.direction):update();
 
-            if sprite.get(drown.pingu:direction):is_finished() then
+            if sprite.get(pingu.me.direction):is_finished() then
                 escape _A_DEAD;
             end
         end
