@@ -23,6 +23,8 @@
 #include "pingus/smallmap_image.hpp"
 #include "pingus/world.hpp"
 
+#include "ceuvars.h"
+
 SmallMap::SmallMap(Server* server_, Playfield* playfield_, const Rect& rect_) :
   RectComponent(rect_), 
   server(server_),
@@ -37,10 +39,14 @@ SmallMap::SmallMap(Server* server_, Playfield* playfield_, const Rect& rect_) :
   image = std::unique_ptr<SmallMapImage>(new SmallMapImage(server, rect.get_width(), rect.get_height()));
 
   scroll_mode = false;
+
+  SmallMap* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_NEW_SMALLMAP, &self);
 }
 
-SmallMap::~SmallMap()
-{
+SmallMap::~SmallMap() {
+  SmallMap* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_DELETE_SMALLMAP, &self);
 }
 
 void
@@ -84,17 +90,8 @@ SmallMap::draw(DrawingContext& gc)
 
   server->get_world()->draw_smallmap(this);
 
-  // Draw Pingus
-  PinguHolder* pingus = world->get_pingus();
-  for(PinguIter i = pingus->begin(); i != pingus->end(); ++i)
-  {
-    int x = static_cast<int>(static_cast<float>(rect.left) + ((*i)->get_x() * static_cast<float>(rect.get_width()) 
-                                                              / static_cast<float>(world->get_width())));
-    int y = static_cast<int>(static_cast<float>(rect.top)  + ((*i)->get_y() * static_cast<float>(rect.get_height()) 
-                                                              / static_cast<float>(world->get_height())));
-
-    gc.draw_line(Vector2i(x, y), Vector2i(x, y-2), Color(255, 255, 0));
-  }
+  SmallMap* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_SMALLMAP_DRAW, &self);
 
   gc_ptr = 0;
 }

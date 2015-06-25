@@ -1,0 +1,47 @@
+#ifndef SMALLMAP_CEU
+#define SMALLMAP_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../iworld.ceu"
+#include "../ipingu_holder.ceu"
+#include "../pingu_holder_listener.ceu"
+
+native/pre do
+    ##include "pingus/components/smallmap.hpp"
+end
+
+input _SmallMap* NEW_SMALLMAP;
+input _SmallMap* DELETE_SMALLMAP;
+input _SmallMap* SMALLMAP_DRAW;
+
+class SmallMap with
+    var _SmallMap* me;
+do
+    var _SmallMap&? small_map = _PTR2REF(me);
+
+    par/or do
+        every sm in SMALLMAP_DRAW do
+            var _World&? world;
+            finalize
+                world = small_map.server:get_world();
+            with end;
+
+            if sm != &small_map then
+                continue;
+            end
+
+            // Draw Pingus            
+            loop pingu in global:world:get_pingus():all_pingus do
+                var int x = (float)small_map.rect.left + pingu:me.get_x()*(float)small_map.rect.get_width()/(float)world.get_width();
+                var int y = (float)small_map.rect.top + pingu:me.get_y()*(float)small_map.rect.get_height()/(float)world.get_height();
+
+                _gc_draw_line(small_map.gc_ptr, _Vector2i(x, y), _Vector2i(x, y-2), _Color(255, 255, 0));
+            end
+        end
+    with
+        var _SmallMap* e = await DELETE_SMALLMAP until (e == &small_map);
+    end
+end
+
+#endif

@@ -6,10 +6,12 @@ native/pre do
     ##define gc_color_draw(gc, s, p) gc->color().draw(s, p)
     ##define gc_color_draw2(gc, s, p) gc->color().draw(*(Sprite*)s, p)
     ##define gc_color_print_center(gc, f, p, t, v) gc->color().print_center(f, p, *(std::string*)t, v);
+    ##define gc_draw_line(gc, a, b, c) gc->draw_line(a, b, c);
 end
 
 native @pure _gc_color_draw(),
 			 _gc_color_draw2(),
-			 _gc_color_print_center();
+			 _gc_color_print_center(),
+			 _gc_draw_line();
 
 #endif
