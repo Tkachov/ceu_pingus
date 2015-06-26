@@ -51,7 +51,7 @@ do
                 loop pingu in global:world:get_pingus():all_pingus do
                     if pingu:is_inside((int)(guillotine.pos.x + 38), (int)(guillotine.pos.y + 90), (int)(guillotine.pos.x + 42), (int)(guillotine.pos.y + 98)) then
                         guillotine.killing = true;
-                        guillotine.direction = _PTR2REF(pingu:me.direction);
+                        guillotine.direction = _PTR2REF(pingu:direction);
                         emit pingu:e_CHANGE_ACTION => _A_DEAD;
                         guillotine.sprite_kill_left.restart();
                         guillotine.sprite_kill_right.restart();

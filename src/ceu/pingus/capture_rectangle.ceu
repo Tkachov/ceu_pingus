@@ -61,15 +61,13 @@ do
 
             if _devmode then
                 _stradd(action_str, " Id: ");
-                _stradd(action_str, _strutil_to_string(pingu:me.get_id()));
+                _stradd(action_str, _strutil_to_string(pingu:get_id()));
             end
         end
     end
 
     function @rec (_SceneContext* gc) => void f_draw do
         if pingu then
-            var _Pingu&? p = _PTR2REF(&pingu:me);
-
             if pingu:ceu_action:catchable then
                 // Draw the capture rectangle
                 if session and pingu:ceu_action:change_allowed(session:get_action_name()) then
@@ -79,7 +77,7 @@ do
                 end
 
                 // Paint the direction arrow
-                if p.direction.is_left() then
+                if pingu:direction.is_left() then
                     _gc_color_draw2(gc, arrow_left, _toVector3f(call/rec pingu:get_center_pos()) + _Vector3f(0, 2, 1000));
                 else
                     _gc_color_draw2(gc, arrow_right, _toVector3f(call/rec pingu:get_center_pos()) + _Vector3f(0, 2, 1000));

@@ -20,7 +20,7 @@
 #include <time.h>
 
 #include "pingus/goal_manager.hpp"
-#include "pingus/pingu.hpp"
+
 #include "pingus/world.hpp"
 #include "util/log.hpp"
 #include "util/sexpr_file_writer.hpp"

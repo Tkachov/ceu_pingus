@@ -40,16 +40,16 @@ do
 
     par do
         every gc in pingu.e_DRAW_CALLED do
-            _gc_color_draw2(gc, sprite.get(pingu.me.direction), pingu.get_pos());
+            _gc_color_draw2(gc, sprite.get(pingu.direction), pingu.get_pos());
         end
     with
         every pingu.e_UPDATE_CALLED do
-            sprite.get(pingu.me.direction):update();
+            sprite.get(pingu.direction):update();
 
             //not on ground
             if not pingu.rel_getpixel(0, -1) and not pingu.rel_getpixel(0, -2) then
                 var Vector3f f;
-                f.x = speed*(float)(pingu.me.direction);
+                f.x = speed*(float)(pingu.direction);
                 f.y = 0;
                 f.z = 0;
                 pingu.apply_force(f);
@@ -64,7 +64,7 @@ do
 
             // Incremental update so that we don't skip pixels
             var Vector3f new_pos;
-            new_pos.x = pingu.get_pos().x + (float)(pingu.me.direction)*speed;
+            new_pos.x = pingu.get_pos().x + (float)(pingu.direction)*speed;
             new_pos.y = pingu.get_pos().y;
 
             loop/100 do
@@ -88,8 +88,8 @@ do
                     pingu.set_pos(_toVector3f(old_pos));
 
                     var Vector3f f;
-                    f.x = (float)(speed*(float)(pingu.me.direction)*0.5);
-                    f.y = -(float)(speed*(float)(_abs(pingu.me.direction))*0.5);
+                    f.x = (float)(speed*(float)(pingu.direction)*0.5);
+                    f.y = -(float)(speed*(float)(_abs((int)pingu.direction))*0.5);
                     f.z = 0;
                     pingu.apply_force(f);
                     escape _A_WALKER;

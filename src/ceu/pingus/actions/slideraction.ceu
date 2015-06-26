@@ -40,18 +40,18 @@ do
 
     par do
         every gc in pingu.e_DRAW_CALLED do
-            _gc_color_draw2(gc, sprite.get(pingu.me.direction), pingu.get_pos() + _Vector3f(0, -2));
+            _gc_color_draw2(gc, sprite.get(pingu.direction), pingu.get_pos() + _Vector3f(0, -2));
         end
     with
         every pingu.e_UPDATE_CALLED do
-            sprite.get(pingu.me.direction):update();
+            sprite.get(pingu.direction):update();
 
             loop/100 i in speed do
                 if pingu.rel_getpixel(1, 0) != _GT_NOTHING then
                     break;
                 end
 
-                pingu.set_x(pingu.get_x() + (float)pingu.me.direction);
+                pingu.set_x(pingu.get_x() + (float)pingu.direction);
 
                 if pingu.rel_getpixel(0, -1) == _GT_NOTHING then
                     if speed > 5 then
@@ -59,7 +59,7 @@ do
                     end
 
                     var float x_speed = speed;
-                    if not pingu.me.direction.is_right() then
+                    if not pingu.direction.is_right() then
                         x_speed = -speed;
                     end
 

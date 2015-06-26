@@ -25,8 +25,6 @@ class PingusLevel;
 class Vector3f;
 class Pingu;
 
-typedef std::list<Pingu*>::iterator PinguIter;
-
 /** This class holds all the penguins in the world */
 class PinguHolder : public WorldObj
 {
@@ -40,21 +38,9 @@ private:
   int exited;
   int released;
 
-  /** A list holding all Pingus, the PinguHolder itself has only the
-      active (not dead) ones */
-  std::list<Pingu*> pingus, deads;
-
 public:
   PinguHolder(const PingusLevel&);
   ~PinguHolder();
-
-  struct GetPinguPackage {
-    PinguHolder* holder;    
-    int id;
-    Pingu* result;
-
-    GetPinguPackage(PinguHolder* h, int i): holder(h), id(i), result(0) {};
-  };
 
   /*@{
     @name overloaded stuff for WorldObj
@@ -64,8 +50,6 @@ public:
   /** Update all Pingus (this calls Pingu::update() which then calls
       PinguAction::update()) */
   void update();
-
-  void erase(Pingu*);
 
   /** The z-pos at which the pingus gets draw.
       @return 50 */
@@ -94,27 +78,8 @@ public:
       this level */
   int get_number_of_allowed();
 
-  void push_pingu_back(Pingu*);
-
-  /** Get a pingu by id, references to dead or exited Pingus are not
-      returned, but 0 instead
-
-      @return the pingu with the id, or 0 if none found or pingu is
-      dead or exited */
-  Pingu* get_pingu(unsigned int id);
-
   /** @return the id of the last pingu + 1 */
   unsigned int get_end_id();
-
-  // FIXME: Dirty cruft, needs cleanup
-  std::list<Pingu*>::iterator  begin () {
-    for(PinguIter i = deads.begin(); i != deads.end(); ++i)
-      pingus.remove(*i);
-    deads.clear();
-    return pingus.begin();
-  }
-  std::list<Pingu*>::iterator  end ()   { return pingus.end (); }
-  std::list<Pingu*>::size_type size ()  { return pingus.size (); }
 
 private:
   PinguHolder (const PinguHolder&);

@@ -17,8 +17,8 @@ end
 #include "pingus/world.ceu"
 #include "proxies/proxyeventlist.ceu"
 
-event _Pingu* e_PINGU_DIED;
-event _Pingu* e_PINGU_EXITED;
+event void e_PINGU_DIED;
+event void e_PINGU_EXITED;
 
 input _MenuButton* NEW_MENUBUTTON;
 input _ArmageddonButton* NEW_ARMAGEDDONBUTTON;

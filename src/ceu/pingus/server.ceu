@@ -30,7 +30,7 @@ do
         server.record(
             _ServerEvent__make_pingu_action_event(
                 server.get_time(),
-                pingu:me.get_id(),
+                pingu:get_id(),
                 pingu:get_pos(),
                 _to_AN(action)
             )

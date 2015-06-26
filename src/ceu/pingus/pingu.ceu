@@ -27,10 +27,8 @@
 #include "ipingu.ceu"
 #include "pingu_holder_listener.ceu"
 
-native/pre do
-    ##include "pingus/pingu.hpp"
-    ##define A_Enum(x) (ActionName::Enum)(x)
-    ##define delete_Pingu(p) delete p    
+native/pre do    
+    ##define A_Enum(x) (ActionName::Enum)(x)    
     ##define PA_get_activation_mode(x) PinguAction::get_activation_mode(x)
 
     ##include "pingus/collision_map.hpp"
@@ -39,13 +37,15 @@ native/pre do
     ##define Math__clamp Math::clamp
 
     #define StringUtil__to_string StringUtil::to_string
+    ##define delete_Direction(s) delete s;
 end
 
 input void PINGU_UPDATE_ALL;
 input _SceneContext* PINGU_DRAW_WALKER;
 input _SceneContext* PINGU_DRAW_OTHERS;
 
-native @pure _delete_Pingu(), _PA_get_activation_mode(), _StringUtil__to_string();
+native @pure _delete_Pingu(), _PA_get_activation_mode(), _StringUtil__to_string(),
+             _delete_Direction();
 
 #define DO_ACTION(n, c) \
     else/if current_action == n then \
@@ -63,9 +63,10 @@ class Pingu with
     var float pos_x;
     var float pos_y;
     var int owner_id;
+    var uint id;
 do
-    var _Pingu&? me_ = _PTR2REF((_Pingu*)&this.me);
-    finalize with _delete_Pingu(me_); end
+    finalize with _delete_Direction(&direction); end;
+    //direction.left();
 
     velocity.x = 0;
     velocity.y = 0;
@@ -88,6 +89,10 @@ do
 
     function (void) => _String get_owner_str do
         return _StringUtil__to_string(owner_id);
+    end
+
+    function (void) => uint get_id do
+        return id;
     end
 
     function (void) => float get_x do
@@ -122,7 +127,7 @@ do
 
     function (int x, int y) => int rel_getpixel do
         return _WorldObj__get_world():get_colmap():getpixel(
-            get_x() + (float)(x * me.direction),
+            get_x() + (float)(x * direction),
             get_y() - (float)y
         );
     end
@@ -244,8 +249,7 @@ do
                 _log_debug("Pingu: Already have action");
             else/if ceu_action:change_allowed(_PTR2REF(req_action)) then
                 _log_debug("setting instant action");
-                result = true;
-                //me.pass_action(req_action);//emit e_CHANGE_ACTION => req_action;
+                result = true;                
                 instant_action = req_action;
                 instant_action_set = true;
             else
@@ -336,10 +340,10 @@ do
                     DO_ACTION(_A_WAITER, WaiterAction)
                     DO_ACTION(_A_WALKER, WalkerAction)
                 else/if current_action == _A_DEAD then
-                    emit global:e_PINGU_DIED => &me;
+                    emit global:e_PINGU_DIED;
                     escape 1;
                 else/if current_action == _A_EXITED then
-                    emit global:e_PINGU_EXITED => &me;
+                    emit global:e_PINGU_EXITED;
                     escape 2;
                 else
                     await FOREVER;

@@ -47,8 +47,8 @@ do
                     continue;
                 end
 
-                if not (pingu:me.direction.is_left() and pingu:get_x() > smasher.pos.x+65 and pingu:get_x() < smasher.pos.x+85) and
-                   not (pingu:me.direction.is_right() and pingu:get_x() > smasher.pos.x+190 and pingu:get_x() < smasher.pos.x+210) then
+                if not (pingu:direction.is_left() and pingu:get_x() > smasher.pos.x+65 and pingu:get_x() < smasher.pos.x+85) and
+                   not (pingu:direction.is_right() and pingu:get_x() > smasher.pos.x+190 and pingu:get_x() < smasher.pos.x+210) then
                     continue;
                 end
 

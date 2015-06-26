@@ -2,8 +2,10 @@
 #define IPINGU_CEU
 
 native/pre do
-    ##include "pingus/pingu.hpp"
-    ##include "pingus/groundtype.hpp"
+    //##include "math/vector3f.hpp"
+    //##include "pingus/action_name.hpp"    
+    ##include "pingus/direction.hpp"
+    ##include "pingus/groundtype.hpp"    
     ##define GT_OUTOFSCREEN Groundtype::GP_OUTOFSCREEN
     ##define GT_NOTHING Groundtype::GP_NOTHING
     ##define GT_WATER Groundtype::GP_WATER
@@ -16,8 +18,8 @@ end
 #include "ipingu_action.ceu"
 #include "../string.ceu"
 
-interface IPingu with
-    var _Pingu& me;    
+interface IPingu with    
+    var _Direction& direction;
     var IPinguAction* ceu_action;
 
     event void e_UPDATE_CALLED;
@@ -61,6 +63,7 @@ interface IPingu with
 
     function (void) => int get_owner;
     function (void) => _String get_owner_str;
+    function (void) => uint get_id;
 end
 
 #endif

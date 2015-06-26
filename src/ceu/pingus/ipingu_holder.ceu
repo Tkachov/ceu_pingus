@@ -23,7 +23,7 @@ interface IPinguHolder with
     pool IPingu[] all_pingus;
     event _PHPackage* e_MAKE_PINGU;
 
-    function (int id) => IPingu* get_pingu;
+    function @rec (int id) => IPingu* get_pingu;
 end
 
 #endif

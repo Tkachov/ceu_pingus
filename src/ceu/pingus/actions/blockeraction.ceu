@@ -46,7 +46,7 @@ do
 
     par do
         every gc in pingu.e_DRAW_CALLED do
-            _gc_color_draw2(gc, sprite.get(pingu.me.direction), pingu.get_pos());
+            _gc_color_draw2(gc, sprite.get(pingu.direction), pingu.get_pos());
         end
     with
         every pingu.e_UPDATE_CALLED do
@@ -65,9 +65,9 @@ do
                    catched:get_y() > pingu.get_y()-32 and
                    catched:get_y() < pingu.get_y()+5 then
                     if catched:get_x() > pingu.get_x() then
-                        catched:me.direction.right();
+                        catched:direction.right();
                     else
-                        catched:me.direction.left();
+                        catched:direction.left();
                     end
                 end
             end

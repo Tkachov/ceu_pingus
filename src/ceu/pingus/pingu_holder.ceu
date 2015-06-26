@@ -9,14 +9,12 @@
 
 native/pre do
     ##include "pingus/pingu_holder.hpp"
-    ##define GetPackage PinguHolder::GetPinguPackage
-    ##define new_Pingu(a) new Pingu(a)
+    ##define new_Direction() new Direction()
 end
 
-input _GetPackage* GET_PINGU;
 input _PinguHolder* DELETE_PINGU_HOLDER;
 
-native @pure _new_Pingu();
+native @pure _new_Direction();
 
 class PinguHolder with
     interface IPinguHolder;
@@ -27,12 +25,12 @@ do
     var int pingus_exited = 0;
     var int pingus_dead = 0;
 
-    function (int id) => IPingu* get_pingu do
+    function @rec (int id) => IPingu* get_pingu do
         var IPingu* result = null;
 
         if id < pingus_emitted then
             loop pingu in all_pingus do
-                if pingu:me.id == id then
+                if pingu:get_id() == id then
                     result = pingu;
                 end
             end
@@ -45,55 +43,37 @@ do
         every package in e_MAKE_PINGU do
             if me_.number_of_allowed > pingus_emitted then
                 // We use all_pingus.size() as pingu_id, so that id == array index
-                var _Pingu* p = null;
-                spawn Pingu in all_pingus with
-                    this.me = _new_Pingu(pingus_emitted);
-                    p = &this.me;
+                spawn Pingu in all_pingus with                
                     this.pos_x = package:entrance:pos.x;
                     this.pos_y = package:entrance:pos.y;
                     this.owner_id = package:entrance:owner_id;
-                end;
+                    this.id = pingus_emitted;
 
-                if package:left then
-                    p:direction.left();
-                else
-                    p:direction.right();
-                end
+                    this.direction = _PTR2REF(_new_Direction());    
+
+                    if package:left then
+                        this.direction.left();
+                    else
+                        this.direction.right();
+                    end
+                end;
 
                 // FIXME: Find the "oing" sound
                 //world->play_sound("oing", pos);
 
                 pingus_emitted = pingus_emitted + 1;
-                me_.released = pingus_emitted;
-                me_.push_pingu_back(_PTR2REF(p));
+                me_.released = pingus_emitted;                
             end
         end
     with
-        every p in global:e_PINGU_DIED do
+        every global:e_PINGU_DIED do
             pingus_dead = pingus_dead + 1;
-            me_.dead = pingus_dead;
-            me_.erase(_PTR2REF(p));
+            me_.dead = pingus_dead;            
         end
     with
-        every p in global:e_PINGU_EXITED do
+        every global:e_PINGU_EXITED do
             pingus_exited = pingus_exited + 1;
             me_.exited = pingus_exited;
-            me_.erase(_PTR2REF(p));
-        end
-    with
-        every package in GET_PINGU do
-            if package:holder != &me_ then
-                continue;
-            end
-
-            package:result = 0;
-            if package:id < pingus_emitted then
-                loop pingu in all_pingus do
-                    if pingu:me.id == package:id then
-                        package:result = _PTR2REF(&pingu:me);
-                    end
-                end
-            end
         end
     end
 end

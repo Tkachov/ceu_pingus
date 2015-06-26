@@ -1,15 +1,11 @@
 #ifndef PINGU_HOLDER_LISTENER_CEU
 #define PINGU_HOLDER_LISTENER_CEU
 
-native/pre do
-    ##include "pingus/pingu.hpp"
-end
-
 #include "iworld.ceu"
 
 interface Global with
-    event _Pingu* e_PINGU_DIED;
-    event _Pingu* e_PINGU_EXITED;
+    event void e_PINGU_DIED;
+    event void e_PINGU_EXITED;
     var IWorld* world;
 end
 

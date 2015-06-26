@@ -51,16 +51,16 @@ do
 
     par do
         every gc in pingu.e_DRAW_CALLED do
-            _gc_color_draw2(gc, sprite.get(pingu.me.direction), pingu.get_pos());
+            _gc_color_draw2(gc, sprite.get(pingu.direction), pingu.get_pos());
 
             if pingu.has_fall_action() and pingu.get_fall_action() == _A_FLOATER then
-                _gc_color_draw2(gc, floaterlayer.get(pingu.me.direction), pingu.get_pos());
+                _gc_color_draw2(gc, floaterlayer.get(pingu.direction), pingu.get_pos());
             end
         end
     with
         every pingu.e_UPDATE_CALLED do
-            sprite.get(pingu.me.direction):update(0.033);
-            floaterlayer.get(pingu.me.direction):update(0.033);
+            sprite.get(pingu.direction):update(0.033);
+            floaterlayer.get(pingu.direction):update(0.033);
 
             /* How should this code work?
 
@@ -78,7 +78,7 @@ do
              */
 
             if pingu.rel_getpixel(1, 0) == _GT_OUTOFSCREEN then
-                pingu.set_x(pingu.get_x() + (float)(pingu.me.direction));
+                pingu.set_x(pingu.get_x() + (float)(pingu.direction));
                 continue;
             end
 
@@ -120,7 +120,7 @@ do
                 // simple, stupid, but working bridge code
                 // original FIXME: We don't check if we 'drift' into a solid ground block
                 pingu.set_posf(
-                    pingu.get_x() + (float)pingu.me.direction,
+                    pingu.get_x() + (float)pingu.direction,
                     pingu.get_y() - 1.0); // pingus 'float' through bridges
 
             else
@@ -157,7 +157,7 @@ do
                 if found_next_step then
                     // pos.y has a reversed co-system to rel_getpixel()?
                     pingu.set_posf(
-                        pingu.get_x() + (float)pingu.me.direction,
+                        pingu.get_x() + (float)pingu.direction,
                         pingu.get_y() - (float)possible_y_step);
                 else
                     if pingu.rel_getpixel(1, 0) != _GT_NOTHING then
@@ -168,10 +168,10 @@ do
                         end
 
                         // No persitent action found, so change the direction
-                        pingu.me.direction.change();
+                        pingu.direction.change();
                     else
                         // We take the step, so that we are in the air
-                        pingu.set_x(pingu.get_x() + (float)pingu.me.direction);
+                        pingu.set_x(pingu.get_x() + (float)pingu.direction);
 
                         // We reached a cliff
                         escape _A_FALLER;
@@ -187,7 +187,7 @@ do
 
                 //if the new position causes a head collision, we are already
                 //stuck in a wall, so lets go back to the old position
-                pingu.me.direction.change();
+                pingu.direction.change();
                 pingu.set_pos(_toVector3f(last_pos));
                 continue;
             end

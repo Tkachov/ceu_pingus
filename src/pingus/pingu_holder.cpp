@@ -16,22 +16,16 @@
 
 #include "pingus/pingu_holder.hpp"
 
-#include "pingus/pingu.hpp"
+
 #include "pingus/pingus_level.hpp"
 
 #include "ceuvars.h"
 
 PinguHolder::PinguHolder(const PingusLevel& plf) :
   number_of_allowed(plf.get_number_of_pingus()),
-  dead(0), exited(0), released(0),
-  pingus(), deads() {}
+  dead(0), exited(0), released(0) {}
 
 PinguHolder::~PinguHolder() {}
-
-void PinguHolder::push_pingu_back(Pingu* p) {  
-  // This list holds the active pingus
-  if(p) pingus.push_back(p);  
-}
 
 void
 PinguHolder::draw (SceneContext& gc)
@@ -41,21 +35,8 @@ PinguHolder::draw (SceneContext& gc)
   ceu_out_go(&CEUapp, CEU_IN_PINGU_DRAW_OTHERS, &g);
 }
 
-void PinguHolder::update() {
-  begin(); //cleans up
+void PinguHolder::update() {  
   ceu_out_go(&CEUapp, CEU_IN_PINGU_UPDATE_ALL, 0);
-}
-
-void PinguHolder::erase(Pingu* p) {
-  //pingus.remove(p);
-  deads.push_back(p);
-}
-
-Pingu* PinguHolder::get_pingu(unsigned int id_) {
-  GetPinguPackage package(this, id_);
-  GetPinguPackage* pp = &package;
-  ceu_out_go(&CEUapp, CEU_IN_GET_PINGU, &pp);
-  return pp->result;
 }
 
 float

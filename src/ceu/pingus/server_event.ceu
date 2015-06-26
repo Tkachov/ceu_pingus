@@ -59,7 +59,7 @@ do
             else/if server_event.type == _SE_END_EVENT then
                 // do nothing
             else/if server_event.type == _SE_PINGU_ACTION_EVENT then                                
-                call/rec do_pingu_action_event(server, global:world:get_pingus():get_pingu(server_event.pingu_id));
+                call/rec do_pingu_action_event(server, call/rec global:world:get_pingus():get_pingu(server_event.pingu_id));
             else
                 _assert(not "Unknown type");
             end
