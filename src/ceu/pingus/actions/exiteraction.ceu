@@ -37,7 +37,7 @@ do
     load_file_directions(sprite, "/exit/");
 
     par do
-        every pingu.e_UPDATE_CALLED do
+        every PINGU_UPDATE_ALL do
             sprite.get(pingu.direction):update();
 
             if sprite.get(pingu.direction):is_finished() then
@@ -49,7 +49,7 @@ do
             _gc_color_draw2(gc, sprite.get(pingu.direction), pingu.get_pos());
         end
     with
-        await pingu.e_UPDATE_CALLED;
+        await PINGU_UPDATE_ALL;
         _Sound_PingusSound_play_sound("yipee");
     end
 end

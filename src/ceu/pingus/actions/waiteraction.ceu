@@ -36,7 +36,7 @@ do
     finalize with _delete_Sprite(sprite); end;
 
     par do
-        every pingu.e_UPDATE_CALLED do
+        every PINGU_UPDATE_ALL do
               sprite.update();
         end
     with
@@ -46,7 +46,7 @@ do
     with
         //in C++ there was a countdown from 2 to 0 with step 0.025 per frame - that's 80 frames
         loop i in 80 do
-            await pingu.e_UPDATE_CALLED;
+            await PINGU_UPDATE_ALL;
         end
         escape _A_WALKER;
     end

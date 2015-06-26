@@ -36,7 +36,7 @@ do
     finalize with _delete_Sprite(sprite); end;
 
     par do
-        every pingu.e_UPDATE_CALLED do
+        every PINGU_UPDATE_ALL do
             sprite.update();
             pingu.set_posf(pingu.get_x() + 40.0*0.025, pingu.get_y() - 200.0*0.025);
 

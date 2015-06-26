@@ -40,7 +40,6 @@ native/pre do
     ##define delete_Direction(s) delete s;
 end
 
-input void PINGU_UPDATE_ALL;
 input _SceneContext* PINGU_DRAW_WALKER;
 input _SceneContext* PINGU_DRAW_OTHERS;
 
@@ -66,7 +65,6 @@ class Pingu with
     var uint id;
 do
     finalize with _delete_Direction(&direction); end;
-    //direction.left();
 
     velocity.x = 0;
     velocity.y = 0;
@@ -294,9 +292,7 @@ do
             if rel_getpixel(0, -1) == _GT_OUTOFSCREEN then
                 //Sound::PingusSound::play_sound("die");
                 emit e_CHANGE_ACTION => _A_DEAD;
-            end            
-
-            emit e_UPDATE_CALLED;
+            end
         end
     with
         every gc in PINGU_DRAW_WALKER do

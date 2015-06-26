@@ -46,7 +46,7 @@ do
             _gc_color_draw2(gc, sprite, pingu.get_pos());
         end
     with
-        every pingu.e_UPDATE_CALLED do
+        every PINGU_UPDATE_ALL do
             sprite.update();
             pingu.set_velocity(v_DOWN);
 

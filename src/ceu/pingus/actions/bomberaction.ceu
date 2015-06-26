@@ -64,7 +64,7 @@ do
     _WorldObj__get_world_play_sound("ohno", pingu.get_pos());
 
     par do
-        every pingu.e_UPDATE_CALLED do
+        every PINGU_UPDATE_ALL do
             sprite.update();
 
             // Move the Pingu
@@ -83,7 +83,7 @@ do
         end
     with
         // If the Bomber hasn't 'exploded' yet...
-        every pingu.e_UPDATE_CALLED do
+        every PINGU_UPDATE_ALL do
             if sprite.get(pingu.direction):get_current_frame() > 9 then
                 break;
             end
@@ -103,7 +103,7 @@ do
         _WorldObj__get_world():play_sound("plop", pingu.get_pos());
 
         //Wait for 13th frame to throw particles
-        await pingu.e_UPDATE_CALLED until (sprite.get(pingu.direction):get_current_frame() > 12);
+        await PINGU_UPDATE_ALL until (sprite.get(pingu.direction):get_current_frame() > 12);
 
         // Throwing particles
         _WorldObj__get_world():get_pingu_particle_holder():add_particle(
@@ -111,7 +111,7 @@ do
         );
 
         //Wait for 13th frame again?..
-        PRE_CONDITION_AWAIT(pingu.e_UPDATE_CALLED, sprite.get(pingu.direction):get_current_frame() >= 13);
+        PRE_CONDITION_AWAIT(PINGU_UPDATE_ALL, sprite.get(pingu.direction):get_current_frame() >= 13);
 
         _WorldObj__get_world_remove(
             bomber_radius,
@@ -120,7 +120,7 @@ do
         );
 
         // The pingu explode
-        PRE_CONDITION_AWAIT(pingu.e_UPDATE_CALLED, sprite.get(pingu.direction):is_finished());
+        PRE_CONDITION_AWAIT(PINGU_UPDATE_ALL, sprite.get(pingu.direction):is_finished());
 
         escape _A_DEAD;
     end

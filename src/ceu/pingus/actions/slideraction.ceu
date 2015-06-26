@@ -43,7 +43,7 @@ do
             _gc_color_draw2(gc, sprite.get(pingu.direction), pingu.get_pos() + _Vector3f(0, -2));
         end
     with
-        every pingu.e_UPDATE_CALLED do
+        every PINGU_UPDATE_ALL do
             sprite.get(pingu.direction):update();
 
             loop/100 i in speed do

@@ -18,11 +18,12 @@ end
 #include "ipingu_action.ceu"
 #include "../string.ceu"
 
+input void PINGU_UPDATE_ALL;
+
 interface IPingu with    
     var _Direction& direction;
     var IPinguAction* ceu_action;
 
-    event void e_UPDATE_CALLED;
     event _SceneContext* e_DRAW_CALLED;
 
     event int e_CHANGE_ACTION;
