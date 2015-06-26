@@ -43,7 +43,7 @@ do
                 loop pingu in global:world:get_pingus():all_pingus do
                     if pingu:get_x() > teleporter.pos.x-3 and pingu:get_x() < teleporter.pos.x+3 and
                        pingu:get_y() > teleporter.pos.y-52 and pingu:get_y() < teleporter.pos.y then
-                        pingu:me.set_pos(teleporter.target:get_pos().x, teleporter.target:get_pos().y);
+                        pingu:set_posf(teleporter.target:get_pos().x, teleporter.target:get_pos().y);
                         teleporter.target:teleporter_used();
                         teleporter.sprite.restart();
                     end

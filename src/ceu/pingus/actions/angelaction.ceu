@@ -41,7 +41,7 @@ do
         return _get_screenname(_A_ANGEL);
     end
 
-    var _Sprite&? sprite = _PTR2REF(_new_SpriteA(_scc3("pingus/player", pingu.me.get_owner_str(), "/angel")));
+    var _Sprite&? sprite = _PTR2REF(_new_SpriteA(_scc3("pingus/player", pingu.get_owner_str(), "/angel")));
     finalize with _delete_Sprite(sprite); end;
 
     var float counter = 0;
@@ -51,9 +51,8 @@ do
         every pingu.e_UPDATE_CALLED do
             sprite.update();
 
-            counter = counter + (float)_globals__game_speed;
-            //pingu.me.set_pos(x_pos + 20*_Math__sin(counter*3.0), pingu.get_y() - 50.0*0.025);
-            pingu.me.set_pos(x_pos + 4.0*_Math__sin(counter*0.01), (float)(pingu.get_y() - 40.0*0.025));
+            counter = counter + (float)_globals__game_speed;            
+            pingu.set_posf(x_pos + 4.0*_Math__sin(counter*0.01), pingu.get_y() - 40.0*0.025);
 
             // Out of screen, let the pingu die
             if pingu.get_y() < -32 then

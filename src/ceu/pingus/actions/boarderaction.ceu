@@ -81,11 +81,11 @@ do
                     offset = -1;
                 end;
 
-                pingu.me.set_pos(_Vector3f(old_pos.x + offset, old_pos.y, old_pos.z));
+                pingu.set_pos(_Vector3f(old_pos.x + offset, old_pos.y, old_pos.z));
 
                 if pingu.rel_getpixel(1, 0) then
                     // Hit a wall
-                    pingu.me.set_pos(_toVector3f(old_pos));
+                    pingu.set_pos(_toVector3f(old_pos));
 
                     var Vector3f f;
                     f.x = (float)(speed*(float)(pingu.me.direction)*0.5);

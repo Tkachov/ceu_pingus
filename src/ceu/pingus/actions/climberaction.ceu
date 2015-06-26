@@ -55,14 +55,14 @@ do
 
             //nothing above and there is still ground to walk on
             if pingu.rel_getpixel(1, 1) != _GT_NOTHING then
-                pingu.me.set_pos(pingu.get_x(), pingu.get_y() - 1);
+                pingu.set_posf(pingu.get_x(), pingu.get_y() - 1);
                 continue;
             end
 
             // If Pingu able to get to new position without head collision
             if not pingu.head_collision_on_walk(pingu.me.direction, 1) then
                 // Get ready to walk
-                pingu.me.set_pos(
+                pingu.set_posf(
                     pingu.get_x() + (float)pingu.me.direction,
                     pingu.get_y() - 1.0
                 );

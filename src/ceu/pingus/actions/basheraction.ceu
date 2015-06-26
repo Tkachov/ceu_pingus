@@ -56,10 +56,10 @@ do
        pingu_height). */
     var int max_bash_height = 33;
 
-    function (void) => void bash do
+    function @rec (void) => void bash do
         _WorldObj__get_world_remove(bash_radius,
-                                    pingu.me.get_xi() - bash_radius.get_width()/2,
-                                    pingu.me.get_yi() - bash_radius.get_height()+1);
+                                    (int)pingu.get_x() - bash_radius.get_width()/2,
+                                    (int)pingu.get_y() - bash_radius.get_height()+1);
     end
 
     function @rec (void) => bool have_something_to_dig do
@@ -89,7 +89,7 @@ do
     end
 
     // Start a bash even if the action will stop instantly after the first bash
-    bash();
+    call/rec bash();
 
     par do
         every gc in pingu.e_DRAW_CALLED do
@@ -128,7 +128,7 @@ do
             else
                 // Note that Pingu::set_pos() is the 'reverse' of the y co-ords of
                 // rel_getpixel()
-                pingu.me.set_pos(
+                pingu.set_posf(
                     pingu.get_x() + (float)pingu.me.direction,
                     pingu.get_y() - (float)y_inc
                 );
@@ -154,7 +154,7 @@ do
                     // We only bash every second step, cause the Pingus would
                     // get trapped otherwise in the bashing area.
                     if not odd_frame then
-                        bash();
+                        call/rec bash();
                     end
                 else/if progress > 0.6 then
                     //original FIXME: EVIL! Engine must not relay on graphic

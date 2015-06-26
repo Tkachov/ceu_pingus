@@ -37,7 +37,7 @@ do
         );
 
         if server.action_holder.pop_action(_to_AN(action)) then
-            if not pingu:me.request_set_action(_to_AN(action)) then
+            if not call/rec pingu:request_set_action(action) then
                 server.action_holder.push_action(_to_AN(action));
             end
         end

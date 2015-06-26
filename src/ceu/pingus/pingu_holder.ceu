@@ -10,7 +10,7 @@
 native/pre do
     ##include "pingus/pingu_holder.hpp"
     ##define GetPackage PinguHolder::GetPinguPackage
-    ##define new_Pingu(a, b, c) new Pingu(a, b, c)
+    ##define new_Pingu(a) new Pingu(a)
 end
 
 input _GetPackage* GET_PINGU;
@@ -47,8 +47,11 @@ do
                 // We use all_pingus.size() as pingu_id, so that id == array index
                 var _Pingu* p = null;
                 spawn Pingu in all_pingus with
-                    this.me = _new_Pingu(pingus_emitted, package:entrance:pos, package:entrance:owner_id);
+                    this.me = _new_Pingu(pingus_emitted);
                     p = &this.me;
+                    this.pos_x = package:entrance:pos.x;
+                    this.pos_y = package:entrance:pos.y;
+                    this.owner_id = package:entrance:owner_id;
                 end;
 
                 if package:left then

@@ -14,6 +14,7 @@ native/pre do
 end
 
 #include "ipingu_action.ceu"
+#include "../string.ceu"
 
 interface IPingu with
     var _Pingu& me;    
@@ -50,6 +51,16 @@ interface IPingu with
     function (void) => float get_x;
     function (void) => float get_y;
     function (void) => _Vector3f get_pos;
+
+    function (float x, float y) => void set_posf;
+    function (_Vector3f arg) => void set_pos;
+    function (float x) => void set_x;
+    function (float y) => void set_y;
+
+    function @rec (int req_action) => bool request_set_action;
+
+    function (void) => int get_owner;
+    function (void) => _String get_owner_str;
 end
 
 #endif

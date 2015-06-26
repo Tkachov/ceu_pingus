@@ -78,7 +78,7 @@ do
              */
 
             if pingu.rel_getpixel(1, 0) == _GT_OUTOFSCREEN then
-                pingu.me.set_x(pingu.get_x() + (float)(pingu.me.direction));
+                pingu.set_x(pingu.get_x() + (float)(pingu.me.direction));
                 continue;
             end
 
@@ -109,7 +109,7 @@ do
                 end
 
                 if found_ground then
-                    pingu.me.set_y(pingu.get_y() - (float)level);
+                    pingu.set_y(pingu.get_y() - (float)level);
                 else
                     escape _A_FALLER;
                 end
@@ -119,7 +119,7 @@ do
             if pingu.rel_getpixel(1, 0) == _GT_BRIDGE and not pingu.head_collision_on_walk(1, 1) then  // bridge
                 // simple, stupid, but working bridge code
                 // original FIXME: We don't check if we 'drift' into a solid ground block
-                pingu.me.set_pos(
+                pingu.set_posf(
                     pingu.get_x() + (float)pingu.me.direction,
                     pingu.get_y() - 1.0); // pingus 'float' through bridges
 
@@ -156,7 +156,7 @@ do
 
                 if found_next_step then
                     // pos.y has a reversed co-system to rel_getpixel()?
-                    pingu.me.set_pos(
+                    pingu.set_posf(
                         pingu.get_x() + (float)pingu.me.direction,
                         pingu.get_y() - (float)possible_y_step);
                 else
@@ -171,7 +171,7 @@ do
                         pingu.me.direction.change();
                     else
                         // We take the step, so that we are in the air
-                        pingu.me.set_x(pingu.get_x() + (float)pingu.me.direction);
+                        pingu.set_x(pingu.get_x() + (float)pingu.me.direction);
 
                         // We reached a cliff
                         escape _A_FALLER;
@@ -188,7 +188,7 @@ do
                 //if the new position causes a head collision, we are already
                 //stuck in a wall, so lets go back to the old position
                 pingu.me.direction.change();
-                pingu.me.set_pos(_toVector3f(last_pos));
+                pingu.set_pos(_toVector3f(last_pos));
                 continue;
             end
         end

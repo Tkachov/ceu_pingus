@@ -32,7 +32,7 @@ do
         return _get_screenname(_A_WAITER);
     end
 
-    var _Sprite&? sprite = _PTR2REF(_new_SpriteA(_scc3("pingus/player", pingu.me.get_owner_str(), "/waiter/left")));
+    var _Sprite&? sprite = _PTR2REF(_new_SpriteA(_scc3("pingus/player", pingu.get_owner_str(), "/waiter/left")));
     finalize with _delete_Sprite(sprite); end;
 
     par do

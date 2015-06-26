@@ -49,7 +49,7 @@ do
 
             loop pingu in global:world:get_pingus():all_pingus do
                 // Make sure this particular exit is allowed for this pingu
-                if pingu:me.get_owner() != exit.owner_id then
+                if pingu:get_owner() != exit.owner_id then
                     continue;
                 end
 

@@ -46,7 +46,7 @@ do
                     pos.x = pingu:get_pos().x - conveyor_belt.speed*0.025;
                     pos.y = pingu:get_pos().y;
                     pos.z = pingu:get_pos().z;
-                    pingu:me.set_pos(_toVector3f(pos));
+                    pingu:set_pos(_toVector3f(pos));
                 end
             end
         end

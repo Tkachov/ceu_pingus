@@ -94,7 +94,7 @@ do
             // Move the Pingu as far is it can go
             mover.reset(pingu.get_pos());
             mover.update(_toVector3f(pingu.get_velocity()), _Colliders__PinguCollider(_pingu_height));
-            pingu.me.set_pos(mover.get_pos());
+            pingu.set_pos(mover.get_pos());
 
             var bool collided = mover.collided();
             var Vector3f velocity = pingu.get_velocity();

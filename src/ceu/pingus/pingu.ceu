@@ -30,22 +30,22 @@
 native/pre do
     ##include "pingus/pingu.hpp"
     ##define A_Enum(x) (ActionName::Enum)(x)
-    ##define delete_Pingu(p) delete p
-    ##define RSA_Package Pingu::RequestSetActionPackage
+    ##define delete_Pingu(p) delete p    
     ##define PA_get_activation_mode(x) PinguAction::get_activation_mode(x)
 
     ##include "pingus/collision_map.hpp"
 
     ##define Math__sqrt Math::sqrt
     ##define Math__clamp Math::clamp
+
+    #define StringUtil__to_string StringUtil::to_string
 end
 
 input void PINGU_UPDATE_ALL;
 input _SceneContext* PINGU_DRAW_WALKER;
 input _SceneContext* PINGU_DRAW_OTHERS;
-input _RSA_Package* PINGU_REQUEST_SET_ACTION;
 
-native @pure _delete_Pingu(), _PA_get_activation_mode();
+native @pure _delete_Pingu(), _PA_get_activation_mode(), _StringUtil__to_string();
 
 #define DO_ACTION(n, c) \
     else/if current_action == n then \
@@ -60,6 +60,9 @@ native @pure _delete_Pingu(), _PA_get_activation_mode();
 class Pingu with
     interface IPingu;
     var Vector3f velocity;
+    var float pos_x;
+    var float pos_y;
+    var int owner_id;
 do
     var _Pingu&? me_ = _PTR2REF((_Pingu*)&this.me);
     finalize with _delete_Pingu(me_); end
@@ -72,22 +75,49 @@ do
     var int previous_action = _A_FALLER;
     var int current_action = _A_FALLER;
 
+    var int instant_action;
+    var bool instant_action_set = false;
     var int fall_action;
     var bool fall_action_set = false;
     var int wall_action;
     var bool wall_action_set = false;
 
+    function (void) => int get_owner do
+        return owner_id;
+    end
+
+    function (void) => _String get_owner_str do
+        return _StringUtil__to_string(owner_id);
+    end
 
     function (void) => float get_x do
-        return me.pos_x;
+        return pos_x;
     end
 
     function (void) => float get_y do
-        return me.pos_y;
+        return pos_y;
     end
 
     function (void) => _Vector3f get_pos do
-        return _Vector3f(me.pos_x, me.pos_y, 0);
+        return _Vector3f(pos_x, pos_y, 0);
+    end
+
+    function (float x) => void set_x do
+        pos_x = x;
+    end
+
+    function (float y) => void set_y do
+        pos_y = y;
+    end
+
+    function (float x, float y) => void set_posf do
+        set_x(x);
+        set_y(y);
+    end
+
+    function (_Vector3f arg) => void set_pos do
+        set_x(arg.x);
+        set_y(arg.y);
     end
 
     function (int x, int y) => int rel_getpixel do
@@ -137,7 +167,7 @@ do
         _assert(x1 < x2);
         _assert(y1 < y2);
 
-        return (me.pos_x > x1 and me.pos_x < x2 and me.pos_y > y1 and me.pos_y < y2);
+        return (pos_x > x1 and pos_x < x2 and pos_y > y1 and pos_y < y2);
     end
 
     function (void) => IPingu& get_ref do
@@ -202,18 +232,65 @@ do
         velocity.z = velocity.z + arg_v.z;
         // Moving the pingu on pixel up, so that the force can take effect
         // original FIXME: this should be handled by a state-machine
-        me.pos_y = me.pos_y - 1;
+        pos_y = pos_y - 1;
+    end
+
+    function @rec (int req_action) => bool request_set_action do
+        var int mode = get_activation_mode(req_action);
+        var bool result = false;
+
+        if mode == PA_INSTANT then
+            if req_action == current_action then
+                _log_debug("Pingu: Already have action");
+            else/if ceu_action:change_allowed(_PTR2REF(req_action)) then
+                _log_debug("setting instant action");
+                result = true;
+                //me.pass_action(req_action);//emit e_CHANGE_ACTION => req_action;
+                instant_action = req_action;
+                instant_action_set = true;
+            else
+                _log_debug("change from action %1% not allowed", ceu_action:get_name());
+            end
+        else/if mode == PA_WALL_TRIGGERED then
+            if wall_action_set and wall_action == req_action then
+                _log_debug("Not using wall action, we have already");
+            else
+                _log_debug("Setting wall action");
+                wall_action = _PTR2REF(req_action);
+                wall_action_set = true;
+                result = true;
+            end
+        else/if mode == PA_FALL_TRIGGERED then
+            if fall_action_set and fall_action == req_action then
+                _log_debug("Not using fall action, we have already");
+            else
+                _log_debug("Setting fall action");
+                fall_action = _PTR2REF(req_action);
+                fall_action_set = true;
+                result = true;
+            end
+        else
+            _log_debug("unknown action activation_mode");
+            _assert(0);
+        end
+
+        return result;
     end
 
     par do
         //pass update() call
         every PINGU_UPDATE_ALL do
+            if instant_action_set then
+                instant_action_set = false;
+                emit e_CHANGE_ACTION => instant_action;
+            end
+
             // original FIXME: Out of screen check is ugly
-            // The Pingu has hit the edge of the screen, a good time to let him die.
+            // The Pingu has hit the edge of the screen, a good time to let him die.            
             if rel_getpixel(0, -1) == _GT_OUTOFSCREEN then
                 //Sound::PingusSound::play_sound("die");
                 emit e_CHANGE_ACTION => _A_DEAD;
-            end
+            end            
 
             emit e_UPDATE_CALLED;
         end
@@ -227,49 +304,6 @@ do
         every gc in PINGU_DRAW_OTHERS do
             if current_action != _A_WALKER then
                 emit e_DRAW_CALLED => gc;
-            end
-        end
-    with
-        every p in PINGU_REQUEST_SET_ACTION do
-            var _RSA_Package&? package = _PTR2REF(p);
-
-            if package.pingu != &me_ then
-                continue;
-            end;
-
-            var int mode = get_activation_mode(package.action);
-
-            if mode == PA_INSTANT then
-                if package.action == current_action then
-                    _log_debug("Pingu: Already have action");
-                else/if ceu_action:change_allowed(_PTR2REF(package.action)) then
-                    _log_debug("setting instant action");
-                    package.result = true;
-                    emit e_CHANGE_ACTION => package.action;
-                else
-                    _log_debug("change from action %1% not allowed", ceu_action:get_name());
-                end
-            else/if mode == PA_WALL_TRIGGERED then
-                if wall_action_set and wall_action == package.action then
-                    _log_debug("Not using wall action, we have already");
-                else
-                    _log_debug("Setting wall action");
-                    wall_action = _PTR2REF(package.action);
-                    wall_action_set = true;
-                    package.result = true;
-                end
-            else/if mode == PA_FALL_TRIGGERED then
-                if fall_action_set and fall_action == package.action then
-                    _log_debug("Not using fall action, we have already");
-                else
-                    _log_debug("Setting fall action");
-                    fall_action = _PTR2REF(package.action);
-                    fall_action_set = true;
-                    package.result = true;
-                end
-            else
-                _log_debug("unknown action activation_mode");
-                _assert(0);
             end
         end
     with

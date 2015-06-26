@@ -38,9 +38,9 @@ do
 
     if pingu.rel_getpixel(0, -1) == _GT_NOTHING then
         if pingu.rel_getpixel(0, -2) == _GT_GROUND then
-            pingu.me.set_y(pingu.get_y() + 1);
+            pingu.set_y(pingu.get_y() + 1);
         else/if pingu.rel_getpixel(0, -2) == _GT_NOTHING and pingu.rel_getpixel(0, -3) == _GT_GROUND then
-            pingu.me.set_y(pingu.get_y() + 2);
+            pingu.set_y(pingu.get_y() + 2);
         end
     end
 

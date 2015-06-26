@@ -33,7 +33,7 @@ do
         return _get_screenname(_A_FLOATER);
     end
 
-    var _Sprite&? sprite = _new_SpriteA(_scc3("pingus/player", pingu.me.get_owner_str(), "/floater/left"));
+    var _Sprite&? sprite = _new_SpriteA(_scc3("pingus/player", pingu.get_owner_str(), "/floater/left"));
     finalize with _delete_Sprite(sprite); end;
 
     var Vector3f v_DOWN;
@@ -51,7 +51,7 @@ do
             pingu.set_velocity(v_DOWN);
 
             if pingu.rel_getpixel(0, -1) == _GT_NOTHING then
-                pingu.me.set_y(pingu.get_y() + 1);
+                pingu.set_y(pingu.get_y() + 1);
             else
                 escape _A_WALKER;
             end

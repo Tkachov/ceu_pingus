@@ -51,7 +51,7 @@ do
                     break;
                 end
 
-                pingu.me.set_x(pingu.get_x() + (float)pingu.me.direction);
+                pingu.set_x(pingu.get_x() + (float)pingu.me.direction);
 
                 if pingu.rel_getpixel(0, -1) == _GT_NOTHING then
                     if speed > 5 then

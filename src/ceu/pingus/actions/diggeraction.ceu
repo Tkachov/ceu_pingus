@@ -37,7 +37,7 @@ do
 
     var int delay_count = 0;
 
-    var _Sprite&? sprite = _PTR2REF(_new_SpriteA(_scc3("pingus/player", pingu.me.get_owner_str(), "/digger/left")));
+    var _Sprite&? sprite = _PTR2REF(_new_SpriteA(_scc3("pingus/player", pingu.get_owner_str(), "/digger/left")));
     finalize with _delete_Sprite(sprite); end;
 
     var _CollisionMask&? digger_radius = _new_CollisionMask("pingus/common/digger_radius_gfx", "pingus/common/digger_radius");
@@ -59,18 +59,18 @@ do
         return true;
     end
 
-    function (bool final) => void dig do
+    function @rec (bool final) => void dig do
         if not final then
             _WorldObj__get_world_remove(digger_radius,
-                                       pingu.me.get_xi() - digger_radius.get_width() / 2,
-                                       pingu.me.get_yi() - digger_radius.get_height() + 2);
+                                       (int)pingu.get_x() - digger_radius.get_width() / 2,
+                                       (int)pingu.get_y() - digger_radius.get_height() + 2);
         else
             _WorldObj__get_world_remove(digger_radius_final,
-                                       pingu.me.get_xi() - digger_radius.get_width() / 2,
-                                       pingu.me.get_yi() - digger_radius.get_height() + 2);
+                                       (int)pingu.get_x() - digger_radius.get_width() / 2,
+                                       (int)pingu.get_y() - digger_radius.get_height() + 2);
         end
 
-        pingu.me.set_pos(pingu.me.get_xi(), pingu.me.get_yi()+1);
+        pingu.set_posf((int)pingu.get_x(), (int)pingu.get_y()+1);
     end
 
     par do
@@ -86,10 +86,10 @@ do
                 escape _A_DROWN;
             else
                 if not call/rec have_something_to_dig() then
-                    dig(true);
+                    call/rec dig(true);
                     escape _A_WALKER;
                 else/if delay_count % 4 == 0 then
-                    dig(false);
+                    call/rec dig(false);
                 end
             end
         end

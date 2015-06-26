@@ -32,13 +32,13 @@ do
         return _get_screenname(_A_SUPERMAN);
     end
     
-    var _Sprite&? sprite = _PTR2REF(_new_SpriteA(_scc3("pingus/player", pingu.me.get_owner_str(), "/superman")));
+    var _Sprite&? sprite = _PTR2REF(_new_SpriteA(_scc3("pingus/player", pingu.get_owner_str(), "/superman")));
     finalize with _delete_Sprite(sprite); end;
 
     par do
         every pingu.e_UPDATE_CALLED do
             sprite.update();
-            pingu.me.set_pos((float)(pingu.get_x() + 40.0*0.025), pingu.get_y() - 200.0*0.025);
+            pingu.set_posf(pingu.get_x() + 40.0*0.025, pingu.get_y() - 200.0*0.025);
 
             if pingu.get_y() < -32 then
                 escape _A_DEAD;

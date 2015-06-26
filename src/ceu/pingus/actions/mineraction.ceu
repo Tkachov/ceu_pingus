@@ -49,22 +49,22 @@ do
     var _CollisionMask&? miner_radius_right = _new_CollisionMask("pingus/common/miner_radius_right_gfx", "pingus/common/miner_radius_right");
     finalize with _delete_CollisionMask(miner_radius_right); end;
 
-    function (bool final) => void mine do
+    function @rec (bool final) => void mine do
         if not final then
             // regular mine action
             _WorldObj__get_world_remove(miner_radius,
-                                        pingu.me.get_xi() - (miner_radius.get_width() / 2) + pingu.me.direction,
-                                        pingu.me.get_yi() - miner_radius.get_height() + 2);
+                                        (int)pingu.get_x() - (miner_radius.get_width() / 2) + pingu.me.direction,
+                                        (int)pingu.get_y() - miner_radius.get_height() + 2);
         else
             // the last mine action before switching to another action
             if pingu.me.direction == _D_LEFT then
                 _WorldObj__get_world_remove(miner_radius_left,
-                                            pingu.me.get_xi() - (miner_radius_left.get_width() / 2) + pingu.me.direction,
-                                            pingu.me.get_yi() - miner_radius_left.get_height() + 2);
+                                            (int)pingu.get_x() - (miner_radius_left.get_width() / 2) + pingu.me.direction,
+                                            (int)pingu.get_y() - miner_radius_left.get_height() + 2);
             else
                 _WorldObj__get_world_remove(miner_radius_right,
-                                            pingu.me.get_xi() - (miner_radius_right.get_width() / 2) + pingu.me.direction,
-                                            pingu.me.get_yi() - miner_radius_right.get_height() + 2);
+                                            (int)pingu.get_x() - (miner_radius_right.get_width() / 2) + pingu.me.direction,
+                                            (int)pingu.get_y() - miner_radius_right.get_height() + 2);
             end;
         end;
     end
@@ -83,7 +83,7 @@ do
 
             if pingu.rel_getpixel(0, -1) == _GT_NOTHING then
                 // stop mining when in the air
-                mine(true);
+                call/rec mine(true);
                 escape _A_WALKER;
             else/if pingu.rel_getpixel(0, -1) == _GT_SOLID or pingu.rel_getpixel(0, _pingu_height) == _GT_SOLID then
                 // stop mining when hitting solid ground
@@ -91,7 +91,7 @@ do
                     _Sound_PingusSound_play_sound("chink");
                 end
 
-                mine(true);
+                call/rec mine(true);
 
                 // stop pingu from walking further into the solid.
                 pingu.me.direction.change();
@@ -99,10 +99,10 @@ do
                 escape _A_WALKER;
             else
                 // mine and walk forward
-                mine(false);
-                pingu.me.set_pos(
-                    pingu.me.get_xi() + pingu.me.direction,
-                    pingu.me.get_yi() + 1
+                call/rec mine(false);
+                pingu.set_posf(
+                    (int)pingu.get_x() + pingu.me.direction,
+                    (int)pingu.get_y() + 1
                 );
             end
 

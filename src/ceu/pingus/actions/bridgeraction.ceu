@@ -112,7 +112,7 @@ do
     end
 
     function @rec (void) => void walk_one_step_up do
-        pingu.me.set_pos(
+        pingu.set_posf(
             pingu.get_x() + 4.0*(float)(pingu.me.direction),
             pingu.get_y() - 2
         );

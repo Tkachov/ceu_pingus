@@ -36,21 +36,7 @@ private:
       a demo file or in a network connection */
   unsigned int id;
 
-  /** The id of the owner of the pingus, used in multiplayer matches */
-  int owner_id;
-
-  float pos_x;
-  float pos_y;
-
 public:
-
-  struct RequestSetActionPackage {
-    Pingu* pingu;
-    ActionName::Enum action;
-    bool result;
-
-    RequestSetActionPackage(Pingu* p, ActionName::Enum a): pingu(p), action(a), result(false) {};
-  };
 
   //FIXME make me private
   Direction direction;
@@ -59,41 +45,14 @@ public:
       @param arg_id The uniq id of the pingu
       @param pos The start position of the pingu
       @param owner The owner id of the pingu (used for multiplayer) */
-  Pingu (int arg_id, const Vector3f& pos, int owner);
+  Pingu (int arg_id);
 
   /** Destruct the pingu... */
   ~Pingu ();
 
-  int get_xi () const { return static_cast<int>(pos_x); }
-  int get_yi () const { return static_cast<int>(pos_y); }
-
   /// Returns the unique id of the pingu
   unsigned int  get_id (void);
 
-  /// Set the pingu to the given coordinates
-  void set_pos (float x, float y);
-  void set_pos (int x, int y) { set_pos(static_cast<float>(x), static_cast<float>(y)); }
-
-  void set_x (float x);
-
-  void set_y (float y);
-
-  /// Set the pingu to the given coordinates
-  void set_pos (const Vector3f& arg_pos);
-
-  /** Request an action to be set to the pingu, if its a persistent
-      action, it will be hold back for later execution, same with a
-      timed action, normal action will be applied if the current
-      action allows that. */
-  bool request_set_action (ActionName::Enum action_name);
-
-  /** @return The owner_id of the owner, only used in multiplayer
-      configurations, ought to be 0 in single player */
-  int get_owner ();
-
-  /** @return The owner_id as a string. Only used in multiplayer
-      configurations, ought to be "0" in single player */
-  std::string get_owner_str ();
 
 private:
   Pingu (const Pingu&);

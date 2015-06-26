@@ -52,7 +52,7 @@ do
     var StateSprite sprite;
     load_file_directions(sprite, "/bomber/");
 
-    var _Sprite&? explo_surf = _new_SpriteA(_scc3("pingus/player", pingu.me.get_owner_str(), "/explo"));
+    var _Sprite&? explo_surf = _new_SpriteA(_scc3("pingus/player", pingu.get_owner_str(), "/explo"));
     finalize with _delete_Sprite(explo_surf); end;
 
     var _CollisionMask&? bomber_radius = _new_CollisionMask("other/bomber_radius_gfx", "other/bomber_radius");
@@ -70,7 +70,7 @@ do
             // Move the Pingu
             mover.reset(pingu.get_pos());
             mover.update(_toVector3f(pingu.get_velocity()), _Colliders__PinguCollider(_pingu_height));
-            pingu.me.set_pos(mover.get_pos());
+            pingu.set_pos(mover.get_pos());
         end
     with
         par do
