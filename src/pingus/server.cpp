@@ -26,6 +26,8 @@
 #include "util/sexpr_file_writer.hpp"
 #include "util/system.hpp"
 
+#include "ceuvars.h"
+
 static std::string get_date_string ()
 {
   char buffer[32];
@@ -82,12 +84,17 @@ Server::Server(const PingusLevel& arg_plf, bool record_demo) :
   {
     demostream = get_demostream(plf);
   }
-}
 
+  Server* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_NEW_SERVER, &self);
+}
 Server::~Server ()
 {
   if (demostream.get()) // FIXME: Any better place to put this? 
     (*demostream) << "(end (time " << get_time() << "))" << std::endl;
+
+  Server* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_DELETE_SERVER, &self);
 }
 
 World*
@@ -109,20 +116,6 @@ Server::send_armageddon_event ()
   record(ServerEvent::make_armageddon_event(get_time()));
 
   world->armageddon();
-}
-
-void
-Server::send_pingu_action_event (Pingu* pingu, ActionName::Enum action)
-{
-  record(ServerEvent::make_pingu_action_event(get_time(), pingu->get_id(), pingu->get_pos(), action));
-
-  if (action_holder.pop_action(action))
-  {
-    if (!(pingu->request_set_action(action)))
-    {
-      action_holder.push_action(action);
-    }
-  }
 }
 
 void

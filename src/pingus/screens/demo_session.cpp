@@ -31,6 +31,8 @@
 #include "pingus/world.hpp"
 #include "util/log.hpp"
 
+#include "ceuvars.h"
+
 static bool false_func() { return false; }
 
 class BButton : public GUI::SurfaceButton
@@ -202,8 +204,11 @@ DemoSession::update_demo()
       std::cout << "Sending: ";
       event.write(std::cout);
     }
+    
+    EventSendPackage package(&event, server->ceu());
+    EventSendPackage* pp = &package;
+    ceu_out_go(&CEUapp, CEU_IN_EVENT_SEND, &pp);
 
-    event.send(server.get());
     events.pop_back();
   }
   

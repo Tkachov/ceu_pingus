@@ -128,6 +128,10 @@ do
         return (me.pos_x > x1 and me.pos_x < x2 and me.pos_y > y1 and me.pos_y < y2);
     end
 
+    function (void) => IPingu& get_ref do
+        return this;
+    end
+
     // Returns the distance between the Pingu and a given coordinate
     function @rec (int x, int y) => float dist do
         var Vector3f p = call/rec get_center_pos();

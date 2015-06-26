@@ -44,6 +44,8 @@ interface IPingu with
     function (void) => Vector3f get_velocity;
     function (Vector3f) => void set_velocity;
     function (Vector3f) => void apply_force;
+
+    function (void) => IPingu& get_ref;
 end
 
 #endif

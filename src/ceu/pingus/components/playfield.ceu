@@ -5,6 +5,7 @@
 #include "../../sdl.ceu"
 #include "../capture_rectangle.ceu"
 #include "../pingu_holder_listener.ceu"
+#include "../server.ceu"
 
 native/pre do
     ##include "pingus/components/playfield.hpp"
@@ -77,7 +78,8 @@ do
             current_pingu = _PTR2REF(call/rec current_pingu_find(pos:x, pos:y));
 
             if current_pingu then
-                _send_pingu_action_event(playfield, &current_pingu:me);
+                var Server* server = (Server*)playfield.server:ceu_server;
+                server:send_pingu_action_event(current_pingu, playfield.session:get_action_name());
             end
         end
     with

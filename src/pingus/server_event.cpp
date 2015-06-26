@@ -24,6 +24,8 @@
 #include "util/log.hpp"
 #include "util/raise_exception.hpp"
 
+#include "ceuvars.h"
+
 ServerEvent::ServerEvent() :
   type(PINGU_ACTION_EVENT),
   time_stamp(0),
@@ -31,6 +33,13 @@ ServerEvent::ServerEvent() :
   pos(),
   pingu_action(ActionName::WALKER)
 {
+  ServerEvent* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_NEW_SERVER_EVENT, &self);
+}
+
+ServerEvent::~ServerEvent() {
+  ServerEvent* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_DELETE_SERVER_EVENT, &self);
 }
 
 ServerEvent::ServerEvent(const FileReader& reader) :
@@ -78,6 +87,9 @@ ServerEvent::ServerEvent(const FileReader& reader) :
   {
     raise_exception(std::runtime_error, "ServerEvent: Parse error: Unknown event: " << reader.get_name());
   }
+
+  ServerEvent* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_NEW_SERVER_EVENT, &self);
 }
 
 void
@@ -145,48 +157,6 @@ ServerEvent::make_pingu_action_event(int t, int id, const Vector3f& pos, ActionN
   event.pos          = pos;
   event.pingu_action = action;
   return event;
-}
-
-void
-ServerEvent::send(Server* server)
-{
-  switch(type)
-  {
-    case ARMAGEDDON_EVENT:
-      server->send_armageddon_event();
-      break;
-
-    case FINISH_EVENT:
-      server->send_finish_event();      
-      break;
-
-    case END_EVENT:
-      // do nothing
-      break;
-
-    case PINGU_ACTION_EVENT:
-    {
-      Pingu* pingu = server->get_world()->get_pingus()->get_pingu(pingu_id); //one of two places where get_pingu(id) is used
-      if (pingu)
-      {
-        if (pos.x != pingu->get_pos().x ||
-            pos.y != pingu->get_pos().y)
-        {
-          log_error("DemoFile inconsistent with world, pingu %1% is at the wrong position", pingu_id);
-        }
-
-        server->send_pingu_action_event(pingu, pingu_action);
-      }
-      else
-      {
-        log_error("DemoFile inconsistent with world, pingu %1% missing", pingu_id);
-      }
-    }
-    break;
-
-    default:
-      assert(!"Unknown type");
-  }
 }
 
 /* EOF */

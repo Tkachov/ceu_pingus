@@ -56,10 +56,9 @@ public:
   /** Construct an server event from an xml subtree */
   ServerEvent(const FileReader& reader);
 
-  void write(std::ostream& out) const;
+  ~ServerEvent();
 
-  /** Send this event to the server */
-  void send(Server*);
+  void write(std::ostream& out) const;
 
   // Pseudo constructors
 

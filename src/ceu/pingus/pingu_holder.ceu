@@ -27,6 +27,20 @@ do
     var int pingus_exited = 0;
     var int pingus_dead = 0;
 
+    function (int id) => IPingu* get_pingu do
+        var IPingu* result = null;
+
+        if id < pingus_emitted then
+            loop pingu in all_pingus do
+                if pingu:me.id == id then
+                    result = pingu;
+                end
+            end
+        end
+
+        return result;
+    end
+
     par do
         every package in e_MAKE_PINGU do
             if me_.number_of_allowed > pingus_emitted then

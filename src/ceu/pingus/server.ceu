@@ -1,0 +1,53 @@
+#ifndef SERVER_CEU
+#define SERVER_CEU
+
+#include "../c.ceu"
+#include "../sdl.ceu"
+#include "iworld.ceu"
+#include "ipingu_holder.ceu"
+#include "pingu_holder_listener.ceu"
+
+native/pre do
+    ##include "pingus/server.hpp"
+    ##include "pingus/server_event.hpp"
+    ##include "pingus/action_name.hpp"
+    ##define ServerEvent__make_pingu_action_event ServerEvent::make_pingu_action_event
+    ##define to_AN(x) (ActionName::Enum)x
+end
+
+input _Server* NEW_SERVER;
+input _Server* DELETE_SERVER;
+
+class Server with
+    var _Server* me;
+    function (IPingu* pingu, int action) => void send_pingu_action_event;
+do
+    var _Server&? server = _PTR2REF((_Server*)me);
+    var Server* self = &this;
+    server.ceu_server = (void*)self;
+
+    function (IPingu* pingu, int action) => void send_pingu_action_event do
+        server.record(
+            _ServerEvent__make_pingu_action_event(
+                server.get_time(),
+                pingu:me.get_id(),
+                pingu:me.get_pos(),
+                _to_AN(action)
+            )
+        );
+
+        if server.action_holder.pop_action(_to_AN(action)) then
+            if not pingu:me.request_set_action(_to_AN(action)) then
+                server.action_holder.push_action(_to_AN(action));
+            end
+        end
+    end
+
+    par/or do
+        await FOREVER;
+    with
+        var _Server* e = await DELETE_SERVER until (e == &server);
+    end
+end
+
+#endif

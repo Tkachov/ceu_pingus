@@ -40,6 +40,8 @@ protected:
   std::unique_ptr<GoalManager>  goal_manager;
   std::unique_ptr<std::ostream> demostream;
 
+  void* ceu_server;
+
 public:
   Server(const PingusLevel& arg_plf, bool record_demo);
   ~Server();
@@ -47,6 +49,8 @@ public:
   void update();
 
   PingusLevel get_plf () { return plf; }
+
+  void* ceu() { return ceu_server; }
 
   int get_time();
 

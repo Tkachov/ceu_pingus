@@ -1,0 +1,72 @@
+#ifndef SERVER_EVENT_CEU
+#define SERVER_EVENT_CEU
+
+#include "../c.ceu"
+#include "../sdl.ceu"
+#include "iworld.ceu"
+#include "ipingu_holder.ceu"
+#include "pingu_holder_listener.ceu"
+#include "server.ceu"
+
+native/pre do
+    ##include "pingus/server_event.hpp"
+    ##include "pingus/screens/demo_session.hpp"
+    ##define ESPackage DemoSession::EventSendPackage
+
+    ##define SE_ARMAGEDDON_EVENT ServerEvent::ARMAGEDDON_EVENT
+    ##define SE_FINISH_EVENT ServerEvent::FINISH_EVENT
+    ##define SE_END_EVENT ServerEvent::END_EVENT
+    ##define SE_PINGU_ACTION_EVENT ServerEvent::PINGU_ACTION_EVENT
+
+    ##define ref(x) *x
+end
+
+native @pure _log_error(), _ref();
+
+input _ServerEvent* NEW_SERVER_EVENT;
+input _ServerEvent* DELETE_SERVER_EVENT;
+input _ESPackage* EVENT_SEND;
+
+class ServerEvent with
+    var _ServerEvent* me;
+do
+    var _ServerEvent&? server_event = _PTR2REF((_ServerEvent*)me);
+
+    function (Server* server, IPingu* p) => void do_pingu_action_event do        
+        if p then
+            if server_event.pos.x != p:me.get_pos().x or server_event.pos.y != p:me.get_pos().y then
+                _log_error("DemoFile inconsistent with world, pingu %1% is at the wrong position", server_event.pingu_id);
+            end
+
+            server:send_pingu_action_event(p, server_event.pingu_action);     
+        else
+            _log_error("DemoFile inconsistent with world, pingu %1% missing", server_event.pingu_id);
+        end
+    end
+
+    par/or do
+        every package in EVENT_SEND do
+            var Server* server = (Server*)package:server;
+
+            if package:event != &server_event then
+                continue;
+            end            
+
+            if server_event.type == _SE_ARMAGEDDON_EVENT then
+                server:me:send_armageddon_event();
+            else/if server_event.type == _SE_FINISH_EVENT then
+                server:me:send_finish_event();      
+            else/if server_event.type == _SE_END_EVENT then
+                // do nothing
+            else/if server_event.type == _SE_PINGU_ACTION_EVENT then                                
+                do_pingu_action_event(server, global:world:get_pingus():get_pingu(server_event.pingu_id));
+            else
+                _assert(not "Unknown type");
+            end
+        end
+    with
+        var _ServerEvent* e = await DELETE_SERVER_EVENT until (e == &server_event);
+    end
+end
+
+#endif
