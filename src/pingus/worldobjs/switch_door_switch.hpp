@@ -39,10 +39,9 @@ private:
 
 public:
   SwitchDoorSwitch(const FileReader& reader);
+  ~SwitchDoorSwitch();
 
   void on_startup();
-  void draw (SceneContext& gc);
-  void update ();
 
   /// The switch and the door should stay above the pingus
   float get_z_pos() const { return 100; }

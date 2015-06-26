@@ -32,21 +32,17 @@ private:
   Sprite left_sur;
   Sprite right_sur;
   Sprite middle_sur;
-
-  Vector3f pos;
+  
   int    width;
   float  speed;
   float  counter;
 
 public:
   ConveyorBelt(const FileReader& reader);
+  ~ConveyorBelt();
 
   void draw (SceneContext& gc);
   void on_startup ();
-  void update ();
-  float get_z_pos () const;
-  void set_pos(const Vector3f& p) { pos = p; }
-  Vector3f get_pos() const { return pos; }
 
 private:
   ConveyorBelt (const ConveyorBelt&);

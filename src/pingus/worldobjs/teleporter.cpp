@@ -23,28 +23,25 @@
 #include "pingus/worldobjs/teleporter_target.hpp"
 #include "util/log.hpp"
 
+#include "ceuvars.h"
+
 namespace WorldObjs {
 
-Teleporter::Teleporter(const FileReader& reader) :
-  pos(),
+Teleporter::Teleporter(const FileReader& reader) :  
   sprite("worldobjs/teleporter"),
   target_id(),
   target()
 {
   reader.read_vector("position", pos);
   reader.read_string("target-id", target_id);
+
+  Teleporter* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_NEW_TELEPORTER, &self);
 }
 
-float
-Teleporter::get_z_pos () const
-{
-  return pos.z;
-}
-
-void
-Teleporter::draw (SceneContext& gc)
-{
-  gc.color().draw(sprite, pos);
+Teleporter::~Teleporter() {
+  Teleporter* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_DELETE_TELEPORTER, &self);
 }
 
 void
@@ -60,27 +57,6 @@ Teleporter::on_startup()
     target = dynamic_cast<TeleporterTarget*>(world->get_worldobj(target_id));
     if (!target)
       log_error("Teleporter: Couldn't find matching target-id or object isn't a TeleporterTarget");
-  }
-}
-
-void
-Teleporter::update ()
-{
-  sprite.update();
-
-  if (target)
-  {
-    PinguHolder* holder = world->get_pingus();
-    for (PinguIter pingu = holder->begin (); pingu != holder->end (); ++pingu)
-    {
-      if (   (*pingu)->get_x() > pos.x - 3  && (*pingu)->get_x() < pos.x + 3
-             && (*pingu)->get_y() > pos.y - 52 && (*pingu)->get_y() < pos.y)
-      {
-        (*pingu)->set_pos(target->get_pos().x, target->get_pos().y);
-        target->teleporter_used();
-        sprite.restart();
-      }
-    }
   }
 }
 

@@ -1,0 +1,58 @@
+#ifndef TELEPORTER_CEU
+#define TELEPORTER_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../../math/vector3f.ceu"
+#include "../iworld.ceu"
+#include "../worldobj.ceu"
+#include "../ipingu_holder.ceu"
+#include "../pingu_holder_listener.ceu"
+
+native/pre do
+    ##include "pingus/worldobjs/teleporter.hpp"
+    ##define WTeleporter WorldObjs::Teleporter
+
+    ##include "pingus/worldobjs/teleporter_target.hpp"
+end
+
+input _WTeleporter* DELETE_TELEPORTER;
+
+class Teleporter with
+    interface IWorldObj;
+do
+    var _WTeleporter&? teleporter = _PTR2REF((_WTeleporter*)me);
+
+    par/or do
+        every package in WORLDOBJ_DRAW do
+            if package:worldobj != &teleporter then
+                continue;
+            end
+
+            _gc_color_draw2(package:gc, &teleporter.sprite, teleporter.pos);            
+        end        
+    with
+        every w in WORLD_UPDATE do
+            if w != teleporter.world then
+                continue;
+            end
+
+            teleporter.sprite.update();
+
+            if teleporter.target then
+                loop pingu in global:world:get_pingus():all_pingus do
+                    if pingu:me.get_x() > teleporter.pos.x-3 and pingu:me.get_x() < teleporter.pos.x+3 and
+                       pingu:me.get_y() > teleporter.pos.y-52 and pingu:me.get_y() < teleporter.pos.y then
+                        pingu:me.set_pos(teleporter.target:get_pos().x, teleporter.target:get_pos().y);
+                        teleporter.target:teleporter_used();
+                        teleporter.sprite.restart();
+                    end
+                end
+            end
+        end
+    with
+        var _WTeleporter* e = await DELETE_TELEPORTER until (e == &teleporter);
+    end
+end
+
+#endif

@@ -1,0 +1,58 @@
+#ifndef CONVEYOR_BELT_CEU
+#define CONVEYOR_BELT_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../../math/vector3f.ceu"
+#include "../iworld.ceu"
+#include "../worldobj.ceu"
+#include "../ipingu_holder.ceu"
+#include "../pingu_holder_listener.ceu"
+
+native/pre do
+    ##include "pingus/worldobjs/conveyor_belt.hpp"
+    ##define WConveyorBelt WorldObjs::ConveyorBelt
+end
+
+input _WConveyorBelt* DELETE_CONVEYOR_BELT;
+
+class ConveyorBelt with
+    interface IWorldObj;
+do
+    var _WConveyorBelt&? conveyor_belt = _PTR2REF((_WConveyorBelt*)me);
+
+    par/or do
+        every package in WORLDOBJ_DRAW do
+            if package:worldobj != &conveyor_belt then
+                continue;
+            end
+            
+            //_gc_color_draw2(package:gc, &conveyor_belt.sprite, conveyor_belt.pos);
+        end        
+    with
+        every w in WORLD_UPDATE do
+            if w != conveyor_belt.world then
+                continue;
+            end
+
+            conveyor_belt.left_sur.update();
+            conveyor_belt.middle_sur.update();
+            conveyor_belt.right_sur.update();
+
+            loop pingu in global:world:get_pingus():all_pingus do
+                if pingu:me.get_x() > conveyor_belt.pos.x and pingu:me.get_x() < conveyor_belt.pos.x + 15*(float)(conveyor_belt.width+2) and
+                   pingu:me.get_y() > conveyor_belt.pos.y-2 and pingu:me.get_y() < conveyor_belt.pos.y+10 then
+                    var Vector3f pos;
+                    pos.x = pingu:me.get_pos().x - conveyor_belt.speed*0.025;
+                    pos.y = pingu:me.get_pos().y;
+                    pos.z = pingu:me.get_pos().z;
+                    pingu:me.set_pos(_toVector3f(pos));
+                end
+            end
+        end
+    with
+        var _WConveyorBelt* e = await DELETE_CONVEYOR_BELT until (e == &conveyor_belt);
+    end
+end
+
+#endif

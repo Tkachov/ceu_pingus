@@ -24,6 +24,8 @@
 #include "pingus/worldobjs/switch_door_door.hpp"
 #include "util/log.hpp"
 
+#include "ceuvars.h"
+
 namespace WorldObjs {
 
 SwitchDoorSwitch::SwitchDoorSwitch(const FileReader& reader) :
@@ -35,6 +37,14 @@ SwitchDoorSwitch::SwitchDoorSwitch(const FileReader& reader) :
 {
   reader.read_string("target-id", m_target);
   reader.read_vector("position", switch_pos);
+
+  SwitchDoorSwitch* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_NEW_SWITCH_DOOR_SWITCH, &self);
+}
+
+SwitchDoorSwitch::~SwitchDoorSwitch() {
+  SwitchDoorSwitch* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_DELETE_SWITCH_DOOR_SWITCH, &self);
 }
 
 void
@@ -49,38 +59,6 @@ SwitchDoorSwitch::on_startup ()
     m_door = dynamic_cast<SwitchDoorDoor*>(world->get_worldobj(m_target));
     if (!m_door)
       log_error("given target-id is not a SwitchDoorDoor");
-  }
-}
-
-void
-SwitchDoorSwitch::draw (SceneContext& gc)
-{
-  gc.color().draw(switch_sur, switch_pos);
-}
-
-void
-SwitchDoorSwitch::update ()
-{
-  if (!is_triggered)
-  {
-    if (m_door)
-    {
-      // Check if a pingu is passing the switch
-      PinguHolder* holder = world->get_pingus();
-
-      for (PinguIter pingu = holder->begin (); pingu != holder->end (); ++pingu)
-      {
-        if ((*pingu)->get_pos().x > switch_pos.x &&
-            (*pingu)->get_pos().x < switch_pos.x + static_cast<float>(switch_sur.get_width()) &&
-            (*pingu)->get_pos().y > switch_pos.y &&
-            (*pingu)->get_pos().y < switch_pos.y + static_cast<float>(switch_sur.get_height()))
-        {
-          is_triggered = true;
-          m_door->open_door();
-          break;
-        }
-      }
-    }
   }
 }
 

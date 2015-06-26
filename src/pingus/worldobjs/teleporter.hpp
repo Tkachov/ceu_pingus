@@ -26,21 +26,14 @@ class TeleporterTarget;
 
 class Teleporter : public WorldObj
 {
-private:
-  Vector3f pos;
+private:  
   Sprite sprite;
   std::string target_id;
   TeleporterTarget* target;
 
 public:
   Teleporter(const FileReader& reader);
-
-  void  draw(SceneContext& gc);
-  void  update();
-
-  float get_z_pos() const;
-  void set_pos(const Vector3f& p) { pos = p; }
-  Vector3f get_pos() const { return pos; }
+  ~Teleporter();
 
   void  on_startup();
 

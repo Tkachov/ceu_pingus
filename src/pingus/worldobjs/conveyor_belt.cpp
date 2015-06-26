@@ -22,13 +22,14 @@
 #include "pingus/world.hpp"
 #include "util/log.hpp"
 
+#include "ceuvars.h"
+
 namespace WorldObjs {
 
 ConveyorBelt::ConveyorBelt(const FileReader& reader) :
   left_sur  (Sprite ("worldobjs/conveyorbelt_left")),
   right_sur (Sprite ("worldobjs/conveyorbelt_right")),
-  middle_sur(Sprite ("worldobjs/conveyorbelt_middle")),
-  pos(),
+  middle_sur(Sprite ("worldobjs/conveyorbelt_middle")),  
   width(),
   speed(),
   counter()
@@ -40,6 +41,14 @@ ConveyorBelt::ConveyorBelt(const FileReader& reader) :
     reader.read_int   ("width",    width);
   }
   reader.read_float ("speed",    speed);
+
+  ConveyorBelt* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_NEW_CONVEYOR_BELT, &self);
+}
+
+ConveyorBelt::~ConveyorBelt() {
+  ConveyorBelt* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_DELETE_CONVEYOR_BELT, &self);
 }
 
 void
@@ -66,34 +75,6 @@ ConveyorBelt::on_startup ()
                static_cast<int>(pos.x) + (15 * i),
                static_cast<int>(pos.y),
                Groundtype::GP_SOLID);
-}
-
-void
-ConveyorBelt::update ()
-{
-  left_sur.update();
-  middle_sur.update();
-  right_sur.update();
-
-  PinguHolder* holder = world->get_pingus();
-  for (PinguIter pingu = holder->begin(); pingu != holder->end(); ++pingu)
-  {
-    if (   (*pingu)->get_pos().x > pos.x
-           && (*pingu)->get_pos().x < pos.x + 15 * static_cast<float>(width + 2)
-           && (*pingu)->get_pos().y > pos.y - 2
-           && (*pingu)->get_pos().y < pos.y + 10)
-    {
-      Vector3f pos_ = (*pingu)->get_pos();
-      pos_.x -= speed * 0.025f;
-      (*pingu)->set_pos(pos_);
-    }
-  }
-}
-
-float
-ConveyorBelt::get_z_pos () const
-{
-  return pos.z;
 }
 
 } // namespace WorldObjs

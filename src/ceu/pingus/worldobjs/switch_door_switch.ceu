@@ -1,0 +1,61 @@
+#ifndef SWITCH_DOOR_SWITCH_CEU
+#define SWITCH_DOOR_SWITCH_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../../math/vector3f.ceu"
+#include "../iworld.ceu"
+#include "../worldobj.ceu"
+#include "../ipingu_holder.ceu"
+#include "../pingu_holder_listener.ceu"
+
+native/pre do
+    ##include "pingus/worldobjs/switch_door_switch.hpp"
+    ##define WSwitchDoorSwitch WorldObjs::SwitchDoorSwitch
+
+    ##include "pingus/worldobjs/switch_door_door.hpp"
+end
+
+input _WSwitchDoorSwitch* DELETE_SWITCH_DOOR_SWITCH;
+
+class SwitchDoorSwitch with
+    interface IWorldObj;
+do
+    var _WSwitchDoorSwitch&? switch_door_switch = _PTR2REF((_WSwitchDoorSwitch*)me);
+
+    par/or do
+        every package in WORLDOBJ_DRAW do
+            if package:worldobj != &switch_door_switch then
+                continue;
+            end
+
+            _gc_color_draw2(package:gc, &switch_door_switch.switch_sur, switch_door_switch.switch_pos);
+        end        
+    with
+        every w in WORLD_UPDATE do
+            if w != switch_door_switch.world then
+                continue;
+            end
+
+            if switch_door_switch.is_triggered or not switch_door_switch.m_door then
+                continue;
+            end
+
+            // Check if a pingu is passing the switch
+            loop pingu in global:world:get_pingus():all_pingus do
+                if pingu:me.get_x() > switch_door_switch.switch_pos.x and
+                   pingu:me.get_x() < switch_door_switch.switch_pos.x+(float)switch_door_switch.switch_sur.get_width() and
+                   pingu:me.get_y() > switch_door_switch.switch_pos.y and
+                   pingu:me.get_y() < switch_door_switch.switch_pos.y+(float)switch_door_switch.switch_sur.get_height() then
+                    switch_door_switch.is_triggered = true;
+                    switch_door_switch.m_door:open_door();
+                    break;
+                end
+            end
+        end
+    with
+        var _WSwitchDoorSwitch* e = await DELETE_SWITCH_DOOR_SWITCH until (e == &switch_door_switch);
+    end
+end
+
+#endif

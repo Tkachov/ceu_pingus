@@ -6,24 +6,32 @@
 #include "iworld.ceu"
 #include "pingu.ceu"
 #include "pingu_holder.ceu"
+#include "worldobjs/conveyor_belt.ceu"
 #include "worldobjs/entrance.ceu"
 #include "worldobjs/exit.ceu"
 #include "worldobjs/fake_exit.ceu"
 #include "worldobjs/guillotine.ceu"
 #include "worldobjs/hammer.ceu"
+#include "worldobjs/ice_block.ceu"
 #include "worldobjs/laser_exit.ceu"
 #include "worldobjs/smasher.ceu"
 #include "worldobjs/spike.ceu"
+#include "worldobjs/switch_door_switch.ceu"
+#include "worldobjs/teleporter.ceu"
 
 input _World* DELETE_WORLD;
+input _WConveyorBelt* NEW_CONVEYOR_BELT;
 input _WEntrance* NEW_ENTRANCE;
 input _WExit* NEW_EXIT;
 input _WFakeExit* NEW_FAKE_EXIT;
 input _WGuillotine* NEW_GUILLOTINE;
 input _WHammer* NEW_HAMMER;
+input _WIceBlock* NEW_ICE_BLOCK;
 input _WLaserExit* NEW_LASER_EXIT;
 input _WSmasher* NEW_SMASHER;
 input _WSpike* NEW_SPIKE;
+input _WSwitchDoorSwitch* NEW_SWITCH_DOOR_SWITCH;
+input _WTeleporter* NEW_TELEPORTER;
 
 class World with
     interface IWorld;
@@ -46,7 +54,7 @@ do
 
             if me_.do_armageddon and me_.game_time%4 == 0 then
                 loop pingu in holder.all_pingus do
-                    if pingu:get_current_action() == _A_BOMBER or
+                    if pingu:get_current_action() == _A_BOMBER or pingu:get_current_action() == _A_DROWN or
                        pingu:get_current_action() == _A_DEAD or pingu:get_current_action() == _A_EXITED then
                         continue;
                     end
@@ -55,6 +63,12 @@ do
                     break;
                 end
             end
+        end
+    with
+        every new_cb in NEW_CONVEYOR_BELT do
+            spawn ConveyorBelt with
+                this.me = _PTR2REF(new_cb);
+            end;
         end
     with
         every new_entrance in NEW_ENTRANCE do
@@ -87,6 +101,12 @@ do
             end;
         end
     with
+        every new_ice_block in NEW_ICE_BLOCK do
+            spawn IceBlock with
+                this.me = _PTR2REF(new_ice_block);
+            end;
+        end
+    with
         every new_laser_exit in NEW_LASER_EXIT do
             spawn LaserExit with
                 this.me = _PTR2REF(new_laser_exit);
@@ -105,8 +125,22 @@ do
             end;
         end
     with
+        every new_switch_door_switch in NEW_SWITCH_DOOR_SWITCH do
+            spawn SwitchDoorSwitch with
+                this.me = _PTR2REF(new_switch_door_switch);
+            end;
+        end
+    with
+        every new_teleporter in NEW_TELEPORTER do
+            spawn Teleporter with
+                this.me = _PTR2REF(new_teleporter);
+            end;
+        end
+    with
         var _World* p = await DELETE_WORLD until (p == &me_);
     end
+
+    await 1s;
 end
 
 #endif

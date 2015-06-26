@@ -30,28 +30,17 @@ namespace WorldObjs {
 class IceBlock : public WorldObj
 {
 private:
-  /// The upper/left position  of the iceblock's
-  Vector3f pos;
-
   /** The number of iceblocks, only complete blocks are supported */
   int width;
-
-  float thickness;
-  bool  is_finished;
-  int   last_contact;
+  
   Sprite block_sur;
   CollisionMask block_sur_cmap;
 
 public:
   IceBlock(const FileReader& reader);
-
-  float get_z_pos () const { return pos.z; }
-  void set_pos(const Vector3f& p) { pos = p; }
-  Vector3f get_pos() const { return pos; }
+  ~IceBlock();
 
   void on_startup ();
-  void draw (SceneContext& gc);
-  void update ();
 
 private:
   IceBlock (const IceBlock&);
