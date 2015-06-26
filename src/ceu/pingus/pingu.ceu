@@ -78,10 +78,22 @@ do
     var bool wall_action_set = false;
 
 
+    function (void) => float get_x do
+        return me.pos_x;
+    end
+
+    function (void) => float get_y do
+        return me.pos_y;
+    end
+
+    function (void) => _Vector3f get_pos do
+        return _Vector3f(me.pos_x, me.pos_y, 0);
+    end
+
     function (int x, int y) => int rel_getpixel do
         return _WorldObj__get_world():get_colmap():getpixel(
-            me.get_x() + (float)(x * me.direction),
-            me.get_y() - (float)y
+            get_x() + (float)(x * me.direction),
+            get_y() - (float)y
         );
     end
 
@@ -112,7 +124,7 @@ do
     end
 
     function @rec (void) => Vector3f get_center_pos do
-        return ceu_action:get_center_pos();
+        return call/rec ceu_action:get_center_pos();
     end
 
     // Returns true if the given koordinates are above the pingu

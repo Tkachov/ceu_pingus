@@ -20,18 +20,18 @@ input _Server* DELETE_SERVER;
 
 class Server with
     var _Server* me;
-    function (IPingu* pingu, int action) => void send_pingu_action_event;
+    function @rec (IPingu* pingu, int action) => void send_pingu_action_event;
 do
     var _Server&? server = _PTR2REF((_Server*)me);
     var Server* self = &this;
     server.ceu_server = (void*)self;
 
-    function (IPingu* pingu, int action) => void send_pingu_action_event do
+    function @rec (IPingu* pingu, int action) => void send_pingu_action_event do
         server.record(
             _ServerEvent__make_pingu_action_event(
                 server.get_time(),
                 pingu:me.get_id(),
-                pingu:me.get_pos(),
+                pingu:get_pos(),
                 _to_AN(action)
             )
         );

@@ -54,8 +54,8 @@ do
                 end
 
                 // Now, make sure the pingu is within range
-                if pingu:me.get_x() <= exit.pos.x-1 or pingu:me.get_x() >= exit.pos.x+1 or
-                   pingu:me.get_y() <= exit.pos.y-5 or pingu:me.get_y() >= exit.pos.y+5 then
+                if pingu:get_x() <= exit.pos.x-1 or pingu:get_x() >= exit.pos.x+1 or
+                   pingu:get_y() <= exit.pos.y-5 or pingu:get_y() >= exit.pos.y+5 then
                     continue;
                 end
 

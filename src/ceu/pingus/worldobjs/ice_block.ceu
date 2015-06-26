@@ -50,8 +50,8 @@ do
             end
 
             loop pingu in global:world:get_pingus():all_pingus do
-                if pingu:me.get_x() > ice_block.pos.x and pingu:me.get_x() < ice_block.pos.x+(float)ice_block.block_sur.get_width() and
-                   pingu:me.get_y() > ice_block.pos.y-4 and pingu:me.get_y() < ice_block.pos.y+(float)ice_block.block_sur.get_height() then
+                if pingu:get_x() > ice_block.pos.x and pingu:get_x() < ice_block.pos.x+(float)ice_block.block_sur.get_width() and
+                   pingu:get_y() > ice_block.pos.y-4 and pingu:get_y() < ice_block.pos.y+(float)ice_block.block_sur.get_height() then
                     last_contact = ice_block.world:get_time();
                 end
             end

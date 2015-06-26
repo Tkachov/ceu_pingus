@@ -20,11 +20,11 @@ do
 
     catchable = true;
 
-    function (void) => Vector3f get_center_pos do
+    function @rec (void) => Vector3f get_center_pos do
         var Vector3f result;
-        result.x = pingu.me.get_pos().x;
-        result.y = pingu.me.get_pos().y - 16;
-        result.z = pingu.me.get_pos().z;
+        result.x = pingu.get_pos().x;
+        result.y = pingu.get_pos().y - 16;
+        result.z = pingu.get_pos().z;
         return result;
     end
 
@@ -38,15 +38,15 @@ do
     par do
         every pingu.e_UPDATE_CALLED do
             sprite.update();
-            pingu.me.set_pos((float)(pingu.me.get_x() + 40.0*0.025), pingu.me.get_y() - 200.0*0.025);
+            pingu.me.set_pos((float)(pingu.get_x() + 40.0*0.025), pingu.get_y() - 200.0*0.025);
 
-            if pingu.me.get_y() < -32 then
+            if pingu.get_y() < -32 then
                 escape _A_DEAD;
             end
         end
     with
         every gc in pingu.e_DRAW_CALLED do
-            _gc_color_draw2(gc, sprite, pingu.me.get_pos());
+            _gc_color_draw2(gc, sprite, pingu.get_pos());
         end
     end
 end

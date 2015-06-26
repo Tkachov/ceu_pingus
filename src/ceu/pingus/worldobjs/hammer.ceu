@@ -47,8 +47,8 @@ do
                             continue;
                         end
 
-                        if pingu:me.get_x() <= hammer.pos.x+55 or pingu:me.get_x() >= hammer.pos.x+77 or
-                           pingu:me.get_y() <= hammer.pos.y+146 or pingu:me.get_y() >= hammer.pos.y+185 then
+                        if pingu:get_x() <= hammer.pos.x+55 or pingu:get_x() >= hammer.pos.x+77 or
+                           pingu:get_y() <= hammer.pos.y+146 or pingu:get_y() >= hammer.pos.y+185 then
                             continue;
                         end
 

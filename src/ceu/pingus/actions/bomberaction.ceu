@@ -37,11 +37,11 @@ do
 
     catchable = true;
 
-    function (void) => Vector3f get_center_pos do
+    function @rec (void) => Vector3f get_center_pos do
         var Vector3f result;
-        result.x = pingu.me.get_pos().x;
-        result.y = pingu.me.get_pos().y - 16;
-        result.z = pingu.me.get_pos().z;
+        result.x = pingu.get_pos().x;
+        result.y = pingu.get_pos().y - 16;
+        result.z = pingu.get_pos().z;
         return result;
     end
 
@@ -61,24 +61,24 @@ do
     var _Movers_LinearMover&? mover = _new_LinearMover();
     finalize with _delete_LinearMover(mover); end;
 
-    _WorldObj__get_world_play_sound("ohno", pingu.me.get_pos());
+    _WorldObj__get_world_play_sound("ohno", pingu.get_pos());
 
     par do
         every pingu.e_UPDATE_CALLED do
             sprite.update();
 
             // Move the Pingu
-            mover.reset(pingu.me.get_pos());
+            mover.reset(pingu.get_pos());
             mover.update(_toVector3f(pingu.get_velocity()), _Colliders__PinguCollider(_pingu_height));
             pingu.me.set_pos(mover.get_pos());
         end
     with
         par do
             var _SceneContext* gc = await pingu.e_DRAW_CALLED until sprite.get(pingu.me.direction):get_current_frame() >= 13;
-            _gc_color_draw2(gc, explo_surf, _Vector3f(pingu.me.get_x()-32, pingu.me.get_y()-48));
+            _gc_color_draw2(gc, explo_surf, _Vector3f(pingu.get_x()-32, pingu.get_y()-48));
         with
             every gc in pingu.e_DRAW_CALLED do
-                _gc_color_draw2(gc, sprite.get(pingu.me.direction), pingu.me.get_pos());
+                _gc_color_draw2(gc, sprite.get(pingu.me.direction), pingu.get_pos());
             end
         end
     with
@@ -100,14 +100,14 @@ do
         end
 
         //Play sound at 10th frame (>9)
-        _WorldObj__get_world():play_sound("plop", pingu.me.get_pos());
+        _WorldObj__get_world():play_sound("plop", pingu.get_pos());
 
         //Wait for 13th frame to throw particles
         await pingu.e_UPDATE_CALLED until (sprite.get(pingu.me.direction):get_current_frame() > 12);
 
         // Throwing particles
         _WorldObj__get_world():get_pingu_particle_holder():add_particle(
-            (int)pingu.me.get_x(), (int)pingu.me.get_y() - 5
+            (int)pingu.get_x(), (int)pingu.get_y() - 5
         );
 
         //Wait for 13th frame again?..
@@ -115,8 +115,8 @@ do
 
         _WorldObj__get_world_remove(
             bomber_radius,
-            (int)((int)pingu.me.get_x() - (bomber_radius.get_width()/2)),
-            (int)((int)pingu.me.get_y() - 16 - (bomber_radius.get_width()/2))
+            (int)((int)pingu.get_x() - (bomber_radius.get_width()/2)),
+            (int)((int)pingu.get_y() - 16 - (bomber_radius.get_width()/2))
         );
 
         // The pingu explode

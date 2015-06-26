@@ -43,10 +43,10 @@ do
 
             // Check if a pingu is passing the switch
             loop pingu in global:world:get_pingus():all_pingus do
-                if pingu:me.get_x() > switch_door_switch.switch_pos.x and
-                   pingu:me.get_x() < switch_door_switch.switch_pos.x+(float)switch_door_switch.switch_sur.get_width() and
-                   pingu:me.get_y() > switch_door_switch.switch_pos.y and
-                   pingu:me.get_y() < switch_door_switch.switch_pos.y+(float)switch_door_switch.switch_sur.get_height() then
+                if pingu:get_x() > switch_door_switch.switch_pos.x and
+                   pingu:get_x() < switch_door_switch.switch_pos.x+(float)switch_door_switch.switch_sur.get_width() and
+                   pingu:get_y() > switch_door_switch.switch_pos.y and
+                   pingu:get_y() < switch_door_switch.switch_pos.y+(float)switch_door_switch.switch_sur.get_height() then
                     switch_door_switch.is_triggered = true;
                     switch_door_switch.m_door:open_door();
                     break;

@@ -32,13 +32,13 @@ class ServerEvent with
 do
     var _ServerEvent&? server_event = _PTR2REF((_ServerEvent*)me);
 
-    function (Server* server, IPingu* p) => void do_pingu_action_event do        
+    function @rec (Server* server, IPingu* p) => void do_pingu_action_event do        
         if p then
-            if server_event.pos.x != p:me.get_pos().x or server_event.pos.y != p:me.get_pos().y then
+            if server_event.pos.x != p:get_pos().x or server_event.pos.y != p:get_pos().y then
                 _log_error("DemoFile inconsistent with world, pingu %1% is at the wrong position", server_event.pingu_id);
             end
 
-            server:send_pingu_action_event(p, server_event.pingu_action);     
+            call/rec server:send_pingu_action_event(p, server_event.pingu_action);     
         else
             _log_error("DemoFile inconsistent with world, pingu %1% missing", server_event.pingu_id);
         end
@@ -59,7 +59,7 @@ do
             else/if server_event.type == _SE_END_EVENT then
                 // do nothing
             else/if server_event.type == _SE_PINGU_ACTION_EVENT then                                
-                do_pingu_action_event(server, global:world:get_pingus():get_pingu(server_event.pingu_id));
+                call/rec do_pingu_action_event(server, global:world:get_pingus():get_pingu(server_event.pingu_id));
             else
                 _assert(not "Unknown type");
             end

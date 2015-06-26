@@ -86,11 +86,7 @@ bool Pingu::request_set_action(ActionName::Enum action_name) {
   return package.result;
 }
 
-Vector3f
-Pingu::get_pos () const
-{
-  return Vector3f(pos_x, pos_y, 0);
-}
+
 
 int
 Pingu::get_owner ()

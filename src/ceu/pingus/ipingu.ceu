@@ -46,6 +46,10 @@ interface IPingu with
     function (Vector3f) => void apply_force;
 
     function (void) => IPingu& get_ref;
+
+    function (void) => float get_x;
+    function (void) => float get_y;
+    function (void) => _Vector3f get_pos;
 end
 
 #endif

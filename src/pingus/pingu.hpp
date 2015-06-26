@@ -64,20 +64,6 @@ public:
   /** Destruct the pingu... */
   ~Pingu ();
 
-  /** Return the logical pingus position, this is the position which
-      is used for collision detection to the ground (the pingus
-      feet) */
-  Vector3f get_pos () const;
-
-  /** Returns the x position of the pingu
-   * For backward comp. only
-   */
-  const float& get_x () const { return pos_x; }
-
-  /** Returns the y position of the pingu
-      For backward comp. only */
-  const float& get_y () const { return pos_y; }
-
   int get_xi () const { return static_cast<int>(pos_x); }
   int get_yi () const { return static_cast<int>(pos_y); }
 

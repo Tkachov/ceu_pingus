@@ -37,8 +37,8 @@ do
 
             if not killing then
                 loop pingu in global:world:get_pingus():all_pingus do
-                    if pingu:me.get_x() <= exit.pos.x+34 or pingu:me.get_x() >= exit.pos.x+34+10 or
-                       pingu:me.get_y() <= exit.pos.y+43 or pingu:me.get_y() >= exit.pos.y+43+20 then
+                    if pingu:get_x() <= exit.pos.x+34 or pingu:get_x() >= exit.pos.x+34+10 or
+                       pingu:get_y() <= exit.pos.y+43 or pingu:get_y() >= exit.pos.y+43+20 then
                         continue;
                     end
 

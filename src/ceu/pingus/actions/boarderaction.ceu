@@ -21,11 +21,11 @@ do
 
     catchable = true;
 
-    function (void) => Vector3f get_center_pos do
+    function @rec (void) => Vector3f get_center_pos do
         var Vector3f result;
-        result.x = pingu.me.get_pos().x;
-        result.y = pingu.me.get_pos().y - 16;
-        result.z = pingu.me.get_pos().z;
+        result.x = pingu.get_pos().x;
+        result.y = pingu.get_pos().y - 16;
+        result.z = pingu.get_pos().z;
         return result;
     end
 
@@ -40,7 +40,7 @@ do
 
     par do
         every gc in pingu.e_DRAW_CALLED do
-            _gc_color_draw2(gc, sprite.get(pingu.me.direction), pingu.me.get_pos());
+            _gc_color_draw2(gc, sprite.get(pingu.me.direction), pingu.get_pos());
         end
     with
         every pingu.e_UPDATE_CALLED do
@@ -64,17 +64,17 @@ do
 
             // Incremental update so that we don't skip pixels
             var Vector3f new_pos;
-            new_pos.x = pingu.me.get_pos().x + (float)(pingu.me.direction)*speed;
-            new_pos.y = pingu.me.get_pos().y;
+            new_pos.x = pingu.get_pos().x + (float)(pingu.me.direction)*speed;
+            new_pos.y = pingu.get_pos().y;
 
             loop/100 do
-                if (int)new_pos.x == (int)pingu.me.get_pos().x then
+                if (int)new_pos.x == (int)pingu.get_pos().x then
                     break;
                 end
 
                 var Vector3f old_pos;
-                old_pos.x = pingu.me.get_pos().x;
-                old_pos.y = pingu.me.get_pos().y;
+                old_pos.x = pingu.get_pos().x;
+                old_pos.y = pingu.get_pos().y;
 
                 var float offset = 1;
                 if old_pos.x >= new_pos.x then

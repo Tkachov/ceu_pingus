@@ -43,15 +43,15 @@ do
 
             loop pingu in global:world:get_pingus():all_pingus do
                 if not killing then
-                    if pingu:me.get_x() > spike.pos.x+16-5 and pingu:me.get_x() < spike.pos.x+16+5 and
-                       pingu:me.get_y() > spike.pos.y and pingu:me.get_y() < spike.pos.y+32 then
+                    if pingu:get_x() > spike.pos.x+16-5 and pingu:get_x() < spike.pos.x+16+5 and
+                       pingu:get_y() > spike.pos.y and pingu:get_y() < spike.pos.y+32 then
                       spike.surface.restart();
                       killing = true;
                     end
                 else
                     if spike.surface.get_current_frame() == 3 and
-                       pingu:me.get_x() > spike.pos.x+16-12 and pingu:me.get_x() < spike.pos.x+16+12 and
-                       pingu:me.get_y() > spike.pos.y and pingu:me.get_y() < spike.pos.y+32 then
+                       pingu:get_x() > spike.pos.x+16-12 and pingu:get_x() < spike.pos.x+16+12 and
+                       pingu:get_y() > spike.pos.y and pingu:get_y() < spike.pos.y+32 then
                       emit pingu:e_CHANGE_ACTION => _A_DEAD;
                     end
                 end

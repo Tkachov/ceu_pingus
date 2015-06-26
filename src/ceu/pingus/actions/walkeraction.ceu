@@ -21,11 +21,11 @@ do
 
     catchable = true;
 
-    function (void) => Vector3f get_center_pos do
+    function @rec (void) => Vector3f get_center_pos do
         var Vector3f result;
-        result.x = pingu.me.get_pos().x;
-        result.y = pingu.me.get_pos().y - 16;
-        result.z = pingu.me.get_pos().z;
+        result.x = pingu.get_pos().x;
+        result.y = pingu.get_pos().y - 16;
+        result.z = pingu.get_pos().z;
         return result;
     end
 
@@ -51,10 +51,10 @@ do
 
     par do
         every gc in pingu.e_DRAW_CALLED do
-            _gc_color_draw2(gc, sprite.get(pingu.me.direction), pingu.me.get_pos());
+            _gc_color_draw2(gc, sprite.get(pingu.me.direction), pingu.get_pos());
 
             if pingu.has_fall_action() and pingu.get_fall_action() == _A_FLOATER then
-                _gc_color_draw2(gc, floaterlayer.get(pingu.me.direction), pingu.me.get_pos());
+                _gc_color_draw2(gc, floaterlayer.get(pingu.me.direction), pingu.get_pos());
             end
         end
     with
@@ -78,7 +78,7 @@ do
              */
 
             if pingu.rel_getpixel(1, 0) == _GT_OUTOFSCREEN then
-                pingu.me.set_x(pingu.me.get_x() + (float)(pingu.me.direction));
+                pingu.me.set_x(pingu.get_x() + (float)(pingu.me.direction));
                 continue;
             end
 
@@ -87,9 +87,9 @@ do
             end
 
             var Vector3f last_pos;
-            last_pos.x = pingu.me.get_pos().x;
-            last_pos.y = pingu.me.get_pos().y;
-            last_pos.z = pingu.me.get_pos().z;
+            last_pos.x = pingu.get_pos().x;
+            last_pos.y = pingu.get_pos().y;
+            last_pos.z = pingu.get_pos().z;
 
             // The Pingu stands no longer on ground, the cause for this could be
             // a digger, miner or a bomber
@@ -109,7 +109,7 @@ do
                 end
 
                 if found_ground then
-                    pingu.me.set_y(pingu.me.get_y() - (float)level);
+                    pingu.me.set_y(pingu.get_y() - (float)level);
                 else
                     escape _A_FALLER;
                 end
@@ -120,8 +120,8 @@ do
                 // simple, stupid, but working bridge code
                 // original FIXME: We don't check if we 'drift' into a solid ground block
                 pingu.me.set_pos(
-                    pingu.me.get_x() + (float)pingu.me.direction,
-                    pingu.me.get_y() - 1.0); // pingus 'float' through bridges
+                    pingu.get_x() + (float)pingu.me.direction,
+                    pingu.get_y() - 1.0); // pingus 'float' through bridges
 
             else
                 // Non of the trivial moves worked, so we do up-hill or down-hill walking
@@ -157,8 +157,8 @@ do
                 if found_next_step then
                     // pos.y has a reversed co-system to rel_getpixel()?
                     pingu.me.set_pos(
-                        pingu.me.get_x() + (float)pingu.me.direction,
-                        pingu.me.get_y() - (float)possible_y_step);
+                        pingu.get_x() + (float)pingu.me.direction,
+                        pingu.get_y() - (float)possible_y_step);
                 else
                     if pingu.rel_getpixel(1, 0) != _GT_NOTHING then
                         // We reached a wall
@@ -171,7 +171,7 @@ do
                         pingu.me.direction.change();
                     else
                         // We take the step, so that we are in the air
-                        pingu.me.set_x(pingu.me.get_x() + (float)pingu.me.direction);
+                        pingu.me.set_x(pingu.get_x() + (float)pingu.me.direction);
 
                         // We reached a cliff
                         escape _A_FALLER;

@@ -79,7 +79,7 @@ do
 
             if current_pingu then
                 var Server* server = (Server*)playfield.server:ceu_server;
-                server:send_pingu_action_event(current_pingu, playfield.session:get_action_name());
+                call/rec server:send_pingu_action_event(current_pingu, playfield.session:get_action_name());
             end
         end
     with
