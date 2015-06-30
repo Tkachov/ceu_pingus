@@ -27,7 +27,7 @@ input _WOCPackage* NEW_FAKE_EXIT;
 input _WOCPackage* NEW_GUILLOTINE;
 input _WOCPackage* NEW_HAMMER;
 input _WOCPackage* NEW_ICE_BLOCK;
-input _WLaserExit* NEW_LASER_EXIT;
+input _WOCPackage* NEW_LASER_EXIT;
 input _WSmasher* NEW_SMASHER;
 input _WSpike* NEW_SPIKE;
 input _WSwitchDoorSwitch* NEW_SWITCH_DOOR_SWITCH;
@@ -171,9 +171,13 @@ do
             end;
         end
     with
-        every new_laser_exit in NEW_LASER_EXIT do
+        every package in NEW_LASER_EXIT do
             spawn LaserExit with
-                this.me = _PTR2REF(new_laser_exit);
+                this.me = _new_WorldObj();
+                package:result = this.me;
+
+                this.surface = _PTR2REF(_new_SpriteA("traps/laser_exit"));
+                package:reader:read_vector("position", _PTR2REF(this.me:pos));
             end;
         end
     with

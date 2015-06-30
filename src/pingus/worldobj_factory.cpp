@@ -22,7 +22,6 @@
 #include "pingus/worldobjs/entrance.hpp"
 #include "pingus/worldobjs/groundpiece.hpp"
 #include "pingus/worldobjs/hotspot.hpp"
-#include "pingus/worldobjs/laser_exit.hpp"
 #include "pingus/worldobjs/liquid.hpp"
 #include "pingus/worldobjs/rain_generator.hpp"
 #include "pingus/worldobjs/smasher.hpp"
@@ -212,7 +211,7 @@ WorldObjFactory::instance()
     new WorldObjCeuFactoryImpl(CEU_IN_NEW_FAKE_EXIT, "fake_exit");
     new WorldObjCeuFactoryImpl(CEU_IN_NEW_GUILLOTINE, "guillotine");
     new WorldObjCeuFactoryImpl(CEU_IN_NEW_HAMMER, "hammer");
-    new WorldObjFactoryImpl<LaserExit>("laser_exit");
+    new WorldObjCeuFactoryImpl(CEU_IN_NEW_LASER_EXIT, "laser_exit");
     new WorldObjFactoryImpl<Smasher>("smasher");
     new WorldObjFactoryImpl<Spike>("spike");
 

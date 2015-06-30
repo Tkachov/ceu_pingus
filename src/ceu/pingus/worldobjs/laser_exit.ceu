@@ -8,18 +8,15 @@
 #include "../ipingu_holder.ceu"
 #include "../pingu_holder_listener.ceu"
 
-native/pre do
-    ##include "pingus/worldobjs/laser_exit.hpp"
-    ##define WLaserExit WorldObjs::LaserExit
-end
-
-input _WLaserExit* DELETE_LASER_EXIT;
-
 class LaserExit with
     interface IWorldObj;
+    var _Sprite&? surface;
 do
-    var _WLaserExit&? exit = _PTR2REF((_WLaserExit*)me);
+    var _WorldObj&? exit = _PTR2REF(me);
     var bool killing = false;
+
+    //delete laser_exit
+    finalize with _delete_obj(surface); end
 
     par/or do
         every package in WORLDOBJ_DRAW do
@@ -27,7 +24,7 @@ do
                 continue;
             end
 
-            _gc_color_draw2(package:gc, &exit.surface, exit.pos);
+            _gc_color_draw2(package:gc, &surface, exit.pos);
         end
     with
         every w in WORLD_UPDATE do
@@ -52,16 +49,16 @@ do
             end
 
             if killing then
-                if exit.surface.is_finished() then
-                    exit.surface.restart();
+                if surface.is_finished() then
+                    surface.restart();
                     killing = false;
                 else
-                    exit.surface.update();
+                    surface.update();
                 end
             end
         end
     with
-        var _WLaserExit* e = await DELETE_LASER_EXIT until (e == &exit);
+        var _WorldObj* e = await DELETE_WORLDOBJ until (e == &exit);
     end
 end
 
