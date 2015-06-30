@@ -8,18 +8,15 @@
 #include "../ipingu_holder.ceu"
 #include "../pingu_holder_listener.ceu"
 
-native/pre do
-    ##include "pingus/worldobjs/spike.hpp"
-    ##define WSpike WorldObjs::Spike
-end
-
-input _WSpike* DELETE_SPIKE;
-
 class Spike with
     interface IWorldObj;
+    var _Sprite&? surface;
 do
-    var _WSpike&? spike = _PTR2REF((_WSpike*)me);
+    var _WorldObj&? spike = _PTR2REF(me);
     var bool killing = false;
+
+    //delete spike
+    finalize with _delete_obj(surface); end;
 
     par/or do
         every package in WORLDOBJ_DRAW do
@@ -28,7 +25,7 @@ do
             end
 
             if killing then
-                _gc_color_draw2(package:gc, &spike.surface, spike.pos);
+                _gc_color_draw2(package:gc, &surface, spike.pos);
             end
         end
     with
@@ -38,18 +35,18 @@ do
             end
 
             if killing then
-                spike.surface.update();
+                surface.update();
             end
 
             loop pingu in global:world:get_pingus():all_pingus do
                 if not killing then
                     if pingu:get_x() > spike.pos.x+16-5 and pingu:get_x() < spike.pos.x+16+5 and
                        pingu:get_y() > spike.pos.y and pingu:get_y() < spike.pos.y+32 then
-                      spike.surface.restart();
+                      surface.restart();
                       killing = true;
                     end
                 else
-                    if spike.surface.get_current_frame() == 3 and
+                    if surface.get_current_frame() == 3 and
                        pingu:get_x() > spike.pos.x+16-12 and pingu:get_x() < spike.pos.x+16+12 and
                        pingu:get_y() > spike.pos.y and pingu:get_y() < spike.pos.y+32 then
                       emit pingu:e_CHANGE_ACTION => _A_DEAD;
@@ -57,12 +54,12 @@ do
                 end
             end
 
-            if spike.surface.get_current_frame() == spike.surface.get_frame_count()-1 then
+            if surface.get_current_frame() == surface.get_frame_count()-1 then
                 killing = false;
             end
         end
     with
-        var _WSpike* e = await DELETE_SPIKE until (e == &spike);
+        var _WorldObj* e = await DELETE_WORLDOBJ until (e == &spike);
     end
 end
 

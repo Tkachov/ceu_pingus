@@ -24,10 +24,8 @@
 #include "pingus/worldobjs/hotspot.hpp"
 #include "pingus/worldobjs/liquid.hpp"
 #include "pingus/worldobjs/rain_generator.hpp"
-#include "pingus/worldobjs/smasher.hpp"
 #include "pingus/worldobjs/snow_generator.hpp"
 #include "pingus/worldobjs/solid_color_background.hpp"
-#include "pingus/worldobjs/spike.hpp"
 #include "pingus/worldobjs/starfield_background.hpp"
 #include "pingus/worldobjs/surface_background.hpp"
 #include "pingus/worldobjs/switch_door_door.hpp"
@@ -212,8 +210,8 @@ WorldObjFactory::instance()
     new WorldObjCeuFactoryImpl(CEU_IN_NEW_GUILLOTINE, "guillotine");
     new WorldObjCeuFactoryImpl(CEU_IN_NEW_HAMMER, "hammer");
     new WorldObjCeuFactoryImpl(CEU_IN_NEW_LASER_EXIT, "laser_exit");
-    new WorldObjFactoryImpl<Smasher>("smasher");
-    new WorldObjFactoryImpl<Spike>("spike");
+    new WorldObjCeuFactoryImpl(CEU_IN_NEW_SMASHER, "smasher");
+    new WorldObjCeuFactoryImpl(CEU_IN_NEW_SPIKE, "spike");
 
     // Special Objects
     new WorldObjFactoryImpl<SwitchDoorSwitch>("switchdoor-switch");

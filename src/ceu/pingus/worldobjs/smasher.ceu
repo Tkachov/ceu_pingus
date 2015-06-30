@@ -10,30 +10,41 @@
 #include "../pingu_holder_listener.ceu"
 
 native/pre do
-    ##include "pingus/worldobjs/smasher.hpp"
     ##include "pingus/particles/smoke_particle_holder.hpp"
-    ##define WSmasher WorldObjs::Smasher
     ##define Math__frand Math::frand
 end
 
-input _WSmasher* DELETE_SMASHER;
-
 class Smasher with
     interface IWorldObj;
+    var _Sprite&? sprite;
 do
-    var _WSmasher&? smasher = _PTR2REF((_WSmasher*)me);
+    var _WorldObj&? smasher = _PTR2REF(me);
+
+    //delete smasher
+    finalize with _delete_obj(sprite); end;
 
     var bool smashing = false;
     var bool downwards = false;
     var int count = 0;
 
     par/or do
+        every wo in WORLDOBJ_STARTUP do
+            if wo != &smasher then
+                continue;
+            end
+
+            _log_info("Drawing colmap entry");
+            var _CollisionMask* mask = _new_CollisionMask("traps/smasher_cmap");
+            _world_put(smasher.world, mask, (int)smasher.pos.x, (int)smasher.pos.y, _GT_SOLID);
+            _delete_obj(mask);
+        end
+    with
         every package in WORLDOBJ_DRAW do
             if package:worldobj != &smasher then
                 continue;
             end
 
-            _gc_color_draw2(package:gc, &smasher.sprite, smasher.pos);
+            _gc_color_draw2(package:gc, &sprite, smasher.pos);
         end
     with
         every w in WORLD_UPDATE do
@@ -62,7 +73,7 @@ do
                 continue;
             end
 
-            smasher.sprite.set_frame(count);
+            sprite.set_frame(count);
 
             if downwards then
                 if count < 5 then
@@ -83,7 +94,7 @@ do
                     end
 
                     loop pingu in global:world:get_pingus():all_pingus do
-                        if pingu:get_current_action() == _A_SPLASHED or
+                        if pingu:get_current_action() == _A_SPLASHED or pingu:get_current_action() == _A_BOMBER or
                            pingu:get_current_action() == _A_DEAD or pingu:get_current_action() == _A_EXITED then
                             continue;
                         end
@@ -103,7 +114,7 @@ do
             end
         end
     with
-        var _WSmasher* e = await DELETE_SMASHER until (e == &smasher);
+        var _WorldObj* e = await DELETE_WORLDOBJ until (e == &smasher);
     end
 end
 

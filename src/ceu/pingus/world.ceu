@@ -28,8 +28,8 @@ input _WOCPackage* NEW_GUILLOTINE;
 input _WOCPackage* NEW_HAMMER;
 input _WOCPackage* NEW_ICE_BLOCK;
 input _WOCPackage* NEW_LASER_EXIT;
-input _WSmasher* NEW_SMASHER;
-input _WSpike* NEW_SPIKE;
+input _WOCPackage* NEW_SMASHER;
+input _WOCPackage* NEW_SPIKE;
 input _WSwitchDoorSwitch* NEW_SWITCH_DOOR_SWITCH;
 input _WTeleporter* NEW_TELEPORTER;
 
@@ -181,15 +181,24 @@ do
             end;
         end
     with
-        every new_smasher in NEW_SMASHER do
+        every package in NEW_SMASHER do
             spawn Smasher with
-                this.me = _PTR2REF(new_smasher);
+                this.me = _new_WorldObj();
+                package:result = this.me;
+
+                this.sprite = _PTR2REF(_new_SpriteA("traps/smasher"));
+                package:reader:read_vector("position", _PTR2REF(this.me:pos));
+                _assert(this.sprite.get_frame_count() == 6);
             end;
         end
     with
-        every new_spike in NEW_SPIKE do
+        every package in NEW_SPIKE do
             spawn Spike with
-                this.me = _PTR2REF(new_spike);
+                this.me = _new_WorldObj();
+                package:result = this.me;
+
+                this.surface = _PTR2REF(_new_SpriteA("traps/spike"));
+                package:reader:read_vector("position", _PTR2REF(this.me:pos));
             end;
         end
     with
