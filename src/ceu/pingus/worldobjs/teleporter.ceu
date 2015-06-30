@@ -10,48 +10,71 @@
 #include "../pingu_holder_listener.ceu"
 
 native/pre do
-    ##include "pingus/worldobjs/teleporter.hpp"
-    ##define WTeleporter WorldObjs::Teleporter
-
     ##include "pingus/worldobjs/teleporter_target.hpp"
+    ##define WTeleporterTarget WorldObjs::TeleporterTarget
+    ##define dynamic_cast_TeleporterTarget(x) dynamic_cast<WorldObjs::TeleporterTarget*>(x)
 end
 
-input _WTeleporter* DELETE_TELEPORTER;
+native @pure _dynamic_cast_TeleporterTarget();
 
 class Teleporter with
     interface IWorldObj;
+    var _Sprite&? sprite;
+    var _String&? target_id;
 do
-    var _WTeleporter&? teleporter = _PTR2REF((_WTeleporter*)me);
+    var _WorldObj&? teleporter = _PTR2REF(me);
+
+    //delete teleporter
+    finalize with _delete_obj(sprite); end;
+    finalize with _delete_obj(target_id); end;
+
+    var _WTeleporterTarget* target = null;
 
     par/or do
+         every wo in WORLDOBJ_STARTUP do
+            if wo != &teleporter then
+                continue;
+            end
+
+            if target_id.empty() then
+                _log_error("target-id is empty");
+            else
+                //original FIXME: find the target
+                target = _dynamic_cast_TeleporterTarget(teleporter.world:get_worldobj(target_id.c_str()));
+                if not target then
+                    _log_error("Teleporter: Couldn't find matching target-id or object isn't a TeleporterTarget");
+                end
+            end
+        end
+    with
         every package in WORLDOBJ_DRAW do
             if package:worldobj != &teleporter then
                 continue;
             end
 
-            _gc_color_draw2(package:gc, &teleporter.sprite, teleporter.pos);            
-        end        
+            _gc_color_draw2(package:gc, &sprite, teleporter.pos);
+        end
     with
         every w in WORLD_UPDATE do
             if w != teleporter.world then
                 continue;
             end
 
-            teleporter.sprite.update();
+            sprite.update();
 
-            if teleporter.target then
+            if target then
                 loop pingu in global:world:get_pingus():all_pingus do
                     if pingu:get_x() > teleporter.pos.x-3 and pingu:get_x() < teleporter.pos.x+3 and
                        pingu:get_y() > teleporter.pos.y-52 and pingu:get_y() < teleporter.pos.y then
-                        pingu:set_posf(teleporter.target:get_pos().x, teleporter.target:get_pos().y);
-                        teleporter.target:teleporter_used();
-                        teleporter.sprite.restart();
+                        pingu:set_posf(target:get_pos().x, target:get_pos().y);
+                        target:teleporter_used();
+                        sprite.restart();
                     end
                 end
             end
         end
     with
-        var _WTeleporter* e = await DELETE_TELEPORTER until (e == &teleporter);
+        var _WorldObj* e = await DELETE_WORLDOBJ until (e == &teleporter);
     end
 end
 

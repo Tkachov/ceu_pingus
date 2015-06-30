@@ -30,8 +30,8 @@ input _WOCPackage* NEW_ICE_BLOCK;
 input _WOCPackage* NEW_LASER_EXIT;
 input _WOCPackage* NEW_SMASHER;
 input _WOCPackage* NEW_SPIKE;
-input _WSwitchDoorSwitch* NEW_SWITCH_DOOR_SWITCH;
-input _WTeleporter* NEW_TELEPORTER;
+input _WOCPackage* NEW_SWITCH_DOOR_SWITCH;
+input _WOCPackage* NEW_TELEPORTER;
 
 class World with
     interface IWorld;
@@ -202,15 +202,29 @@ do
             end;
         end
     with
-        every new_switch_door_switch in NEW_SWITCH_DOOR_SWITCH do
+        every package in NEW_SWITCH_DOOR_SWITCH do
             spawn SwitchDoorSwitch with
-                this.me = _PTR2REF(new_switch_door_switch);
+                this.me = _new_WorldObj();
+                package:result = this.me;
+
+                this.switch_sur = _PTR2REF(_new_SpriteA("worldobjs/switchdoor_switch"));
+                this.is_triggered = false;
+                this.m_target = _PTR2REF(_new_String());
+                _string_read_string(this.m_target, package:reader, "target-id");
+                package:reader:read_vector("position", _PTR2REF(this.me:pos));
+                this.me:pos.z = 100; //TODO: somehow guarantee that it always stays that way
             end;
         end
     with
-        every new_teleporter in NEW_TELEPORTER do
+        every package in NEW_TELEPORTER do
             spawn Teleporter with
-                this.me = _PTR2REF(new_teleporter);
+                this.me = _new_WorldObj();
+                package:result = this.me;
+
+                this.sprite = _PTR2REF(_new_SpriteA("worldobjs/teleporter"));
+                package:reader:read_vector("position", _PTR2REF(this.me:pos));
+                this.target_id = _PTR2REF(_new_String());
+                _string_read_string(this.target_id, package:reader, "target-id");
             end;
         end
     with

@@ -29,8 +29,6 @@
 #include "pingus/worldobjs/starfield_background.hpp"
 #include "pingus/worldobjs/surface_background.hpp"
 #include "pingus/worldobjs/switch_door_door.hpp"
-#include "pingus/worldobjs/switch_door_switch.hpp"
-#include "pingus/worldobjs/teleporter.hpp"
 #include "pingus/worldobjs/teleporter_target.hpp"
 #include "util/log.hpp"
 #include "util/overrride_file_reader.hpp"
@@ -214,11 +212,11 @@ WorldObjFactory::instance()
     new WorldObjCeuFactoryImpl(CEU_IN_NEW_SPIKE, "spike");
 
     // Special Objects
-    new WorldObjFactoryImpl<SwitchDoorSwitch>("switchdoor-switch");
+    new WorldObjCeuFactoryImpl(CEU_IN_NEW_SWITCH_DOOR_SWITCH, "switchdoor-switch");
     new WorldObjFactoryImpl<SwitchDoorDoor>("switchdoor-door");
     new WorldObjCeuFactoryImpl(CEU_IN_NEW_ICE_BLOCK, "iceblock");
     new WorldObjCeuFactoryImpl(CEU_IN_NEW_CONVEYOR_BELT, "conveyorbelt");
-    new WorldObjFactoryImpl<Teleporter>("teleporter");
+    new WorldObjCeuFactoryImpl(CEU_IN_NEW_TELEPORTER, "teleporter");
     new WorldObjFactoryImpl<TeleporterTarget>("teleporter-target");
 
     // Backgrounds

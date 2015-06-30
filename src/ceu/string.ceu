@@ -9,21 +9,25 @@ native/pre do
     ##define const_char_string const char*
 
     ##define new_String() new std::string()
-    ##define delete_String(s) delete s; 
+    ##define delete_String(s) delete s;
     ##define String std::string
 
     ##define string_set(s, v) *s = v
     ##define string_add(s, v) *s += v
+    ##define string_read_string(s, reader, id) reader->read_string(id, *s)
 end
 
 native @pure _new_String(),
              _delete_String(),
              _string_set(),
-             _string_add();
+             _string_add(),
+             _string_read_string();
 
 class String with
     function (_const_char_string v) => void set;
     function (_const_char_string v) => void add;
+    function (_FileReader* reader, _const_char_string id) => void read_from_reader;
+    function (void) => bool empty;
     function (void) => _const_char_string get;
 do
     var _String&? ss = _PTR2REF(_new_String());
@@ -35,6 +39,14 @@ do
 
     function (_const_char_string v) => void add do
         _string_add(ss, v);
+    end
+
+    function (_FileReader* reader, _const_char_string id) => void read_from_reader do
+        _string_read_string(ss, reader, id);
+    end
+
+    function (void) => bool empty do
+        return ss.empty();
     end
 
     function (void) => _const_char_string get do

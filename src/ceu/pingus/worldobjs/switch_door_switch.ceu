@@ -10,51 +10,76 @@
 #include "../pingu_holder_listener.ceu"
 
 native/pre do
-    ##include "pingus/worldobjs/switch_door_switch.hpp"
-    ##define WSwitchDoorSwitch WorldObjs::SwitchDoorSwitch
-
     ##include "pingus/worldobjs/switch_door_door.hpp"
+    ##define WSwitchDoorDoor WorldObjs::SwitchDoorDoor
+    ##define dynamic_cast_SwitchDoorDoor(x) dynamic_cast<WorldObjs::SwitchDoorDoor*>(x)
 end
 
-input _WSwitchDoorSwitch* DELETE_SWITCH_DOOR_SWITCH;
+native @pure _dynamic_cast_SwitchDoorDoor();
+
+input _WorldObj* DELETE_SWITCH_DOOR_SWITCH;
 
 class SwitchDoorSwitch with
     interface IWorldObj;
+    var _Sprite&? switch_sur;
+    var _String&? m_target;
+    var bool is_triggered;
 do
-    var _WSwitchDoorSwitch&? switch_door_switch = _PTR2REF((_WSwitchDoorSwitch*)me);
+    var _WorldObj&? switch_door_switch = _PTR2REF(me);
+
+    //delete switch
+    finalize with _delete_obj(switch_sur); end;
+    finalize with _delete_obj(m_target); end;
+
+    var _WSwitchDoorDoor* m_door = null;
 
     par/or do
+         every wo in WORLDOBJ_STARTUP do
+            if wo != &switch_door_switch then
+                continue;
+            end
+
+            if m_target.empty() then
+                _log_error("target-id is empty");
+            else
+                m_door = _dynamic_cast_SwitchDoorDoor(switch_door_switch.world:get_worldobj(m_target.c_str()));
+                if not m_door then
+                    _log_error("given target-id is not a SwitchDoorDoor");
+                end
+            end
+        end
+    with
         every package in WORLDOBJ_DRAW do
             if package:worldobj != &switch_door_switch then
                 continue;
             end
 
-            _gc_color_draw2(package:gc, &switch_door_switch.switch_sur, switch_door_switch.switch_pos);
-        end        
+            _gc_color_draw2(package:gc, &switch_sur, switch_door_switch.pos);
+        end
     with
         every w in WORLD_UPDATE do
             if w != switch_door_switch.world then
                 continue;
             end
 
-            if switch_door_switch.is_triggered or not switch_door_switch.m_door then
+            if is_triggered or not m_door then
                 continue;
             end
 
             // Check if a pingu is passing the switch
             loop pingu in global:world:get_pingus():all_pingus do
-                if pingu:get_x() > switch_door_switch.switch_pos.x and
-                   pingu:get_x() < switch_door_switch.switch_pos.x+(float)switch_door_switch.switch_sur.get_width() and
-                   pingu:get_y() > switch_door_switch.switch_pos.y and
-                   pingu:get_y() < switch_door_switch.switch_pos.y+(float)switch_door_switch.switch_sur.get_height() then
-                    switch_door_switch.is_triggered = true;
-                    switch_door_switch.m_door:open_door();
+                if pingu:get_x() > switch_door_switch.pos.x and
+                   pingu:get_x() < switch_door_switch.pos.x+(float)switch_sur.get_width() and
+                   pingu:get_y() > switch_door_switch.pos.y and
+                   pingu:get_y() < switch_door_switch.pos.y+(float)switch_sur.get_height() then
+                    is_triggered = true;
+                    m_door:open_door();
                     break;
                 end
             end
         end
     with
-        var _WSwitchDoorSwitch* e = await DELETE_SWITCH_DOOR_SWITCH until (e == &switch_door_switch);
+        var _WorldObj* e = await DELETE_WORLDOBJ until (e == &switch_door_switch);
     end
 end
 
