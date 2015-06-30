@@ -9,30 +9,37 @@
 #include "../pingu_holder_listener.ceu"
 
 native/pre do
-    ##include "pingus/worldobjs/entrance.hpp"
-    ##define WEntrance WorldObjs::Entrance
-    ##define ED_MISC WorldObjs::Entrance::EntranceDirection::MISC
-    ##define ED_LEFT WorldObjs::Entrance::EntranceDirection::LEFT
-
     ##include "pingus/components/smallmap.hpp"
 end
 
-input _WEntrance* DELETE_ENTRANCE;
+#define ED_LEFT 1
+#define ED_RIGHT 2
+#define ED_MISC 3
 
 class Entrance with
     interface IWorldObj;
-do
-    var _WEntrance&? entrance = _PTR2REF((_WEntrance*)me);
+    var int direction;
+    var int release_rate;
+    var int owner_id;
 
-    var int last_release = 150 - entrance.release_rate;
+    var _Sprite&? smallmap_symbol;
+    var _Sprite&? surface;
+do
+    var _WorldObj&? entrance = _PTR2REF(me);
+
+    //delete entrance
+    finalize with _delete_obj(smallmap_symbol); end;
+    finalize with _delete_obj(surface); end;
+
+    var int last_release = 150 - release_rate;
     var bool go_left = true;
 
-    if entrance.direction != _ED_LEFT then
+    if direction != ED_LEFT then
         go_left = false;
     end
 
     function (void) => bool pingu_ready do
-        if (last_release + entrance.release_rate) < entrance.world:get_time() then
+        if (last_release + release_rate) < entrance.world:get_time() then
             last_release = _PTR2REF(entrance.world:get_time()); //that's not a pointer even
             return true;
         end
@@ -47,7 +54,7 @@ do
             end
 
             //original FIXME: Why do we still have these hardcoded offsets?!
-            _gc_color_draw2(package:gc, &entrance.surface, _Vector3f(entrance.pos.x - 32, entrance.pos.y - 16));
+            _gc_color_draw2(package:gc, &surface, _Vector3f(entrance.pos.x - 32, entrance.pos.y - 16));
         end
     with
         every package in WORLDOBJ_DRAW_SMALLMAP do
@@ -55,7 +62,7 @@ do
                 continue;
             end
 
-            package:smallmap:draw_sprite(_PTR2REF(entrance.smallmap_symbol), _PTR2REF(entrance.pos));
+            package:smallmap:draw_sprite(_deref(smallmap_symbol), _PTR2REF(entrance.pos));
         end
     with
         every w in WORLD_UPDATE do
@@ -66,16 +73,17 @@ do
             if pingu_ready() and not entrance.world:check_armageddon() then
                 var _PHPackage* package = _new_PHPackage();
                 package:entrance = &entrance;
+                package:owner_id = owner_id;
                 package:left = go_left;
                 emit global:world:get_pingus():e_MAKE_PINGU => package;
 
-                if entrance.direction == _ED_MISC then
+                if direction == ED_MISC then
                     go_left = not go_left;
                 end
             end
         end
     with
-        var _WEntrance* e = await DELETE_ENTRANCE until (e == &entrance);
+        var _WorldObj* e = await DELETE_WORLDOBJ until (e == &entrance);
     end
 end
 

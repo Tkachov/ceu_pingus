@@ -19,7 +19,6 @@
 #include <stdexcept>
 
 #include "pingus/prefab_file.hpp"
-#include "pingus/worldobjs/entrance.hpp"
 #include "pingus/worldobjs/groundpiece.hpp"
 #include "pingus/worldobjs/hotspot.hpp"
 #include "pingus/worldobjs/liquid.hpp"
@@ -200,7 +199,7 @@ WorldObjFactory::instance()
 
     new WorldObjFactoryImpl<Liquid>("liquid");
     new WorldObjFactoryImpl<Hotspot>("hotspot");
-    new WorldObjFactoryImpl<Entrance>("entrance");
+    new WorldObjCeuFactoryImpl(CEU_IN_NEW_ENTRANCE, "entrance");
     new WorldObjCeuFactoryImpl(CEU_IN_NEW_EXIT, "exit");
 
     // traps

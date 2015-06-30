@@ -6,11 +6,11 @@
 #include "ipingu.ceu"
 
 native/pre do
-    ##include "pingus/worldobjs/entrance.hpp"
-    ##define WEntrance WorldObjs::Entrance
+    ##include "pingus/worldobj.hpp"
 
     struct PHPackage {
-        WorldObjs::Entrance* entrance;
+        WorldObj* entrance;
+        int owner_id;
         bool left;
     };
 

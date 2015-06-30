@@ -43,13 +43,13 @@ do
         every package in e_MAKE_PINGU do
             if me_.number_of_allowed > pingus_emitted then
                 // We use all_pingus.size() as pingu_id, so that id == array index
-                spawn Pingu in all_pingus with                
+                spawn Pingu in all_pingus with
                     this.pos_x = package:entrance:pos.x;
                     this.pos_y = package:entrance:pos.y;
-                    this.owner_id = package:entrance:owner_id;
+                    this.owner_id = package:owner_id;
                     this.id = pingus_emitted;
 
-                    this.direction = _PTR2REF(_new_Direction());    
+                    this.direction = _PTR2REF(_new_Direction());
 
                     if package:left then
                         this.direction.left();
@@ -62,13 +62,13 @@ do
                 //world->play_sound("oing", pos);
 
                 pingus_emitted = pingus_emitted + 1;
-                me_.released = pingus_emitted;                
+                me_.released = pingus_emitted;
             end
         end
     with
         every global:e_PINGU_DIED do
             pingus_dead = pingus_dead + 1;
-            me_.dead = pingus_dead;            
+            me_.dead = pingus_dead;
         end
     with
         every global:e_PINGU_EXITED do

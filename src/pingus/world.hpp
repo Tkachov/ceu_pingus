@@ -160,6 +160,13 @@ private:
   World& operator= (const World&);
 };
 
+struct GetStartPosPackage {
+  World* world;
+  Vector2i pos;
+  int player_id;
+  GetStartPosPackage(World* w, int p): world(w), player_id(p) {};
+};
+
 #endif
 
 /* EOF */

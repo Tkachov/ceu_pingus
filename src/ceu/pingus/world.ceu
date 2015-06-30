@@ -21,7 +21,7 @@
 
 input _World* DELETE_WORLD;
 input _WOCPackage* NEW_CONVEYOR_BELT;
-input _WEntrance* NEW_ENTRANCE;
+input _WOCPackage* NEW_ENTRANCE;
 input _WOCPackage* NEW_EXIT;
 input _WOCPackage* NEW_FAKE_EXIT;
 input _WOCPackage* NEW_GUILLOTINE;
@@ -33,9 +33,12 @@ input _WOCPackage* NEW_SPIKE;
 input _WOCPackage* NEW_SWITCH_DOOR_SWITCH;
 input _WOCPackage* NEW_TELEPORTER;
 
+input _GetStartPosPackage* WORLD_GET_START_POS;
+
 class World with
     interface IWorld;
     var _World& me;
+    pool Entrance[] entrances;
 do
     var _World&? me_ = _PTR2REF((_World*)&this.me);
     var PinguHolder holder with
@@ -66,6 +69,28 @@ do
             end
         end
     with
+        every package in WORLD_GET_START_POS do
+            if package:world != &me_ then
+                continue;
+            end
+
+            var int num_entrances = 0;
+
+            loop entrance in entrances do
+                if entrance:owner_id == package:player_id then
+                    package:pos.x = package:pos.x + entrance:me:get_pos().x;
+                    package:pos.y = package:pos.y + entrance:me:get_pos().y;
+                    num_entrances = num_entrances + 1;
+                end
+            end
+
+            if num_entrances>0 then
+                package:pos.x = package:pos.x/num_entrances;
+                package:pos.y = package:pos.y/num_entrances;
+                package:pos.y = package:pos.y+100;
+            end
+        end
+    with
         every package in NEW_CONVEYOR_BELT do
             spawn ConveyorBelt with
                 this.me = _new_WorldObj();
@@ -84,11 +109,43 @@ do
             end;
         end
     with
-        every new_entrance in NEW_ENTRANCE do
-            spawn Entrance with
-                this.me = _PTR2REF(new_entrance);
+        every package in NEW_ENTRANCE do
+            spawn Entrance in entrances with
+                this.me = _new_WorldObj();
+                package:result = this.me;
+
+                this.direction = ED_MISC;
+                this.release_rate = 150;
+                this.owner_id = 0;
+                this.smallmap_symbol = _PTR2REF(_new_SpriteA("core/misc/smallmap_entrance"));
+                this.surface = _PTR2REF(_new_Sprite());
+
+                package:reader:read_int("owner-id", _PTR2REF(this.owner_id));
+                package:reader:read_vector("position", _PTR2REF(this.me:pos));
+                package:reader:read_int("release-rate",  _PTR2REF(this.release_rate));
+
+                // Set default owner ID to 0
+                if this.owner_id<0 or this.owner_id>3 then
+                    this.owner_id = 0;
+                end
+
+                var _String&? direction_str = _PTR2REF(_new_String());
+                _string_read_string(direction_str, package:reader, "direction");
+
+                if direction_str == "left" then
+                    this.direction = ED_LEFT;
+                else/if direction_str == "right" then
+                    this.direction = ED_RIGHT;
+                else/if direction_str == "misc" then
+                    this.direction = ED_MISC;
+                else
+                    _log_error("unknown direction: '%1%'", direction_str);
+                    this.direction = ED_MISC;
+                end
+
+                _delete_obj(direction_str);
             end;
-        end
+        end;
     with
         every package in NEW_EXIT do
             spawn Exit with

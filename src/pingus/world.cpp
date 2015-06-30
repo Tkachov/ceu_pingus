@@ -30,7 +30,6 @@
 #include "pingus/pingu_holder.hpp"
 #include "pingus/pingus_level.hpp"
 #include "pingus/worldobj_factory.hpp"
-#include "pingus/worldobjs/entrance.hpp"
 #include "util/log.hpp"
 
 #include "ceuvars.h"
@@ -266,27 +265,10 @@ Vector2i
 World::get_start_pos(int player_id)
 {
   // FIXME: Workaround for lack of start-pos
-  Vector2i pos;
-  int num_entrances = 0;
-  for(WorldObjIter obj = world_obj.begin(); obj != world_obj.end(); ++obj)
-  {
-    WorldObjs::Entrance* entrance = dynamic_cast<WorldObjs::Entrance*>(*obj);
-    if (entrance && entrance->get_owner_id() == player_id)
-    {
-      pos += Vector2i(static_cast<int>(entrance->get_pos().x),
-                      static_cast<int>(entrance->get_pos().y));
-      num_entrances += 1;
-    }
-  }
-
-  if (num_entrances > 0)
-  {
-    pos.x /= num_entrances;
-    pos.y /= num_entrances;
-    pos.y += 100;
-  }
-
-  return pos;
+  GetStartPosPackage package(this, player_id);
+  GetStartPosPackage* pp = &package;
+  ceu_out_go(&CEUapp, CEU_IN_WORLD_GET_START_POS, &pp);
+  return package.pos;
 }
 
 /* EOF */
