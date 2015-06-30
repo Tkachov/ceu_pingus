@@ -54,6 +54,12 @@ private:
   WorldObjFactory& operator= (const WorldObjFactory&);
 };
 
+struct WorldObjCeuPackage {
+  FileReader* reader;
+  WorldObj* result;
+  WorldObjCeuPackage(const FileReader& r): reader(const_cast<FileReader*>(&r)), result(0) {};
+};
+
 #endif
 
 /* EOF */

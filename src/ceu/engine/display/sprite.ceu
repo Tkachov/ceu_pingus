@@ -3,6 +3,7 @@
 
 native/pre do
     ##include "engine/display/sprite.hpp"
+    ##define scc2(a, b) (a+b)
     ##define scc3(a, b, c) (a+b+c)
 
     ##define new_Sprite() new Sprite()

@@ -22,7 +22,7 @@
 input _World* DELETE_WORLD;
 input _WConveyorBelt* NEW_CONVEYOR_BELT;
 input _WEntrance* NEW_ENTRANCE;
-input _WExit* NEW_EXIT;
+input _WOCPackage* NEW_EXIT;
 input _WFakeExit* NEW_FAKE_EXIT;
 input _WGuillotine* NEW_GUILLOTINE;
 input _WHammer* NEW_HAMMER;
@@ -77,9 +77,25 @@ do
             end;
         end
     with
-        every new_exit in NEW_EXIT do
+        every package in NEW_EXIT do
             spawn Exit with
-                this.me = _PTR2REF(new_exit);
+                this.me = _new_WorldObj();
+                package:result = this.me;
+                
+                this.desc = _PTR2REF(_new_ResDescriptor());
+                this.smallmap_symbol = _PTR2REF(_new_SpriteA("core/misc/smallmap_exit"));                          
+                
+                package:reader:read_vector("position", _PTR2REF(this.me:pos));                
+                package:reader:read_desc  ("surface",  _deref(this.desc));                
+                package:reader:read_int   ("owner-id", _PTR2REF(this.owner_id));                
+
+                // Set default owner ID to 0
+                if this.owner_id<0 or this.owner_id>3 then
+                    this.owner_id = 0;
+                end
+
+                this.flag = _PTR2REF(_new_SpriteA(_scc2("core/misc/flag", _StringUtil__to_string(this.owner_id))));
+                this.sprite = _PTR2REF(_new_SpriteA(_deref(this.desc)));
             end;
         end
     with

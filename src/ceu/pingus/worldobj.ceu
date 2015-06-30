@@ -4,6 +4,7 @@
 native/pre do
     ##include "pingus/world.hpp"
     ##include "pingus/worldobj.hpp"
+    ##include "pingus/worldobj_factory.hpp"
     ##include "pingus/collision_mask.hpp"
 
     ##define WorldObj__get_world WorldObj::get_world
@@ -13,13 +14,21 @@ native/pre do
 
     ##define WOPackage WorldObj::WorldObjPackage
     ##define WOSMPackage WorldObj::WorldObjSmallMapPackage
+
+    ##define WOCPackage WorldObjCeuPackage
+    ##define new_WorldObj new WorldObj
+    ##define delete_WorldObj(x) delete x;
 end
 
 native @pure _WorldObj__get_world(),
 			 _WorldObj__get_world_put(),
              _WorldObj__get_world_remove(),
-             _WorldObj__get_world_play_sound();
+             _WorldObj__get_world_play_sound(),
+             _new_WorldObj(),
+             _delete_WorldObj();
 
+input _WorldObj* DELETE_WORLDOBJ;
+input _WorldObj* WORLDOBJ_STARTUP;
 input _WOPackage* WORLDOBJ_DRAW;
 input _WOSMPackage* WORLDOBJ_DRAW_SMALLMAP;
 

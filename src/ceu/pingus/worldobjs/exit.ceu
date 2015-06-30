@@ -9,18 +9,30 @@
 #include "../pingu_holder_listener.ceu"
 
 native/pre do
-    ##include "pingus/worldobjs/exit.hpp"
-    ##define WExit WorldObjs::Exit
-
     ##include "pingus/components/smallmap.hpp"
+    ##include "pingus/res_descriptor.hpp"
+    ##define new_ResDescriptor() new ResDescriptor()
+    ##define delete_ResDescriptor(x) delete x;
+    ##define colmap_remove(cm, desc, x, y) { CollisionMask __mask(*desc); cm->remove(__mask, x, y); }
 end
 
-input _WExit* DELETE_EXIT;
+native @pure _new_ResDescriptor(), _delete_ResDescriptor(), _colmap_remove(), _deref();
 
 class Exit with
     interface IWorldObj;
-do
-    var _WExit&? exit = _PTR2REF((_WExit*)me);
+    var _ResDescriptor&? desc;
+    var int owner_id;
+
+    var _Sprite&? sprite;
+    var _Sprite&? flag;
+    var _Sprite&? smallmap_symbol;
+do    
+    var _WorldObj&? exit = _PTR2REF(me);
+    //finalize with _delete_WorldObj(me); end
+    finalize with _delete_ResDescriptor(desc); end
+    finalize with _delete_Sprite(sprite); end;
+    finalize with _delete_Sprite(flag); end;
+    finalize with _delete_Sprite(smallmap_symbol); end;
 
     par/or do
         every package in WORLDOBJ_DRAW do
@@ -28,16 +40,24 @@ do
                 continue;
             end
             
-            _gc_color_draw2(package:gc, &exit.sprite, exit.pos);
-            _gc_color_draw2(package:gc, &exit.flag, exit.pos + _Vector3f(40, 0));
-        end        
+            _gc_color_draw2(package:gc, &sprite, exit.pos);
+            _gc_color_draw2(package:gc, &flag, exit.pos + _Vector3f(40, 0));
+        end
+    with
+        every wo in WORLDOBJ_STARTUP do
+            if wo != &exit then
+                continue;
+            end
+
+            _colmap_remove(exit.world:get_colmap(), desc, (int)exit.pos.x - sprite.get_width()/2, (int)exit.pos.y - sprite.get_height());
+        end
     with
         every package in WORLDOBJ_DRAW_SMALLMAP do
             if package:worldobj != &exit then
                 continue;
             end
 
-            package:smallmap:draw_sprite(_PTR2REF(exit.smallmap_symbol), _PTR2REF(exit.pos));
+            package:smallmap:draw_sprite(_deref(smallmap_symbol), _PTR2REF(exit.pos));
         end
     with
         every w in WORLD_UPDATE do
@@ -45,11 +65,11 @@ do
                 continue;
             end
 
-            exit.sprite.update();
+            sprite.update();
 
             loop pingu in global:world:get_pingus():all_pingus do
                 // Make sure this particular exit is allowed for this pingu
-                if pingu:get_owner() != exit.owner_id then
+                if pingu:get_owner() != owner_id then
                     continue;
                 end
 
@@ -68,7 +88,7 @@ do
             end
         end
     with
-        var _WExit* e = await DELETE_EXIT until (e == &exit);
+        var _WorldObj* e = await DELETE_WORLDOBJ until (e == &exit);
     end
 end
 

@@ -21,7 +21,6 @@
 #include "pingus/prefab_file.hpp"
 #include "pingus/worldobjs/conveyor_belt.hpp"
 #include "pingus/worldobjs/entrance.hpp"
-#include "pingus/worldobjs/exit.hpp"
 #include "pingus/worldobjs/fake_exit.hpp"
 #include "pingus/worldobjs/groundpiece.hpp"
 #include "pingus/worldobjs/guillotine.hpp"
@@ -43,6 +42,8 @@
 #include "pingus/worldobjs/teleporter_target.hpp"
 #include "util/log.hpp"
 #include "util/overrride_file_reader.hpp"
+
+#include "ceuvars.h"
 
 using namespace WorldObjs;
 
@@ -83,6 +84,34 @@ public:
 private:
   WorldObjFactoryImpl (const WorldObjFactoryImpl&);
   WorldObjFactoryImpl& operator= (const WorldObjFactoryImpl&);
+};
+
+/** Template to create Ceu factories, usage:
+    new WorldObjCeuFactoryImpl<CEU_IN_NEW_CLASS_NAME>("id"); */
+
+template<int T>
+class WorldObjCeuFactoryImpl: public WorldObjAbstractFactory {
+public:
+  WorldObjCeuFactoryImpl(const std::string& id): WorldObjAbstractFactory(id) {}
+
+  std::vector<WorldObj*> create(const FileReader& reader) {
+    std::vector<WorldObj*> lst;
+        
+    WorldObjCeuPackage package(reader);
+    WorldObjCeuPackage* pp = &package;
+    ceu_out_go(&CEUapp, T, &pp);
+
+    if(package.result)
+      lst.push_back(package.result);
+    else
+      log_error("Ceu factory failed to create new WorldObj");
+
+    return lst;
+  }
+
+private:
+  WorldObjCeuFactoryImpl(const WorldObjCeuFactoryImpl&);
+  WorldObjCeuFactoryImpl& operator=(const WorldObjCeuFactoryImpl&);
 };
 
 class WorldObjGroupFactory : public WorldObjAbstractFactory
@@ -182,7 +211,7 @@ WorldObjFactory::instance()
     new WorldObjFactoryImpl<Liquid>("liquid");
     new WorldObjFactoryImpl<Hotspot>("hotspot");
     new WorldObjFactoryImpl<Entrance>("entrance");
-    new WorldObjFactoryImpl<Exit>("exit");
+    new WorldObjCeuFactoryImpl<CEU_IN_NEW_EXIT>("exit");
 
     // traps
     new WorldObjFactoryImpl<FakeExit>("fake_exit");

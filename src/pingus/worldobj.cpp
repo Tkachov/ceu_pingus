@@ -42,13 +42,15 @@ WorldObj::WorldObj() :
 
 WorldObj::~WorldObj()
 {
-
+  WorldObj* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_DELETE_WORLDOBJ, &self);
 }
 
 void
 WorldObj::on_startup()
 {
-  // do nothing
+  WorldObj* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_WORLDOBJ_STARTUP, &self);
 }
 
 void
