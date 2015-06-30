@@ -26,7 +26,7 @@ class Exit with
     var _Sprite&? sprite;
     var _Sprite&? flag;
     var _Sprite&? smallmap_symbol;
-do    
+do
     var _WorldObj&? exit = _PTR2REF(me);
     //finalize with _delete_WorldObj(me); end
     finalize with _delete_ResDescriptor(desc); end
@@ -39,7 +39,7 @@ do
             if package:worldobj != &exit then
                 continue;
             end
-            
+
             _gc_color_draw2(package:gc, &sprite, exit.pos);
             _gc_color_draw2(package:gc, &flag, exit.pos + _Vector3f(40, 0));
         end

@@ -71,11 +71,11 @@ do
                 package:result = this.me;
 
                 this.left_sur = _PTR2REF(_new_SpriteA("worldobjs/conveyorbelt_left"));
-                this.right_sur = _PTR2REF(_new_SpriteA("worldobjs/conveyorbelt_right"));   
-                this.middle_sur = _PTR2REF(_new_SpriteA("worldobjs/conveyorbelt_middle"));   
+                this.right_sur = _PTR2REF(_new_SpriteA("worldobjs/conveyorbelt_right"));
+                this.middle_sur = _PTR2REF(_new_SpriteA("worldobjs/conveyorbelt_middle"));
 
                 package:reader:read_vector("position", _PTR2REF(this.me:pos));
-                if not package:reader:read_int("repeat", _PTR2REF(this.width)) then                
+                if not package:reader:read_int("repeat", _PTR2REF(this.width)) then
                     _log_warn("old 'width' tag used");
                     package:reader:read_int("width", _PTR2REF(this.width));
                 end
@@ -93,13 +93,13 @@ do
             spawn Exit with
                 this.me = _new_WorldObj();
                 package:result = this.me;
-                
+
                 this.desc = _PTR2REF(_new_ResDescriptor());
-                this.smallmap_symbol = _PTR2REF(_new_SpriteA("core/misc/smallmap_exit"));                          
-                
-                package:reader:read_vector("position", _PTR2REF(this.me:pos));                
-                package:reader:read_desc  ("surface",  _deref(this.desc));                
-                package:reader:read_int   ("owner-id", _PTR2REF(this.owner_id));                
+                this.smallmap_symbol = _PTR2REF(_new_SpriteA("core/misc/smallmap_exit"));
+
+                package:reader:read_vector("position", _PTR2REF(this.me:pos));
+                package:reader:read_desc  ("surface",  _deref(this.desc));
+                package:reader:read_int   ("owner-id", _PTR2REF(this.owner_id));
 
                 // Set default owner ID to 0
                 if this.owner_id<0 or this.owner_id>3 then

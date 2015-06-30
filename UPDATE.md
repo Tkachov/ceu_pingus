@@ -1,13 +1,33 @@
-# Week 4 (15/06--21/06)
+# Week 6 (29/06--5/07)
 
 ## What I was supposed to do the past week?
 
-Port actions and Pingu completely (this will require partial porting of other classes).
-Transfer SDL events?
+Port world objects;
+Sprites;
+Document bad and good examples of ported code?
 
 ## What I actually did the past week?
 
 ## What I'll do this week?
+
+# Week 4 and 5 (15/06--28/06)
+
+## What I was supposed to do the past weeks?
+
+Port actions and Pingu completely (this will require partial porting of other classes).
+Transfer SDL events?
+
+## What I actually did the past weeks?
+
+Ported actions and Pingu completely.
+Moved some world objects partically.
+World, Server, ServerEvent and some other classes ported a little bit.
+
+## What I'll do this week?
+
+Work on world objects;
+Sprites;
+Document bad and good examples of ported code?
 
 # Week 3 (08/06--14/06)
 
