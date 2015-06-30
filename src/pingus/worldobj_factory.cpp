@@ -21,8 +21,6 @@
 #include "pingus/prefab_file.hpp"
 #include "pingus/worldobjs/entrance.hpp"
 #include "pingus/worldobjs/groundpiece.hpp"
-#include "pingus/worldobjs/guillotine.hpp"
-#include "pingus/worldobjs/hammer.hpp"
 #include "pingus/worldobjs/hotspot.hpp"
 #include "pingus/worldobjs/ice_block.hpp"
 #include "pingus/worldobjs/laser_exit.hpp"
@@ -213,8 +211,8 @@ WorldObjFactory::instance()
 
     // traps
     new WorldObjCeuFactoryImpl(CEU_IN_NEW_FAKE_EXIT, "fake_exit");
-    new WorldObjFactoryImpl<Guillotine>("guillotine");
-    new WorldObjFactoryImpl<Hammer>("hammer");
+    new WorldObjCeuFactoryImpl(CEU_IN_NEW_GUILLOTINE, "guillotine");
+    new WorldObjCeuFactoryImpl(CEU_IN_NEW_HAMMER, "hammer");
     new WorldObjFactoryImpl<LaserExit>("laser_exit");
     new WorldObjFactoryImpl<Smasher>("smasher");
     new WorldObjFactoryImpl<Spike>("spike");

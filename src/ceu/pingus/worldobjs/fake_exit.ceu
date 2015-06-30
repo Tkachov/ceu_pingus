@@ -19,6 +19,9 @@ class FakeExit with
     var bool smashing;
 do
     var _WorldObj&? fake_exit = _PTR2REF((_WorldObj*)me);
+    //delete fake_exit
+    finalize with _delete_Sprite(sprite); end;
+    finalize with _delete_Sprite(smallmap_symbol); end;
 
     par/or do
         every package in WORLDOBJ_DRAW do

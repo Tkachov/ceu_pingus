@@ -8,18 +8,15 @@
 #include "../ipingu_holder.ceu"
 #include "../pingu_holder_listener.ceu"
 
-native/pre do
-    ##include "pingus/worldobjs/hammer.hpp"
-    ##define WHammer WorldObjs::Hammer
-end
-
-input _WHammer* DELETE_HAMMER;
-
 class Hammer with
     interface IWorldObj;
+    var _Sprite&? sprite;
 do
-    var _WHammer&? hammer = _PTR2REF((_WHammer*)me);
+    var _WorldObj&? hammer = _PTR2REF(me);
     var int current_frame = 0;
+
+    //delete hammer
+    finalize with _delete_Sprite(sprite); end;
 
     par/or do
         every package in WORLDOBJ_DRAW do
@@ -27,7 +24,7 @@ do
                 continue;
             end
 
-            _gc_color_draw2(package:gc, &hammer.sprite, hammer.pos);
+            _gc_color_draw2(package:gc, &sprite, hammer.pos);
         end
     with
         loop do
@@ -38,9 +35,9 @@ do
                 end
 
                 current_frame = current_frame + 1;
-                hammer.sprite.set_frame(current_frame);
+                sprite.set_frame(current_frame);
 
-                if current_frame == hammer.sprite.get_frame_count()-1 then
+                if current_frame == sprite.get_frame_count()-1 then
                     loop pingu in global:world:get_pingus():all_pingus do
                         if pingu:get_current_action() == _A_SPLASHED or
                            pingu:get_current_action() == _A_DEAD or pingu:get_current_action() == _A_EXITED then
@@ -67,14 +64,14 @@ do
                 end
 
                 current_frame = current_frame - 1;
-                hammer.sprite.set_frame(current_frame);
+                sprite.set_frame(current_frame);
                 if current_frame == 0 then
                     break;
                 end
             end
         end
     with
-        var _WHammer* e = await DELETE_HAMMER until (e == &hammer);
+        var _WorldObj* e = await DELETE_WORLDOBJ until (e == &hammer);
     end
 end
 

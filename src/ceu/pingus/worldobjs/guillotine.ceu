@@ -8,17 +8,21 @@
 #include "../ipingu_holder.ceu"
 #include "../pingu_holder_listener.ceu"
 
-native/pre do
-    ##include "pingus/worldobjs/guillotine.hpp"
-    ##define WGuillotine WorldObjs::Guillotine
-end
-
-input _WGuillotine* DELETE_GUILLOTINE;
-
 class Guillotine with
     interface IWorldObj;
+    var _Sprite&? sprite_kill_right;
+    var _Sprite&? sprite_kill_left;
+    var _Sprite&? sprite_idle;
+
+    var _Direction&? direction;
+    var bool killing;
 do
-    var _WGuillotine&? guillotine = _PTR2REF((_WGuillotine*)me);
+    var _WorldObj&? guillotine = _PTR2REF(me);
+    //delete guillotine
+    finalize with _delete_obj(direction); end;
+    finalize with _delete_Sprite(sprite_kill_left); end;
+    finalize with _delete_Sprite(sprite_kill_right); end;
+    finalize with _delete_Sprite(sprite_idle); end;
 
     par/or do
         every package in WORLDOBJ_DRAW do
@@ -26,14 +30,14 @@ do
                 continue;
             end
 
-            if guillotine.killing then
-                if guillotine.direction.is_left() then
-                    _gc_color_draw2(package:gc, &guillotine.sprite_kill_left, guillotine.pos);
+            if killing then
+                if direction.is_left() then
+                    _gc_color_draw2(package:gc, &sprite_kill_left, guillotine.pos);
                 else
-                    _gc_color_draw2(package:gc, &guillotine.sprite_kill_right, guillotine.pos);
+                    _gc_color_draw2(package:gc, &sprite_kill_right, guillotine.pos);
                 end
             else
-                _gc_color_draw2(package:gc, &guillotine.sprite_idle, guillotine.pos);
+                _gc_color_draw2(package:gc, &sprite_idle, guillotine.pos);
             end
         end
     with
@@ -43,38 +47,38 @@ do
             end
 
             // Only have to check one sprite because they update simultaneously
-            if guillotine.sprite_kill_left.is_finished() then
-                guillotine.killing = false;
+            if sprite_kill_left.is_finished() then
+                killing = false;
             end
 
-            if not guillotine.killing then
+            if not killing then
                 loop pingu in global:world:get_pingus():all_pingus do
                     if pingu:is_inside((int)(guillotine.pos.x + 38), (int)(guillotine.pos.y + 90), (int)(guillotine.pos.x + 42), (int)(guillotine.pos.y + 98)) then
-                        guillotine.killing = true;
-                        guillotine.direction = _PTR2REF(pingu:direction);
+                        killing = true;
+                        direction = _PTR2REF(pingu:direction);
                         emit pingu:e_CHANGE_ACTION => _A_DEAD;
-                        guillotine.sprite_kill_left.restart();
-                        guillotine.sprite_kill_right.restart();
+                        sprite_kill_left.restart();
+                        sprite_kill_right.restart();
                         break;
                     end
                 end
             end
 
-            if guillotine.killing then
+            if killing then
                 // Update both sprites so they finish at the same time.
-                guillotine.sprite_kill_left.update();
-                guillotine.sprite_kill_right.update();
+                sprite_kill_left.update();
+                sprite_kill_right.update();
 
                 // original FIXME: Should be a different sound
-                if guillotine.sprite_kill_left.get_current_frame() == 7 then
+                if sprite_kill_left.get_current_frame() == 7 then
                     _WorldObj__get_world_play_sound("splash", guillotine.pos);
                 end
             else
-                guillotine.sprite_idle.update();
+                sprite_idle.update();
             end
         end
     with
-        var _WGuillotine* e = await DELETE_GUILLOTINE until (e == &guillotine);
+        var _WorldObj* e = await DELETE_WORLDOBJ until (e == &guillotine);
     end
 end
 
