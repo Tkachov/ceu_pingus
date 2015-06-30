@@ -9,36 +9,42 @@
 #include "../ipingu_holder.ceu"
 #include "../pingu_holder_listener.ceu"
 
-native/pre do
-    ##include "pingus/worldobjs/ice_block.hpp"
-    ##define WIceBlock WorldObjs::IceBlock
-
-    ##define world_remove(w, a, x, y) w->remove(a, x, y)
-end
-
-input _WIceBlock* DELETE_ICE_BLOCK;
-
 native @pure _world_remove();
 
 class IceBlock with
     interface IWorldObj;
+    var int width;
+
+    var _Sprite&? block_sur;
+    var _CollisionMask&? block_sur_cmap;
 do
-    var _WIceBlock&? ice_block = _PTR2REF((_WIceBlock*)me);
+    var _WorldObj&? ice_block = _PTR2REF(me);
+    //delete ice_block
+    finalize with _delete_obj(block_sur); end
+    finalize with _delete_obj(block_sur_cmap); end
 
     var float thickness = 1.0;
     var bool is_finished = false;
     var int last_contact = 0;
 
     par/or do
+        every wo in WORLDOBJ_STARTUP do
+            if wo != &ice_block then
+                continue;
+            end
+
+            _world_put(ice_block.world, block_sur_cmap, (int)ice_block.pos.x, (int)ice_block.pos.y, _GT_GROUND);
+        end
+    with
         every package in WORLDOBJ_DRAW do
             if package:worldobj != &ice_block then
                 continue;
             end
 
             if not is_finished then
-                _gc_color_draw2(package:gc, &ice_block.block_sur, ice_block.pos);
+                _gc_color_draw2(package:gc, &block_sur, ice_block.pos);
             end
-        end        
+        end
     with
         every w in WORLD_UPDATE do
             if w != ice_block.world then
@@ -50,24 +56,24 @@ do
             end
 
             loop pingu in global:world:get_pingus():all_pingus do
-                if pingu:get_x() > ice_block.pos.x and pingu:get_x() < ice_block.pos.x+(float)ice_block.block_sur.get_width() and
-                   pingu:get_y() > ice_block.pos.y-4 and pingu:get_y() < ice_block.pos.y+(float)ice_block.block_sur.get_height() then
+                if pingu:get_x() > ice_block.pos.x and pingu:get_x() < ice_block.pos.x+(float)block_sur.get_width() and
+                   pingu:get_y() > ice_block.pos.y-4 and pingu:get_y() < ice_block.pos.y+(float)block_sur.get_height() then
                     last_contact = ice_block.world:get_time();
                 end
             end
 
-            if last_contact and last_contact+1000 > ice_block.world:get_time() then                
+            if last_contact and last_contact+1000 > ice_block.world:get_time() then
                 thickness = thickness - 0.01;
 
                 if thickness<0 then
                     is_finished = true;
-                    thickness = 0;                    
-                    _world_remove(ice_block.world, ice_block.block_sur_cmap, (int)ice_block.pos.x, (int)ice_block.pos.y);                    
+                    thickness = 0;
+                    _world_remove(ice_block.world, block_sur_cmap, (int)ice_block.pos.x, (int)ice_block.pos.y);
                 end
             end
         end
     with
-        var _WIceBlock* e = await DELETE_ICE_BLOCK until (e == &ice_block);
+        var _WorldObj* e = await DELETE_WORLDOBJ until (e == &ice_block);
     end
 end
 

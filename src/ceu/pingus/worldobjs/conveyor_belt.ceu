@@ -15,14 +15,7 @@ native/pre do
     ##include "engine/display/scene_context.hpp"
     ##include "pingus/pingu_holder.hpp"
     ##include "pingus/world.hpp"
-    //##include "util/log.hpp"
-
-    ##define world_put(w, m, x, y, t) {CollisionMask& __msk = *m; w->put(__msk, x, y, t);}
-    ##define new_CollisionMask new CollisionMask
-    ##define _delete_CollisionMask(x) delete x;
 end
-
-native @pure _world_put(), _new_CollisionMask(), _delete_CollisionMask();
 
 class ConveyorBelt with
     interface IWorldObj;
@@ -64,6 +57,10 @@ do
         end
     with
         every wo in WORLDOBJ_STARTUP do
+            if wo != &conveyor_belt then
+                continue;
+            end
+
             var _CollisionMask* mask = _new_CollisionMask("worldobjs/conveyorbelt_cmap");
 
             loop/100 i in width+2 do

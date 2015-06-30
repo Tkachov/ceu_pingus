@@ -22,7 +22,6 @@
 #include "pingus/worldobjs/entrance.hpp"
 #include "pingus/worldobjs/groundpiece.hpp"
 #include "pingus/worldobjs/hotspot.hpp"
-#include "pingus/worldobjs/ice_block.hpp"
 #include "pingus/worldobjs/laser_exit.hpp"
 #include "pingus/worldobjs/liquid.hpp"
 #include "pingus/worldobjs/rain_generator.hpp"
@@ -220,7 +219,7 @@ WorldObjFactory::instance()
     // Special Objects
     new WorldObjFactoryImpl<SwitchDoorSwitch>("switchdoor-switch");
     new WorldObjFactoryImpl<SwitchDoorDoor>("switchdoor-door");
-    new WorldObjFactoryImpl<IceBlock>("iceblock");
+    new WorldObjCeuFactoryImpl(CEU_IN_NEW_ICE_BLOCK, "iceblock");
     new WorldObjCeuFactoryImpl(CEU_IN_NEW_CONVEYOR_BELT, "conveyorbelt");
     new WorldObjFactoryImpl<Teleporter>("teleporter");
     new WorldObjFactoryImpl<TeleporterTarget>("teleporter-target");

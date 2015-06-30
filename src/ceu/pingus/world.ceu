@@ -26,7 +26,7 @@ input _WOCPackage* NEW_EXIT;
 input _WOCPackage* NEW_FAKE_EXIT;
 input _WOCPackage* NEW_GUILLOTINE;
 input _WOCPackage* NEW_HAMMER;
-input _WIceBlock* NEW_ICE_BLOCK;
+input _WOCPackage* NEW_ICE_BLOCK;
 input _WLaserExit* NEW_LASER_EXIT;
 input _WSmasher* NEW_SMASHER;
 input _WSpike* NEW_SPIKE;
@@ -55,6 +55,7 @@ do
             if me_.do_armageddon and me_.game_time%4 == 0 then
                 loop pingu in holder.all_pingus do
                     if pingu:get_current_action() == _A_BOMBER or pingu:get_current_action() == _A_DROWN or
+                       pingu:get_current_action() == _A_SPLASHED or pingu:get_current_action() == _A_LASERKILL or
                        pingu:get_current_action() == _A_DEAD or pingu:get_current_action() == _A_EXITED then
                         continue;
                     end
@@ -154,9 +155,19 @@ do
             end;
         end
     with
-        every new_ice_block in NEW_ICE_BLOCK do
+        every package in NEW_ICE_BLOCK do
             spawn IceBlock with
-                this.me = _PTR2REF(new_ice_block);
+                this.me = _new_WorldObj();
+                package:result = this.me;
+
+                this.block_sur = _PTR2REF(_new_SpriteA("worldobjs/iceblock"));
+                this.block_sur_cmap = _PTR2REF(_new_CollisionMask("worldobjs/iceblock_cmap"));
+
+                package:reader:read_vector("position", _PTR2REF(this.me:pos));
+                if not package:reader:read_int("repeat", _PTR2REF(this.width)) then
+                    _log_warn("old 'width' tag used");
+                    package:reader:read_int("width", _PTR2REF(this.width));
+                end
             end;
         end
     with
