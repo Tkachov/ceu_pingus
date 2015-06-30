@@ -20,7 +20,6 @@
 
 #include "pingus/prefab_file.hpp"
 #include "pingus/worldobjs/entrance.hpp"
-#include "pingus/worldobjs/fake_exit.hpp"
 #include "pingus/worldobjs/groundpiece.hpp"
 #include "pingus/worldobjs/guillotine.hpp"
 #include "pingus/worldobjs/hammer.hpp"
@@ -213,7 +212,7 @@ WorldObjFactory::instance()
     new WorldObjCeuFactoryImpl(CEU_IN_NEW_EXIT, "exit");
 
     // traps
-    new WorldObjFactoryImpl<FakeExit>("fake_exit");
+    new WorldObjCeuFactoryImpl(CEU_IN_NEW_FAKE_EXIT, "fake_exit");
     new WorldObjFactoryImpl<Guillotine>("guillotine");
     new WorldObjFactoryImpl<Hammer>("hammer");
     new WorldObjFactoryImpl<LaserExit>("laser_exit");
