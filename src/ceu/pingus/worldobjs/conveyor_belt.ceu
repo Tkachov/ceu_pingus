@@ -10,16 +10,35 @@
 #include "../pingu_holder_listener.ceu"
 
 native/pre do
-    ##include "pingus/worldobjs/conveyor_belt.hpp"
-    ##define WConveyorBelt WorldObjs::ConveyorBelt
+    ##include "math/vector3f.hpp"
+    ##include "pingus/worldobj.hpp"    
+    ##include "engine/display/scene_context.hpp"
+    ##include "pingus/pingu_holder.hpp"
+    ##include "pingus/world.hpp"
+    //##include "util/log.hpp"
+
+    ##define world_put(w, m, x, y, t) {CollisionMask& __msk = *m; w->put(__msk, x, y, t);}
+    ##define new_CollisionMask new CollisionMask
+    ##define _delete_CollisionMask(x) delete x;
 end
 
-input _WConveyorBelt* DELETE_CONVEYOR_BELT;
+native @pure _world_put(), _new_CollisionMask(), _delete_CollisionMask();
 
 class ConveyorBelt with
     interface IWorldObj;
+    var _Sprite&? left_sur;
+    var _Sprite&? right_sur;
+    var _Sprite&? middle_sur;
+  
+    var int width;
+    var float speed;
+    var float counter;
 do
-    var _WConveyorBelt&? conveyor_belt = _PTR2REF((_WConveyorBelt*)me);
+    var _WorldObj&? conveyor_belt = _PTR2REF(me);
+    //delete convbelt
+    finalize with _delete_Sprite(left_sur); end;
+    finalize with _delete_Sprite(right_sur); end;
+    finalize with _delete_Sprite(middle_sur); end;
 
     par/or do
         every package in WORLDOBJ_DRAW do
@@ -27,23 +46,47 @@ do
                 continue;
             end
             
-            //_gc_color_draw2(package:gc, &conveyor_belt.sprite, conveyor_belt.pos);
-        end        
+            _gc_color_draw2(package:gc, &left_sur, conveyor_belt.pos);
+
+            loop/100 i in width do
+                _gc_color_draw2(package:gc, &middle_sur, 
+                    _Vector3f(
+                        (float)(conveyor_belt.pos.x + (float)(left_sur.get_width() + i*middle_sur.get_width())),
+                        (float)conveyor_belt.pos.y
+                    ));
+            end
+
+            _gc_color_draw2(package:gc, &right_sur, 
+                _Vector3f(
+                    (float)(conveyor_belt.pos.x + (float)(left_sur.get_width() + width*middle_sur.get_width())),
+                    (float)conveyor_belt.pos.y
+                ));
+        end   
+    with
+        every wo in WORLDOBJ_STARTUP do
+            var _CollisionMask* mask = _new_CollisionMask("worldobjs/conveyorbelt_cmap");
+            
+            loop/100 i in width+2 do
+                _world_put(conveyor_belt.world, mask, (int)conveyor_belt.pos.x + 15*i, (int)conveyor_belt.pos.y, _GT_SOLID);
+            end
+
+            _delete_CollisionMask(mask);
+        end     
     with
         every w in WORLD_UPDATE do
             if w != conveyor_belt.world then
                 continue;
             end
 
-            conveyor_belt.left_sur.update();
-            conveyor_belt.middle_sur.update();
-            conveyor_belt.right_sur.update();
+            left_sur.update();
+            middle_sur.update();
+            right_sur.update();
 
             loop pingu in global:world:get_pingus():all_pingus do
-                if pingu:get_x() > conveyor_belt.pos.x and pingu:get_x() < conveyor_belt.pos.x + 15*(float)(conveyor_belt.width+2) and
+                if pingu:get_x() > conveyor_belt.pos.x and pingu:get_x() < conveyor_belt.pos.x + 15*(float)(width+2) and
                    pingu:get_y() > conveyor_belt.pos.y-2 and pingu:get_y() < conveyor_belt.pos.y+10 then
                     var Vector3f pos;
-                    pos.x = pingu:get_pos().x - conveyor_belt.speed*0.025;
+                    pos.x = pingu:get_pos().x - speed*0.025;
                     pos.y = pingu:get_pos().y;
                     pos.z = pingu:get_pos().z;
                     pingu:set_pos(_toVector3f(pos));
@@ -51,7 +94,7 @@ do
             end
         end
     with
-        var _WConveyorBelt* e = await DELETE_CONVEYOR_BELT until (e == &conveyor_belt);
+        var _WorldObj* e = await DELETE_WORLDOBJ until (e == &conveyor_belt);
     end
 end
 

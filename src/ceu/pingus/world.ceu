@@ -20,7 +20,7 @@
 #include "worldobjs/teleporter.ceu"
 
 input _World* DELETE_WORLD;
-input _WConveyorBelt* NEW_CONVEYOR_BELT;
+input _WOCPackage* NEW_CONVEYOR_BELT;
 input _WEntrance* NEW_ENTRANCE;
 input _WOCPackage* NEW_EXIT;
 input _WFakeExit* NEW_FAKE_EXIT;
@@ -65,9 +65,21 @@ do
             end
         end
     with
-        every new_cb in NEW_CONVEYOR_BELT do
+        every package in NEW_CONVEYOR_BELT do
             spawn ConveyorBelt with
-                this.me = _PTR2REF(new_cb);
+                this.me = _new_WorldObj();
+                package:result = this.me;
+
+                this.left_sur = _PTR2REF(_new_SpriteA("worldobjs/conveyorbelt_left"));
+                this.right_sur = _PTR2REF(_new_SpriteA("worldobjs/conveyorbelt_right"));   
+                this.middle_sur = _PTR2REF(_new_SpriteA("worldobjs/conveyorbelt_middle"));   
+
+                package:reader:read_vector("position", _PTR2REF(this.me:pos));
+                if not package:reader:read_int("repeat", _PTR2REF(this.width)) then                
+                    _log_warn("old 'width' tag used");
+                    package:reader:read_int("width", _PTR2REF(this.width));
+                end
+                package:reader:read_float("speed", _PTR2REF(this.speed));
             end;
         end
     with

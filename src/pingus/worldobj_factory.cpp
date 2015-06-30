@@ -19,7 +19,6 @@
 #include <stdexcept>
 
 #include "pingus/prefab_file.hpp"
-#include "pingus/worldobjs/conveyor_belt.hpp"
 #include "pingus/worldobjs/entrance.hpp"
 #include "pingus/worldobjs/fake_exit.hpp"
 #include "pingus/worldobjs/groundpiece.hpp"
@@ -86,20 +85,20 @@ private:
   WorldObjFactoryImpl& operator= (const WorldObjFactoryImpl&);
 };
 
-/** Template to create Ceu factories, usage:
-    new WorldObjCeuFactoryImpl<CEU_IN_NEW_CLASS_NAME>("id"); */
+/** not a template to create Ceu factories, usage:
+    new WorldObjCeuFactoryImpl(CEU_IN_NEW_CLASS_NAME, "id"); */
 
-template<int T>
 class WorldObjCeuFactoryImpl: public WorldObjAbstractFactory {
+  int EVENT;
 public:
-  WorldObjCeuFactoryImpl(const std::string& id): WorldObjAbstractFactory(id) {}
+  WorldObjCeuFactoryImpl(int ev, const std::string& id): WorldObjAbstractFactory(id), EVENT(ev) {}
 
   std::vector<WorldObj*> create(const FileReader& reader) {
     std::vector<WorldObj*> lst;
         
     WorldObjCeuPackage package(reader);
     WorldObjCeuPackage* pp = &package;
-    ceu_out_go(&CEUapp, T, &pp);
+    ceu_out_go(&CEUapp, EVENT, &pp);
 
     if(package.result)
       lst.push_back(package.result);
@@ -211,7 +210,7 @@ WorldObjFactory::instance()
     new WorldObjFactoryImpl<Liquid>("liquid");
     new WorldObjFactoryImpl<Hotspot>("hotspot");
     new WorldObjFactoryImpl<Entrance>("entrance");
-    new WorldObjCeuFactoryImpl<CEU_IN_NEW_EXIT>("exit");
+    new WorldObjCeuFactoryImpl(CEU_IN_NEW_EXIT, "exit");
 
     // traps
     new WorldObjFactoryImpl<FakeExit>("fake_exit");
@@ -225,7 +224,7 @@ WorldObjFactory::instance()
     new WorldObjFactoryImpl<SwitchDoorSwitch>("switchdoor-switch");
     new WorldObjFactoryImpl<SwitchDoorDoor>("switchdoor-door");
     new WorldObjFactoryImpl<IceBlock>("iceblock");
-    new WorldObjFactoryImpl<ConveyorBelt>("conveyorbelt");
+    new WorldObjCeuFactoryImpl(CEU_IN_NEW_CONVEYOR_BELT, "conveyorbelt");
     new WorldObjFactoryImpl<Teleporter>("teleporter");
     new WorldObjFactoryImpl<TeleporterTarget>("teleporter-target");
 
