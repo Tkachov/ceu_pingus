@@ -20,6 +20,7 @@
 #include "worldobjs/smasher.ceu"
 #include "worldobjs/solid_color_background.ceu"
 #include "worldobjs/spike.ceu"
+#include "worldobjs/starfield_background.ceu"
 #include "worldobjs/switch_door_switch.ceu"
 #include "worldobjs/teleporter.ceu"
 #include "worldobjs/teleporter_target.ceu"
@@ -39,6 +40,7 @@ input _WOCPackage* NEW_LIQUID;
 input _WOCPackage* NEW_SMASHER;
 input _WOCPackage* NEW_SOLID_COLOR_BACKGROUND;
 input _WOCPackage* NEW_SPIKE;
+input _WOCPackage* NEW_STARFIELD_BACKGROUND;
 input _WOCPackage* NEW_SWITCH_DOOR_SWITCH;
 input _WOCPackage* NEW_TELEPORTER;
 input _WOCPackage* NEW_TELEPORTER_TARGET;
@@ -341,6 +343,24 @@ do
 
                 this.surface = _PTR2REF(_new_SpriteA("traps/spike"));
                 package:reader:read_vector("position", _PTR2REF(this.me:pos));
+            end;
+        end
+    with
+        every package in NEW_STARFIELD_BACKGROUND do
+            spawn StarfieldBackground with
+                this.me = _new_WorldObj();
+                package:result = this.me;
+
+                this.small_stars_count = 100;
+                this.middle_stars_count = 50;
+                this.large_stars_count = 25;
+
+                package:reader:read_int("small-stars", _PTR2REF(this.small_stars_count));
+                package:reader:read_int("middle-stars", _PTR2REF(this.middle_stars_count));
+                package:reader:read_int("large-stars", _PTR2REF(this.large_stars_count));
+
+                //original FIXME: Make z_pos handling editable via xml
+                this.me:pos.z = -10; //TODO: somehow guarantee that it always stays that way
             end;
         end
     with

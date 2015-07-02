@@ -1,0 +1,67 @@
+#ifndef STARFIELD_BACKGROUND_CEU
+#define STARFIELD_BACKGROUND_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../iworld.ceu"
+#include "../worldobj.ceu"
+#include "../ipingu_holder.ceu"
+#include "../pingu_holder_listener.ceu"
+#include "starfield_background_stars.ceu"
+
+class StarfieldBackground with
+    interface IWorldObj;
+
+    var int small_stars_count;
+    var int middle_stars_count;
+    var int large_stars_count;
+do
+    var _WorldObj&? hotspot = _PTR2REF(me);
+    //finalize with _delete_obj(me); end
+
+    pool StarfieldBackgroundStars[] stars;
+
+    loop i in small_stars_count do
+        spawn StarfieldBackgroundStars in stars with
+            this.sprite = _PTR2REF(_new_SpriteA("game/stars/small_star"));
+        end;
+    end
+
+    loop i in middle_stars_count do
+        spawn StarfieldBackgroundStars in stars with
+            this.sprite = _PTR2REF(_new_SpriteA("game/stars/middle_star"));
+        end;
+    end
+
+    loop i in large_stars_count do
+        spawn StarfieldBackgroundStars in stars with
+            this.sprite = _PTR2REF(_new_SpriteA("game/stars/large_star"));
+        end;
+    end
+
+    par/or do
+        every package in WORLDOBJ_DRAW do
+            if package:worldobj != &hotspot then
+                continue;
+            end
+            
+            loop star in stars do
+                emit star:e_DRAW => package;
+            end
+        end
+    with    
+        every w in WORLD_UPDATE do
+            if w != hotspot.world then
+                continue;
+            end
+
+            loop star in stars do
+                emit star:e_UPDATE;
+            end
+        end
+    with
+        var _WorldObj* e = await DELETE_WORLDOBJ until (e == &hotspot);
+    end
+end
+
+#endif
