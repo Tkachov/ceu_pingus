@@ -1,0 +1,39 @@
+#ifndef SOLID_COLOR_BACKGROUND_CEU
+#define SOLID_COLOR_BACKGROUND_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../iworld.ceu"
+#include "../worldobj.ceu"
+#include "../ipingu_holder.ceu"
+#include "../pingu_holder_listener.ceu"
+
+native/pre do
+    ##include "math/color.hpp"
+    ##define new_Color() new Color()
+end
+
+native @pure _new_Color();
+
+class SolidColorBackground with
+    interface IWorldObj;
+    var _Color&? color;
+do
+    var _WorldObj&? scb = _PTR2REF(me);
+    //finalize with _delete_obj(me); end
+    finalize with _delete_obj(color); end
+
+    par/or do        
+        every package in WORLDOBJ_DRAW do
+            if package:worldobj != &scb then
+                continue;
+            end
+            
+            _gc_color_fill_screen(package:gc, _deref(color));
+        end
+    with
+        var _WorldObj* e = await DELETE_WORLDOBJ until (e == &scb);
+    end
+end
+
+#endif
