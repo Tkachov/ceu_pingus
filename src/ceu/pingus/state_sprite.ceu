@@ -13,7 +13,7 @@ native/pre do
     ##define const_char_string const char*
 
     ##define new_StateSprite() new StateSprite()
-    ##define delete_StateSprite(s) delete s;    
+    ##define delete_StateSprite(s) delete s;
 end
 
 native @pure _new_StateSprite(),

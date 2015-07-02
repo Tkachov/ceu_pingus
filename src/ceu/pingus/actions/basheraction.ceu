@@ -15,7 +15,7 @@
 class BasherAction with
     interface IAction;
     interface IPinguAction;
-do  
+do
     pingu.ceu_action = &this;
 
     function (int a) => bool change_allowed do
@@ -43,7 +43,7 @@ do
     load_file_directions(sprite, "/basher/");
 
     var _CollisionMask&? bash_radius = _new_CollisionMask("pingus/common/bash_radius_gfx", "pingus/common/bash_radius");
-    finalize with _delete_CollisionMask(bash_radius); end;
+    finalize with _delete_obj(bash_radius); end;
 
     _assert(bash_radius.get_width() % 2 == 0);
     var int bash_reach = bash_radius.get_width();

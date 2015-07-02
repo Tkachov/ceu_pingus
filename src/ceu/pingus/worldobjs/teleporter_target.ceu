@@ -18,7 +18,7 @@ do
 
     //delete teleporter_target
     finalize with _delete_obj(sprite); end;
-    
+
     function (void) => void teleporter_used do
         sprite.restart();
     end

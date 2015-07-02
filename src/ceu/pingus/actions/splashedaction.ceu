@@ -19,7 +19,7 @@ native @pure _WorldObj__get_world();
 class SplashedAction with
     interface IAction;
     interface IPinguAction;
-do    
+do
     pingu.ceu_action = &this;
 
     function (int a) => bool change_allowed do
@@ -41,7 +41,7 @@ do
     end
 
     var _Sprite&? sprite = _PTR2REF(_new_SpriteA(_scc3("pingus/player", pingu.get_owner_str(), "/splat")));
-    finalize with _delete_Sprite(sprite); end;
+    finalize with _delete_obj(sprite); end;
 
     par do
         every gc in pingu.e_DRAW_CALLED do

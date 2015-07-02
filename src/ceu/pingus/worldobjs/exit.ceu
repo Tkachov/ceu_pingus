@@ -12,11 +12,10 @@ native/pre do
     ##include "pingus/components/smallmap.hpp"
     ##include "pingus/res_descriptor.hpp"
     ##define new_ResDescriptor() new ResDescriptor()
-    ##define delete_ResDescriptor(x) delete x;
     ##define colmap_remove(cm, desc, x, y) { CollisionMask __mask(*desc); cm->remove(__mask, x, y); }
 end
 
-native @pure _new_ResDescriptor(), _delete_ResDescriptor(), _colmap_remove(), _deref();
+native @pure _new_ResDescriptor(), _colmap_remove();
 
 class Exit with
     interface IWorldObj;
@@ -28,11 +27,11 @@ class Exit with
     var _Sprite&? smallmap_symbol;
 do
     var _WorldObj&? exit = _PTR2REF(me);
-    //finalize with _delete_WorldObj(me); end
-    finalize with _delete_ResDescriptor(desc); end
-    finalize with _delete_Sprite(sprite); end;
-    finalize with _delete_Sprite(flag); end;
-    finalize with _delete_Sprite(smallmap_symbol); end;
+    //finalize with _delete_obj(me); end
+    finalize with _delete_obj(desc); end
+    finalize with _delete_obj(sprite); end;
+    finalize with _delete_obj(flag); end;
+    finalize with _delete_obj(smallmap_symbol); end;
 
     par/or do
         every package in WORLDOBJ_DRAW do

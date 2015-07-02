@@ -27,8 +27,8 @@
 #include "ipingu.ceu"
 #include "pingu_holder_listener.ceu"
 
-native/pre do    
-    ##define A_Enum(x) (ActionName::Enum)(x)    
+native/pre do
+    ##define A_Enum(x) (ActionName::Enum)(x)
     ##define PA_get_activation_mode(x) PinguAction::get_activation_mode(x)
 
     ##include "pingus/collision_map.hpp"
@@ -37,14 +37,12 @@ native/pre do
     ##define Math__clamp Math::clamp
 
     #define StringUtil__to_string StringUtil::to_string
-    ##define delete_Direction(s) delete s;
 end
 
 input _SceneContext* PINGU_DRAW_WALKER;
 input _SceneContext* PINGU_DRAW_OTHERS;
 
-native @pure _delete_Pingu(), _PA_get_activation_mode(), _StringUtil__to_string(),
-             _delete_Direction();
+native @pure _PA_get_activation_mode(), _StringUtil__to_string();
 
 #define DO_ACTION(n, c) \
     else/if current_action == n then \
@@ -64,7 +62,7 @@ class Pingu with
     var int owner_id;
     var uint id;
 do
-    finalize with _delete_Direction(&direction); end;
+    finalize with _delete_obj(&direction); end;
 
     velocity.x = 0;
     velocity.y = 0;
@@ -247,7 +245,7 @@ do
                 _log_debug("Pingu: Already have action");
             else/if ceu_action:change_allowed(_PTR2REF(req_action)) then
                 _log_debug("setting instant action");
-                result = true;                
+                result = true;
                 instant_action = req_action;
                 instant_action_set = true;
             else
@@ -288,7 +286,7 @@ do
             end
 
             // original FIXME: Out of screen check is ugly
-            // The Pingu has hit the edge of the screen, a good time to let him die.            
+            // The Pingu has hit the edge of the screen, a good time to let him die.
             if rel_getpixel(0, -1) == _GT_OUTOFSCREEN then
                 //Sound::PingusSound::play_sound("die");
                 emit e_CHANGE_ACTION => _A_DEAD;

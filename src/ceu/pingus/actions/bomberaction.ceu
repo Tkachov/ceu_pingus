@@ -53,13 +53,13 @@ do
     load_file_directions(sprite, "/bomber/");
 
     var _Sprite&? explo_surf = _new_SpriteA(_scc3("pingus/player", pingu.get_owner_str(), "/explo"));
-    finalize with _delete_Sprite(explo_surf); end;
+    finalize with _delete_obj(explo_surf); end;
 
     var _CollisionMask&? bomber_radius = _new_CollisionMask("other/bomber_radius_gfx", "other/bomber_radius");
-    finalize with _delete_CollisionMask(bomber_radius); end;
+    finalize with _delete_obj(bomber_radius); end;
 
     var _Movers_LinearMover&? mover = _new_LinearMover();
-    finalize with _delete_LinearMover(mover); end;
+    finalize with _delete_obj(mover); end;
 
     _WorldObj__get_world_play_sound("ohno", pingu.get_pos());
 

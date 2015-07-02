@@ -5,9 +5,8 @@ native/pre do
     ##include "pingus/collision_mask.hpp"
 
     ##define new_CollisionMask new CollisionMask
-    ##define delete_CollisionMask(m) delete m
 end
 
-native @pure _new_CollisionMask(), _delete_CollisionMask();
+native @pure _new_CollisionMask();
 
 #endif

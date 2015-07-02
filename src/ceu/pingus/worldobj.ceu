@@ -17,22 +17,19 @@ native/pre do
 
     ##define WOCPackage WorldObjCeuPackage
     ##define new_WorldObj new WorldObj
-    ##define delete_WorldObj(x) delete x;
 
     ##define world_put(w, m, x, y, t) {CollisionMask& __msk = *m; w->put(__msk, x, y, t);}
     ##define world_remove(w, m, x, y) {CollisionMask& __msk = *m; w->remove(__msk, x, y);}
     ##define new_CollisionMask new CollisionMask
-    ##define _delete_CollisionMask(x) delete x;
 end
 
-native @pure _world_put(), _new_CollisionMask(), _delete_CollisionMask();
+native @pure _world_put(), _new_CollisionMask();
 
 native @pure _WorldObj__get_world(),
 			 _WorldObj__get_world_put(),
              _WorldObj__get_world_remove(),
              _WorldObj__get_world_play_sound(),
-             _new_WorldObj(),
-             _delete_WorldObj();
+             _new_WorldObj();
 
 input _WorldObj* DELETE_WORLDOBJ;
 input _WorldObj* WORLDOBJ_STARTUP;

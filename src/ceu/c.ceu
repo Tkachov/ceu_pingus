@@ -7,8 +7,8 @@ native _assert(),
 native @const _stderr;
 
 native @nohold _FILE,
-				_fopen(),
-				_fprintf(),
+               _fopen(),
+               _fprintf(),
                _free(),
                _printf(),
                _sprintf(),

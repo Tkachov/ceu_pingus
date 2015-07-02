@@ -4,7 +4,7 @@
 #include "../math/vector3f.ceu"
 #include "../string.ceu"
 
-interface IPinguAction with    
+interface IPinguAction with
     var bool catchable;
     function (int a) => bool change_allowed;
     function @rec (void) => Vector3f get_center_pos;

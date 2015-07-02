@@ -3,9 +3,9 @@
 
 native/pre do
     //##include "math/vector3f.hpp"
-    //##include "pingus/action_name.hpp"    
+    //##include "pingus/action_name.hpp"
     ##include "pingus/direction.hpp"
-    ##include "pingus/groundtype.hpp"    
+    ##include "pingus/groundtype.hpp"
     ##define GT_OUTOFSCREEN Groundtype::GP_OUTOFSCREEN
     ##define GT_NOTHING Groundtype::GP_NOTHING
     ##define GT_WATER Groundtype::GP_WATER
@@ -20,14 +20,14 @@ end
 
 input void PINGU_UPDATE_ALL;
 
-interface IPingu with    
+interface IPingu with
     var _Direction& direction;
     var IPinguAction* ceu_action;
 
     event _SceneContext* e_DRAW_CALLED;
 
     event int e_CHANGE_ACTION;
-    
+
     function (int x, int y) => int rel_getpixel;
     function (int x, int y) => bool head_collision_on_walk;
     function (int x, int y) => bool collision_on_walk;
@@ -37,14 +37,14 @@ interface IPingu with
     function @rec (int x, int y) => bool is_over;
     function (int x1, int y1, int x2, int y2) => bool is_inside;
     function @rec (int x, int y) => float dist;
-    
+
     function (void) => bool has_fall_action;
     function (void) => bool has_wall_action;
     function (void) => int get_fall_action;
     function (void) => int get_wall_action;
     function (void) => int get_previous_action;
     function (void) => int get_current_action;
-    
+
     function (void) => Vector3f get_velocity;
     function (Vector3f) => void set_velocity;
     function (Vector3f) => void apply_force;

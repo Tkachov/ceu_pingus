@@ -14,7 +14,7 @@
 class MinerAction with
     interface IAction;
     interface IPinguAction;
-do    
+do
     pingu.ceu_action = &this;
 
     function (int a) => bool change_allowed do
@@ -41,13 +41,13 @@ do
     load_file_directions(sprite, "/miner/");
 
     var _CollisionMask&? miner_radius = _new_CollisionMask("pingus/common/miner_radius_gfx", "pingus/common/miner_radius");
-    finalize with _delete_CollisionMask(miner_radius); end;
+    finalize with _delete_obj(miner_radius); end;
 
     var _CollisionMask&? miner_radius_left = _new_CollisionMask("pingus/common/miner_radius_left_gfx", "pingus/common/miner_radius_left");
-    finalize with _delete_CollisionMask(miner_radius_left); end;
+    finalize with _delete_obj(miner_radius_left); end;
 
     var _CollisionMask&? miner_radius_right = _new_CollisionMask("pingus/common/miner_radius_right_gfx", "pingus/common/miner_radius_right");
-    finalize with _delete_CollisionMask(miner_radius_right); end;
+    finalize with _delete_obj(miner_radius_right); end;
 
     function @rec (bool final) => void mine do
         if not final then

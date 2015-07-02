@@ -58,10 +58,10 @@ do
     load_file_directions(build_sprite, "/bridger/");
 
     var _CollisionMask&? brick_l = _new_CollisionMask("other/brick_left");
-    finalize with _delete_CollisionMask(brick_l); end;
+    finalize with _delete_obj(brick_l); end;
 
     var _CollisionMask&? brick_r = _new_CollisionMask("other/brick_right");
-    finalize with _delete_CollisionMask(brick_r); end;
+    finalize with _delete_obj(brick_r); end;
 
     // way_is_free() needs to stop BRIDGERS from getting stuck between a brick
     // and the ceiling.  The routine also stops cases of Bridgers building up but

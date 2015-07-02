@@ -20,9 +20,9 @@ do
     var _WorldObj&? guillotine = _PTR2REF(me);
     //delete guillotine
     finalize with _delete_obj(direction); end;
-    finalize with _delete_Sprite(sprite_kill_left); end;
-    finalize with _delete_Sprite(sprite_kill_right); end;
-    finalize with _delete_Sprite(sprite_idle); end;
+    finalize with _delete_obj(sprite_kill_left); end;
+    finalize with _delete_obj(sprite_kill_right); end;
+    finalize with _delete_obj(sprite_idle); end;
 
     par/or do
         every package in WORLDOBJ_DRAW do

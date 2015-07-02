@@ -16,7 +16,7 @@ do
     var int current_frame = 0;
 
     //delete hammer
-    finalize with _delete_Sprite(sprite); end;
+    finalize with _delete_obj(sprite); end;
 
     par/or do
         every package in WORLDOBJ_DRAW do

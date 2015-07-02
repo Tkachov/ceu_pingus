@@ -10,8 +10,8 @@ native/pre do
 end
 
 native @pure _gc_color_draw(),
-			 _gc_color_draw2(),
-			 _gc_color_print_center(),
-			 _gc_draw_line();
+             _gc_color_draw2(),
+             _gc_color_print_center(),
+             _gc_draw_line();
 
 #endif

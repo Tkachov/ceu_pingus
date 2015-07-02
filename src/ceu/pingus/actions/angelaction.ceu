@@ -20,7 +20,7 @@ end
 class AngelAction with
     interface IAction;
     interface IPinguAction;
-do    
+do
     pingu.ceu_action = &this;
 
     function (int a) => bool change_allowed do
@@ -42,7 +42,7 @@ do
     end
 
     var _Sprite&? sprite = _PTR2REF(_new_SpriteA(_scc3("pingus/player", pingu.get_owner_str(), "/angel")));
-    finalize with _delete_Sprite(sprite); end;
+    finalize with _delete_obj(sprite); end;
 
     var float counter = 0;
     var float x_pos = pingu.get_x();
@@ -51,7 +51,7 @@ do
         every PINGU_UPDATE_ALL do
             sprite.update();
 
-            counter = counter + (float)_globals__game_speed;            
+            counter = counter + (float)_globals__game_speed;
             pingu.set_posf(x_pos + 4.0*_Math__sin(counter*0.01), pingu.get_y() - 40.0*0.025);
 
             // Out of screen, let the pingu die

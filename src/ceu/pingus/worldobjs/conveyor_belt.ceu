@@ -29,9 +29,9 @@ class ConveyorBelt with
 do
     var _WorldObj&? conveyor_belt = _PTR2REF(me);
     //delete convbelt
-    finalize with _delete_Sprite(left_sur); end;
-    finalize with _delete_Sprite(right_sur); end;
-    finalize with _delete_Sprite(middle_sur); end;
+    finalize with _delete_obj(left_sur); end;
+    finalize with _delete_obj(right_sur); end;
+    finalize with _delete_obj(middle_sur); end;
 
     par/or do
         every package in WORLDOBJ_DRAW do
@@ -67,7 +67,7 @@ do
                 _world_put(conveyor_belt.world, mask, (int)conveyor_belt.pos.x + 15*i, (int)conveyor_belt.pos.y, _GT_SOLID);
             end
 
-            _delete_CollisionMask(mask);
+            _delete_obj(mask);
         end
     with
         every w in WORLD_UPDATE do

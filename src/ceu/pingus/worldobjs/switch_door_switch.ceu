@@ -17,8 +17,6 @@ end
 
 native @pure _dynamic_cast_SwitchDoorDoor();
 
-input _WorldObj* DELETE_SWITCH_DOOR_SWITCH;
-
 class SwitchDoorSwitch with
     interface IWorldObj;
     var _Sprite&? switch_sur;

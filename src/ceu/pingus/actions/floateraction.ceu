@@ -34,7 +34,7 @@ do
     end
 
     var _Sprite&? sprite = _new_SpriteA(_scc3("pingus/player", pingu.get_owner_str(), "/floater/left"));
-    finalize with _delete_Sprite(sprite); end;
+    finalize with _delete_obj(sprite); end;
 
     var Vector3f v_DOWN;
     v_DOWN.x=0;

@@ -14,7 +14,7 @@
 class DiggerAction with
     interface IAction;
     interface IPinguAction;
-do    
+do
     pingu.ceu_action = &this;
 
     function (int a) => bool change_allowed do
@@ -38,13 +38,13 @@ do
     var int delay_count = 0;
 
     var _Sprite&? sprite = _PTR2REF(_new_SpriteA(_scc3("pingus/player", pingu.get_owner_str(), "/digger/left")));
-    finalize with _delete_Sprite(sprite); end;
+    finalize with _delete_obj(sprite); end;
 
     var _CollisionMask&? digger_radius = _new_CollisionMask("pingus/common/digger_radius_gfx", "pingus/common/digger_radius");
-    finalize with _delete_CollisionMask(digger_radius); end;
+    finalize with _delete_obj(digger_radius); end;
 
     var _CollisionMask&? digger_radius_final = _new_CollisionMask("pingus/common/digger_radius_final_gfx", "pingus/common/digger_radius_final_gfx");
-    finalize with _delete_CollisionMask(digger_radius_final); end;
+    finalize with _delete_obj(digger_radius_final); end;
 
     function @rec (void) => bool have_something_to_dig do
         if pingu.rel_getpixel(0, -1) == _GT_NOTHING then

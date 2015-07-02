@@ -303,7 +303,7 @@ do
                 this.me = _new_WorldObj();
                 package:result = this.me;
 
-                package:reader:read_string("id", _PTR2REF(this.me:id));                  
+                package:reader:read_string("id", _PTR2REF(this.me:id));
                 this.sprite = _PTR2REF(_new_SpriteA("worldobjs/teleportertarget"));
                 package:reader:read_vector("position", _PTR2REF(this.me:pos));
             end;

@@ -9,17 +9,12 @@
 
 native/pre do
     ##define AN_get_char(x) ActionName::get_persistent_char((ActionName::Enum)x)
-    ##define streq(x, y) *x = y
-    ##define stradd(x, y) *x += y
     ##define devmode globals::developer_mode
     ##define strutil_to_string StringUtil::to_string
     ##define Fonts__courier_small Fonts::courier_small
-    ##define std__string std::string
-    ##define new_std__string() new std::string()
-    ##define delete_std__string(s) delete s
 end
 
-native @pure _new_CaptureRectangle(), _AN_get_char(), _streq(), _stradd(), _strutil_to_string(), _new_std__string(), _delete_std__string();
+native @pure _new_CaptureRectangle(), _AN_get_char(), _strutil_to_string();
 
 class CaptureRectangle with
     var _GameSession* session;
@@ -27,41 +22,41 @@ class CaptureRectangle with
     event _SceneContext* draw;
 do
     var IPingu* pingu = null;
-    var _std__string&? action_str = _new_std__string();
-    finalize with _delete_std__string(action_str); end;
+    var _String&? action_str = _new_String();
+    finalize with _delete_obj(action_str); end;
 
     var _Sprite&? good = _PTR2REF(_new_SpriteA("game/cursors/capgood"));
     var _Sprite&? bad = _PTR2REF(_new_SpriteA("game/cursors/capbad"));
     var _Sprite&? arrow_left = _PTR2REF(_new_SpriteA("game/cursors/arrow_left"));
     var _Sprite&? arrow_right = _PTR2REF(_new_SpriteA("game/cursors/arrow_right"));
-    finalize with _delete_Sprite(good); end;
-    finalize with _delete_Sprite(bad); end;
-    finalize with _delete_Sprite(arrow_left); end;
-    finalize with _delete_Sprite(arrow_right); end;
+    finalize with _delete_obj(good); end;
+    finalize with _delete_obj(bad); end;
+    finalize with _delete_obj(arrow_left); end;
+    finalize with _delete_obj(arrow_right); end;
 
     function @rec (IPingu* p) => void set_pingu do
         pingu = p;
 
         if pingu then
-            _streq(action_str, _PTR2REF(pingu:ceu_action:get_name()));
+            _string_set(action_str, _PTR2REF(pingu:ceu_action:get_name()));
 
             if pingu:has_wall_action() or pingu:has_fall_action() then
-                _stradd(action_str, "[");
+                _string_add(action_str, "[");
 
                 if pingu:has_wall_action() then
-                    _stradd(action_str, _AN_get_char(pingu:get_wall_action()));
+                    _string_add(action_str, _AN_get_char(pingu:get_wall_action()));
                 end
 
                 if pingu:has_fall_action() then
-                    _stradd(action_str, _AN_get_char(pingu:get_fall_action()));
+                    _string_add(action_str, _AN_get_char(pingu:get_fall_action()));
                 end
 
-                _stradd(action_str, "]");
+                _string_add(action_str, "]");
             end
 
             if _devmode then
-                _stradd(action_str, " Id: ");
-                _stradd(action_str, _strutil_to_string(pingu:get_id()));
+                _string_add(action_str, " Id: ");
+                _string_add(action_str, _strutil_to_string(pingu:get_id()));
             end
         end
     end
