@@ -1,0 +1,47 @@
+#ifndef TELEPORTER_TARGET_CEU
+#define TELEPORTER_TARGET_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../../math/vector3f.ceu"
+#include "../iworld.ceu"
+#include "../worldobj.ceu"
+#include "../ipingu_holder.ceu"
+#include "../pingu_holder_listener.ceu"
+#include "iteleporter_target.ceu"
+
+class TeleporterTarget with
+    interface ITeleporterTarget;
+    var _Sprite&? sprite;
+do
+    var _WorldObj&? teleporter = _PTR2REF(me);
+
+    //delete teleporter_target
+    finalize with _delete_obj(sprite); end;
+    
+    function (void) => void teleporter_used do
+        sprite.restart();
+    end
+
+    par/or do
+        every package in WORLDOBJ_DRAW do
+            if package:worldobj != &teleporter then
+                continue;
+            end
+
+            _gc_color_draw2(package:gc, &sprite, teleporter.pos);
+        end
+    with
+        every w in WORLD_UPDATE do
+            if w != teleporter.world then
+                continue;
+            end
+
+            sprite.update();
+        end
+    with
+        var _WorldObj* e = await DELETE_WORLDOBJ until (e == &teleporter);
+    end
+end
+
+#endif

@@ -18,6 +18,7 @@
 #include "worldobjs/spike.ceu"
 #include "worldobjs/switch_door_switch.ceu"
 #include "worldobjs/teleporter.ceu"
+#include "worldobjs/teleporter_target.ceu"
 
 input _World* DELETE_WORLD;
 input _WOCPackage* NEW_CONVEYOR_BELT;
@@ -32,6 +33,7 @@ input _WOCPackage* NEW_SMASHER;
 input _WOCPackage* NEW_SPIKE;
 input _WOCPackage* NEW_SWITCH_DOOR_SWITCH;
 input _WOCPackage* NEW_TELEPORTER;
+input _WOCPackage* NEW_TELEPORTER_TARGET;
 
 input _GetStartPosPackage* WORLD_GET_START_POS;
 
@@ -39,6 +41,7 @@ class World with
     interface IWorld;
     var _World& me;
     pool Entrance[] entrances;
+    pool ITeleporterTarget[] teleporter_targets;
 do
     var _World&? me_ = _PTR2REF((_World*)&this.me);
     var PinguHolder holder with
@@ -47,6 +50,16 @@ do
 
     function (void) => IPinguHolder* get_pingus do
         return holder;
+    end
+
+    function (_const_char_string id) => ITeleporterTarget* get_teleporter_target do
+        loop target in teleporter_targets do
+            if target:me:id == id then
+                return target;
+            end
+        end
+
+        return null;
     end
 
     par/or do
@@ -282,6 +295,17 @@ do
                 package:reader:read_vector("position", _PTR2REF(this.me:pos));
                 this.target_id = _PTR2REF(_new_String());
                 _string_read_string(this.target_id, package:reader, "target-id");
+            end;
+        end
+    with
+        every package in NEW_TELEPORTER_TARGET do
+            spawn TeleporterTarget in teleporter_targets with
+                this.me = _new_WorldObj();
+                package:result = this.me;
+
+                package:reader:read_string("id", _PTR2REF(this.me:id));                  
+                this.sprite = _PTR2REF(_new_SpriteA("worldobjs/teleportertarget"));
+                package:reader:read_vector("position", _PTR2REF(this.me:pos));
             end;
         end
     with

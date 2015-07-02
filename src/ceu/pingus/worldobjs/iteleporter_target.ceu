@@ -1,0 +1,13 @@
+#ifndef ITELEPORTER_TARGET_CEU
+#define ITELEPORTER_TARGET_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../worldobj.ceu"
+
+interface ITeleporterTarget with
+    interface IWorldObj;
+    function (void) => void teleporter_used;
+end
+
+#endif

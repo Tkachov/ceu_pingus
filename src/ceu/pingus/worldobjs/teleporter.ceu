@@ -8,14 +8,7 @@
 #include "../worldobj.ceu"
 #include "../ipingu_holder.ceu"
 #include "../pingu_holder_listener.ceu"
-
-native/pre do
-    ##include "pingus/worldobjs/teleporter_target.hpp"
-    ##define WTeleporterTarget WorldObjs::TeleporterTarget
-    ##define dynamic_cast_TeleporterTarget(x) dynamic_cast<WorldObjs::TeleporterTarget*>(x)
-end
-
-native @pure _dynamic_cast_TeleporterTarget();
+#include "iteleporter_target.ceu"
 
 class Teleporter with
     interface IWorldObj;
@@ -28,7 +21,7 @@ do
     finalize with _delete_obj(sprite); end;
     finalize with _delete_obj(target_id); end;
 
-    var _WTeleporterTarget* target = null;
+    var ITeleporterTarget* target = null;
 
     par/or do
          every wo in WORLDOBJ_STARTUP do
@@ -40,8 +33,8 @@ do
                 _log_error("target-id is empty");
             else
                 //original FIXME: find the target
-                target = _dynamic_cast_TeleporterTarget(teleporter.world:get_worldobj(target_id.c_str()));
-                if not target then
+                target = _PTR2REF(global:world:get_teleporter_target(target_id.c_str()));
+                if target == null then
                     _log_error("Teleporter: Couldn't find matching target-id or object isn't a TeleporterTarget");
                 end
             end
@@ -62,11 +55,11 @@ do
 
             sprite.update();
 
-            if target then
+            if target != null then
                 loop pingu in global:world:get_pingus():all_pingus do
                     if pingu:get_x() > teleporter.pos.x-3 and pingu:get_x() < teleporter.pos.x+3 and
                        pingu:get_y() > teleporter.pos.y-52 and pingu:get_y() < teleporter.pos.y then
-                        pingu:set_posf(target:get_pos().x, target:get_pos().y);
+                        pingu:set_posf(target:me:get_pos().x, target:me:get_pos().y);
                         target:teleporter_used();
                         sprite.restart();
                     end
