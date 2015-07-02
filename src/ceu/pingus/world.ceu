@@ -16,6 +16,7 @@
 #include "worldobjs/hotspot.ceu"
 #include "worldobjs/ice_block.ceu"
 #include "worldobjs/laser_exit.ceu"
+#include "worldobjs/liquid.ceu"
 #include "worldobjs/smasher.ceu"
 #include "worldobjs/spike.ceu"
 #include "worldobjs/switch_door_switch.ceu"
@@ -33,6 +34,7 @@ input _WOCPackage* NEW_HAMMER;
 input _WOCPackage* NEW_HOTSPOT;
 input _WOCPackage* NEW_ICE_BLOCK;
 input _WOCPackage* NEW_LASER_EXIT;
+input _WOCPackage* NEW_LIQUID;
 input _WOCPackage* NEW_SMASHER;
 input _WOCPackage* NEW_SPIKE;
 input _WOCPackage* NEW_SWITCH_DOOR_SWITCH;
@@ -288,6 +290,23 @@ do
                 package:reader:read_vector("position", _PTR2REF(this.me:pos));
             end;
         end
+    with
+        every package in NEW_LIQUID do        
+            spawn Liquid with
+                this.me = _new_WorldObj();
+                package:result = this.me;
+
+                this.width = 0;
+
+                var _ResDescriptor&? desc = _PTR2REF(_new_ResDescriptor());
+
+                package:reader:read_vector("position", _PTR2REF(this.me:pos));
+                package:reader:read_desc  ("surface",  _deref(desc));
+                package:reader:read_int   ("repeat",   _PTR2REF(this.width));
+
+                this.sprite = _PTR2REF(_new_SpriteA(_deref(desc)));
+            end;
+        end        
     with
         every package in NEW_SMASHER do
             spawn Smasher with

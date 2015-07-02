@@ -1,0 +1,71 @@
+#ifndef LIQUID_CEU
+#define LIQUID_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../iworld.ceu"
+#include "../worldobj.ceu"
+#include "../ipingu_holder.ceu"
+#include "../pingu_holder_listener.ceu"
+
+class Liquid with
+    interface IWorldObj;
+    var _Sprite&? sprite; //Sprite sur;
+    var int width;
+do
+    var _WorldObj&? liquid = _PTR2REF(me);
+    //finalize with _delete_obj(me); end
+    finalize with _delete_obj(sprite); end
+
+    //Cause to interpret the width in pixels instead of tiles
+    var bool old_width_handling = false;
+    if not old_width_handling then
+        width = width * sprite.get_width();
+    end
+
+    par/or do
+        every wo in WORLDOBJ_STARTUP do
+            if wo != &liquid then
+                continue;
+            end
+
+            var _CollisionMask* mask = _new_CollisionMask("liquids/water_cmap");
+
+            loop/100 i in width do
+                _world_put(liquid.world:get_colmap(), mask, (int)(liquid.pos.x + (float)i), (int)liquid.pos.y, _GT_WATER);
+                //colmap, actually, but I hope this defines does its work
+            end
+
+            _delete_obj(mask);
+        end
+    with
+        every package in WORLDOBJ_DRAW do
+            if package:worldobj != &liquid then
+                continue;
+            end
+
+            var int x = liquid.pos.x;
+            loop/100 do
+                if x >= (int)liquid.pos.x + width then
+                    break;
+                end;
+                
+                _gc_color_draw2(package:gc, &sprite, _Vector3f(x, liquid.pos.y) finalize with end);
+
+                x = x + sprite.get_width();
+            end            
+        end
+    with    
+        every w in WORLD_UPDATE do
+            if w != liquid.world then
+                continue;
+            end
+
+            sprite.update(0.033);
+        end
+    with
+        var _WorldObj* e = await DELETE_WORLDOBJ until (e == &liquid);
+    end
+end
+
+#endif
