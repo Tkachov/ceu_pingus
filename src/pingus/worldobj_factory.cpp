@@ -19,7 +19,6 @@
 #include <stdexcept>
 
 #include "pingus/prefab_file.hpp"
-#include "pingus/worldobjs/groundpiece.hpp"
 #include "pingus/worldobjs/hotspot.hpp"
 #include "pingus/worldobjs/liquid.hpp"
 #include "pingus/worldobjs/rain_generator.hpp"
@@ -230,7 +229,7 @@ WorldObjFactory::instance()
     new WorldObjFactoryImpl<RainGenerator>("rain");
 
     // Groundpieces
-    new WorldObjFactoryImpl<Groundpiece>("groundpiece");
+    new WorldObjCeuFactoryImpl(CEU_IN_NEW_GROUNDPIECE, "groundpiece");
   }
 
   return instance_;

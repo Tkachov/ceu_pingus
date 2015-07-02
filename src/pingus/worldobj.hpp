@@ -88,12 +88,6 @@ public:
       stuff onto the gfx map or do other manipulations to the World */
   virtual void on_startup ();
 
-  /** @return true if this WorldObj is empty and doesn't have an
-      update() or draw() function, but only a on_startup() one. The
-      World can so decide which objects need to stay active and which
-      one can get purged after calling on_startup() */
-  virtual bool purge_after_startup() { return false; }
-
   /** The update function is called once a game loop, the delta
    * specifies how much time is passed since the last update
    * delta = 1.0 means that one second of realtime has passed. */

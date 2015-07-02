@@ -98,16 +98,18 @@ do
             _Sound_PingusSound_play_sound("ting");
         end
 
-        if pingu.direction.is_right() then
-            _WorldObj__get_world_put(brick_r,
-                                     (int)(pingu.get_x() + 10.0 - (float)brick_r.get_width()),
-                                     (int)pingu.get_y(),
-                                     _GT_BRIDGE);
+        if pingu.direction.is_right() then            
+            _world_put(_WorldObj__get_world(),
+                       brick_r,
+                       (int)(pingu.get_x() + 10.0 - (float)brick_r.get_width()),
+                       (int)pingu.get_y(),
+                       _GT_BRIDGE);
         else
-            _WorldObj__get_world_put(brick_l,
-                                     (int)(pingu.get_x() - 10.0),
-                                     (int)pingu.get_y(),
-                                     _GT_BRIDGE);
+            _world_put(_WorldObj__get_world(),
+                       brick_l,
+                       (int)(pingu.get_x() - 10.0),
+                       (int)pingu.get_y(),
+                       _GT_BRIDGE);
         end
     end
 

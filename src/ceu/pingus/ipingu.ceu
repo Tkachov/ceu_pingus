@@ -13,6 +13,7 @@ native/pre do
     ##define GT_GROUND Groundtype::GP_GROUND
     ##define GT_LAVA Groundtype::GP_LAVA
     ##define GT_SOLID Groundtype::GP_SOLID
+    ##define GT_REMOVE Groundtype::GP_REMOVE
 end
 
 #include "ipingu_action.ceu"

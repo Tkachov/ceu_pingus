@@ -10,6 +10,7 @@
 #include "worldobjs/entrance.ceu"
 #include "worldobjs/exit.ceu"
 #include "worldobjs/fake_exit.ceu"
+#include "worldobjs/groundpiece.ceu"
 #include "worldobjs/guillotine.ceu"
 #include "worldobjs/hammer.ceu"
 #include "worldobjs/ice_block.ceu"
@@ -25,6 +26,7 @@ input _WOCPackage* NEW_CONVEYOR_BELT;
 input _WOCPackage* NEW_ENTRANCE;
 input _WOCPackage* NEW_EXIT;
 input _WOCPackage* NEW_FAKE_EXIT;
+input _WOCPackage* NEW_GROUNDPIECE;
 input _WOCPackage* NEW_GUILLOTINE;
 input _WOCPackage* NEW_HAMMER;
 input _WOCPackage* NEW_ICE_BLOCK;
@@ -36,6 +38,12 @@ input _WOCPackage* NEW_TELEPORTER;
 input _WOCPackage* NEW_TELEPORTER_TARGET;
 
 input _GetStartPosPackage* WORLD_GET_START_POS;
+
+native/pre do
+    ##define reader_read_Groundtype(r, s, v) r->read_enum(s, v, &Groundtype::string_to_type);
+end
+
+native @pure _reader_read_Groundtype();
 
 class World with
     interface IWorld;
@@ -196,6 +204,19 @@ do
                 this.me:pos.y = this.me:pos.y - (float)this.sprite.get_height();
             end;
         end
+    with
+        every package in NEW_GROUNDPIECE do
+            spawn Groundpiece with
+                this.me = _new_WorldObj();
+                package:result = this.me;
+
+                package:reader:read_vector("position", _PTR2REF(this.me:pos));
+                this.desc = _PTR2REF(_new_ResDescriptor());
+                package:reader:read_desc("surface", _deref(this.desc));
+                this.gptype = _GT_GROUND;
+                _reader_read_Groundtype(package:reader, "type", _PTR2REF(this.gptype));
+            end;
+        end  
     with
         every package in NEW_GUILLOTINE do
             spawn Guillotine with

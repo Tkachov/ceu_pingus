@@ -61,11 +61,11 @@ do
 
     function @rec (bool final) => void dig do
         if not final then
-            _WorldObj__get_world_remove(digger_radius,
+            _world_remove(_WorldObj__get_world(), digger_radius,
                                        (int)pingu.get_x() - digger_radius.get_width() / 2,
                                        (int)pingu.get_y() - digger_radius.get_height() + 2);
         else
-            _WorldObj__get_world_remove(digger_radius_final,
+            _world_remove(_WorldObj__get_world(), digger_radius_final,
                                        (int)pingu.get_x() - digger_radius.get_width() / 2,
                                        (int)pingu.get_y() - digger_radius.get_height() + 2);
         end

@@ -8,8 +8,6 @@ native/pre do
     ##include "pingus/collision_mask.hpp"
 
     ##define WorldObj__get_world WorldObj::get_world
-    ##define WorldObj__get_world_put(m, x, y, t) {CollisionMask& __msk = *m; WorldObj::get_world()->put(__msk, x, y, t);}
-    ##define WorldObj__get_world_remove(a, b, c) {CollisionMask& __msk = *a; WorldObj::get_world()->remove(__msk, b, c);}
     ##define WorldObj__get_world_play_sound WorldObj::get_world()->play_sound
 
     ##define WOPackage WorldObj::WorldObjPackage
@@ -23,11 +21,9 @@ native/pre do
     ##define new_CollisionMask new CollisionMask
 end
 
-native @pure _world_put(), _new_CollisionMask();
+native @pure _world_put(), _world_remove(), _new_CollisionMask();
 
 native @pure _WorldObj__get_world(),
-			 _WorldObj__get_world_put(),
-             _WorldObj__get_world_remove(),
              _WorldObj__get_world_play_sound(),
              _new_WorldObj();
 

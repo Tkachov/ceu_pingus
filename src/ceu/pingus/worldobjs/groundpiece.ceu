@@ -1,0 +1,52 @@
+#ifndef GROUNDPIECE_CEU
+#define GROUNDPIECE_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../iworld.ceu"
+#include "../worldobj.ceu"
+#include "../ipingu_holder.ceu"
+#include "../pingu_holder_listener.ceu"
+
+native/pre do    
+    ##include "pingus/res_descriptor.hpp"
+    ##define new_ResDescriptor() new ResDescriptor()
+    ##define to_GT(x) (Groundtype::GPType)x
+end
+
+native @pure _new_ResDescriptor(), _to_GT();
+
+class Groundpiece with
+    interface IWorldObj;  
+    var _ResDescriptor&? desc;
+    var int gptype;
+do
+    var _WorldObj&? groundpiece = _PTR2REF(me);
+    //finalize with _delete_obj(me); end
+    finalize with _delete_obj(desc); end
+
+    par/or do
+        //TODO: when there are no more C++ World, remove that `every` - we need STARTUP only once
+        every wo in WORLDOBJ_STARTUP do
+            if wo != &groundpiece then
+                continue;
+            end
+
+            //original FIXME: using a CollisionMask is kind of unneeded here
+            var _CollisionMask* mask = _new_CollisionMask(_deref(desc));
+
+            //original FIXME: overdrawing of bridges and similar things aren't handled here
+            if gptype == _GT_REMOVE then
+                _world_remove(groundpiece.get_world(), mask, (int)groundpiece.pos.x, (int)groundpiece.pos.y);
+            else
+                _world_put(groundpiece.get_world(), mask, (int)groundpiece.pos.x, (int)groundpiece.pos.y, _to_GT(gptype));
+            end
+
+            _delete_obj(mask);
+        end
+    with
+        var _WorldObj* e = await DELETE_WORLDOBJ until (e == &groundpiece);
+    end
+end
+
+#endif

@@ -113,7 +113,7 @@ do
         //Wait for 13th frame again?..
         PRE_CONDITION_AWAIT(PINGU_UPDATE_ALL, sprite.get(pingu.direction):get_current_frame() >= 13);
 
-        _WorldObj__get_world_remove(
+        _world_remove(_WorldObj__get_world(), 
             bomber_radius,
             (int)((int)pingu.get_x() - (bomber_radius.get_width()/2)),
             (int)((int)pingu.get_y() - 16 - (bomber_radius.get_width()/2))
