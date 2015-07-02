@@ -19,7 +19,6 @@
 #include <stdexcept>
 
 #include "pingus/prefab_file.hpp"
-#include "pingus/worldobjs/hotspot.hpp"
 #include "pingus/worldobjs/liquid.hpp"
 #include "pingus/worldobjs/rain_generator.hpp"
 #include "pingus/worldobjs/snow_generator.hpp"
@@ -196,7 +195,7 @@ WorldObjFactory::instance()
     new WorldObjPrefabFactory("prefab");
 
     new WorldObjFactoryImpl<Liquid>("liquid");
-    new WorldObjFactoryImpl<Hotspot>("hotspot");
+    new WorldObjCeuFactoryImpl(CEU_IN_NEW_HOTSPOT, "hotspot");
     new WorldObjCeuFactoryImpl(CEU_IN_NEW_ENTRANCE, "entrance");
     new WorldObjCeuFactoryImpl(CEU_IN_NEW_EXIT, "exit");
 

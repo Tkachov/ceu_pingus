@@ -13,6 +13,7 @@
 #include "worldobjs/groundpiece.ceu"
 #include "worldobjs/guillotine.ceu"
 #include "worldobjs/hammer.ceu"
+#include "worldobjs/hotspot.ceu"
 #include "worldobjs/ice_block.ceu"
 #include "worldobjs/laser_exit.ceu"
 #include "worldobjs/smasher.ceu"
@@ -29,6 +30,7 @@ input _WOCPackage* NEW_FAKE_EXIT;
 input _WOCPackage* NEW_GROUNDPIECE;
 input _WOCPackage* NEW_GUILLOTINE;
 input _WOCPackage* NEW_HAMMER;
+input _WOCPackage* NEW_HOTSPOT;
 input _WOCPackage* NEW_ICE_BLOCK;
 input _WOCPackage* NEW_LASER_EXIT;
 input _WOCPackage* NEW_SMASHER;
@@ -243,6 +245,21 @@ do
 
                 this.sprite = _PTR2REF(_new_SpriteA("traps/hammer"));
                 package:reader:read_vector("position", _PTR2REF(this.me:pos));
+            end;
+        end
+    with
+        every package in NEW_HOTSPOT do
+            spawn Hotspot with
+                this.me = _new_WorldObj();
+                package:result = this.me;
+
+                var _ResDescriptor&? desc = _PTR2REF(_new_ResDescriptor());
+
+                package:reader:read_vector("position", _PTR2REF(this.me:pos));
+                package:reader:read_desc  ("surface",  _deref(desc));
+                package:reader:read_float ("parallax", _PTR2REF(this.para));
+
+                this.sprite = _PTR2REF(_new_SpriteA(_deref(desc)));
             end;
         end
     with

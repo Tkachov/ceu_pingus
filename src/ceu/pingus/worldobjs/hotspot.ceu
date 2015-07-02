@@ -1,0 +1,42 @@
+#ifndef HOTSPOT_CEU
+#define HOTSPOT_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../iworld.ceu"
+#include "../worldobj.ceu"
+#include "../ipingu_holder.ceu"
+#include "../pingu_holder_listener.ceu"
+
+class Hotspot with
+    interface IWorldObj;
+    var _Sprite&? sprite;
+    var float para;
+do
+    var _WorldObj&? hotspot = _PTR2REF(me);
+    //finalize with _delete_obj(me); end
+    finalize with _delete_obj(sprite); end
+
+    par/or do
+        every package in WORLDOBJ_DRAW do
+            if package:worldobj != &hotspot then
+                continue;
+            end
+
+            //original FIXME: para support doesnn't work correctly
+            _gc_color_draw2(package:gc, &sprite, hotspot.pos);
+        end
+    with    
+        every w in WORLD_UPDATE do
+            if w != hotspot.world then
+                continue;
+            end
+
+            sprite.update();
+        end
+    with
+        var _WorldObj* e = await DELETE_WORLDOBJ until (e == &hotspot);
+    end
+end
+
+#endif
