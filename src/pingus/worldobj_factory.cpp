@@ -19,13 +19,10 @@
 #include <stdexcept>
 
 #include "pingus/prefab_file.hpp"
-#include "pingus/worldobjs/switch_door_door.hpp"
 #include "util/log.hpp"
 #include "util/overrride_file_reader.hpp"
 
 #include "ceuvars.h"
-
-using namespace WorldObjs;
 
 WorldObjFactory* WorldObjFactory::instance_ = 0;
 
@@ -203,7 +200,7 @@ WorldObjFactory::instance()
 
     // Special Objects
     new WorldObjCeuFactoryImpl(CEU_IN_NEW_SWITCH_DOOR_SWITCH, "switchdoor-switch");
-    new WorldObjFactoryImpl<SwitchDoorDoor>("switchdoor-door");
+    new WorldObjCeuFactoryImpl(CEU_IN_NEW_SWITCH_DOOR_DOOR, "switchdoor-door");
     new WorldObjCeuFactoryImpl(CEU_IN_NEW_ICE_BLOCK, "iceblock");
     new WorldObjCeuFactoryImpl(CEU_IN_NEW_CONVEYOR_BELT, "conveyorbelt");
     new WorldObjCeuFactoryImpl(CEU_IN_NEW_TELEPORTER, "teleporter");

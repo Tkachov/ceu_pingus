@@ -1,0 +1,120 @@
+#ifndef SWITCH_DOOR_DOOR_CEU
+#define SWITCH_DOOR_DOOR_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../../math/vector3f.ceu"
+#include "../iworld.ceu"
+#include "../worldobj.ceu"
+#include "iswitch_door_door.ceu"
+
+class SwitchDoorDoor with
+    interface ISwitchDoorDoor;
+
+    // The height of the door in graphic tiles
+    var int door_height;
+
+    var _Sprite&? door_box;
+    var _CollisionMask&? door_box_cmap;
+    var _Sprite&? door_tile;
+    var _CollisionMask&? door_tile_cmap;
+
+    // True if the door is opening
+    var bool is_opening;
+
+    // The current height of the door, it might decrease when the door
+    // is opening, it will be zero when the door is fully opened
+    var int current_door_height;
+do
+    var _WorldObj&? switch_door_door = _PTR2REF(me);
+    //delete door
+    finalize with _delete_obj(door_box); end;
+    finalize with _delete_obj(door_box_cmap); end;
+    finalize with _delete_obj(door_tile); end;
+    finalize with _delete_obj(door_tile_cmap); end;
+
+    function (void) => void open_door do
+        is_opening = true;
+    end
+
+    par/or do
+         every wo in WORLDOBJ_STARTUP do
+            if wo != &switch_door_door then
+                continue;
+            end
+
+            _world_put(
+                switch_door_door.world:get_colmap(),
+                door_box_cmap,
+                (int)switch_door_door.pos.x,
+                (int)switch_door_door.pos.y,
+                _GT_SOLID
+            );
+
+            loop/100 i in door_height do
+                _world_put(
+                    switch_door_door.world:get_colmap(),
+                    door_tile_cmap,
+                    (int)switch_door_door.pos.x,
+                    (int)switch_door_door.pos.y + i*door_tile.get_height() + door_box.get_height(),
+                    _GT_SOLID
+                );
+            end
+        end
+    with
+        every package in WORLDOBJ_DRAW do
+            if package:worldobj != &switch_door_door then
+                continue;
+            end
+
+            _gc_color_draw2(package:gc, &door_box, switch_door_door.pos);
+            loop/500 i in current_door_height do
+                _gc_color_draw2(
+                    package:gc,
+                    &door_tile,
+                    _Vector3f(
+                        switch_door_door.pos.x,
+                        switch_door_door.pos.y + (float)(i*door_tile.get_height() + door_box.get_height())
+                    ) finalize with end
+                );
+            end
+        end
+    with
+        every w in WORLD_UPDATE do
+            if w != switch_door_door.world then
+                continue;
+            end
+
+            if current_door_height>0 and is_opening then
+                // Open the door
+                current_door_height = current_door_height - 1;
+
+                // If the door is opend enough, so that a pingus fits under
+                // it, we remove the door from the colmap
+                if current_door_height+10 < door_height then
+                    _world_put(
+                        switch_door_door.world:get_colmap(),
+                        door_box_cmap,
+                        (int)switch_door_door.pos.x,
+                        (int)switch_door_door.pos.y,
+                        _GT_NOTHING
+                    );
+
+                    loop/100 i in door_height do
+                        _world_put(
+                            switch_door_door.world:get_colmap(),
+                            door_tile_cmap,
+                            (int)switch_door_door.pos.x,
+                            (int)switch_door_door.pos.y + i*door_tile.get_height() + door_box.get_height(),
+                            _GT_NOTHING
+                        );
+                    end
+                end
+            end
+        end
+    with
+        var _WorldObj* e = await DELETE_WORLDOBJ until (e == &switch_door_door);
+    end
+end
+
+#endif

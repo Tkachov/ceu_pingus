@@ -24,6 +24,7 @@
 #include "worldobjs/spike.ceu"
 #include "worldobjs/starfield_background.ceu"
 #include "worldobjs/surface_background.ceu"
+#include "worldobjs/switch_door_door.ceu"
 #include "worldobjs/switch_door_switch.ceu"
 #include "worldobjs/teleporter.ceu"
 #include "worldobjs/teleporter_target.ceu"
@@ -47,6 +48,7 @@ input _WOCPackage* NEW_SOLID_COLOR_BACKGROUND;
 input _WOCPackage* NEW_SPIKE;
 input _WOCPackage* NEW_STARFIELD_BACKGROUND;
 input _WOCPackage* NEW_SURFACE_BACKGROUND;
+input _WOCPackage* NEW_SWITCH_DOOR_DOOR;
 input _WOCPackage* NEW_SWITCH_DOOR_SWITCH;
 input _WOCPackage* NEW_TELEPORTER;
 input _WOCPackage* NEW_TELEPORTER_TARGET;
@@ -70,6 +72,7 @@ class World with
     var _World& me;
     pool Entrance[] entrances;
     pool ITeleporterTarget[] teleporter_targets;
+    pool ISwitchDoorDoor[] switch_door_doors;
 do
     var _World&? me_ = _PTR2REF((_World*)&this.me);
     var PinguHolder holder with
@@ -84,6 +87,16 @@ do
         loop target in teleporter_targets do
             if target:me:id == id then
                 return target;
+            end
+        end
+
+        return null;
+    end
+
+    function (_const_char_string id) => ISwitchDoorDoor* get_switch_door_door do
+        loop door in switch_door_doors do
+            if door:me:id == id then
+                return door;
             end
         end
 
@@ -479,6 +492,27 @@ do
                 end
 
                 _delete_obj(desc);
+            end;
+        end
+    with
+        every package in NEW_SWITCH_DOOR_DOOR do
+            spawn SwitchDoorDoor in switch_door_doors with
+                this.me = _new_WorldObj();
+                package:result = this.me;
+
+                package:reader:read_string("id", _PTR2REF(this.me:id));
+
+                this.door_box = _PTR2REF(_new_SpriteA("worldobjs/switchdoor_box"));
+                this.door_box_cmap = _PTR2REF(_new_CollisionMask("worldobjs/switchdoor_box"));
+                this.door_tile = _PTR2REF(_new_SpriteA("worldobjs/switchdoor_tile"));
+                this.door_tile_cmap = _PTR2REF(_new_CollisionMask("worldobjs/switchdoor_tile_cmap"));
+                this.is_opening = false;
+
+                package:reader:read_vector("position", _PTR2REF(this.me:pos));
+                this.me:pos.z = 100; //TODO: somehow guarantee that it always stays that way
+
+                package:reader:read_int("height", _PTR2REF(this.door_height));
+                this.current_door_height = this.door_height;
             end;
         end
     with

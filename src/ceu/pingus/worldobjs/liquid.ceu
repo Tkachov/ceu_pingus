@@ -33,7 +33,6 @@ do
 
             loop/100 i in width do
                 _world_put(liquid.world:get_colmap(), mask, (int)(liquid.pos.x + (float)i), (int)liquid.pos.y, _GT_WATER);
-                //colmap, actually, but I hope this defines does its work
             end
 
             _delete_obj(mask);

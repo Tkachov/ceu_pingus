@@ -6,6 +6,7 @@
 #include "../string.ceu"
 #include "ipingu_holder.ceu"
 #include "worldobjs/iteleporter_target.ceu"
+#include "worldobjs/iswitch_door_door.ceu"
 
 native/pre do
     ##include "pingus/world.hpp"
@@ -16,6 +17,7 @@ input _World* WORLD_UPDATE;
 interface IWorld with
     function (void) => IPinguHolder* get_pingus;
     function (_const_char_string id) => ITeleporterTarget* get_teleporter_target;
+    function (_const_char_string id) => ISwitchDoorDoor* get_switch_door_door;
 end
 
 #endif

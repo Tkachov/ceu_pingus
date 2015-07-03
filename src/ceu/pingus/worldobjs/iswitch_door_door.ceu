@@ -1,0 +1,13 @@
+#ifndef ISWITCH_DOOR_DOOR_CEU
+#define ISWITCH_DOOR_DOOR_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../worldobj.ceu"
+
+interface ISwitchDoorDoor with
+    interface IWorldObj;
+    function (void) => void open_door;
+end
+
+#endif
