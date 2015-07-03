@@ -21,6 +21,7 @@
 #include "worldobjs/solid_color_background.ceu"
 #include "worldobjs/spike.ceu"
 #include "worldobjs/starfield_background.ceu"
+#include "worldobjs/surface_background.ceu"
 #include "worldobjs/switch_door_switch.ceu"
 #include "worldobjs/teleporter.ceu"
 #include "worldobjs/teleporter_target.ceu"
@@ -41,6 +42,7 @@ input _WOCPackage* NEW_SMASHER;
 input _WOCPackage* NEW_SOLID_COLOR_BACKGROUND;
 input _WOCPackage* NEW_SPIKE;
 input _WOCPackage* NEW_STARFIELD_BACKGROUND;
+input _WOCPackage* NEW_SURFACE_BACKGROUND;
 input _WOCPackage* NEW_SWITCH_DOOR_SWITCH;
 input _WOCPackage* NEW_TELEPORTER;
 input _WOCPackage* NEW_TELEPORTER_TARGET;
@@ -49,9 +51,15 @@ input _GetStartPosPackage* WORLD_GET_START_POS;
 
 native/pre do
     ##define reader_read_Groundtype(r, s, v) r->read_enum(s, v, &Groundtype::string_to_type);
+
+    ##include "pingus/resource.hpp"
+    ##define Resource__load_surface Resource::load_surface
+
+    ##define opeq(x, y) *x = y
+    ##define new_Surface() new Surface()
 end
 
-native @pure _reader_read_Groundtype();
+native @pure _reader_read_Groundtype(), _Resource__load_surface(), _opeq(), _new_Surface();
 
 class World with
     interface IWorld;
@@ -224,7 +232,7 @@ do
                 this.gptype = _GT_GROUND;
                 _reader_read_Groundtype(package:reader, "type", _PTR2REF(this.gptype));
             end;
-        end  
+        end
     with
         every package in NEW_GUILLOTINE do
             spawn Guillotine with
@@ -266,6 +274,8 @@ do
                 package:reader:read_float ("parallax", _PTR2REF(this.para));
 
                 this.sprite = _PTR2REF(_new_SpriteA(_deref(desc)));
+
+                _delete_obj(desc);
             end;
         end
     with
@@ -295,7 +305,7 @@ do
             end;
         end
     with
-        every package in NEW_LIQUID do        
+        every package in NEW_LIQUID do
             spawn Liquid with
                 this.me = _new_WorldObj();
                 package:result = this.me;
@@ -310,7 +320,7 @@ do
 
                 this.sprite = _PTR2REF(_new_SpriteA(_deref(desc)));
             end;
-        end        
+        end
     with
         every package in NEW_SMASHER do
             spawn Smasher with
@@ -328,7 +338,7 @@ do
                 this.me = _new_WorldObj();
                 package:result = this.me;
 
-                this.color = _PTR2REF(_new_Color());                
+                this.color = _PTR2REF(_new_Color());
                 if not package:reader:read_colori("colori", _deref(this.color)) then
                     package:reader:read_colorf("color", _deref(this.color));
                 end
@@ -361,6 +371,90 @@ do
 
                 //original FIXME: Make z_pos handling editable via xml
                 this.me:pos.z = -10; //TODO: somehow guarantee that it always stays that way
+            end;
+        end
+    with
+        every package in NEW_SURFACE_BACKGROUND do
+            spawn SurfaceBackground with
+                this.me = _new_WorldObj();
+                package:result = this.me;
+
+                this.para_x = 0.5;
+                this.para_y = 0.5;
+                this.scroll_x = 0;
+                this.scroll_y = 0;
+                this.color = _PTR2REF(_new_Color(0, 0, 0, 0));
+                this.stretch_x = false;
+                this.stretch_y = false;
+                this.keep_aspect = false;
+                this.scroll_ox = 0;
+                this.scroll_oy = 0;
+
+                if not package:reader:read_vector("position", _PTR2REF(this.me:pos)) then
+                    this.me:pos.x = 0;
+                    this.me:pos.y = 0;
+                    this.me:pos.z = -150;
+                end
+
+                var _ResDescriptor&? desc = _PTR2REF(_new_ResDescriptor());
+                package:reader:read_desc("surface",  _deref(desc));
+
+                if not package:reader:read_colori("colori", _deref(this.color)) then
+                    package:reader:read_colorf("color", _deref(this.color));
+                end
+
+                package:reader:read_float("para-x", _PTR2REF(this.para_x));
+                package:reader:read_float("para-y", _PTR2REF(this.para_y));
+
+                package:reader:read_float("scroll-x", _PTR2REF(this.scroll_x));
+                package:reader:read_float("scroll-y", _PTR2REF(this.scroll_y));
+
+                package:reader:read_bool("stretch-x", _PTR2REF(this.stretch_x));
+                package:reader:read_bool("stretch-y", _PTR2REF(this.stretch_y));
+
+                package:reader:read_bool("keep-aspect", _PTR2REF(this.keep_aspect));
+
+                if not this.stretch_x and not this.stretch_y and this.color.a == 0 then
+                    //orignal FIXME: would be nice to allow surface manipulation with
+                    // animated sprites, but it's not that easy to do
+                    this.sprite = _PTR2REF(_new_SpriteA(_deref(desc)));
+                else
+                    var _Surface&? surface = _new_Surface();
+                    _opeq(surface, _Resource__load_surface(_deref(desc)));
+
+                    if this.color.a != 0 and surface.is_indexed() then
+                        if surface.has_colorkey() then
+                            _opeq(surface, surface.convert_to_rgba());
+                        else
+                            _opeq(surface, surface.convert_to_rgb());
+                        end
+                    end
+
+                    surface.fill(_deref(this.color));
+
+                    // Scaling Code
+                    if this.stretch_x and this.stretch_y then
+                        _opeq(surface, surface.scale(this.me:world:get_width(), this.me:world:get_height()));
+                    else/if this.stretch_x and not this.stretch_y then
+                        if this.keep_aspect then
+                            var float aspect = (float)surface.get_height() / (float)surface.get_width();
+                            _opeq(surface, surface.scale(this.me:world:get_width(), (int)((float)this.me:world:get_width()*aspect)));
+                        else
+                            _opeq(surface, surface.scale(this.me:world:get_width(), surface.get_height()));
+                        end
+                    else/if not this.stretch_x and this.stretch_y then
+                        if this.keep_aspect then
+                            var float aspect = (float)surface.get_width() / (float)surface.get_height();
+                            _opeq(surface, surface.scale((int)((float)this.me:world:get_height()*aspect), this.me:world:get_height()));
+                        else
+                            _opeq(surface, surface.scale(surface.get_width(), this.me:world:get_height()));
+                        end
+                    end
+
+                    this.sprite = _PTR2REF(_new_SpriteA(_deref(surface)));
+                end
+
+                _delete_obj(desc);
             end;
         end
     with

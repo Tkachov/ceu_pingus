@@ -26,7 +26,7 @@ do
             //original FIXME: para support doesnn't work correctly
             _gc_color_draw2(package:gc, &sprite, hotspot.pos);
         end
-    with    
+    with
         every w in WORLD_UPDATE do
             if w != hotspot.world then
                 continue;

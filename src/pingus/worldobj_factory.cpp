@@ -21,7 +21,6 @@
 #include "pingus/prefab_file.hpp"
 #include "pingus/worldobjs/rain_generator.hpp"
 #include "pingus/worldobjs/snow_generator.hpp"
-#include "pingus/worldobjs/surface_background.hpp"
 #include "pingus/worldobjs/switch_door_door.hpp"
 #include "util/log.hpp"
 #include "util/overrride_file_reader.hpp"
@@ -213,7 +212,7 @@ WorldObjFactory::instance()
     new WorldObjCeuFactoryImpl(CEU_IN_NEW_TELEPORTER_TARGET, "teleporter-target");
 
     // Backgrounds
-    new WorldObjFactoryImpl<SurfaceBackground>("surface-background");
+    new WorldObjCeuFactoryImpl(CEU_IN_NEW_SURFACE_BACKGROUND, "surface-background");
     new WorldObjCeuFactoryImpl(CEU_IN_NEW_STARFIELD_BACKGROUND, "starfield-background");
     new WorldObjCeuFactoryImpl(CEU_IN_NEW_SOLID_COLOR_BACKGROUND, "solidcolor-background");
 

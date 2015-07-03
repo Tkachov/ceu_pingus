@@ -10,7 +10,7 @@
 
 native/pre do
     ##include "math/color.hpp"
-    ##define new_Color() new Color()
+    ##define new_Color new Color
 end
 
 native @pure _new_Color();
@@ -23,12 +23,12 @@ do
     //finalize with _delete_obj(me); end
     finalize with _delete_obj(color); end
 
-    par/or do        
+    par/or do
         every package in WORLDOBJ_DRAW do
             if package:worldobj != &scb then
                 continue;
             end
-            
+
             _gc_color_fill_screen(package:gc, _deref(color));
         end
     with

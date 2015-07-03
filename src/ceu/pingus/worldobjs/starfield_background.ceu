@@ -44,12 +44,12 @@ do
             if package:worldobj != &hotspot then
                 continue;
             end
-            
+
             loop star in stars do
                 emit star:e_DRAW => package;
             end
         end
-    with    
+    with
         every w in WORLD_UPDATE do
             if w != hotspot.world then
                 continue;

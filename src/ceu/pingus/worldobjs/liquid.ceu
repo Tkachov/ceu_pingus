@@ -49,13 +49,13 @@ do
                 if x >= (int)liquid.pos.x + width then
                     break;
                 end;
-                
+
                 _gc_color_draw2(package:gc, &sprite, _Vector3f(x, liquid.pos.y) finalize with end);
 
                 x = x + sprite.get_width();
-            end            
+            end
         end
-    with    
+    with
         every w in WORLD_UPDATE do
             if w != liquid.world then
                 continue;
