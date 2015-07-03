@@ -1,0 +1,76 @@
+#ifndef RAIN_GENERATOR_CEU
+#define RAIN_GENERATOR_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../../engine/sound/sound.ceu"
+#include "../../math/vector3f.ceu"
+#include "../../math/math.ceu"
+#include "../iworld.ceu"
+#include "../worldobj.ceu"
+
+native/pre do
+    ##include "pingus/particles/rain_particle_holder.hpp"
+end
+
+class RainGenerator with
+    interface IWorldObj;
+    var bool do_thunder;
+    var float thunder_count;
+    var float waiter_count;
+
+do
+    var _WorldObj&? rain_generator = _PTR2REF(me);
+    //delete rain_generator
+
+    do_thunder = false;
+    thunder_count = 0;
+    waiter_count = 0;
+
+    par/or do
+        every package in WORLDOBJ_DRAW do
+            if package:worldobj != &rain_generator then
+                continue;
+            end
+
+            if do_thunder then
+                if thunder_count < 0 then
+                    do_thunder = false;
+                    thunder_count = 0;
+                    waiter_count = 1;
+                end
+
+                //gc.color().fill_screen(Color(255, 255, 255, static_cast<uint8_t>(thunder_count*255)));
+                package:gc:color().fill_screen(_Color(255, 255, 255, (u8)(thunder_count*255)));
+            end
+        end
+    with
+        every w in WORLD_UPDATE do
+            if w != rain_generator.world then
+                continue;
+            end
+
+            if waiter_count<0 and _rand()%150 == 0 then
+                _log_info("Doing thunder");
+                do_thunder = true;
+                thunder_count = 1;
+                waiter_count = 1;
+                _Sound_PingusSound_play_sound("thunder");
+            end
+
+            if do_thunder then
+                thunder_count = thunder_count - 10 * 0.025;
+            end
+
+            waiter_count = waiter_count - 20.0 * 0.025;
+
+            loop i in 16 do
+                w:get_rain_particle_holder():add_particle(_rand()%(w:get_width()*2), -32);
+            end
+        end
+    with
+        var _WorldObj* e = await DELETE_WORLDOBJ until (e == &rain_generator);
+    end
+end
+
+#endif

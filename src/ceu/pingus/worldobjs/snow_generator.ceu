@@ -1,0 +1,66 @@
+#ifndef SNOW_GENERATOR_CEU
+#define SNOW_GENERATOR_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../../math/vector3f.ceu"
+#include "../../math/math.ceu"
+#include "../iworld.ceu"
+#include "../worldobj.ceu"
+
+native/pre do
+    ##include "pingus/particles/snow_particle_holder.hpp"
+    ##define globals__tile_size globals::tile_size
+end
+
+class SnowGenerator with
+    interface IWorldObj;
+    var float intensity;
+do
+    var _WorldObj&? snow_generator = _PTR2REF(me);
+    //delete snow_generator
+
+    par/or do
+        every wo in WORLDOBJ_STARTUP do
+            if wo != &snow_generator then
+                continue;
+            end
+
+            // FIXME: if snow should be available from start, this needs to get fixed to have the right amount of snow
+            /*
+            for (int i = 0; i < 500; ++i) // FIXME: 500 is a random value, doesn't work very often
+            {
+                world->get_snow_particle_holder()->add_particle(rand() % world->get_width(), rand() % world->get_height());
+                world->get_snow_particle_holder()->add_particle(rand() % world->get_width(), rand() % world->get_height());
+                world->get_snow_particle_holder()->add_particle(rand() % world->get_width(), rand() % world->get_height(), true);
+            }
+            */
+        end
+    with
+        every w in WORLD_UPDATE do
+            if w != snow_generator.world then
+                continue;
+            end
+
+            loop/5000 i in _Math__floor(intensity) do
+                if _rand()%3 != 0 then
+                    w:get_snow_particle_holder():add_particle(_rand()%w:get_width(), -_globals__tile_size, false);
+                else
+                    w:get_snow_particle_holder():add_particle(_rand()%w:get_width(), -_globals__tile_size, true);
+                end
+
+                if (intensity - (float)(int)intensity) > _Math__frand() then
+                    if _rand()%3 != 0 then
+                        w:get_snow_particle_holder():add_particle(_rand()%w:get_width(), -_globals__tile_size, false);
+                    else
+                        w:get_snow_particle_holder():add_particle(_rand()%w:get_width(), -_globals__tile_size, true);
+                    end
+                end
+            end
+        end
+    with
+        var _WorldObj* e = await DELETE_WORLDOBJ until (e == &snow_generator);
+    end
+end
+
+#endif

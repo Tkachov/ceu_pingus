@@ -1,0 +1,42 @@
+#ifndef MATH_CEU
+#define MATH_CEU
+
+native/pre do
+    ##include "math/math.hpp"
+    ##define Math__pi Math::pi
+    ##define Math__pi_2 Math::pi_2
+
+    ##define Math__min(a) Math::min(a)
+    ##define Math__max(a) Math::max(a)
+    ##define Math__clamp(l, v, h) Math::clamp(l, v, h)
+    ##define Math__frand() Math::frand()
+    ##define Math__rand_bool() Math::rand_bool()
+    ##define Math__round(f) Math::round(f)
+    ##define Math__abs(v) Math::abs(v)
+    ##define Math__sin(a) Math::sin(a)
+    ##define Math__cos(a) Math::cos(a)
+    ##define Math__sqrt(a) Math::sqrt(a)
+    ##define Math__mod(x, y) Math::mod(x, y)
+    ##define Math__floor(x) Math::floor(x)
+    ##define Math__atan2(x, y) Math::atan2(x, y)
+    ##define Math__float2string(value) Math::float2string(value)
+    ##define Math__string2float(str) Math::string2float(str)
+end
+
+native @pure _Math__min(),
+             _Math__max(),
+             _Math__clamp(),
+             _Math__frand(),
+             _Math__rand_bool(),
+             _Math__round(),
+             _Math__abs(),
+             _Math__sin(),
+             _Math__cos(),
+             _Math__sqrt(),
+             _Math__mod(),
+             _Math__floor(),
+             _Math__atan2(),
+             _Math__float2string(),
+             _Math__string2float();
+
+#endif

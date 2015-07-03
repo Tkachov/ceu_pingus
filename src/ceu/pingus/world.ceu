@@ -17,7 +17,9 @@
 #include "worldobjs/ice_block.ceu"
 #include "worldobjs/laser_exit.ceu"
 #include "worldobjs/liquid.ceu"
+#include "worldobjs/rain_generator.ceu"
 #include "worldobjs/smasher.ceu"
+#include "worldobjs/snow_generator.ceu"
 #include "worldobjs/solid_color_background.ceu"
 #include "worldobjs/spike.ceu"
 #include "worldobjs/starfield_background.ceu"
@@ -38,7 +40,9 @@ input _WOCPackage* NEW_HOTSPOT;
 input _WOCPackage* NEW_ICE_BLOCK;
 input _WOCPackage* NEW_LASER_EXIT;
 input _WOCPackage* NEW_LIQUID;
+input _WOCPackage* NEW_RAIN_GENERATOR;
 input _WOCPackage* NEW_SMASHER;
+input _WOCPackage* NEW_SNOW_GENERATOR;
 input _WOCPackage* NEW_SOLID_COLOR_BACKGROUND;
 input _WOCPackage* NEW_SPIKE;
 input _WOCPackage* NEW_STARFIELD_BACKGROUND;
@@ -322,6 +326,15 @@ do
             end;
         end
     with
+        every package in NEW_RAIN_GENERATOR do
+            spawn RainGenerator with
+                this.me = _new_WorldObj();
+                package:result = this.me;
+
+                this.me:pos.z = 1000; //TODO: somehow guarantee that it always stays that way
+            end;
+        end
+    with
         every package in NEW_SMASHER do
             spawn Smasher with
                 this.me = _new_WorldObj();
@@ -330,6 +343,17 @@ do
                 this.sprite = _PTR2REF(_new_SpriteA("traps/smasher"));
                 package:reader:read_vector("position", _PTR2REF(this.me:pos));
                 _assert(this.sprite.get_frame_count() == 6);
+            end;
+        end
+    with
+        every package in NEW_SNOW_GENERATOR do
+            spawn SnowGenerator with
+                this.me = _new_WorldObj();
+                package:result = this.me;
+
+                this.intensity = 1;
+                package:reader:read_float("intensity", _PTR2REF(this.intensity));
+                this.me:pos.z = 1000; //TODO: somehow guarantee that it always stays that way
             end;
         end
     with

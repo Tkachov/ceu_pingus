@@ -19,8 +19,6 @@
 #include <stdexcept>
 
 #include "pingus/prefab_file.hpp"
-#include "pingus/worldobjs/rain_generator.hpp"
-#include "pingus/worldobjs/snow_generator.hpp"
 #include "pingus/worldobjs/switch_door_door.hpp"
 #include "util/log.hpp"
 #include "util/overrride_file_reader.hpp"
@@ -217,11 +215,11 @@ WorldObjFactory::instance()
     new WorldObjCeuFactoryImpl(CEU_IN_NEW_SOLID_COLOR_BACKGROUND, "solidcolor-background");
 
     // Weather
-    new WorldObjFactoryImpl<SnowGenerator>("snow-generator");
-    new WorldObjFactoryImpl<RainGenerator>("rain-generator");
+    new WorldObjCeuFactoryImpl(CEU_IN_NEW_SNOW_GENERATOR, "snow-generator");
+    new WorldObjCeuFactoryImpl(CEU_IN_NEW_RAIN_GENERATOR, "rain-generator");
     // Weather-Backward compability
-    new WorldObjFactoryImpl<SnowGenerator>("snow");
-    new WorldObjFactoryImpl<RainGenerator>("rain");
+    new WorldObjCeuFactoryImpl(CEU_IN_NEW_SNOW_GENERATOR, "snow");
+    new WorldObjCeuFactoryImpl(CEU_IN_NEW_RAIN_GENERATOR, "rain");
 
     // Groundpieces
     new WorldObjCeuFactoryImpl(CEU_IN_NEW_GROUNDPIECE, "groundpiece");

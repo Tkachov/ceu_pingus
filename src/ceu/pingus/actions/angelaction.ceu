@@ -5,6 +5,7 @@
 #include "../../sdl.ceu"
 #include "../../engine/display/scene_context.ceu"
 #include "../../engine/display/sprite.ceu"
+#include "../../math/math.ceu"
 #include "../iaction.ceu"
 #include "../ipingu.ceu"
 
@@ -14,7 +15,6 @@ native/pre do
 
     ##include "pingus/globals.hpp"
     ##define globals__game_speed globals::game_speed
-    ##define Math__sin Math::sin
 end
 
 class AngelAction with

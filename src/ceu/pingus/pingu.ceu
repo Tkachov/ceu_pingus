@@ -3,6 +3,7 @@
 
 #include "../c.ceu"
 #include "../sdl.ceu"
+#include "../math/math.ceu"
 #include "actions/angelaction.ceu"
 #include "actions/basheraction.ceu"
 #include "actions/blockeraction.ceu"
@@ -32,9 +33,6 @@ native/pre do
     ##define PA_get_activation_mode(x) PinguAction::get_activation_mode(x)
 
     ##include "pingus/collision_map.hpp"
-
-    ##define Math__sqrt Math::sqrt
-    ##define Math__clamp Math::clamp
 
     #define StringUtil__to_string StringUtil::to_string
 end

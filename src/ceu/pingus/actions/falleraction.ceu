@@ -5,6 +5,7 @@
 #include "../../sdl.ceu"
 #include "../../engine/display/scene_context.ceu"
 #include "../../math/vector3f.ceu"
+#include "../../math/math.ceu"
 #include "../iaction.ceu"
 #include "../ipingu.ceu"
 #include "../state_sprite.ceu"
@@ -16,7 +17,6 @@ native/pre do
     ##include "pingus/worldobj.hpp"
     ##define WorldObj__get_world WorldObj::get_world
     ##define Colliders__PinguCollider Colliders::PinguCollider
-    ##define Math__abs Math::abs
 end
 
 native @pure _Colliders__PinguCollider(),

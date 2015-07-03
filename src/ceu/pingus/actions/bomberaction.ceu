@@ -20,7 +20,6 @@ native/pre do
     ##include "pingus/movers/linear_mover.hpp"
     ##include "pingus/pingu_enums.hpp"
     ##define Colliders__PinguCollider Colliders::PinguCollider
-    ##define Math__abs Math::abs
 end
 
 native @pure _Colliders__PinguCollider();
