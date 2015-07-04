@@ -5,6 +5,8 @@
 
 interface ISortedList with
     event IWorldObj* e_INSERT;
+    event IWorldObj* e_REMOVE;
+    event void e_DELETE;
 end
 
 #endif

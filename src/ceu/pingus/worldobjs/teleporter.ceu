@@ -16,6 +16,7 @@ class Teleporter with
     var _String&? target_id;
 do
     var _WorldObj&? teleporter = _PTR2REF(me);
+    emit global:world:get_list():e_INSERT => &this;
 
     //delete teleporter
     finalize with _delete_obj(sprite); end;
@@ -24,11 +25,7 @@ do
     var ITeleporterTarget* target = null;
 
     par/or do
-         every wo in WORLDOBJ_STARTUP do
-            if wo != &teleporter then
-                continue;
-            end
-
+         every e_STARTUP do
             if target_id.empty() then
                 _log_error("target-id is empty");
             else
@@ -40,19 +37,11 @@ do
             end
         end
     with
-        every package in WORLDOBJ_DRAW do
-            if package:worldobj != &teleporter then
-                continue;
-            end
-
-            _gc_color_draw2(package:gc, &sprite, teleporter.pos);
+        every gc in e_DRAW do
+            _gc_color_draw2(gc, &sprite, teleporter.pos);
         end
     with
-        every w in WORLD_UPDATE do
-            if w != teleporter.world then
-                continue;
-            end
-
+        every e_UPDATE do
             sprite.update();
 
             if target != null then
@@ -67,7 +56,7 @@ do
             end
         end
     with
-        var _WorldObj* e = await DELETE_WORLDOBJ until (e == &teleporter);
+        await e_DELETE;
     end
 end
 

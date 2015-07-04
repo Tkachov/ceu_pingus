@@ -17,6 +17,7 @@ class StarfieldBackground with
     var int large_stars_count;
 do
     var _WorldObj&? hotspot = _PTR2REF(me);
+    emit global:world:get_list():e_INSERT => &this;
     //finalize with _delete_obj(me); end
 
     pool StarfieldBackgroundStars[] stars;
@@ -40,27 +41,19 @@ do
     end
 
     par/or do
-        every package in WORLDOBJ_DRAW do
-            if package:worldobj != &hotspot then
-                continue;
-            end
-
+        every gc in e_DRAW do
             loop star in stars do
-                emit star:e_DRAW => package;
+                emit star:e_DRAW => gc;
             end
         end
     with
-        every w in WORLD_UPDATE do
-            if w != hotspot.world then
-                continue;
-            end
-
+        every e_UPDATE do
             loop star in stars do
                 emit star:e_UPDATE;
             end
         end
     with
-        var _WorldObj* e = await DELETE_WORLDOBJ until (e == &hotspot);
+        await e_DELETE;
     end
 end
 

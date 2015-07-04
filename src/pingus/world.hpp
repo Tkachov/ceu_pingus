@@ -58,9 +58,6 @@ private:
   /** FIXME: ugly hack to iterate over all pingus and make bombers out
       of them, should use pingus_id instead */
   unsigned int armageddon_count;
-
-  std::vector<WorldObj*> world_obj;
-  typedef std::vector<WorldObj*>::iterator WorldObjIter;
     
   PinguHolder*                    pingus;
 
@@ -110,8 +107,6 @@ public:
   void put(const CollisionMask&, int x, int y, Groundtype::GPType);
 
   void remove(const CollisionMask&, int x, int y);
-
-  WorldObj* get_worldobj(const std::string& id);
 
   /** @return true if the world is currently doing an armageddon */
   bool check_armageddon() { return do_armageddon; }

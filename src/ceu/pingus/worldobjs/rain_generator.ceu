@@ -21,6 +21,7 @@ class RainGenerator with
 
 do
     var _WorldObj&? rain_generator = _PTR2REF(me);
+    emit global:world:get_list():e_INSERT => &this;
     //delete rain_generator
 
     do_thunder = false;
@@ -28,11 +29,7 @@ do
     waiter_count = 0;
 
     par/or do
-        every package in WORLDOBJ_DRAW do
-            if package:worldobj != &rain_generator then
-                continue;
-            end
-
+        every gc in e_DRAW do
             if do_thunder then
                 if thunder_count < 0 then
                     do_thunder = false;
@@ -41,15 +38,11 @@ do
                 end
 
                 //gc.color().fill_screen(Color(255, 255, 255, static_cast<uint8_t>(thunder_count*255)));
-                package:gc:color().fill_screen(_Color(255, 255, 255, (u8)(thunder_count*255)));
+                gc:color().fill_screen(_Color(255, 255, 255, (u8)(thunder_count*255)));
             end
         end
     with
-        every w in WORLD_UPDATE do
-            if w != rain_generator.world then
-                continue;
-            end
-
+        every e_UPDATE do
             if waiter_count<0 and _rand()%150 == 0 then
                 _log_info("Doing thunder");
                 do_thunder = true;
@@ -65,11 +58,11 @@ do
             waiter_count = waiter_count - 20.0 * 0.025;
 
             loop i in 16 do
-                global:world:get_rain_particles_holder():add_particle(_rand()%(w:get_width()*2), -32);
+                global:world:get_rain_particles_holder():add_particle(_rand()%(rain_generator.world:get_width()*2), -32);
             end
         end
     with
-        var _WorldObj* e = await DELETE_WORLDOBJ until (e == &rain_generator);
+        await e_DELETE;
     end
 end
 

@@ -22,14 +22,17 @@ do
     var _WorldObj&? ground_map = _PTR2REF(me);
     emit global:world:get_list():e_INSERT => &this;
     //finalize with _delete_obj(me); end
-    finalize with _delete_obj(gmap); end
+    finalize with
+        _delete_obj(gmap);
+        _printf("ground\n");
+    end
 
     par/or do
         every gc in e_DRAW do
             gmap.draw(_deref(gc));
         end
     with
-        var _WorldObj* e = await DELETE_WORLDOBJ until (e == &ground_map);
+        await e_DELETE;
     end
 end
 

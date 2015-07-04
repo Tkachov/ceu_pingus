@@ -36,6 +36,7 @@
 #include "worldobjs/teleporter_target.ceu"
 
 input _World* DELETE_WORLD;
+input _World* WORLD_STARTUP;
 input _WOCPackage* NEW_CONVEYOR_BELT;
 input _WOCPackage* NEW_ENTRANCE;
 input _WOCPackage* NEW_EXIT;
@@ -73,6 +74,16 @@ end
 
 native @pure _reader_read_Groundtype(), _Resource__load_surface(), _opeq(), _new_Surface();
 
+#define iterate_objects(e) \
+    var Node* n = objs.first; \
+    loop do \
+        if n == null then \
+            break; \
+        end \
+        e \
+        n = (Node*)n:next; \
+    end
+
 class World with
     interface IWorld;
     var _World& me;
@@ -86,7 +97,6 @@ do
     var PinguHolder holder with
         this.me = _new_WorldObj();
         this.me:world = &me_;
-        me_.world_obj.push_back(_PTR2REF(this.me));
 
         this.holder = me_.pingus;
 
@@ -96,7 +106,6 @@ do
     var PinguParticlesHolder pingu_particles_holder with
         this.me = _new_WorldObj();
         this.me:world = &me_;
-        me_.world_obj.push_back(_PTR2REF(this.me));
 
         this.sprite = _PTR2REF(_new_SpriteA("particles/pingu_explo"));
         this.particles = _PTR2REF(_new_Vector_PinguParticle());
@@ -107,7 +116,6 @@ do
     var RainParticlesHolder rain_particles_holder with
         this.me = _new_WorldObj();
         this.me:world = &me_;
-        me_.world_obj.push_back(_PTR2REF(this.me));
 
         this.rain1_surf = _PTR2REF(_new_SpriteA("particles/rain1"));
         this.rain2_surf = _PTR2REF(_new_SpriteA("particles/rain2"));
@@ -120,7 +128,6 @@ do
     var SmokeParticlesHolder smoke_particles_holder with
         this.me = _new_WorldObj();
         this.me:world = &me_;
-        me_.world_obj.push_back(_PTR2REF(this.me));
 
         this.surf1 = _PTR2REF(_new_SpriteA("particles/smoke"));
         this.surf2 = _PTR2REF(_new_SpriteA("particles/smoke2"));
@@ -132,7 +139,6 @@ do
     var SnowParticlesHolder snow_particles_holder with
         this.me = _new_WorldObj();
         this.me:world = &me_;
-        me_.world_obj.push_back(_PTR2REF(this.me));
 
         this.snow1 = _PTR2REF(_new_SpriteA("particles/snow1"));
         this.snow2 = _PTR2REF(_new_SpriteA("particles/snow2"));
@@ -154,7 +160,6 @@ do
         this.me:pos.z = 0; //TODO: somehow guarantee that it always stays that way
         me_.gfx_map = _PTR2REF(this.gmap);
         me_.colmap = _PTR2REF(this.gmap.colmap.get());
-        me_.world_obj.push_back(_PTR2REF(this.me));
     end;
 
     function (void) => ISortedList* get_list do
@@ -202,22 +207,20 @@ do
     end
 
     par/or do
-        every package in WORLDOBJ_DRAW do
-            var Node* n = objs.first;
-            loop do
-                if n == null then
-                    break;
-                end
-
-                //TODO: remove the check
-                //it can be done when all world objects would be registered in SortedList
-                //and for that we need to port all these world objects
-                if package:worldobj == n:ceu:me then
-                    emit n:ceu:e_DRAW => package:gc;
-                end
-
-                n = (Node*)n:next;
+        every w in WORLD_STARTUP do
+            if w != &me_ then
+                continue;
             end
+
+            iterate_objects(emit n:ceu:e_STARTUP;)
+        end
+    with
+        every package in WORLDOBJ_DRAW do
+            iterate_objects(emit n:ceu:e_DRAW => package:gc;)
+        end
+    with
+        every package in WORLDOBJ_DRAW_SMALLMAP do
+            iterate_objects(emit n:ceu:e_DRAW_SMALLMAP => package:smallmap;)
         end
     with
         every w in WORLD_UPDATE do
@@ -237,6 +240,8 @@ do
                     break;
                 end
             end
+
+            iterate_objects(emit n:ceu:e_UPDATE;)
         end
     with
         every package in WORLD_GET_START_POS do
@@ -673,6 +678,14 @@ do
     end
 
     await 1s;
+    emit objs.e_DELETE;
+    /*emit objs.e_REMOVE => &holder;
+    emit objs.e_REMOVE => &pingu_particles_holder;
+    emit objs.e_REMOVE => &rain_particles_holder;
+    emit objs.e_REMOVE => &smoke_particles_holder;
+    emit objs.e_REMOVE => &snow_particles_holder;
+    emit objs.e_REMOVE => &gfx_map;*/
+    global:world = null;
 end
 
 #endif

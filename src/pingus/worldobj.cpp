@@ -40,35 +40,4 @@ WorldObj::WorldObj() :
   // z_pos = 0;
 }
 
-WorldObj::~WorldObj()
-{
-  WorldObj* self = this;
-  ceu_out_go(&CEUapp, CEU_IN_DELETE_WORLDOBJ, &self);
-}
-
-void
-WorldObj::on_startup()
-{
-  WorldObj* self = this;
-  ceu_out_go(&CEUapp, CEU_IN_WORLDOBJ_STARTUP, &self);
-}
-
-void
-WorldObj::update()
-{
-  // do nothing
-}
-
-void WorldObj::draw(SceneContext& gc) {
-  WorldObjPackage package(this, &gc);
-  WorldObjPackage* pp = &package;
-  ceu_out_go(&CEUapp, CEU_IN_WORLDOBJ_DRAW, &pp);
-}
-
-void WorldObj::draw_smallmap(SmallMap* smallmap) {
-  WorldObjSmallMapPackage package(this, smallmap);
-  WorldObjSmallMapPackage* pp = &package;
-  ceu_out_go(&CEUapp, CEU_IN_WORLDOBJ_DRAW_SMALLMAP, &pp);
-}
-
 /* EOF */

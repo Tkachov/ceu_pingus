@@ -26,6 +26,7 @@ class Entrance with
     var _Sprite&? surface;
 do
     var _WorldObj&? entrance = _PTR2REF(me);
+    emit global:world:get_list():e_INSERT => &this;
 
     //delete entrance
     finalize with _delete_obj(smallmap_symbol); end;
@@ -48,28 +49,16 @@ do
     end
 
     par/or do
-        every package in WORLDOBJ_DRAW do
-            if package:worldobj != &entrance then
-                continue;
-            end
-
+        every gc in e_DRAW do
             //original FIXME: Why do we still have these hardcoded offsets?!
-            _gc_color_draw2(package:gc, &surface, _Vector3f(entrance.pos.x - 32, entrance.pos.y - 16));
+            _gc_color_draw2(gc, &surface, _Vector3f(entrance.pos.x - 32, entrance.pos.y - 16));
         end
     with
-        every package in WORLDOBJ_DRAW_SMALLMAP do
-            if package:worldobj != &entrance then
-                continue;
-            end
-
-            package:smallmap:draw_sprite(_deref(smallmap_symbol), _PTR2REF(entrance.pos));
+        every smallmap in e_DRAW_SMALLMAP do
+            smallmap:draw_sprite(_deref(smallmap_symbol), _PTR2REF(entrance.pos));
         end
     with
-        every w in WORLD_UPDATE do
-            if w != entrance.world then
-                continue;
-            end
-
+        every e_UPDATE do
             if pingu_ready() and not entrance.world:check_armageddon() then
                 var _PHPackage* package = _new_PHPackage();
                 package:entrance = &entrance;
@@ -83,7 +72,7 @@ do
             end
         end
     with
-        var _WorldObj* e = await DELETE_WORLDOBJ until (e == &entrance);
+        await e_DELETE;
     end
 end
 

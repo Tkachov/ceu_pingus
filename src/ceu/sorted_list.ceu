@@ -17,15 +17,22 @@ class Node with
     interface INode;
     var INode* next;
 do
-    every 1s do
+    every 2s do
         if destroy then
             break;
         end
     end
 
+    _printf("node: 1");
+    if ceu != null then
+        emit ceu:e_DELETE;
+    end
+
+    _printf("2");
     if next != null then
         next:destroy = true;
     end
+    _printf("3\n");
 end
 
 class SortedList with
@@ -36,56 +43,80 @@ do
         if first != null then
             first:destroy = true;
         end
+        _printf("sorted list\n");
     end
 
-    every object in e_INSERT do
-        //_printf("inserting %d\n", object);
-        var Node* before = null;
+    par/or do
+        every object in e_INSERT do
+            //_printf("inserting %d\n", object);
+            var Node* before = null;
 
-        var Node* current = first;
-        loop/10000 do
-            if current == null then
-                break;
+            var Node* current = first;
+            loop/10000 do
+                if current == null then
+                    break;
+                end
+
+                if current:ceu:me:get_z_pos() < object:me:get_z_pos() then
+                    before = current;
+                else
+                    break;
+                end
+
+                current = (Node*)current:next;
             end
 
-            if current:ceu:me:get_z_pos() < object:me:get_z_pos() then
-                before = current;
+            var Node* new_node = null;
+            spawn Node with
+                this.ceu = object;
+                this.destroy = false;
+                new_node = &this;
+            end;
+
+            if before == null then
+                new_node:next = first;
+                first = new_node;
             else
-                break;
+                new_node:next = before:next;
+                before:next = new_node;
             end
 
-            current = (Node*)current:next;
-        end
+            /*
+            _printf("contains:");
+            var Node* n = first;
+            loop do
+                if n == null then
+                    break;
+                end
 
-        var Node* new_node = null;
-        spawn Node with
-            this.ceu = object;
-            this.destroy = false;
-            new_node = &this;
-        end;
+                _printf(" %d", n:ceu);
 
-        if before == null then
-            new_node:next = first;
-            first = new_node;
-        else
-            new_node:next = before:next;
-            before:next = new_node;
-        end
-
-        /*
-        _printf("contains:");
-        var Node* n = first;
-        loop do
-            if n == null then
-                break;
+                n = (Node*)n:next;
             end
-
-            _printf(" %d", n:ceu);
-
-            n = (Node*)n:next;
+            _printf("\n");
+            */
         end
-        _printf("\n");
-        */
+    with
+        every object in e_REMOVE do
+            _printf("remove: 1");
+            var Node* n = first;
+            loop do
+                if n == null then
+                    break;
+                end
+
+                if n:ceu == object then
+                    _printf("2");
+                    n:ceu = null;
+                end
+
+                n = (Node*)n:next;
+            end
+            _printf("3\n");
+        end
+    with
+        await e_DELETE;
+        _printf("delete sorted list\n");
     end
 end
 

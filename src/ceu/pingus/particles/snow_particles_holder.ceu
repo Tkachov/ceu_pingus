@@ -37,14 +37,17 @@ class SnowParticlesHolder with
 do
     var _WorldObj&? holder = _PTR2REF(me);
     emit global:world:get_list():e_INSERT => &this;
-    //finalize with _delete_obj(me); end
-    finalize with _delete_obj(snow1); end
-    finalize with _delete_obj(snow2); end
-    finalize with _delete_obj(snow3); end
-    finalize with _delete_obj(snow4); end
-    finalize with _delete_obj(snow5); end
-    finalize with _delete_obj(ground); end
-    finalize with _delete_obj(particles); end
+    finalize with
+        //_delete_obj(me); end
+        _delete_obj(snow1);
+        _delete_obj(snow2);
+        _delete_obj(snow3);
+        _delete_obj(snow4);
+        _delete_obj(snow5);
+        _delete_obj(ground);
+        _delete_obj(particles);
+        _printf("snow");
+    end
 
     function (int x, int y, bool c) => void add_particle do
         //default c == false
@@ -56,15 +59,11 @@ do
            _SnPH_draw(particles, gc, snow1, snow2, snow3, snow4, snow5);
         end
     with
-        every w in WORLD_UPDATE do
-            if w != holder.world then
-                continue;
-            end
-
+        every e_UPDATE do
             _SnPH_update(particles, holder.world, ground);
         end
     with
-        var _WorldObj* e = await DELETE_WORLDOBJ until (e == &holder);
+        await e_DELETE;
     end
 end
 

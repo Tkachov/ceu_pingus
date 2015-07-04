@@ -13,27 +13,21 @@ class Spike with
     var _Sprite&? surface;
 do
     var _WorldObj&? spike = _PTR2REF(me);
-    var bool killing = false;
+    emit global:world:get_list():e_INSERT => &this;
 
     //delete spike
     finalize with _delete_obj(surface); end;
 
-    par/or do
-        every package in WORLDOBJ_DRAW do
-            if package:worldobj != &spike then
-                continue;
-            end
+    var bool killing = false;
 
+    par/or do
+        every gc in e_DRAW do
             if killing then
-                _gc_color_draw2(package:gc, &surface, spike.pos);
+                _gc_color_draw2(gc, &surface, spike.pos);
             end
         end
     with
-        every w in WORLD_UPDATE do
-            if w != spike.world then
-                continue;
-            end
-
+        every e_UPDATE do
             if killing then
                 surface.update();
             end
@@ -59,7 +53,7 @@ do
             end
         end
     with
-        var _WorldObj* e = await DELETE_WORLDOBJ until (e == &spike);
+        await e_DELETE;
     end
 end
 

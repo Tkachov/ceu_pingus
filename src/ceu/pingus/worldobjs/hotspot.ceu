@@ -14,28 +14,22 @@ class Hotspot with
     var float para;
 do
     var _WorldObj&? hotspot = _PTR2REF(me);
+    emit global:world:get_list():e_INSERT => &this;
+
     //finalize with _delete_obj(me); end
     finalize with _delete_obj(sprite); end
 
     par/or do
-        every package in WORLDOBJ_DRAW do
-            if package:worldobj != &hotspot then
-                continue;
-            end
-
+        every gc in e_DRAW do
             //original FIXME: para support doesnn't work correctly
-            _gc_color_draw2(package:gc, &sprite, hotspot.pos);
+            _gc_color_draw2(gc, &sprite, hotspot.pos);
         end
     with
-        every w in WORLD_UPDATE do
-            if w != hotspot.world then
-                continue;
-            end
-
+        every e_UPDATE do
             sprite.update();
         end
     with
-        var _WorldObj* e = await DELETE_WORLDOBJ until (e == &hotspot);
+        await e_DELETE;
     end
 end
 

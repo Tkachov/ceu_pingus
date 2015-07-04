@@ -28,39 +28,14 @@ class ConveyorBelt with
     var float counter;
 do
     var _WorldObj&? conveyor_belt = _PTR2REF(me);
+    emit global:world:get_list():e_INSERT => &this;
     //delete convbelt
     finalize with _delete_obj(left_sur); end;
     finalize with _delete_obj(right_sur); end;
     finalize with _delete_obj(middle_sur); end;
 
     par/or do
-        every package in WORLDOBJ_DRAW do
-            if package:worldobj != &conveyor_belt then
-                continue;
-            end
-
-            _gc_color_draw2(package:gc, &left_sur, conveyor_belt.pos);
-
-            loop/100 i in width do
-                _gc_color_draw2(package:gc, &middle_sur,
-                    _Vector3f(
-                        (float)(conveyor_belt.pos.x + (float)(left_sur.get_width() + i*middle_sur.get_width())),
-                        (float)conveyor_belt.pos.y
-                    ));
-            end
-
-            _gc_color_draw2(package:gc, &right_sur,
-                _Vector3f(
-                    (float)(conveyor_belt.pos.x + (float)(left_sur.get_width() + width*middle_sur.get_width())),
-                    (float)conveyor_belt.pos.y
-                ));
-        end
-    with
-        every wo in WORLDOBJ_STARTUP do
-            if wo != &conveyor_belt then
-                continue;
-            end
-
+        every e_STARTUP do
             var _CollisionMask* mask = _new_CollisionMask("worldobjs/conveyorbelt_cmap");
 
             loop/100 i in width+2 do
@@ -70,11 +45,25 @@ do
             _delete_obj(mask);
         end
     with
-        every w in WORLD_UPDATE do
-            if w != conveyor_belt.world then
-                continue;
+        every gc in e_DRAW do
+            _gc_color_draw2(gc, &left_sur, conveyor_belt.pos);
+
+            loop/100 i in width do
+                _gc_color_draw2(gc, &middle_sur,
+                    _Vector3f(
+                        (float)(conveyor_belt.pos.x + (float)(left_sur.get_width() + i*middle_sur.get_width())),
+                        (float)conveyor_belt.pos.y
+                    ));
             end
 
+            _gc_color_draw2(gc, &right_sur,
+                _Vector3f(
+                    (float)(conveyor_belt.pos.x + (float)(left_sur.get_width() + width*middle_sur.get_width())),
+                    (float)conveyor_belt.pos.y
+                ));
+        end
+    with
+        every e_UPDATE do
             left_sur.update();
             middle_sur.update();
             right_sur.update();
@@ -91,7 +80,7 @@ do
             end
         end
     with
-        var _WorldObj* e = await DELETE_WORLDOBJ until (e == &conveyor_belt);
+        await e_DELETE;
     end
 end
 

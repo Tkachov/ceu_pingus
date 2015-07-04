@@ -43,8 +43,7 @@ World::World(const PingusLevel& plf) :
   mheight(plf.get_size().height),
   game_time(0),
   do_armageddon(false),
-  armageddon_count(0),
-  world_obj(),     
+  armageddon_count(0),  
   pingus(new PinguHolder(plf)),
   colmap(),
   gravitational_acceleration(0.2f)
@@ -57,8 +56,7 @@ World::World(const PingusLevel& plf) :
   init_worldobjs(plf);
 }
 
-void World::add_object(WorldObj* obj) {
-  if(obj) world_obj.push_back(obj);
+void World::add_object(WorldObj* obj) {  
 }
 
 void
@@ -71,22 +69,11 @@ World::init_worldobjs(const PingusLevel& plf)
       add_object(obj);
   }
 
-  std::stable_sort (world_obj.begin (), world_obj.end (), WorldObj_less);
-
-  // Drawing all world objs to the colmap, gfx, or what ever the
-  // objects want to do
-  for(WorldObjIter obj = world_obj.begin(); obj != world_obj.end(); ++obj)
-  {
-    (*obj)->on_startup();
-  }
+  World* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_WORLD_STARTUP, &self);
 }
 
-World::~World()
-{
-  for (WorldObjIter it = world_obj.begin(); it != world_obj.end(); ++it) {
-    delete *it;
-  }
-
+World::~World() {
   World* self = this;
   ceu_out_go(&CEUapp, CEU_IN_DELETE_WORLD, &self);
 }
@@ -98,10 +85,12 @@ World::draw (SceneContext& gc)
 
   gc.light().fill_screen(Color(ambient_light));
 
-  for(WorldObjIter obj = world_obj.begin(); obj != world_obj.end(); ++obj)
-  {
-    (*obj)->draw(gc);
-  }
+  //World* self = this;
+  //ceu_out_go(&CEUapp, CEU_IN_WORLD_DRAW, &self);
+
+  WorldObj::WorldObjPackage package(0, &gc);
+  WorldObj::WorldObjPackage* pp = &package;
+  ceu_out_go(&CEUapp, CEU_IN_WORLDOBJ_DRAW, &pp);
 }
 
 void
@@ -109,10 +98,9 @@ World::draw_smallmap(SmallMap* smallmap)
 {
   WorldObj::set_world(this);
 
-  for(WorldObjIter obj = world_obj.begin(); obj != world_obj.end(); ++obj)
-  {
-    (*obj)->draw_smallmap (smallmap);
-  }
+  WorldObj::WorldObjSmallMapPackage package(0, smallmap);
+  WorldObj::WorldObjSmallMapPackage* pp = &package;
+  ceu_out_go(&CEUapp, CEU_IN_WORLDOBJ_DRAW_SMALLMAP, &pp);
 }
 
 void
@@ -124,17 +112,6 @@ World::update()
 
   World* self = this;
   ceu_out_go(&CEUapp, CEU_IN_WORLD_UPDATE, &self);
-
-  // Let all pingus move and
-  // Let the pingus catch each other and
-  // Let the traps catch the pingus and
-  // Let the exit catch the pingus
-  for(WorldObjIter obj = world_obj.begin(); obj != world_obj.end(); ++obj)
-  {
-    // catch_pingu() is now done in relevant update() if WorldObj
-    // needs to catch pingus.
-    (*obj)->update();
-  }
 }
 
 PinguHolder*
@@ -225,17 +202,6 @@ World::remove(const CollisionMask& mask, int x, int y)
 {
   gfx_map->remove(mask.get_surface(), x, y);
   colmap->remove(mask, x, y);
-}
-
-WorldObj*
-World::get_worldobj(const std::string& id)
-{
-  for(WorldObjIter obj = world_obj.begin(); obj != world_obj.end(); ++obj)
-  {
-    if ((*obj)->get_id() == id)
-      return *obj;
-  }
-  return 0;
 }
 
 Vector2i

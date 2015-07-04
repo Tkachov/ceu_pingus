@@ -27,7 +27,6 @@ native @pure _WorldObj__get_world(),
              _WorldObj__get_world_play_sound(),
              _new_WorldObj();
 
-input _WorldObj* DELETE_WORLDOBJ;
 input _WorldObj* WORLDOBJ_STARTUP;
 input _WOPackage* WORLDOBJ_DRAW;
 input _WOSMPackage* WORLDOBJ_DRAW_SMALLMAP;
@@ -35,7 +34,11 @@ input _WOSMPackage* WORLDOBJ_DRAW_SMALLMAP;
 interface IWorldObj with
     var _WorldObj* me;
 
+    event void e_STARTUP;
     event _SceneContext* e_DRAW;
+    event _SmallMap* e_DRAW_SMALLMAP;
+    event void e_UPDATE;
+    event void e_DELETE;
 end
 
 #endif

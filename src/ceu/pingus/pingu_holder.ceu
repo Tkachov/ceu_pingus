@@ -21,6 +21,11 @@ class PinguHolder with
     var _PinguHolder& holder;
 do
     var _PinguHolder&? pingu_holder = _PTR2REF((_PinguHolder*)&holder);
+    finalize with
+        _delete_obj(pingu_holder);
+        _printf("holder\n");
+    end
+
     var int pingus_emitted = 0;
     var int pingus_exited = 0;
     var int pingus_dead = 0;
@@ -44,20 +49,12 @@ do
     end
 
     par do
-        every package in WORLDOBJ_DRAW do
-            if package:worldobj != &wobj then
-                continue;
-            end
-
-            emit global:e_PINGU_DRAW_WALKER => package:gc;
-            emit global:e_PINGU_DRAW_OTHERS => package:gc;
+        every gc in e_DRAW do
+            emit global:e_PINGU_DRAW_WALKER => gc;
+            emit global:e_PINGU_DRAW_OTHERS => gc;
         end
     with
-        every w in WORLD_UPDATE do
-            if w != wobj.world then
-                continue;
-            end
-
+        every e_UPDATE do
             emit global:e_PINGU_UPDATE_ALL;
         end
     with
