@@ -1,0 +1,13 @@
+#ifndef IPINGU_PARTICLES_HOLDER_CEU
+#define IPINGU_PARTICLES_HOLDER_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../worldobj.ceu"
+
+interface IPinguParticlesHolder with
+	interface IWorldObj;
+    function (int x, int y) => void add_particle;
+end
+
+#endif

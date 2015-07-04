@@ -1,0 +1,62 @@
+#ifndef PINGU_PARTICLES_HOLDER_CEU
+#define PINGU_PARTICLES_HOLDER_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../iworld.ceu"
+#include "../worldobj.ceu"
+#include "ipingu_particles_holder.ceu"
+
+native/pre do
+    ##include "pingus/particles/pingu_particles_holder.hpp"
+
+    ##define Vector_PinguParticle std::vector<PinguParticle>
+    ##define new_Vector_PinguParticle() new std::vector<PinguParticle>()
+
+    ##define PPH_add_particle(a, b, c) Particles::PinguParticleHolder_add_particle(a, b, c)
+    ##define PPH_update(a, b) Particles::PinguParticleHolder_update(a, b)
+    ##define PPH_draw(a, b, c) Particles::PinguParticleHolder_draw(a, b, c)
+end
+
+native @pure _new_Vector_PinguParticle(),
+             _PPH_add_particle(),
+             _PPH_update(),
+             _PPH_draw();
+
+class PinguParticlesHolder with
+    interface IPinguParticlesHolder;
+
+    var _Sprite&? sprite;
+    var _Vector_PinguParticle&? particles;
+do
+    var _WorldObj&? holder = _PTR2REF(me);
+    //finalize with _delete_obj(me); end
+    finalize with _delete_obj(sprite); end
+    finalize with _delete_obj(particles); end
+
+    function (int x, int y) => void add_particle do
+        _PPH_add_particle(particles, x, y);
+    end
+
+    par/or do
+        every package in WORLDOBJ_DRAW do
+            if package:worldobj != &holder then
+                continue;
+            end
+            
+            _PPH_draw(particles, package:gc, sprite);
+        end
+    with
+        every w in WORLD_UPDATE do
+            if w != holder.world then
+                continue;
+            end
+
+            _PPH_update(particles, holder.world);
+        end
+    with
+        var _WorldObj* e = await DELETE_WORLDOBJ until (e == &holder);
+    end
+end
+
+#endif

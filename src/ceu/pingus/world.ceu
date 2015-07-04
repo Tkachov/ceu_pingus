@@ -6,6 +6,7 @@
 #include "iworld.ceu"
 #include "pingu.ceu"
 #include "pingu_holder.ceu"
+#include "particles/pingu_particles_holder.ceu"
 #include "worldobjs/conveyor_belt.ceu"
 #include "worldobjs/entrance.ceu"
 #include "worldobjs/exit.ceu"
@@ -79,8 +80,23 @@ do
         this.me = me_.pingus;
     end;
 
+    var PinguParticlesHolder pingu_particles_holder with
+        this.me = _new_WorldObj();
+        this.me:world = &me_;
+        me_.world_obj.push_back(_PTR2REF(this.me));
+
+        this.sprite = _PTR2REF(_new_SpriteA("particles/pingu_explo"));        
+        this.particles = _PTR2REF(_new_Vector_PinguParticle());
+
+        this.me:pos.z = 1000; //TODO: somehow guarantee that it always stays that way
+    end;
+
     function (void) => IPinguHolder* get_pingus do
         return holder;
+    end
+
+    function (void) => IPinguParticlesHolder* get_pingu_particles_holder do
+        return pingu_particles_holder;
     end
 
     function (_const_char_string id) => ITeleporterTarget* get_teleporter_target do

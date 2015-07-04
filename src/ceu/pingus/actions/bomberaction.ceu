@@ -10,12 +10,13 @@
 #include "../collision_mask.ceu"
 #include "../iaction.ceu"
 #include "../ipingu.ceu"
+#include "../pingu_holder_listener.ceu"
 #include "../state_sprite.ceu"
 #include "../worldobj.ceu"
 #include "../movers/linear_mover.ceu"
+#include "../particles/ipingu_particles_holder.ceu"
 
-native/pre do
-    ##include "pingus/particles/pingu_particle_holder.hpp"
+native/pre do    
     ##include "pingus/colliders/pingu_collider.hpp"
     ##include "pingus/movers/linear_mover.hpp"
     ##include "pingus/pingu_enums.hpp"
@@ -105,8 +106,8 @@ do
         await PINGU_UPDATE_ALL until (sprite.get(pingu.direction):get_current_frame() > 12);
 
         // Throwing particles
-        _WorldObj__get_world():get_pingu_particle_holder():add_particle(
-            (int)pingu.get_x(), (int)pingu.get_y() - 5
+        global:world:get_pingu_particles_holder():add_particle(
+            pingu.get_x(), pingu.get_y() - 5
         );
 
         //Wait for 13th frame again?..
