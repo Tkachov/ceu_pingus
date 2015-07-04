@@ -39,6 +39,7 @@ do
     end
 
     every object in e_INSERT do
+        //_printf("inserting %d\n", object);
         var Node* before = null;
 
         var Node* current = first;
@@ -59,6 +60,7 @@ do
         var Node* new_node = null;
         spawn Node with
             this.ceu = object;
+            this.destroy = false;
             new_node = &this;
         end;
 
@@ -69,6 +71,21 @@ do
             new_node:next = before:next;
             before:next = new_node;
         end
+
+        /*
+        _printf("contains:");
+        var Node* n = first;
+        loop do
+            if n == null then
+                break;
+            end
+
+            _printf(" %d", n:ceu);
+
+            n = (Node*)n:next;
+        end
+        _printf("\n");
+        */
     end
 end
 

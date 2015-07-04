@@ -35,7 +35,6 @@ class SmallMap;
 class SceneContext;
 
 namespace Particles {
-class RainParticleHolder;
 class SmokeParticleHolder;
 class SnowParticleHolder;
 }
@@ -66,7 +65,6 @@ private:
   std::vector<WorldObj*> world_obj;
   typedef std::vector<WorldObj*>::iterator WorldObjIter;
 
-  Particles::RainParticleHolder*  rain_particle_holder;
   Particles::SmokeParticleHolder* smoke_particle_holder;
   Particles::SnowParticleHolder*  snow_particle_holder;
   PinguHolder*                    pingus;
@@ -119,9 +117,6 @@ public:
   void remove(const CollisionMask&, int x, int y);
 
   WorldObj* get_worldobj(const std::string& id);
-
-  /** @return A pointer to the worlds rain particle holder */
-  Particles::RainParticleHolder* get_rain_particle_holder () { return rain_particle_holder; }
 
   /** @return A pointer to the worlds smoke particle holder */
   Particles::SmokeParticleHolder* get_smoke_particle_holder () { return smoke_particle_holder; }

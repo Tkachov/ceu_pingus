@@ -65,7 +65,7 @@ do
             waiter_count = waiter_count - 20.0 * 0.025;
 
             loop i in 16 do
-                w:get_rain_particle_holder():add_particle(_rand()%(w:get_width()*2), -32);
+                global:world:get_rain_particles_holder():add_particle(_rand()%(w:get_width()*2), -32);
             end
         end
     with

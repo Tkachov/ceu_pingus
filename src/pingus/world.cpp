@@ -22,7 +22,6 @@
 #include "engine/sound/sound.hpp"
 #include "pingus/collision_map.hpp"
 #include "pingus/ground_map.hpp"
-#include "pingus/particles/rain_particle_holder.hpp"
 #include "pingus/particles/smoke_particle_holder.hpp"
 #include "pingus/particles/snow_particle_holder.hpp"
 
@@ -45,8 +44,7 @@ World::World(const PingusLevel& plf) :
   game_time(0),
   do_armageddon(false),
   armageddon_count(0),
-  world_obj(),  
-  rain_particle_holder(),
+  world_obj(),    
   smoke_particle_holder(),
   snow_particle_holder(),
   pingus(new PinguHolder(plf)),
@@ -57,14 +55,12 @@ World::World(const PingusLevel& plf) :
 
   log_debug("create particle holder");
 
-  // These get deleted via the world_obj vector in the destructor  
-  rain_particle_holder  = new Particles::RainParticleHolder();
+  // These get deleted via the world_obj vector in the destructor    
   smoke_particle_holder = new Particles::SmokeParticleHolder();
   snow_particle_holder  = new Particles::SnowParticleHolder();
 
   world_obj.push_back(gfx_map);
-
-  world_obj.push_back(rain_particle_holder);
+  
   world_obj.push_back(smoke_particle_holder);
   world_obj.push_back(snow_particle_holder);
 

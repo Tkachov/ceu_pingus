@@ -1,21 +1,5 @@
-//  Pingus - A free Lemmings clone
-//  Copyright (C) 1999 Ingo Ruhnke <grumbel@gmx.de>
-//
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//  
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//  
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-#ifndef HEADER_PINGUS_PINGUS_PARTICLES_RAIN_PARTICLE_HOLDER_HPP
-#define HEADER_PINGUS_PINGUS_PARTICLES_RAIN_PARTICLE_HOLDER_HPP
+#ifndef RAIN_PARTICLE_HOLDER_HPP
+#define RAIN_PARTICLE_HOLDER_HPP
 
 #include <vector>
 
@@ -23,54 +7,33 @@
 #include "math/vector3f.hpp"
 #include "pingus/worldobj.hpp"
 
-class GraphicContext;
+struct RainParticle {
+  bool  alive;
+  bool  splash;
+  bool  use_rain2_surf;
+  int   splash_counter;
+  float splash_frame;
 
-namespace Particles {
+  // pos.z contains a modificator for x and y pos
+  Vector3f pos;
 
-class RainParticleHolder : public WorldObj
-{
-  struct RainParticle {
-    bool  alive;
-    bool  splash;
-    bool  use_rain2_surf;
-    int   splash_counter;
-    float splash_frame;
-
-    // pos.z contains a modificator for x and y pos
-    Vector3f pos;
-
-    RainParticle(int x, int y);
-  };
-
-private:
-  Sprite rain1_surf;
-  Sprite rain2_surf;
-  Sprite rain_splash;
-
-  std::vector<RainParticle> particles;
-
-public:
-  RainParticleHolder ();
-
-  void add_particle(int x, int y);
-
-  float get_z_pos () const { return 1000.0f; }
-  void set_pos(const Vector3f& p) { }
-  Vector3f get_pos() const { return Vector3f(); }
-
-  /// Let the particle move
-  void update ();
-
-  /// Draw the particle with the correct zoom resize
-  void draw (SceneContext& gc);
-
-private:
-  RainParticleHolder (const RainParticleHolder&);
-  RainParticleHolder& operator= (const RainParticleHolder&);
+  RainParticle(int x, int y):
+    alive(true),
+    splash(false),
+    use_rain2_surf(false),
+    splash_counter(0),
+    splash_frame(0),
+    pos(Vector3f(x, y))
+  {
+    use_rain2_surf = ((rand() % 3) == 0);
+    pos.z = 1.0f + Math::frand() * 3.0f;
+  }
 };
 
-} // namespace Particles
+namespace Particles {
+  void RainParticleHolder_add_particle(std::vector<RainParticle>* particles, int x, int y);
+  void RainParticleHolder_update(std::vector<RainParticle>* particles, World* world, Sprite* s3);
+  void RainParticleHolder_draw(std::vector<RainParticle>* particles, SceneContext* gc, Sprite* s1, Sprite* s2, Sprite* s3);
+}
 
 #endif
-
-/* EOF */

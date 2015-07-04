@@ -23,26 +23,10 @@
 
 namespace Particles {
 
-RainParticleHolder::RainParticle::RainParticle(int x, int y)
-  : alive(true), splash(false), use_rain2_surf(false), splash_counter(0), splash_frame(0), pos(Vector3f(static_cast<float>(x), static_cast<float>(y)))
-{
-  use_rain2_surf = ((rand() % 3) == 0);
-  pos.z = 1.0f + Math::frand() * 3.0f;
-}
-
-RainParticleHolder::RainParticleHolder () :
-  rain1_surf("particles/rain1"),
-  rain2_surf("particles/rain2"),
-  rain_splash("particles/rain_splash"),
-  particles()
-{
-}
-
-void
-RainParticleHolder::add_particle (int x, int y)
+void RainParticleHolder_add_particle(std::vector<RainParticle>* particles, int x, int y)
 {
   // search for dead entry to replace
-  for (std::vector<RainParticle>::iterator it=particles.begin(); it != particles.end(); ++it)
+  for (std::vector<RainParticle>::iterator it=particles->begin(); it != particles->end(); ++it)
     if (!it->alive)
     {
       *it = RainParticle(x, y);
@@ -50,14 +34,13 @@ RainParticleHolder::add_particle (int x, int y)
     }
 
   // create new entry
-  particles.push_back(RainParticle(x, y));
+  particles->push_back(RainParticle(x, y));
 }
 
-void
-RainParticleHolder::update ()
+void RainParticleHolder_update(std::vector<RainParticle>* particles, World* world, Sprite* rain_splash)
 {
   // update all contained particles
-  for (std::vector<RainParticle>::iterator it=particles.begin(); it != particles.end(); ++it)
+  for (std::vector<RainParticle>::iterator it=particles->begin(); it != particles->end(); ++it)
   {
     // skip dead particles
     if (!it->alive)
@@ -65,7 +48,7 @@ RainParticleHolder::update ()
 
     if (it->splash)
     {
-      if (it->splash_frame >= rain_splash.get_frame_count())
+      if (it->splash_frame >= rain_splash->get_frame_count())
       {
         it->alive = false;
         continue;
@@ -98,10 +81,9 @@ RainParticleHolder::update ()
 
 }
 
-void
-RainParticleHolder::draw (SceneContext& gc)
+void RainParticleHolder_draw(std::vector<RainParticle>* particles, SceneContext* gc, Sprite* rain1_surf, Sprite* rain2_surf, Sprite* rain_splash)
 {
-  for (std::vector<RainParticle>::iterator it=particles.begin(); it != particles.end(); ++it)
+  for (std::vector<RainParticle>::iterator it=particles->begin(); it != particles->end(); ++it)
   {
     // skip dead/invisible particles
     if (!it->alive || it->pos.x > WorldObj::get_world()->get_width())
@@ -109,16 +91,14 @@ RainParticleHolder::draw (SceneContext& gc)
 
     if (it->splash)
     {
-      rain_splash.set_frame(static_cast<int>(it->splash_frame));
-      gc.color().draw(rain_splash, it->pos);
+      rain_splash->set_frame(static_cast<int>(it->splash_frame));
+      gc->color().draw(*rain_splash, it->pos);
     }
     else
       if (it->use_rain2_surf)
-        gc.color().draw(rain2_surf, Vector2i(static_cast<int>(it->pos.x), 
-                                             static_cast<int>(it->pos.y - static_cast<float>(rain1_surf.get_height()))));
+        gc->color().draw(*rain2_surf, Vector2i(it->pos.x, it->pos.y - (float)rain2_surf->get_height())); //was using rain1's height
       else
-        gc.color().draw(rain1_surf, Vector2i(static_cast<int>(it->pos.x),
-                                             static_cast<int>(it->pos.y - static_cast<float>(rain1_surf.get_height()))));
+        gc->color().draw(*rain1_surf, Vector2i(it->pos.x, it->pos.y - (float)rain1_surf->get_height()));
   }
 }
 

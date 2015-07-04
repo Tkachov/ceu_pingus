@@ -1,0 +1,64 @@
+#ifndef RAIN_PARTICLES_HOLDER_CEU
+#define RAIN_PARTICLES_HOLDER_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../iworld.ceu"
+#include "../pingu_holder_listener.ceu"
+#include "../worldobj.ceu"
+#include "irain_particles_holder.ceu"
+
+native/pre do
+    ##include "pingus/particles/rain_particle_holder.hpp"
+
+    ##define Vector_RainParticle std::vector<RainParticle>
+    ##define new_Vector_RainParticle() new std::vector<RainParticle>()
+
+    ##define RPH_add_particle(a, b, c) Particles::RainParticleHolder_add_particle(a, b, c)
+    ##define RPH_update(a, b, c) Particles::RainParticleHolder_update(a, b, c)
+    ##define RPH_draw(a, b, c, d, e) Particles::RainParticleHolder_draw(a, b, c, d, e)
+end
+
+native @pure _new_Vector_RainParticle(),
+             _RPH_add_particle(),
+             _RPH_update(),
+             _RPH_draw();
+
+class RainParticlesHolder with
+    interface IRainParticlesHolder;
+
+    var _Sprite&? rain1_surf;
+    var _Sprite&? rain2_surf;
+    var _Sprite&? rain_splash;
+    var _Vector_RainParticle&? particles;
+do
+    var _WorldObj&? holder = _PTR2REF(me);
+    emit global:world:get_list():e_INSERT => &this;
+    //finalize with _delete_obj(me); end
+    finalize with _delete_obj(rain1_surf); end
+    finalize with _delete_obj(rain2_surf); end
+    finalize with _delete_obj(rain_splash); end
+    finalize with _delete_obj(particles); end
+
+    function (int x, int y) => void add_particle do
+        _RPH_add_particle(particles, x, y);
+    end
+
+    par/or do
+        every gc in e_DRAW do
+           _RPH_draw(particles, gc, rain1_surf, rain2_surf, rain_splash);
+        end
+    with
+        every w in WORLD_UPDATE do
+            if w != holder.world then
+                continue;
+            end
+
+            _RPH_update(particles, holder.world, rain_splash);
+        end
+    with
+        var _WorldObj* e = await DELETE_WORLDOBJ until (e == &holder);
+    end
+end
+
+#endif
