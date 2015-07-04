@@ -3,6 +3,7 @@
 
 #include "../c.ceu"
 #include "../sdl.ceu"
+#include "../sorted_list.ceu"
 #include "iworld.ceu"
 #include "pingu.ceu"
 #include "pingu_holder.ceu"
@@ -76,6 +77,8 @@ class World with
     pool ISwitchDoorDoor[] switch_door_doors;
 do
     var _World&? me_ = _PTR2REF((_World*)&this.me);
+    var SortedList objs;
+
     var PinguHolder holder with
         this.me = me_.pingus;
     end;
@@ -85,11 +88,15 @@ do
         this.me:world = &me_;
         me_.world_obj.push_back(_PTR2REF(this.me));
 
-        this.sprite = _PTR2REF(_new_SpriteA("particles/pingu_explo"));        
+        this.sprite = _PTR2REF(_new_SpriteA("particles/pingu_explo"));
         this.particles = _PTR2REF(_new_Vector_PinguParticle());
 
         this.me:pos.z = 1000; //TODO: somehow guarantee that it always stays that way
     end;
+
+    function (void) => ISortedList* get_list do
+        return objs;
+    end
 
     function (void) => IPinguHolder* get_pingus do
         return holder;
@@ -120,6 +127,24 @@ do
     end
 
     par/or do
+        every package in WORLDOBJ_DRAW do
+            var Node* n = objs.first;
+            loop do
+                if n == null then
+                    break;
+                end
+
+                //TODO: remove the check
+                //it can be done when all world objects would be registered in SortedList
+                //and for that we need to port all these world objects
+                if package:worldobj == n:ceu:me then
+                    emit n:ceu:e_DRAW => package:gc;
+                end
+
+                n = (Node*)n:next;
+            end
+        end
+    with
         every w in WORLD_UPDATE do
             if w != &me_ then
                 continue;

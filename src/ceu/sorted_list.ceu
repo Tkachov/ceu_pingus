@@ -1,0 +1,75 @@
+#ifndef SORTED_LIST_CEU
+#define SORTED_LIST_CEU
+
+##include "pingus/worldobj.ceu"
+##include "isorted_list.ceu"
+
+native/pre do
+    ##include "pingus/worldobj.hpp"
+end
+
+interface INode with
+    var IWorldObj* ceu;
+    var bool destroy;
+end;
+
+class Node with
+    interface INode;
+    var INode* next;
+do
+    every 1s do
+        if destroy then
+            break;
+        end
+    end
+
+    if next != null then
+        next:destroy = true;
+    end
+end
+
+class SortedList with
+    interface ISortedList;
+    var Node* first = null;
+do
+    finalize with
+        if first != null then
+            first:destroy = true;
+        end
+    end
+
+    every object in e_INSERT do
+        var Node* before = null;
+
+        var Node* current = first;
+        loop/10000 do
+            if current == null then
+                break;
+            end
+
+            if current:ceu:me:get_z_pos() < object:me:get_z_pos() then
+                before = current;
+            else
+                break;
+            end
+
+            current = (Node*)current:next;
+        end
+
+        var Node* new_node = null;
+        spawn Node with
+            this.ceu = object;
+            new_node = &this;
+        end;
+
+        if before == null then
+            new_node:next = first;
+            first = new_node;
+        else
+            new_node:next = before:next;
+            before:next = new_node;
+        end
+    end
+end
+
+#endif

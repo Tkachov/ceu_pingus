@@ -1,0 +1,10 @@
+#ifndef ISORTED_LIST_CEU
+#define ISORTED_LIST_CEU
+
+#include "pingus/worldobj.ceu"
+
+interface ISortedList with
+    event IWorldObj* e_INSERT;
+end
+
+#endif

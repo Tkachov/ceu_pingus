@@ -4,6 +4,7 @@
 #include "../../c.ceu"
 #include "../../sdl.ceu"
 #include "../iworld.ceu"
+#include "../pingu_holder_listener.ceu"
 #include "../worldobj.ceu"
 #include "ipingu_particles_holder.ceu"
 
@@ -30,6 +31,7 @@ class PinguParticlesHolder with
     var _Vector_PinguParticle&? particles;
 do
     var _WorldObj&? holder = _PTR2REF(me);
+    emit global:world:get_list():e_INSERT => &this;
     //finalize with _delete_obj(me); end
     finalize with _delete_obj(sprite); end
     finalize with _delete_obj(particles); end
@@ -39,12 +41,8 @@ do
     end
 
     par/or do
-        every package in WORLDOBJ_DRAW do
-            if package:worldobj != &holder then
-                continue;
-            end
-            
-            _PPH_draw(particles, package:gc, sprite);
+        every gc in e_DRAW do
+           _PPH_draw(particles, gc, sprite);
         end
     with
         every w in WORLD_UPDATE do

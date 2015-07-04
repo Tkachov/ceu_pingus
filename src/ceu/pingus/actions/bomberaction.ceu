@@ -16,7 +16,7 @@
 #include "../movers/linear_mover.ceu"
 #include "../particles/ipingu_particles_holder.ceu"
 
-native/pre do    
+native/pre do
     ##include "pingus/colliders/pingu_collider.hpp"
     ##include "pingus/movers/linear_mover.hpp"
     ##include "pingus/pingu_enums.hpp"

@@ -4,6 +4,7 @@
 #include "../c.ceu"
 #include "../sdl.ceu"
 #include "../string.ceu"
+#include "../isorted_list.ceu"
 #include "ipingu_holder.ceu"
 #include "particles/ipingu_particles_holder.ceu"
 #include "worldobjs/iteleporter_target.ceu"
@@ -20,6 +21,8 @@ interface IWorld with
     function (void) => IPinguParticlesHolder* get_pingu_particles_holder;
     function (_const_char_string id) => ITeleporterTarget* get_teleporter_target;
     function (_const_char_string id) => ISwitchDoorDoor* get_switch_door_door;
+
+    function (void) => ISortedList* get_list;
 end
 
 #endif

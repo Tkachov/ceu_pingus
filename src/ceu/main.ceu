@@ -63,10 +63,10 @@ with
     end
 with
     every new_world in NEW_WORLD do
-        var World*? ptr = spawn World with
+        spawn World with
             this.me = _PTR2REF(new_world);
+            world = &this;
         end;
-        world = ptr;
     end
 with
     every new_playfield in NEW_PLAYFIELD do
