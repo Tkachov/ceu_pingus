@@ -5,14 +5,11 @@
 #include "../../sdl.ceu"
 #include "../../engine/sound/sound.ceu"
 #include "../../math/math.ceu"
+#include "../particles/ismoke_particles_holder.ceu"
 #include "../iworld.ceu"
 #include "../worldobj.ceu"
 #include "../ipingu_holder.ceu"
 #include "../pingu_holder_listener.ceu"
-
-native/pre do
-    ##include "pingus/particles/smoke_particle_holder.hpp"
-end
 
 class Smasher with
     interface IWorldObj;
@@ -85,7 +82,7 @@ do
                     _Sound_PingusSound_play_sound("tenton");
 
                     loop i in 20 do
-                        smasher.world:get_smoke_particle_holder():add_particle(
+                        global:world:get_smoke_particles_holder():add_particle(
                             smasher.pos.x + 20 + (float)(_rand()%260),
                             smasher.pos.y + 180,
                             _Math__frand()-0.5,

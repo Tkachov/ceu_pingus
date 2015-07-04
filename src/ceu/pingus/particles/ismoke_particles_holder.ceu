@@ -1,0 +1,13 @@
+#ifndef ISMOKE_PARTICLES_HOLDER_CEU
+#define ISMOKE_PARTICLES_HOLDER_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../worldobj.ceu"
+
+interface ISmokeParticlesHolder with
+	interface IWorldObj;
+    function (int x, int y, float vx, float vy) => void add_particle;
+end
+
+#endif

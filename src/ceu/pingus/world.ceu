@@ -9,6 +9,7 @@
 #include "pingu_holder.ceu"
 #include "particles/pingu_particles_holder.ceu"
 #include "particles/rain_particles_holder.ceu"
+#include "particles/smoke_particles_holder.ceu"
 #include "worldobjs/conveyor_belt.ceu"
 #include "worldobjs/entrance.ceu"
 #include "worldobjs/exit.ceu"
@@ -114,6 +115,18 @@ do
         this.me:pos.z = 1000; //TODO: somehow guarantee that it always stays that way
     end;
 
+    var SmokeParticlesHolder smoke_particles_holder with
+        this.me = _new_WorldObj();
+        this.me:world = &me_;
+        me_.world_obj.push_back(_PTR2REF(this.me));
+
+        this.surf1 = _PTR2REF(_new_SpriteA("particles/smoke"));
+        this.surf2 = _PTR2REF(_new_SpriteA("particles/smoke2"));
+        this.particles = _PTR2REF(_new_Vector_SmokeParticle());
+
+        this.me:pos.z = 1000; //TODO: somehow guarantee that it always stays that way
+    end;
+
     function (void) => ISortedList* get_list do
         return objs;
     end
@@ -128,6 +141,10 @@ do
 
     function (void) => IRainParticlesHolder* get_rain_particles_holder do
         return rain_particles_holder;
+    end
+
+    function (void) => ISmokeParticlesHolder* get_smoke_particles_holder do
+        return smoke_particles_holder;
     end
 
     function (_const_char_string id) => ITeleporterTarget* get_teleporter_target do
