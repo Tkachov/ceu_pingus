@@ -9,6 +9,7 @@
 #include "particles/ipingu_particles_holder.ceu"
 #include "particles/irain_particles_holder.ceu"
 #include "particles/ismoke_particles_holder.ceu"
+#include "particles/isnow_particles_holder.ceu"
 #include "worldobjs/iteleporter_target.ceu"
 #include "worldobjs/iswitch_door_door.ceu"
 
@@ -23,6 +24,7 @@ interface IWorld with
     function (void) => IPinguParticlesHolder* get_pingu_particles_holder;
     function (void) => IRainParticlesHolder* get_rain_particles_holder;
     function (void) => ISmokeParticlesHolder* get_smoke_particles_holder;
+    function (void) => ISnowParticlesHolder* get_snow_particles_holder;
     function (_const_char_string id) => ITeleporterTarget* get_teleporter_target;
     function (_const_char_string id) => ISwitchDoorDoor* get_switch_door_door;
 

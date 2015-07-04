@@ -1,0 +1,13 @@
+#ifndef ISNOW_PARTICLES_HOLDER_CEU
+#define ISNOW_PARTICLES_HOLDER_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../worldobj.ceu"
+
+interface ISnowParticlesHolder with
+	interface IWorldObj;
+    function (int x, int y, bool c) => void add_particle;
+end
+
+#endif

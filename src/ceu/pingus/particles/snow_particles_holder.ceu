@@ -1,0 +1,71 @@
+#ifndef SNOW_PARTICLES_HOLDER_CEU
+#define SNOW_PARTICLES_HOLDER_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../iworld.ceu"
+#include "../pingu_holder_listener.ceu"
+#include "../worldobj.ceu"
+#include "isnow_particles_holder.ceu"
+
+native/pre do
+    ##include "pingus/particles/snow_particle_holder.hpp"
+
+    ##define Vector_SnowParticle std::vector<SnowParticle>
+    ##define new_Vector_SnowParticle() new std::vector<SnowParticle>()
+
+    ##define SnPH_add_particle(a, b, c, d) Particles::SnowParticleHolder_add_particle(a, b, c, d)
+    ##define SnPH_update(a, b, c) Particles::SnowParticleHolder_update(a, b, c)
+    ##define SnPH_draw(a, b, c, d, e, f, g) Particles::SnowParticleHolder_draw(a, b, c, d, e, f, g)
+end
+
+native @pure _new_Vector_SnowParticle(),
+             _SnPH_add_particle(),
+             _SnPH_update(),
+             _SnPH_draw();
+
+class SnowParticlesHolder with
+    interface ISnowParticlesHolder;
+
+    var _Sprite&? snow1;
+    var _Sprite&? snow2;
+    var _Sprite&? snow3;
+    var _Sprite&? snow4;
+    var _Sprite&? snow5;
+    var _CollisionMask&? ground;
+    var _Vector_SnowParticle&? particles;
+do
+    var _WorldObj&? holder = _PTR2REF(me);
+    emit global:world:get_list():e_INSERT => &this;
+    //finalize with _delete_obj(me); end
+    finalize with _delete_obj(snow1); end
+    finalize with _delete_obj(snow2); end    
+    finalize with _delete_obj(snow3); end    
+    finalize with _delete_obj(snow4); end    
+    finalize with _delete_obj(snow5); end    
+    finalize with _delete_obj(ground); end    
+    finalize with _delete_obj(particles); end
+
+    function (int x, int y, bool c) => void add_particle do
+        //default c == false
+        _SnPH_add_particle(particles, x, y, c);
+    end
+
+    par/or do
+        every gc in e_DRAW do
+           _SnPH_draw(particles, gc, snow1, snow2, snow3, snow4, snow5);
+        end
+    with
+        every w in WORLD_UPDATE do
+            if w != holder.world then
+                continue;
+            end
+
+            _SnPH_update(particles, holder.world, ground);
+        end
+    with
+        var _WorldObj* e = await DELETE_WORLDOBJ until (e == &holder);
+    end
+end
+
+#endif

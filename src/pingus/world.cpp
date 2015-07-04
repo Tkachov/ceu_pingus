@@ -43,22 +43,14 @@ World::World(const PingusLevel& plf) :
   game_time(0),
   do_armageddon(false),
   armageddon_count(0),
-  world_obj(),      
-  snow_particle_holder(),
+  world_obj(),     
   pingus(new PinguHolder(plf)),
   colmap(gfx_map->get_colmap()),
   gravitational_acceleration(0.2f)
 {
   WorldObj::set_world(this);
 
-  log_debug("create particle holder");
-
-  // These get deleted via the world_obj vector in the destructor      
-  snow_particle_holder  = new Particles::SnowParticleHolder();
-
   world_obj.push_back(gfx_map);
-    
-  world_obj.push_back(snow_particle_holder);
 
   World* self = this;
   ceu_out_go(&CEUapp, CEU_IN_NEW_WORLD, &self);

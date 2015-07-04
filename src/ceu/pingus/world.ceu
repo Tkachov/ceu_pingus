@@ -10,6 +10,7 @@
 #include "particles/pingu_particles_holder.ceu"
 #include "particles/rain_particles_holder.ceu"
 #include "particles/smoke_particles_holder.ceu"
+#include "particles/snow_particles_holder.ceu"
 #include "worldobjs/conveyor_belt.ceu"
 #include "worldobjs/entrance.ceu"
 #include "worldobjs/exit.ceu"
@@ -127,6 +128,22 @@ do
         this.me:pos.z = 1000; //TODO: somehow guarantee that it always stays that way
     end;
 
+    var SnowParticlesHolder snow_particles_holder with
+        this.me = _new_WorldObj();
+        this.me:world = &me_;
+        me_.world_obj.push_back(_PTR2REF(this.me));
+
+        this.snow1 = _PTR2REF(_new_SpriteA("particles/snow1"));
+        this.snow2 = _PTR2REF(_new_SpriteA("particles/snow2"));
+        this.snow3 = _PTR2REF(_new_SpriteA("particles/snow3"));
+        this.snow4 = _PTR2REF(_new_SpriteA("particles/snow4"));
+        this.snow5 = _PTR2REF(_new_SpriteA("particles/snow5"));
+        this.ground = _PTR2REF(_new_CollisionMask("particles/ground_snow"));  
+        this.particles = _PTR2REF(_new_Vector_SnowParticle());
+
+        this.me:pos.z = 1000; //TODO: somehow guarantee that it always stays that way
+    end;
+
     function (void) => ISortedList* get_list do
         return objs;
     end
@@ -145,6 +162,10 @@ do
 
     function (void) => ISmokeParticlesHolder* get_smoke_particles_holder do
         return smoke_particles_holder;
+    end
+
+    function (void) => ISnowParticlesHolder* get_snow_particles_holder do
+        return snow_particles_holder;
     end
 
     function (_const_char_string id) => ITeleporterTarget* get_teleporter_target do

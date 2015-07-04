@@ -34,10 +34,6 @@ class WorldObj;
 class SmallMap;
 class SceneContext;
 
-namespace Particles {
-class SnowParticleHolder;
-}
-
 /** The World holds all objects of the pingu enviroment.
 
     It holds the pingus, traps, exits, entrances, etc.. It keeps
@@ -63,8 +59,7 @@ private:
 
   std::vector<WorldObj*> world_obj;
   typedef std::vector<WorldObj*>::iterator WorldObjIter;
-  
-  Particles::SnowParticleHolder*  snow_particle_holder;
+    
   PinguHolder*                    pingus;
 
   // Pointers which are references to objects from other classes
@@ -115,9 +110,6 @@ public:
   void remove(const CollisionMask&, int x, int y);
 
   WorldObj* get_worldobj(const std::string& id);
-
-  /** @return A pointer to the worlds snow particle holder */
-  Particles::SnowParticleHolder* get_snow_particle_holder () { return snow_particle_holder; }
 
   /** @return true if the world is currently doing an armageddon */
   bool check_armageddon() { return do_armageddon; }
