@@ -2,10 +2,10 @@
 #define PINGU_HOLDER_LISTENER_CEU
 
 #include "iworld.ceu"
+#include "pingu_events.ceu"
 
 interface Global with
-    event void e_PINGU_DIED;
-    event void e_PINGU_EXITED;
+	interface GlobalPinguEvents;
     var IWorld* world;
 end
 

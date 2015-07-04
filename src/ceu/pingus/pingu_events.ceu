@@ -1,0 +1,16 @@
+#ifndef PINGU_EVENTS_CEU
+#define PINGU_EVENTS_CEU
+
+native/pre do
+    ##include "engine/display/scene_context.hpp"
+end
+
+interface GlobalPinguEvents with
+    event void e_PINGU_DIED;
+    event void e_PINGU_EXITED;
+    event _SceneContext* e_PINGU_DRAW_WALKER;
+    event _SceneContext* e_PINGU_DRAW_OTHERS;
+    event void e_PINGU_UPDATE_ALL;
+end
+
+#endif

@@ -81,7 +81,13 @@ do
     var SortedList objs;
 
     var PinguHolder holder with
-        this.me = me_.pingus;
+        this.me = _new_WorldObj();
+        this.me:world = &me_;
+        me_.world_obj.push_back(_PTR2REF(this.me));
+
+        this.holder = me_.pingus;
+
+        this.me:pos.z = 50; //TODO: somehow guarantee that it always stays that way
     end;
 
     var PinguParticlesHolder pingu_particles_holder with

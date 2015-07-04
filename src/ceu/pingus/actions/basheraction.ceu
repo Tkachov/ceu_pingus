@@ -96,13 +96,13 @@ do
             _gc_color_draw2(gc, sprite.get(pingu.direction), pingu.get_pos());
         end
     with
-        every PINGU_UPDATE_ALL do
+        every global:e_PINGU_UPDATE_ALL do
             sprite.get(pingu.direction):update();
             odd_frame = not odd_frame;
         end
     with
         loop do
-            await PINGU_UPDATE_ALL;
+            await global:e_PINGU_UPDATE_ALL;
 
             /// WALK_FORWARD ///
             //Basher turns into a Faller if it goes down more than <max_steps_down>
@@ -162,8 +162,8 @@ do
                 end
             end
 
-            await PINGU_UPDATE_ALL;
-            await PINGU_UPDATE_ALL;
+            await global:e_PINGU_UPDATE_ALL;
+            await global:e_PINGU_UPDATE_ALL;
         end
     end
 end

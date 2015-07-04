@@ -74,12 +74,12 @@ do
             _gc_color_draw2(gc, sprite.get(pingu.direction), pingu.get_pos());
         end
     with
-        every PINGU_UPDATE_ALL do
+        every global:e_PINGU_UPDATE_ALL do
             sprite.get(pingu.direction):update();
         end
     with
         loop do
-            await PINGU_UPDATE_ALL;
+            await global:e_PINGU_UPDATE_ALL;
 
             if pingu.rel_getpixel(0, -1) == _GT_NOTHING then
                 // stop mining when in the air
@@ -108,7 +108,7 @@ do
 
             //await 3 more frames
             loop i in 3 do
-                await PINGU_UPDATE_ALL;
+                await global:e_PINGU_UPDATE_ALL;
             end
         end
     end

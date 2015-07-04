@@ -12,6 +12,7 @@ end
 #include "pingus/components/playfield.ceu"
 #include "pingus/components/smallmap.ceu"
 #include "pingus/pingu_holder.ceu"
+#include "pingus/pingu_events.ceu"
 #include "pingus/pingu_holder_listener.ceu"
 #include "pingus/server_event.ceu"
 #include "pingus/world.ceu"
@@ -19,6 +20,9 @@ end
 
 event void e_PINGU_DIED;
 event void e_PINGU_EXITED;
+event _SceneContext* e_PINGU_DRAW_WALKER;
+event _SceneContext* e_PINGU_DRAW_OTHERS;
+event void e_PINGU_UPDATE_ALL;
 
 input _MenuButton* NEW_MENUBUTTON;
 input _ArmageddonButton* NEW_ARMAGEDDONBUTTON;

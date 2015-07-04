@@ -17,9 +17,8 @@ native/pre do
 end
 
 #include "ipingu_action.ceu"
+#include "pingu_events.ceu"
 #include "../string.ceu"
-
-input void PINGU_UPDATE_ALL;
 
 interface IPingu with
     var _Direction& direction;

@@ -69,7 +69,7 @@ do
             end
         end
     with
-        every PINGU_UPDATE_ALL do
+        every global:e_PINGU_UPDATE_ALL do
             if call/rec is_tumbling() then
                 tumbler.get(pingu.direction):update();
             else

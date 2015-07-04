@@ -17,17 +17,10 @@
 #ifndef HEADER_PINGUS_PINGUS_PINGU_HOLDER_HPP
 #define HEADER_PINGUS_PINGUS_PINGU_HOLDER_HPP
 
-#include <list>
-
-#include "pingus/worldobj.hpp"
-
 class PingusLevel;
-class Vector3f;
-class Pingu;
 
 /** This class holds all the penguins in the world */
-class PinguHolder : public WorldObj
-{
+class PinguHolder {
 private:
   /** The total number of pingus that will get released in this
       level */
@@ -40,23 +33,6 @@ private:
 
 public:
   PinguHolder(const PingusLevel&);
-  ~PinguHolder();
-
-  /*@{
-    @name overloaded stuff for WorldObj
-  */
-  void draw (SceneContext& gc);
-
-  /** Update all Pingus (this calls Pingu::update() which then calls
-      PinguAction::update()) */
-  void update();
-
-  /** The z-pos at which the pingus gets draw.
-      @return 50 */
-  float get_z_pos() const;
-  void set_pos(const Vector3f& p) { }
-  Vector3f get_pos() const { return Vector3f(); }
-  /*@}*/
 
   /** @return the number of pingus that have successfully exit this
       level */

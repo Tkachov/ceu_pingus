@@ -139,7 +139,7 @@ do
 
         //building step
         par/or do
-            every PINGU_UPDATE_ALL do
+            every global:e_PINGU_UPDATE_ALL do
                 build_sprite.get(pingu.direction):update();
             end
         with
@@ -156,7 +156,7 @@ do
                 );
             end
         with
-            await PINGU_UPDATE_ALL until (build_sprite.get(pingu.direction):get_current_frame () >= 7);
+            await global:e_PINGU_UPDATE_ALL until (build_sprite.get(pingu.direction):get_current_frame () >= 7);
 
             if bricks > 0 then
                 if call/rec brick_placement_allowed() then
@@ -169,14 +169,14 @@ do
                 escape _A_WAITER;
             end
 
-            PRE_CONDITION_AWAIT(PINGU_UPDATE_ALL, build_sprite.get(pingu.direction):is_finished());
+            PRE_CONDITION_AWAIT(global:e_PINGU_UPDATE_ALL, build_sprite.get(pingu.direction):is_finished());
 
             build_sprite.get(pingu.direction):restart();
         end
 
         //walking step
         par/or do
-            every PINGU_UPDATE_ALL do
+            every global:e_PINGU_UPDATE_ALL do
                 //original FIXME: Dangerous! might not be fixed timing
                 if walk_sprite.get(pingu.direction):is_finished() then
                     break;

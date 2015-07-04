@@ -37,7 +37,7 @@ do
     sprite.load_file(_D_RIGHT, "other/laser_kill/right");
 
     par do
-        every PINGU_UPDATE_ALL do
+        every global:e_PINGU_UPDATE_ALL do
             if sprite.get(pingu.direction):is_finished() then
                 escape _A_DEAD;
             else

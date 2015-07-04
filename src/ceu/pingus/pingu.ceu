@@ -37,8 +37,8 @@ native/pre do
     #define StringUtil__to_string StringUtil::to_string
 end
 
-input _SceneContext* PINGU_DRAW_WALKER;
-input _SceneContext* PINGU_DRAW_OTHERS;
+output _SceneContext* PINGU_DRAW_WALKER;
+output _SceneContext* PINGU_DRAW_OTHERS;
 
 native @pure _PA_get_activation_mode(), _StringUtil__to_string();
 
@@ -277,7 +277,7 @@ do
 
     par do
         //pass update() call
-        every PINGU_UPDATE_ALL do
+        every global:e_PINGU_UPDATE_ALL do
             if instant_action_set then
                 instant_action_set = false;
                 emit e_CHANGE_ACTION => instant_action;
@@ -291,13 +291,13 @@ do
             end
         end
     with
-        every gc in PINGU_DRAW_WALKER do
+        every gc in global:e_PINGU_DRAW_WALKER do
             if current_action == _A_WALKER then
                 emit e_DRAW_CALLED => gc;
             end
         end
     with
-        every gc in PINGU_DRAW_OTHERS do
+        every gc in global:e_PINGU_DRAW_OTHERS do
             if current_action != _A_WALKER then
                 emit e_DRAW_CALLED => gc;
             end
@@ -341,7 +341,7 @@ do
                     await FOREVER;
                 end
 
-                await PINGU_UPDATE_ALL; //hack
+                await global:e_PINGU_UPDATE_ALL; //hack
             end
         end
     end

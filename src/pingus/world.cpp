@@ -84,8 +84,6 @@ World::init_worldobjs(const PingusLevel& plf)
       add_object(obj);
   }
 
-  world_obj.push_back(pingus);
-
   std::stable_sort (world_obj.begin (), world_obj.end (), WorldObj_less);
 
   // Drawing all world objs to the colmap, gfx, or what ever the

@@ -78,7 +78,7 @@ do
             _gc_color_draw2(gc, sprite, pingu.get_pos());
         end
     with
-        every PINGU_UPDATE_ALL do
+        every global:e_PINGU_UPDATE_ALL do
             sprite.update();
             delay_count = delay_count + 1;
 

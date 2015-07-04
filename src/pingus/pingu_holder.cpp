@@ -15,35 +15,11 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "pingus/pingu_holder.hpp"
-
-
 #include "pingus/pingus_level.hpp"
-
-#include "ceuvars.h"
 
 PinguHolder::PinguHolder(const PingusLevel& plf) :
   number_of_allowed(plf.get_number_of_pingus()),
   dead(0), exited(0), released(0) {}
-
-PinguHolder::~PinguHolder() {}
-
-void
-PinguHolder::draw (SceneContext& gc)
-{
-  SceneContext* g = &gc;
-  ceu_out_go(&CEUapp, CEU_IN_PINGU_DRAW_WALKER, &g);
-  ceu_out_go(&CEUapp, CEU_IN_PINGU_DRAW_OTHERS, &g);
-}
-
-void PinguHolder::update() {  
-  ceu_out_go(&CEUapp, CEU_IN_PINGU_UPDATE_ALL, 0);
-}
-
-float
-PinguHolder::get_z_pos() const
-{
-  return 50;
-}
 
 int PinguHolder::get_number_of_exited() { return exited; }
 

@@ -18,12 +18,16 @@ native @pure _new_Direction();
 
 class PinguHolder with
     interface IPinguHolder;
-    var _PinguHolder& me;
+    var _PinguHolder& holder;
 do
-    var _PinguHolder&? me_ = _PTR2REF((_PinguHolder*)&this.me);
+    var _PinguHolder&? pingu_holder = _PTR2REF((_PinguHolder*)&holder);
     var int pingus_emitted = 0;
     var int pingus_exited = 0;
     var int pingus_dead = 0;
+
+    var _WorldObj&? wobj = _PTR2REF(me);
+    emit global:world:get_list():e_INSERT => &this;
+    //finalize with _delete_obj(me); end
 
     function @rec (int id) => IPingu* get_pingu do
         var IPingu* result = null;
@@ -40,8 +44,25 @@ do
     end
 
     par do
+        every package in WORLDOBJ_DRAW do
+            if package:worldobj != &wobj then
+                continue;
+            end
+
+            emit global:e_PINGU_DRAW_WALKER => package:gc;
+            emit global:e_PINGU_DRAW_OTHERS => package:gc;
+        end
+    with
+        every w in WORLD_UPDATE do
+            if w != wobj.world then
+                continue;
+            end
+
+            emit global:e_PINGU_UPDATE_ALL;
+        end
+    with
         every package in e_MAKE_PINGU do
-            if me_.number_of_allowed > pingus_emitted then
+            if pingu_holder.number_of_allowed > pingus_emitted then
                 // We use all_pingus.size() as pingu_id, so that id == array index
                 spawn Pingu in all_pingus with
                     this.pos_x = package:entrance:pos.x;
@@ -62,18 +83,18 @@ do
                 //world->play_sound("oing", pos);
 
                 pingus_emitted = pingus_emitted + 1;
-                me_.released = pingus_emitted;
+                pingu_holder.released = pingus_emitted;
             end
         end
     with
         every global:e_PINGU_DIED do
             pingus_dead = pingus_dead + 1;
-            me_.dead = pingus_dead;
+            pingu_holder.dead = pingus_dead;
         end
     with
         every global:e_PINGU_EXITED do
             pingus_exited = pingus_exited + 1;
-            me_.exited = pingus_exited;
+            pingu_holder.exited = pingus_exited;
         end
     end
 end

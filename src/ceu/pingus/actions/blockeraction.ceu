@@ -49,7 +49,7 @@ do
             _gc_color_draw2(gc, sprite.get(pingu.direction), pingu.get_pos());
         end
     with
-        every PINGU_UPDATE_ALL do
+        every global:e_PINGU_UPDATE_ALL do
             if pingu.rel_getpixel(0,-1) == _GT_NOTHING then
                 escape _A_FALLER;
             end

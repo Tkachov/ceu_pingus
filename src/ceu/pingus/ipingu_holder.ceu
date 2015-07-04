@@ -4,6 +4,7 @@
 #include "../c.ceu"
 #include "../sdl.ceu"
 #include "ipingu.ceu"
+#include "worldobj.ceu"
 
 native/pre do
     ##include "pingus/worldobj.hpp"
@@ -20,6 +21,8 @@ end
 native @pure _new_PHPackage();
 
 interface IPinguHolder with
+    interface IWorldObj;
+
     pool IPingu[] all_pingus;
     event _PHPackage* e_MAKE_PINGU;
 

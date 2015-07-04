@@ -48,7 +48,7 @@ do
     var float x_pos = pingu.get_x();
 
     par do
-        every PINGU_UPDATE_ALL do
+        every global:e_PINGU_UPDATE_ALL do
             sprite.update();
 
             counter = counter + (float)_globals__game_speed;
