@@ -1,0 +1,36 @@
+#ifndef GROUND_MAP_CEU
+#define GROUND_MAP_CEU
+
+#include "../c.ceu"
+#include "../sdl.ceu"
+#include "iworld.ceu"
+#include "pingu_holder_listener.ceu"
+#include "worldobj.ceu"
+
+native/pre do
+    ##include "pingus/ground_map.hpp"
+    ##define new_GroundMap(a, b) new GroundMap(a, b)
+end
+
+native @pure _new_GroundMap();
+
+class GroundMap with
+    interface IWorldObj;
+
+    var _GroundMap&? gmap;
+do
+    var _WorldObj&? ground_map = _PTR2REF(me);
+    emit global:world:get_list():e_INSERT => &this;
+    //finalize with _delete_obj(me); end
+    finalize with _delete_obj(gmap); end
+
+    par/or do
+        every gc in e_DRAW do
+            gmap.draw(_deref(gc));
+        end
+    with
+        var _WorldObj* e = await DELETE_WORLDOBJ until (e == &ground_map);
+    end
+end
+
+#endif

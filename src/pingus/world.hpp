@@ -47,6 +47,8 @@ private:
   /** groundmap for the pingus */
   GroundMap* gfx_map;
 
+  int mwidth, mheight;
+
   /** manager class for the time in the pingus world */
   int game_time;
 

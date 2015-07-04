@@ -28,14 +28,14 @@ class SmokeParticlesHolder with
     interface ISmokeParticlesHolder;
 
     var _Sprite&? surf1;
-    var _Sprite&? surf2;    
+    var _Sprite&? surf2;
     var _Vector_SmokeParticle&? particles;
 do
     var _WorldObj&? holder = _PTR2REF(me);
     emit global:world:get_list():e_INSERT => &this;
     //finalize with _delete_obj(me); end
     finalize with _delete_obj(surf1); end
-    finalize with _delete_obj(surf2); end    
+    finalize with _delete_obj(surf2); end
     finalize with _delete_obj(particles); end
 
     function (int x, int y, float vx, float vy) => void add_particle do

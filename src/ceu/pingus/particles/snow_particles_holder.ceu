@@ -39,11 +39,11 @@ do
     emit global:world:get_list():e_INSERT => &this;
     //finalize with _delete_obj(me); end
     finalize with _delete_obj(snow1); end
-    finalize with _delete_obj(snow2); end    
-    finalize with _delete_obj(snow3); end    
-    finalize with _delete_obj(snow4); end    
-    finalize with _delete_obj(snow5); end    
-    finalize with _delete_obj(ground); end    
+    finalize with _delete_obj(snow2); end
+    finalize with _delete_obj(snow3); end
+    finalize with _delete_obj(snow4); end
+    finalize with _delete_obj(snow5); end
+    finalize with _delete_obj(ground); end
     finalize with _delete_obj(particles); end
 
     function (int x, int y, bool c) => void add_particle do

@@ -39,18 +39,17 @@ bool WorldObj_less (WorldObj* a, WorldObj* b)
 
 World::World(const PingusLevel& plf) :
   ambient_light(Color(plf.get_ambient_light())),
-  gfx_map(new GroundMap(plf.get_size().width, plf.get_size().height)),
+  mwidth(plf.get_size().width),
+  mheight(plf.get_size().height),
   game_time(0),
   do_armageddon(false),
   armageddon_count(0),
   world_obj(),     
   pingus(new PinguHolder(plf)),
-  colmap(gfx_map->get_colmap()),
+  colmap(),
   gravitational_acceleration(0.2f)
 {
   WorldObj::set_world(this);
-
-  world_obj.push_back(gfx_map);
 
   World* self = this;
   ceu_out_go(&CEUapp, CEU_IN_NEW_WORLD, &self);

@@ -7,6 +7,7 @@
 #include "iworld.ceu"
 #include "pingu.ceu"
 #include "pingu_holder.ceu"
+#include "ground_map.ceu"
 #include "particles/pingu_particles_holder.ceu"
 #include "particles/rain_particles_holder.ceu"
 #include "particles/smoke_particles_holder.ceu"
@@ -138,10 +139,22 @@ do
         this.snow3 = _PTR2REF(_new_SpriteA("particles/snow3"));
         this.snow4 = _PTR2REF(_new_SpriteA("particles/snow4"));
         this.snow5 = _PTR2REF(_new_SpriteA("particles/snow5"));
-        this.ground = _PTR2REF(_new_CollisionMask("particles/ground_snow"));  
+        this.ground = _PTR2REF(_new_CollisionMask("particles/ground_snow"));
         this.particles = _PTR2REF(_new_Vector_SnowParticle());
 
         this.me:pos.z = 1000; //TODO: somehow guarantee that it always stays that way
+    end;
+
+    var GroundMap gfx_map with
+        this.me = _new_WorldObj();
+        this.me:world = &me_;
+
+        this.gmap = _PTR2REF(_new_GroundMap(me_.mwidth, me_.mheight));
+
+        this.me:pos.z = 0; //TODO: somehow guarantee that it always stays that way
+        me_.gfx_map = _PTR2REF(this.gmap);
+        me_.colmap = _PTR2REF(this.gmap.colmap.get());
+        me_.world_obj.push_back(_PTR2REF(this.me));
     end;
 
     function (void) => ISortedList* get_list do
