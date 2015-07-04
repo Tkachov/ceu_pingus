@@ -22,8 +22,7 @@ class PinguHolder with
 do
     var _PinguHolder&? pingu_holder = _PTR2REF((_PinguHolder*)&holder);
     finalize with
-        _delete_obj(pingu_holder);
-        _printf("holder\n");
+        _delete_obj(pingu_holder);        
     end
 
     var int pingus_emitted = 0;

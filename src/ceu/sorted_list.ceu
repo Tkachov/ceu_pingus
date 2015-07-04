@@ -42,8 +42,7 @@ do
     finalize with
         if first != null then
             first:destroy = true;
-        end
-        _printf("sorted list\n");
+        end        
     end
 
     par/or do
@@ -115,8 +114,7 @@ do
             _printf("3\n");
         end
     with
-        await e_DELETE;
-        _printf("delete sorted list\n");
+        await e_DELETE;        
     end
 end
 

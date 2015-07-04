@@ -676,15 +676,8 @@ do
     with
         var _World* p = await DELETE_WORLD until (p == &me_);
     end
-
-    await 1s;
+    
     emit objs.e_DELETE;
-    /*emit objs.e_REMOVE => &holder;
-    emit objs.e_REMOVE => &pingu_particles_holder;
-    emit objs.e_REMOVE => &rain_particles_holder;
-    emit objs.e_REMOVE => &smoke_particles_holder;
-    emit objs.e_REMOVE => &snow_particles_holder;
-    emit objs.e_REMOVE => &gfx_map;*/
     global:world = null;
 end
 

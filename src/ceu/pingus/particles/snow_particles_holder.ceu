@@ -46,7 +46,6 @@ do
         _delete_obj(snow5);
         _delete_obj(ground);
         _delete_obj(particles);
-        _printf("snow");
     end
 
     function (int x, int y, bool c) => void add_particle do
