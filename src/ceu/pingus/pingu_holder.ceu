@@ -49,6 +49,7 @@ do
 
     par do
         every gc in e_DRAW do
+            _printf("\tpingu holder\n");
             emit global:e_PINGU_DRAW_WALKER => gc;
             emit global:e_PINGU_DRAW_OTHERS => gc;
         end

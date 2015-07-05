@@ -63,9 +63,9 @@ Playfield::draw(DrawingContext& gc)
 
   state.push(*scene_context);
 
+  printf("DRAW, gc = %d\n", &*scene_context);
   ceu_out_go(&CEUapp, CEU_IN_PLAYFIELD_DRAW, &scene_context);
-
-  server->get_world()->draw(*scene_context);
+  printf("~DRAW\n");
 
   state.pop(*scene_context);
 

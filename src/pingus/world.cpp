@@ -49,11 +49,15 @@ World::World(const PingusLevel& plf) :
   gravitational_acceleration(0.2f)
 {
   WorldObj::set_world(this);
+  
+  printf("world()\n");
 
   World* self = this;
   ceu_out_go(&CEUapp, CEU_IN_NEW_WORLD, &self);
 
-  init_worldobjs(plf);
+  printf("first Ceu event returned\n");
+
+  init_worldobjs(plf);  
 }
 
 void World::add_object(WorldObj* obj) {  
@@ -69,8 +73,12 @@ World::init_worldobjs(const PingusLevel& plf)
       add_object(obj);
   }
 
+  printf("world objects must be created\n");
+
   World* self = this;
   ceu_out_go(&CEUapp, CEU_IN_WORLD_STARTUP, &self);
+
+  printf("Ceu startup event returned\n");
 }
 
 World::~World() {
@@ -80,28 +88,16 @@ World::~World() {
 }
 
 void
-World::draw (SceneContext& gc)
-{
-  WorldObj::set_world(this);
-
-  gc.light().fill_screen(Color(ambient_light));
-
-  //World* self = this;
-  //ceu_out_go(&CEUapp, CEU_IN_WORLD_DRAW, &self);
-
-  WorldObj::WorldObjPackage package(0, &gc);
-  WorldObj::WorldObjPackage* pp = &package;
-  ceu_out_go(&CEUapp, CEU_IN_WORLDOBJ_DRAW, &pp);
-}
-
-void
 World::draw_smallmap(SmallMap* smallmap)
-{
+{  
   WorldObj::set_world(this);
 
+  //TODO: fix that
+  /*
   WorldObj::WorldObjSmallMapPackage package(0, smallmap);
   WorldObj::WorldObjSmallMapPackage* pp = &package;
   ceu_out_go(&CEUapp, CEU_IN_WORLDOBJ_DRAW_SMALLMAP, &pp);
+  */
 }
 
 void

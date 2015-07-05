@@ -44,6 +44,7 @@ do
 
     par/or do
         every gc in e_DRAW do
+            _printf("\tPPH\n");
            _PPH_draw(particles, gc, sprite);
         end
     with

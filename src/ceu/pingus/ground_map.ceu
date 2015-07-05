@@ -28,6 +28,7 @@ do
 
     par/or do
         every gc in e_DRAW do
+            _printf("\tgfx_map\n");
             gmap.draw(_deref(gc));
         end
     with

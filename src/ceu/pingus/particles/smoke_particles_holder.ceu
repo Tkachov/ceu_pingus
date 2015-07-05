@@ -46,6 +46,7 @@ do
 
     par/or do
         every gc in e_DRAW do
+            _printf("\tSPH\n");
            _SPH_draw(particles, gc, surf1, surf2);
         end
     with

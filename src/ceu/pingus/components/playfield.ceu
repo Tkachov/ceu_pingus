@@ -70,8 +70,16 @@ do
         end
     with
         every gc in PLAYFIELD_DRAW do
+            _printf("A\n");
             call/rec capture_rectangle.set_pingu(get_current_pingu()); //another no-"access across `await`"-hack
+            _printf("B, gc = %d\n", gc);
             emit capture_rectangle.draw => gc;
+            _printf("C, world = %d, gc = %d\n", global:world, gc);
+
+            if global:world != null then
+                emit global:world:e_DRAW => gc;
+            end
+            _printf("D\n");
         end
     with
         every pos in PLAYFIELD_CLICK do
