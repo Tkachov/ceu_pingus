@@ -55,7 +55,6 @@ do
 
     par/or do
         every gc in e_DRAW do
-            _printf("\tSnPH\n");
            _SnPH_draw(particles, gc, snow1, snow2, snow3, snow4, snow5);
         end
     with

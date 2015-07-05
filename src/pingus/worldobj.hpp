@@ -63,6 +63,13 @@ public:
   virtual void set_pos(const Vector3f& p) { pos = p; }
   virtual Vector3f get_pos() const { return pos; }
 
+  struct WorldObjPackage {
+    WorldObj* worldobj;
+    SceneContext* gc;
+
+    WorldObjPackage(WorldObj* w, SceneContext* g): worldobj(w), gc(g) {};
+  };
+
   struct WorldObjSmallMapPackage {
     WorldObj* worldobj;
     SmallMap* smallmap;

@@ -48,7 +48,6 @@ do
 
     par/or do
         every gc in e_DRAW do
-            _printf("\tRPH\n");
            _RPH_draw(particles, gc, rain1_surf, rain2_surf, rain_splash);
         end
     with

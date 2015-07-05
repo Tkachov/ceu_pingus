@@ -10,7 +10,6 @@ end
 
 interface INode with
     var IWorldObj* ceu;
-    var int z;
 end;
 
 class Node with
@@ -28,17 +27,12 @@ class SortedList with
 do
     finalize with
         first = null;
-        _printf("SortedList finalized (%d):\n", cnt);
+        _printf(" - SortedList finalized (%d)\n", cnt);
     end
 
     par/or do
         every object in e_INSERT do
-            if object == null then
-                continue;
-            end
-
             //_printf("inserting %d\n", object);
-            var int object_z = object:me:get_z_pos();
             var Node* before = null;
 
             var Node* current = first;
@@ -47,7 +41,7 @@ do
                     break;
                 end
 
-                if current:z < object_z then
+                if current:ceu:me:get_z_pos() < object:me:get_z_pos() then
                     before = current;
                 else
                     break;
@@ -59,7 +53,6 @@ do
             var Node* new_node = null;
             spawn Node with
                 this.ceu = object;
-                this.z = object_z;
                 new_node = &this;
             end;
             cnt = cnt + 1;

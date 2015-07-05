@@ -77,6 +77,9 @@ public:
       make sure that it will get deleted */
   void add_object (WorldObj* obj);
 
+  /** Draw the world onto the given SceneContext */
+  void    draw (SceneContext& gc);
+
   /** Draw the world onte the given SmallMap*/
   void    draw_smallmap(SmallMap* smallmap);
 
