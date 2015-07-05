@@ -34,23 +34,19 @@ do
             */
         end
     with
-        every w in WORLD_UPDATE do
-            if w != snow_generator.world then
-                continue;
-            end
-
+        every e_UPDATE do
             loop/5000 i in _Math__floor(intensity) do
                 if _rand()%3 != 0 then
-                    global:world:get_snow_particles_holder():add_particle(_rand()%w:get_width(), -_globals__tile_size, false);
+                    global:world:get_snow_particles_holder():add_particle(_rand()%snow_generator.world:get_width(), -_globals__tile_size, false);
                 else
-                    global:world:get_snow_particles_holder():add_particle(_rand()%w:get_width(), -_globals__tile_size, true);
+                    global:world:get_snow_particles_holder():add_particle(_rand()%snow_generator.world:get_width(), -_globals__tile_size, true);
                 end
 
                 if (intensity - (float)(int)intensity) > _Math__frand() then
                     if _rand()%3 != 0 then
-                        global:world:get_snow_particles_holder():add_particle(_rand()%w:get_width(), -_globals__tile_size, false);
+                        global:world:get_snow_particles_holder():add_particle(_rand()%snow_generator.world:get_width(), -_globals__tile_size, false);
                     else
-                        global:world:get_snow_particles_holder():add_particle(_rand()%w:get_width(), -_globals__tile_size, true);
+                        global:world:get_snow_particles_holder():add_particle(_rand()%snow_generator.world:get_width(), -_globals__tile_size, true);
                     end
                 end
             end

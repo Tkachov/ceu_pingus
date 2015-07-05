@@ -48,11 +48,7 @@ do
             end
         end
     with
-        every w in WORLD_UPDATE do
-            if w != liquid.world then
-                continue;
-            end
-
+        every e_UPDATE do
             sprite.update(0.033);
         end
     with

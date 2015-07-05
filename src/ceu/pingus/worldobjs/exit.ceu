@@ -54,11 +54,7 @@ _printf("draw exit");
             package:smallmap:draw_sprite(_deref(smallmap_symbol), _PTR2REF(exit.pos));
         end
     with
-        every w in WORLD_UPDATE do
-            if w != exit.world then
-                continue;
-            end
-
+        every e_UPDATE do
             sprite.update();
 
             loop pingu in global:world:get_pingus():all_pingus do

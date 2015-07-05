@@ -26,11 +26,7 @@ do
             end
         end
     with
-        every w in WORLD_UPDATE do
-            if w != spike.world then
-                continue;
-            end
-
+        every e_UPDATE do
             if killing then
                 surface.update();
             end

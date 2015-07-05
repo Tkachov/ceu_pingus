@@ -47,11 +47,7 @@ do
             end
         end
     with
-        every w in WORLD_UPDATE do
-            if w != hotspot.world then
-                continue;
-            end
-
+        every e_UPDATE do
             loop star in stars do
                 emit star:e_UPDATE;
             end

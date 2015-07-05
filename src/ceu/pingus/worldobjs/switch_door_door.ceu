@@ -73,11 +73,7 @@ do
             end
         end
     with
-        every w in WORLD_UPDATE do
-            if w != switch_door_door.world then
-                continue;
-            end
-
+        every e_UPDATE do
             if current_door_height>0 and is_opening then
                 // Open the door
                 current_door_height = current_door_height - 1;

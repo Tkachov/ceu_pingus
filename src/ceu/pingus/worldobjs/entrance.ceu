@@ -64,11 +64,7 @@ _printf("draw entrance");
             package:smallmap:draw_sprite(_deref(smallmap_symbol), _PTR2REF(entrance.pos));
         end
     with
-        every w in WORLD_UPDATE do
-            if w != entrance.world then
-                continue;
-            end
-
+        every e_UPDATE do
             if pingu_ready() and not entrance.world:check_armageddon() then
                 var _PHPackage* package = _new_PHPackage();
                 package:entrance = &entrance;

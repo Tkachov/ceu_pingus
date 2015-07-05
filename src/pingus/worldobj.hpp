@@ -75,11 +75,6 @@ public:
 
     WorldObjSmallMapPackage(WorldObj* w, SmallMap* s): worldobj(w), smallmap(s) {};
   };
-
-  /** The update function is called once a game loop, the delta
-   * specifies how much time is passed since the last update
-   * delta = 1.0 means that one second of realtime has passed. */
-  virtual void update ();
 };
 
 #endif

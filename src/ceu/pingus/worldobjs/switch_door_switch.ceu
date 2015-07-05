@@ -41,11 +41,7 @@ do
             _gc_color_draw2(gc, &switch_sur, switch_door_switch.pos);
         end
     with
-        every w in WORLD_UPDATE do
-            if w != switch_door_switch.world then
-                continue;
-            end
-
+        every e_UPDATE do
             if is_triggered or not m_door then
                 continue;
             end

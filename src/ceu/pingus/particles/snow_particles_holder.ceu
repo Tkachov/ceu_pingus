@@ -56,16 +56,11 @@ do
            _SnPH_draw(particles, gc, snow1, snow2, snow3, snow4, snow5);
         end
     with
-        every w in WORLD_UPDATE do
-            if w != holder.world then
-                continue;
-            end
-
+        every e_UPDATE do
             _SnPH_update(particles, holder.world, ground);
         end
     with
         await e_DELETE;
-        _printf("SnPH DELETE\n");
     end
 end
 

@@ -81,7 +81,7 @@ World::~World()
 {
   World* self = this;
   ceu_out_go(&CEUapp, CEU_IN_CLEAN_WORLD, &self);
-  ceu_out_go(&CEUapp, CEU_IN_DELETE_WORLD, &self);
+  ceu_out_go(&CEUapp, CEU_IN_WORLD_DELETE, &self);
 }
 
 void
@@ -116,17 +116,6 @@ World::update()
 
   World* self = this;
   ceu_out_go(&CEUapp, CEU_IN_WORLD_UPDATE, &self);
-
-  // Let all pingus move and
-  // Let the pingus catch each other and
-  // Let the traps catch the pingus and
-  // Let the exit catch the pingus
-  for(WorldObjIter obj = world_obj.begin(); obj != world_obj.end(); ++obj)
-  {
-    // catch_pingu() is now done in relevant update() if WorldObj
-    // needs to catch pingus.
-    (*obj)->update();
-  }
 }
 
 PinguHolder*

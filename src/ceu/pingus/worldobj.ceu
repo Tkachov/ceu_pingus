@@ -9,7 +9,7 @@ native/pre do
 
     ##define WorldObj__get_world WorldObj::get_world
     ##define WorldObj__get_world_play_sound WorldObj::get_world()->play_sound
-    
+
     ##define WOSMPackage WorldObj::WorldObjSmallMapPackage
 
     ##define WOCPackage WorldObjCeuPackage
@@ -34,6 +34,7 @@ interface IWorldObj with
 
     event void e_STARTUP;
     event _SceneContext* e_DRAW;
+    event void e_UPDATE;
     event void e_DELETE;
 end
 

@@ -45,16 +45,11 @@ do
            _PPH_draw(particles, gc, sprite);
         end
     with
-        every w in WORLD_UPDATE do
-            if w != holder.world then
-                continue;
-            end
-
+        every e_UPDATE do
             _PPH_update(particles, holder.world);
         end
     with
         await e_DELETE;
-        _printf("PPH DELETE\n");
     end
 end
 

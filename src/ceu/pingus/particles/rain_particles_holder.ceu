@@ -49,16 +49,11 @@ do
            _RPH_draw(particles, gc, rain1_surf, rain2_surf, rain_splash);
         end
     with
-        every w in WORLD_UPDATE do
-            if w != holder.world then
-                continue;
-            end
-
+        every e_UPDATE do
             _RPH_update(particles, holder.world, rain_splash);
         end
     with
         await e_DELETE;
-        _printf("RPH DELETE\n");
     end
 end
 

@@ -37,11 +37,7 @@ do
             _gc_color_draw2(gc, &sprite, smasher.pos);
         end
     with
-        every w in WORLD_UPDATE do
-            if w != smasher.world then
-                continue;
-            end
-
+        every e_UPDATE do
             loop pingu in global:world:get_pingus():all_pingus do
                 if pingu:get_current_action() == _A_SPLASHED or smashing or
                    pingu:get_current_action() == _A_DEAD or pingu:get_current_action() == _A_EXITED then

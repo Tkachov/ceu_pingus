@@ -54,11 +54,7 @@ _printf("draw wobj");
             emit global:e_PINGU_DRAW_OTHERS => gc;
         end
     with
-        every w in WORLD_UPDATE do
-            if w != wobj.world then
-                continue;
-            end
-
+        every e_UPDATE do
             emit global:e_PINGU_UPDATE_ALL;
         end
     with

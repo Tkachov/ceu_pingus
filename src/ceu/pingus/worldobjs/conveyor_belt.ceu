@@ -36,8 +36,6 @@ do
 
     par/or do
         every gc in e_DRAW do
-_printf("draw conveyor_belt");
-
             _gc_color_draw2(gc, &left_sur, conveyor_belt.pos);
 
             loop/100 i in width do
@@ -65,11 +63,7 @@ _printf("draw conveyor_belt");
             _delete_obj(mask);
         end
     with
-        every w in WORLD_UPDATE do
-            if w != conveyor_belt.world then
-                continue;
-            end
-
+        every e_UPDATE do
             left_sur.update();
             middle_sur.update();
             right_sur.update();
@@ -87,7 +81,6 @@ _printf("draw conveyor_belt");
         end
     with
         await e_DELETE;
-        _printf("convbelt DELETE\n");
     end
 end
 

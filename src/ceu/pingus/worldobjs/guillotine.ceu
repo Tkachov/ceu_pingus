@@ -40,11 +40,7 @@ _printf("draw guillotine");
             end
         end
     with
-        every w in WORLD_UPDATE do
-            if w != guillotine.world then
-                continue;
-            end
-
+        every e_UPDATE do
             // Only have to check one sprite because they update simultaneously
             if sprite_kill_left.is_finished() then
                 killing = false;

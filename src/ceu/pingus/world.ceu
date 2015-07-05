@@ -34,9 +34,6 @@
 #include "worldobjs/teleporter.ceu"
 #include "worldobjs/teleporter_target.ceu"
 
-input IWorldObj* WORLD_DELETE_OBJECT;
-
-input _World* DELETE_WORLD;
 input _WOCPackage* NEW_CONVEYOR_BELT;
 input _WOCPackage* NEW_ENTRANCE;
 input _WOCPackage* NEW_EXIT;
@@ -79,8 +76,13 @@ native @pure _reader_read_Groundtype(), _Resource__load_surface(), _opeq(), _new
 
 input _World* WORLD_STARTUP;
 input _WorldDrawPackage* WORLD_DRAW;
+input _World* WORLD_UPDATE;
+input _World* WORLD_DELETE;
+
 input IWorldObj* WORLD_STARTUP_OBJECT;
 input IWorldObj* WORLD_DRAW_OBJECT;
+input IWorldObj* WORLD_UPDATE_OBJECT;
+input IWorldObj* WORLD_DELETE_OBJECT;
 
 class World with
     interface IWorld;
@@ -224,20 +226,20 @@ do
             objs.iterate(_CEU_IN_WORLD_STARTUP_OBJECT);
         end
     with
-        every object in WORLD_STARTUP_OBJECT do            
+        every object in WORLD_STARTUP_OBJECT do
             emit object:e_STARTUP;
         end
     with
         every package in WORLD_DRAW do
             draw_iterating = true;
-            gc = _PTR2REF(package:gc);            
-            objs.iterate(_CEU_IN_WORLD_DRAW_OBJECT);            
+            gc = _PTR2REF(package:gc);
+            objs.iterate(_CEU_IN_WORLD_DRAW_OBJECT);
             draw_iterating = false;
             gc = null;
         end
     with
-        every object in WORLD_DRAW_OBJECT do            
-            if draw_iterating and gc != null then                
+        every object in WORLD_DRAW_OBJECT do
+            if draw_iterating and gc != null then
                 emit object:e_DRAW => gc;
             end
         end
@@ -259,6 +261,12 @@ do
                     break;
                 end
             end
+
+            objs.iterate(_CEU_IN_WORLD_UPDATE_OBJECT);
+        end
+    with
+        every object in WORLD_UPDATE_OBJECT do
+            emit object:e_UPDATE;
         end
     with
         every package in WORLD_GET_START_POS do
@@ -695,15 +703,15 @@ do
             if w != &me_ then
                 continue;
             end
-            
+
             objs.iterate(_CEU_IN_WORLD_DELETE_OBJECT);
         end
     with
-        every object in WORLD_DELETE_OBJECT do            
+        every object in WORLD_DELETE_OBJECT do
             emit object:e_DELETE;
-        end 
+        end
     with
-        every w in DELETE_WORLD do
+        every w in WORLD_DELETE do
             if w == &me_ then
                 break;
             end

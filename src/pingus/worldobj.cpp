@@ -46,12 +46,6 @@ WorldObj::~WorldObj()
   ceu_out_go(&CEUapp, CEU_IN_DELETE_WORLDOBJ, &self);
 }
 
-void
-WorldObj::update()
-{
-  // do nothing
-}
-
 void WorldObj::draw_smallmap(SmallMap* smallmap) {
   WorldObjSmallMapPackage package(this, smallmap);
   WorldObjSmallMapPackage* pp = &package;

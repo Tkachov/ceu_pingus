@@ -26,11 +26,7 @@ _printf("draw hotspot");
             _gc_color_draw2(gc, &sprite, hotspot.pos);
         end
     with
-        every w in WORLD_UPDATE do
-            if w != hotspot.world then
-                continue;
-            end
-
+        every e_UPDATE do
             sprite.update();
         end
     with

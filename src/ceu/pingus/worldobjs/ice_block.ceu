@@ -41,11 +41,7 @@ _printf("draw ice_block");
             end
         end
     with
-        every w in WORLD_UPDATE do
-            if w != ice_block.world then
-                continue;
-            end
-
+        every e_UPDATE do
             if is_finished then
                 continue;
             end

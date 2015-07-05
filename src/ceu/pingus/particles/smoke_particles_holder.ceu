@@ -47,16 +47,11 @@ do
            _SPH_draw(particles, gc, surf1, surf2);
         end
     with
-        every w in WORLD_UPDATE do
-            if w != holder.world then
-                continue;
-            end
-
+        every e_UPDATE do
             _SPH_update(particles);
         end
     with
         await e_DELETE;
-        _printf("SPH DELETE\n");
     end
 end
 

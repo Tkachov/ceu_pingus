@@ -29,11 +29,7 @@ do
             _gc_color_draw2(gc, &sprite, teleporter.pos);
         end
     with
-        every w in WORLD_UPDATE do
-            if w != teleporter.world then
-                continue;
-            end
-
+        every e_UPDATE do
             sprite.update();
         end
     with

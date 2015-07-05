@@ -24,11 +24,7 @@ do
             _gc_color_draw2(gc, &surface, exit.pos);
         end
     with
-        every w in WORLD_UPDATE do
-            if w != exit.world then
-                continue;
-            end
-
+        every e_UPDATE do
             if not killing then
                 loop pingu in global:world:get_pingus():all_pingus do
                     if pingu:get_x() <= exit.pos.x+34 or pingu:get_x() >= exit.pos.x+34+10 or

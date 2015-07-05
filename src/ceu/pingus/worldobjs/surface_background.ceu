@@ -94,11 +94,7 @@ do
             end
         end
     with
-        every w in WORLD_UPDATE do
-            if w != surface_background.world then
-                continue;
-            end
-
+        every e_UPDATE do
             sprite.update();
 
             if not sprite or _globals__static_graphics then
