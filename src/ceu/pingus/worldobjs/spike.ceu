@@ -21,8 +21,6 @@ do
 
     par/or do
         every gc in e_DRAW do
-_printf("draw spike");
-
             if killing then
                 _gc_color_draw2(gc, &surface, spike.pos);
             end
@@ -59,7 +57,6 @@ _printf("draw spike");
         end
     with
         await e_DELETE;
-        _printf("spike DELETE\n");
     end
 end
 

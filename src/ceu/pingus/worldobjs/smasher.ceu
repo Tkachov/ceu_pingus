@@ -26,11 +26,7 @@ do
     var int count = 0;
 
     par/or do
-        every wo in WORLDOBJ_STARTUP do
-            if wo != &smasher then
-                continue;
-            end
-
+        every e_STARTUP do
             _log_info("Drawing colmap entry");
             var _CollisionMask* mask = _new_CollisionMask("traps/smasher_cmap");
             _world_put(smasher.world, mask, (int)smasher.pos.x, (int)smasher.pos.y, _GT_SOLID);
@@ -38,8 +34,6 @@ do
         end
     with
         every gc in e_DRAW do
-_printf("draw smasher");
-
             _gc_color_draw2(gc, &sprite, smasher.pos);
         end
     with
@@ -111,7 +105,6 @@ _printf("draw smasher");
         end
     with
         await e_DELETE;
-        _printf("smasher DELETE\n");
     end
 end
 

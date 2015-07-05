@@ -21,8 +21,6 @@ do
 
     par/or do
         every gc in e_DRAW do
-_printf("draw exit");
-
             _gc_color_draw2(gc, &surface, exit.pos);
         end
     with
@@ -58,7 +56,6 @@ _printf("draw exit");
         end
     with
         await e_DELETE;
-        _printf("laser_exit DELETE\n");
     end
 end
 

@@ -42,11 +42,7 @@ _printf("draw exit");
             _gc_color_draw2(gc, &flag, exit.pos + _Vector3f(40, 0));
         end
     with
-        every wo in WORLDOBJ_STARTUP do
-            if wo != &exit then
-                continue;
-            end
-
+        every e_STARTUP do
             _colmap_remove(exit.world:get_colmap(), desc, (int)exit.pos.x - sprite.get_width()/2, (int)exit.pos.y - sprite.get_height());
         end
     with

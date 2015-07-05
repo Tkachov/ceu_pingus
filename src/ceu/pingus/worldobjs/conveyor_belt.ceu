@@ -55,11 +55,7 @@ _printf("draw conveyor_belt");
                 ));
         end
     with
-        every wo in WORLDOBJ_STARTUP do
-            if wo != &conveyor_belt then
-                continue;
-            end
-
+        every e_STARTUP do
             var _CollisionMask* mask = _new_CollisionMask("worldobjs/conveyorbelt_cmap");
 
             loop/100 i in width+2 do

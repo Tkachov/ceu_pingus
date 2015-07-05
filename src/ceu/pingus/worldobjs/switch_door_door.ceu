@@ -39,11 +39,7 @@ do
     end
 
     par/or do
-         every wo in WORLDOBJ_STARTUP do
-            if wo != &switch_door_door then
-                continue;
-            end
-
+         every e_STARTUP do
             _world_put(
                 switch_door_door.world:get_colmap(),
                 door_box_cmap,
@@ -64,8 +60,6 @@ do
         end
     with
         every gc in e_DRAW do
-_printf("draw switch_door_door");
-
             _gc_color_draw2(gc, &door_box, switch_door_door.pos);
             loop/500 i in current_door_height do
                 _gc_color_draw2(
@@ -113,7 +107,6 @@ _printf("draw switch_door_door");
         end
     with
         await e_DELETE;
-        _printf("switch_door_door DELETE\n");
     end
 end
 

@@ -73,12 +73,8 @@ World::init_worldobjs(const PingusLevel& plf)
 
   std::stable_sort (world_obj.begin (), world_obj.end (), WorldObj_less);
 
-  // Drawing all world objs to the colmap, gfx, or what ever the
-  // objects want to do
-  for(WorldObjIter obj = world_obj.begin(); obj != world_obj.end(); ++obj)
-  {
-    (*obj)->on_startup();
-  }
+  World* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_WORLD_STARTUP, &self);
 }
 
 World::~World()

@@ -66,8 +66,7 @@ public:
   virtual void set_pos(const Vector3f& p) { pos = p; }
   virtual Vector3f get_pos() const { return pos; }
 
-  /** Draw the WorldObj to the given SceneContext */
-  virtual void draw(SceneContext& gc);
+  /** Draw the WorldObj to the given SceneContext */  
   virtual void draw_smallmap(SmallMap* smallmap);
 
   struct WorldObjSmallMapPackage {
@@ -76,10 +75,6 @@ public:
 
     WorldObjSmallMapPackage(WorldObj* w, SmallMap* s): worldobj(w), smallmap(s) {};
   };
-
-  /** Draws the objects collision map to the main collision map, draws
-      stuff onto the gfx map or do other manipulations to the World */
-  virtual void on_startup ();
 
   /** The update function is called once a game loop, the delta
    * specifies how much time is passed since the last update

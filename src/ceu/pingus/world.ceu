@@ -77,7 +77,9 @@ end
 
 native @pure _reader_read_Groundtype(), _Resource__load_surface(), _opeq(), _new_Surface(), _new_Container();
 
+input _World* WORLD_STARTUP;
 input _WorldDrawPackage* WORLD_DRAW;
+input IWorldObj* WORLD_STARTUP_OBJECT;
 input IWorldObj* WORLD_DRAW_OBJECT;
 
 class World with
@@ -214,6 +216,18 @@ do
     var _SceneContext* gc = null;
 
     par/or do
+        every w in WORLD_STARTUP do
+            if w != &me_ then
+                continue;
+            end
+
+            objs.iterate(_CEU_IN_WORLD_STARTUP_OBJECT);
+        end
+    with
+        every object in WORLD_STARTUP_OBJECT do            
+            emit object:e_STARTUP;
+        end
+    with
         every package in WORLD_DRAW do
             draw_iterating = true;
             gc = _PTR2REF(package:gc);            

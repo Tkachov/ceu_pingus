@@ -25,11 +25,7 @@ do
     var ITeleporterTarget* target = null;
 
     par/or do
-         every wo in WORLDOBJ_STARTUP do
-            if wo != &teleporter then
-                continue;
-            end
-
+         every e_STARTUP do
             if target_id.empty() then
                 _log_error("target-id is empty");
             else

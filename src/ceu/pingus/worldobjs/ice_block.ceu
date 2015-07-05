@@ -29,11 +29,7 @@ do
     var int last_contact = 0;
 
     par/or do
-        every wo in WORLDOBJ_STARTUP do
-            if wo != &ice_block then
-                continue;
-            end
-
+        every e_STARTUP do
             _world_put(ice_block.world, block_sur_cmap, (int)ice_block.pos.x, (int)ice_block.pos.y, _GT_GROUND);
         end
     with

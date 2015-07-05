@@ -28,11 +28,7 @@ do
 
     par/or do
         //TODO: when there are no more C++ World, remove that `every` - we need STARTUP only once
-        every wo in WORLDOBJ_STARTUP do
-            if wo != &groundpiece then
-                continue;
-            end
-
+        every e_STARTUP do
             //original FIXME: using a CollisionMask is kind of unneeded here
             var _CollisionMask* mask = _new_CollisionMask(_deref(desc));
 

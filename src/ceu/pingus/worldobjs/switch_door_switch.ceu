@@ -26,11 +26,7 @@ do
     var ISwitchDoorDoor* m_door = null;
 
     par/or do
-         every wo in WORLDOBJ_STARTUP do
-            if wo != &switch_door_switch then
-                continue;
-            end
-
+         every e_STARTUP do
             if m_target.empty() then
                 _log_error("target-id is empty");
             else
@@ -68,7 +64,6 @@ do
         end
     with
         await e_DELETE;
-        _printf("switch_door_switch DELETE\n");
     end
 end
 

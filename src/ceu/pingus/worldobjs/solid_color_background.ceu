@@ -26,13 +26,10 @@ do
 
     par/or do
         every gc in e_DRAW do
-_printf("draw scb");
-
             _gc_color_fill_screen(gc, _deref(color));
         end
     with
         await e_DELETE;
-        _printf("SolidColorBackground DELETE\n");
     end
 end
 

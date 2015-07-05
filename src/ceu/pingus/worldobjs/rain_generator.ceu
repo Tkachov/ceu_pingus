@@ -30,8 +30,6 @@ do
 
     par/or do
         every gc in e_DRAW do
-_printf("draw rain_generator");
-
             if do_thunder then
                 if thunder_count < 0 then
                     do_thunder = false;
@@ -69,7 +67,6 @@ _printf("draw rain_generator");
         end
     with
         await e_DELETE;
-        _printf("rain_generator DELETE\n");
     end
 end
 

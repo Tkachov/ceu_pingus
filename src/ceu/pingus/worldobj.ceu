@@ -27,12 +27,12 @@ native @pure _WorldObj__get_world(),
              _new_WorldObj();
 
 input _WorldObj* DELETE_WORLDOBJ;
-input _WorldObj* WORLDOBJ_STARTUP;
 input _WOSMPackage* WORLDOBJ_DRAW_SMALLMAP;
 
 interface IWorldObj with
     var _WorldObj* me;
 
+    event void e_STARTUP;
     event _SceneContext* e_DRAW;
     event void e_DELETE;
 end

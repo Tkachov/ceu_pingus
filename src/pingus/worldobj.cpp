@@ -47,19 +47,10 @@ WorldObj::~WorldObj()
 }
 
 void
-WorldObj::on_startup()
-{
-  WorldObj* self = this;
-  ceu_out_go(&CEUapp, CEU_IN_WORLDOBJ_STARTUP, &self);
-}
-
-void
 WorldObj::update()
 {
   // do nothing
 }
-
-void WorldObj::draw(SceneContext& gc) {}
 
 void WorldObj::draw_smallmap(SmallMap* smallmap) {
   WorldObjSmallMapPackage package(this, smallmap);
