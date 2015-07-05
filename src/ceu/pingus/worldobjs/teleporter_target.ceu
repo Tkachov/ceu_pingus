@@ -34,7 +34,6 @@ do
         end
     with
         await e_DELETE;
-        _printf("teleporter_target DELETE\n");
     end
 end
 

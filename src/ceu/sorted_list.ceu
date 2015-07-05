@@ -10,24 +10,39 @@ end
 
 interface INode with
     var IWorldObj* ceu;
+    var bool destroy;
 end;
 
 class Node with
     interface INode;
     var INode* next;
 do
-    finalize with _printf("N"); next = null; ceu = null; end
-    await FOREVER;
+    every 2s do
+        if destroy then
+            break;
+        end
+    end
+
+    _printf("node: 1");
+    if ceu != null then
+        emit ceu:e_DELETE;
+    end
+
+    _printf("2");
+    if next != null then
+        next:destroy = true;
+    end
+    _printf("3\n");
 end
 
 class SortedList with
     interface ISortedList;
     var Node* first = null;
-    var int cnt = 0;
 do
     finalize with
-        first = null;
-        _printf(" - SortedList finalized (%d)\n", cnt);
+        if first != null then
+            first:destroy = true;
+        end        
     end
 
     par/or do
@@ -53,9 +68,9 @@ do
             var Node* new_node = null;
             spawn Node with
                 this.ceu = object;
+                this.destroy = false;
                 new_node = &this;
             end;
-            cnt = cnt + 1;
 
             if before == null then
                 new_node:next = first;
@@ -99,9 +114,8 @@ do
             _printf("3\n");
         end
     with
-        await e_DELETE;      
+        await e_DELETE;        
     end
-    _printf("SortedList deleted\n");
 end
 
 #endif

@@ -24,7 +24,7 @@ native @pure _abs(),
 native/pre do
     ##define PTR2REF(v) v
     ##define deref(x) *x
-    ##define delete_obj(x) log_error("delete %1%", x); /*delete x;*/ printf("--------------------------\n");
+    ##define delete_obj(x) delete x;
 end
 
 native @pure _PTR2REF; //convert any pointer (*) to any reference (&?)

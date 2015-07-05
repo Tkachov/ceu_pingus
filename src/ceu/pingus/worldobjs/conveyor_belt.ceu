@@ -81,7 +81,6 @@ do
         end
     with
         await e_DELETE;
-        _printf("conveyor_belt DELETE\n");
     end
 end
 

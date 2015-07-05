@@ -54,7 +54,6 @@ do
         end
     with
         await e_DELETE;
-        _printf("liquid DELETE\n");
     end
 end
 

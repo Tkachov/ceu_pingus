@@ -64,7 +64,6 @@ do
         end
     with
         await e_DELETE;
-        _printf("hammer DELETE\n");
     end
 end
 

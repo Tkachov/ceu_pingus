@@ -53,7 +53,6 @@ do
         end
     with
         await e_DELETE;
-        _printf("laser_exit DELETE\n");
     end
 end
 

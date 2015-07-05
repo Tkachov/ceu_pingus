@@ -60,7 +60,6 @@ do
         end
     with
         await e_DELETE;
-        _printf("switch_door_switch DELETE\n");
     end
 end
 

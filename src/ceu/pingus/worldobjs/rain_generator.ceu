@@ -63,7 +63,6 @@ do
         end
     with
         await e_DELETE;
-        _printf("rain gen DELETE\n");
     end
 end
 

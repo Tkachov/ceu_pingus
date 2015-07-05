@@ -31,7 +31,6 @@ do
         end
     with
         await e_DELETE;
-        _printf("solidback DELETE\n");
     end
 end
 

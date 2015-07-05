@@ -73,7 +73,6 @@ do
         end
     with
         await e_DELETE;
-        _printf("guillotine DELETE\n");
     end
 end
 

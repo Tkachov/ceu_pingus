@@ -126,7 +126,6 @@ do
         end
     with
         await e_DELETE;
-        _printf("surface_background DELETE\n");
     end
 end
 

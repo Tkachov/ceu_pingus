@@ -101,7 +101,6 @@ do
         end
     with
         await e_DELETE;
-        _printf("smasher DELETE\n");
     end
 end
 
