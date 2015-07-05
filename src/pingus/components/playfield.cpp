@@ -65,8 +65,6 @@ Playfield::draw(DrawingContext& gc)
 
   ceu_out_go(&CEUapp, CEU_IN_PLAYFIELD_DRAW, &scene_context);
 
-  server->get_world()->draw(*scene_context);
-
   state.pop(*scene_context);
 
   gc.draw(new SceneContextDrawingRequest(scene_context.get(), Vector2i(0,0), -10000));

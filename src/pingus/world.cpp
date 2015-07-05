@@ -63,12 +63,6 @@ World::~World() {
   ceu_out_go(&CEUapp, CEU_IN_WORLD_DELETE, &self);
 }
 
-void World::draw(SceneContext& gc) {
-  WorldDrawPackage package(this, &gc);
-  WorldDrawPackage* pp = &package;
-  ceu_out_go(&CEUapp, CEU_IN_WORLD_DRAW, &pp);
-}
-
 void World::draw_smallmap(SmallMap* smallmap) {
   WorldDrawSmallmapPackage package(this, smallmap);
   WorldDrawSmallmapPackage* pp = &package;

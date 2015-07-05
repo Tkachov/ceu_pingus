@@ -36,13 +36,6 @@ class SceneContext;
 
 class World;
 
-struct WorldDrawPackage {
-  World* world;
-  SceneContext* gc;
-
-  WorldDrawPackage(World* w, SceneContext* g): world(w), gc(g) {};
-};
-
 struct WorldDrawSmallmapPackage {
   World* world;
   SmallMap* smallmap;
@@ -88,9 +81,6 @@ private:
 public:
   World(const PingusLevel& level);
   virtual ~World();
-
-  /** Draw the world onto the given SceneContext */
-  void    draw (SceneContext& gc);
 
   /** Draw the world onte the given SmallMap*/
   void    draw_smallmap(SmallMap* smallmap);

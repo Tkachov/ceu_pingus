@@ -72,6 +72,10 @@ do
         every gc in PLAYFIELD_DRAW do
             call/rec capture_rectangle.set_pingu(get_current_pingu()); //another no-"access across `await`"-hack
             emit capture_rectangle.draw => gc;
+
+            if global:world != null then
+                emit global:world:e_DRAW => gc;
+            end
         end
     with
         every pos in PLAYFIELD_CLICK do

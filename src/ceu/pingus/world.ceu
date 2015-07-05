@@ -77,7 +77,6 @@ end
 native @pure _reader_read_Groundtype(), _Resource__load_surface(), _opeq(), _new_Surface(), _new_Container(), _WorldObj__set_world();
 
 input _World* WORLD_STARTUP;
-input _WorldDrawPackage* WORLD_DRAW;
 input _WorldDrawSmallmapPackage* WORLD_DRAW_SMALLMAP;
 input _World* WORLD_UPDATE;
 input _World* WORLD_DELETE;
@@ -235,16 +234,12 @@ do
             emit object:e_STARTUP;
         end
     with
-        every package in WORLD_DRAW do
-            if package:world != &me_ then
-                continue;
-            end
-
+        every wgc in e_DRAW do
             _WorldObj__set_world(me_);
-            package:gc:light().fill_screen(_Color(me_.ambient_light) finalize with end);
+            wgc:light().fill_screen(_Color(me_.ambient_light) finalize with end);
 
             draw_iterating = true;
-            gc = _PTR2REF(package:gc);
+            gc = _PTR2REF(wgc);
             objs.iterate(_CEU_IN_WORLD_DRAW_OBJECT);
             draw_iterating = false;
             gc = null;
