@@ -26,10 +26,7 @@ do
     with
         loop do
             loop do
-                var _World* w = await WORLD_UPDATE;
-                if w != hammer.world then
-                    continue;
-                end
+                await e_UPDATE;
 
                 current_frame = current_frame + 1;
                 sprite.set_frame(current_frame);
@@ -55,10 +52,7 @@ do
 
             //roll back
             loop do
-                var _World* w = await WORLD_UPDATE;
-                if w != hammer.world then
-                    continue;
-                end
+                await e_UPDATE;
 
                 current_frame = current_frame - 1;
                 sprite.set_frame(current_frame);

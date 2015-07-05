@@ -17,9 +17,6 @@ native/pre do
     ##include "pingus/world.hpp"
 end
 
-input _World* WORLD_UPDATE;
-input _World* CLEAN_WORLD;
-
 interface IWorld with
     function (void) => IPinguHolder* get_pingus;
     function (void) => IPinguParticlesHolder* get_pingu_particles_holder;

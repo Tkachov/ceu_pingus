@@ -712,22 +712,15 @@ do
             end;
         end
     with
-        every w in CLEAN_WORLD do
-            if w != &me_ then
-                continue;
+        every w in WORLD_DELETE do
+            if w == &me_ then
+                objs.iterate(_CEU_IN_WORLD_DELETE_OBJECT);
+                break;
             end
-
-            objs.iterate(_CEU_IN_WORLD_DELETE_OBJECT);
         end
     with
         every object in WORLD_DELETE_OBJECT do
             emit object:e_DELETE;
-        end
-    with
-        every w in WORLD_DELETE do
-            if w == &me_ then
-                break;
-            end
         end
     end
 end

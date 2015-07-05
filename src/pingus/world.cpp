@@ -68,8 +68,7 @@ World::init_worldobjs(const PingusLevel& plf)
 
 World::~World()
 {
-  World* self = this;
-  ceu_out_go(&CEUapp, CEU_IN_CLEAN_WORLD, &self);
+  World* self = this;  
   ceu_out_go(&CEUapp, CEU_IN_WORLD_DELETE, &self);
 }
 
