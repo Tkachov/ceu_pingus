@@ -29,24 +29,21 @@ do
         _delete_obj(desc);
     end
 
-    par/or do
-        //TODO: when there are no more C++ World, remove that `every` - we need STARTUP only once
-        every e_STARTUP do
-            //original FIXME: using a CollisionMask is kind of unneeded here
-            var _CollisionMask* mask = _new_CollisionMask(_deref(desc));
+    await e_STARTUP;
 
-            //original FIXME: overdrawing of bridges and similar things aren't handled here
-            if gptype == _GT_REMOVE then
-                _world_remove(groundpiece.get_world(), mask, (int)groundpiece.pos.x, (int)groundpiece.pos.y);
-            else
-                _world_put(groundpiece.get_world(), mask, (int)groundpiece.pos.x, (int)groundpiece.pos.y, _to_GT(gptype));
-            end
+    //original FIXME: using a CollisionMask is kind of unneeded here
+    var _CollisionMask* mask = _new_CollisionMask(_deref(desc));
 
-            _delete_obj(mask);
-        end
-    with
-        await e_DELETE;
+    //original FIXME: overdrawing of bridges and similar things aren't handled here
+    if gptype == _GT_REMOVE then
+        _world_remove(groundpiece.get_world(), mask, (int)groundpiece.pos.x, (int)groundpiece.pos.y);
+    else
+        _world_put(groundpiece.get_world(), mask, (int)groundpiece.pos.x, (int)groundpiece.pos.y, _to_GT(gptype));
     end
+
+    _delete_obj(mask);
+
+    global:world:remove_object(&this);     
 end
 
 #endif

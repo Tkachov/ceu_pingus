@@ -102,6 +102,10 @@ do
         objs.sort();
     end
 
+    function (IWorldObj* o) => void remove_object do
+        objs.remove((void*)o);
+    end
+
     var PinguHolder holder with
         this.me = _new_WorldObj();
         this.me:world = &me_;

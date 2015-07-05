@@ -5,10 +5,11 @@
 #include <vector>
 
 struct ContainedPair {
+  bool removed;
   void* ptr;
   int z;
 
-  ContainedPair(void* p, int s): ptr(p), z(s) {}
+  ContainedPair(void* p, int s): removed(false), ptr(p), z(s) {}
 
   bool operator<(const ContainedPair& other) const { return z < other.z; }
 };
@@ -21,6 +22,7 @@ public:
   Container() {};
 
   void add(void* ptr, int z);
+  void remove(void* ptr);
   void sort();
   void iterate(int event);
 };
