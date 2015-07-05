@@ -28,8 +28,8 @@ do
     var _WorldObj&? entrance = _PTR2REF(me);
     global:world:add_object(&this);
 
-    //delete entrance
     finalize with
+        _delete_obj(entrance);
         _delete_obj(smallmap_symbol);
         _delete_obj(surface);
     end;

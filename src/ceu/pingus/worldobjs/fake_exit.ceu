@@ -20,8 +20,9 @@ class FakeExit with
 do
     var _WorldObj&? fake_exit = _PTR2REF((_WorldObj*)me);
     global:world:add_object(&this);
-    //delete fake_exit
+
     finalize with
+        _delete_obj(fake_exit);
         _delete_obj(sprite);
         _delete_obj(smallmap_symbol);
     end;

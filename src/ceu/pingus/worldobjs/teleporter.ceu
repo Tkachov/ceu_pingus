@@ -18,8 +18,8 @@ do
     var _WorldObj&? teleporter = _PTR2REF(me);
     global:world:add_object(&this);
 
-    //delete teleporter
     finalize with
+        _delete_obj(teleporter);
         _delete_obj(sprite);
         _delete_obj(target_id);
     end;

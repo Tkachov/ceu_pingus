@@ -15,8 +15,11 @@ class Liquid with
 do
     var _WorldObj&? liquid = _PTR2REF(me);
     global:world:add_object(&this);
-    //finalize with _delete_obj(me); end
-    finalize with _delete_obj(sprite); end
+
+    finalize with
+        _delete_obj(liquid);
+        _delete_obj(sprite);
+    end
 
     //Cause to interpret the width in pixels instead of tiles
     var bool old_width_handling = false;

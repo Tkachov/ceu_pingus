@@ -18,8 +18,10 @@ do
     var _WorldObj&? smasher = _PTR2REF(me);
     global:world:add_object(&this);
 
-    //delete smasher
-    finalize with _delete_obj(sprite); end;
+    finalize with
+        _delete_obj(smasher);
+        _delete_obj(sprite);
+    end;
 
     var bool smashing = false;
     var bool downwards = false;

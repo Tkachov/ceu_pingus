@@ -20,8 +20,9 @@ class IceBlock with
 do
     var _WorldObj&? ice_block = _PTR2REF(me);
     global:world:add_object(&this);
-    //delete ice_block
+
     finalize with
+        _delete_obj(ice_block);
         _delete_obj(block_sur);
         _delete_obj(block_sur_cmap);
     end

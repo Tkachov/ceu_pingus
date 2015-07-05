@@ -19,8 +19,8 @@ do
     var _WorldObj&? switch_door_switch = _PTR2REF(me);
     global:world:add_object(&this);
 
-    //delete switch
     finalize with
+        _delete_obj(switch_door_switch);
         _delete_obj(switch_sur);
         _delete_obj(m_target);
     end;

@@ -28,8 +28,9 @@ class Exit with
 do
     var _WorldObj&? exit = _PTR2REF(me);
     global:world:add_object(&this);
-    //finalize with _delete_obj(me); end
+
     finalize with
+        _delete_obj(exit);
         _delete_obj(desc);
         _delete_obj(sprite);
         _delete_obj(flag);

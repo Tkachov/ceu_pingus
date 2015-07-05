@@ -19,8 +19,9 @@ class Guillotine with
 do
     var _WorldObj&? guillotine = _PTR2REF(me);
     global:world:add_object(&this);
-    //delete guillotine
+
     finalize with
+        _delete_obj(guillotine);
         _delete_obj(direction);
         _delete_obj(sprite_kill_left);
         _delete_obj(sprite_kill_right);

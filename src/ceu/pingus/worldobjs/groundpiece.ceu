@@ -23,8 +23,11 @@ class Groundpiece with
 do
     var _WorldObj&? groundpiece = _PTR2REF(me);
     global:world:add_object(&this);
-    //finalize with _delete_obj(me); end
-    finalize with _delete_obj(desc); end
+
+    finalize with
+        _delete_obj(groundpiece);
+        _delete_obj(desc);
+    end
 
     par/or do
         //TODO: when there are no more C++ World, remove that `every` - we need STARTUP only once

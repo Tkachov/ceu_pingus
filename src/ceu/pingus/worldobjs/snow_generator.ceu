@@ -19,7 +19,8 @@ class SnowGenerator with
 do
     var _WorldObj&? snow_generator = _PTR2REF(me);
     global:world:add_object(&this);
-    //delete snow_generator
+
+    finalize with _delete_obj(snow_generator); end
 
     par/or do
         every e_STARTUP do

@@ -49,8 +49,9 @@ class SurfaceBackground with
 do
     var _WorldObj&? surface_background = _PTR2REF(me);
     global:world:add_object(&this);
-    //finalize with _delete_obj(me); end
+
     finalize with
+        _delete_obj(surface_background);
         _delete_obj(sprite);
         _delete_obj(color);
     end;

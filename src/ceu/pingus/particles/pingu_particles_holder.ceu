@@ -32,8 +32,9 @@ class PinguParticlesHolder with
 do
     var _WorldObj&? holder = _PTR2REF(me);
     global:world:add_object(&this);
-    //finalize with _delete_obj(me); end
+
     finalize with
+        _delete_obj(holder);
         _delete_obj(sprite);
         _delete_obj(particles);
     end

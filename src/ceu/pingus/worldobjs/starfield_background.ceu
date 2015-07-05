@@ -18,7 +18,8 @@ class StarfieldBackground with
 do
     var _WorldObj&? hotspot = _PTR2REF(me);
     global:world:add_object(&this);
-    //finalize with _delete_obj(me); end
+
+    finalize with _delete_obj(hotspot); end
 
     pool StarfieldBackgroundStars[] stars;
 

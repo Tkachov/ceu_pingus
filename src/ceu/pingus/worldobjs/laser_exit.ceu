@@ -14,10 +14,13 @@ class LaserExit with
 do
     var _WorldObj&? exit = _PTR2REF(me);
     global:world:add_object(&this);
-    var bool killing = false;
 
-    //delete laser_exit
-    finalize with _delete_obj(surface); end
+    finalize with
+        _delete_obj(exit);
+        _delete_obj(surface);
+    end
+
+    var bool killing = false;
 
     par/or do
         every gc in e_DRAW do

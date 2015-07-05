@@ -20,14 +20,15 @@ class PinguHolder with
     interface IPinguHolder;
     var _PinguHolder& holder;
 do
+    var _WorldObj&? wobj = _PTR2REF(me);
+    global:world:add_object(&this);
+
+    finalize with _delete_obj(wobj); end
+
     var _PinguHolder&? pingu_holder = _PTR2REF((_PinguHolder*)&holder);
     var int pingus_emitted = 0;
     var int pingus_exited = 0;
     var int pingus_dead = 0;
-
-    var _WorldObj&? wobj = _PTR2REF(me);
-    global:world:add_object(&this);
-    //finalize with _delete_obj(me); end
 
     function @rec (int id) => IPingu* get_pingu do
         var IPingu* result = null;

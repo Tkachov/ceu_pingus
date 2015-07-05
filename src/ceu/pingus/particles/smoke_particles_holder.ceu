@@ -33,8 +33,9 @@ class SmokeParticlesHolder with
 do
     var _WorldObj&? holder = _PTR2REF(me);
     global:world:add_object(&this);
-    //finalize with _delete_obj(me); end
+
     finalize with
+        _delete_obj(holder);
         _delete_obj(surf1);
         _delete_obj(surf2);
         _delete_obj(particles);

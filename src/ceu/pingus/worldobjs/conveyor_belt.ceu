@@ -29,10 +29,13 @@ class ConveyorBelt with
 do
     var _WorldObj&? conveyor_belt = _PTR2REF(me);
     global:world:add_object(&this);
-    //delete convbelt
-    finalize with _delete_obj(left_sur); end;
-    finalize with _delete_obj(right_sur); end;
-    finalize with _delete_obj(middle_sur); end;
+
+    finalize with
+        _delete_obj(conveyor_belt);
+        _delete_obj(left_sur);
+        _delete_obj(right_sur);
+        _delete_obj(middle_sur);
+    end;
 
     par/or do
         every gc in e_DRAW do

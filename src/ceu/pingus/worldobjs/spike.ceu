@@ -14,10 +14,13 @@ class Spike with
 do
     var _WorldObj&? spike = _PTR2REF(me);
     global:world:add_object(&this);
-    var bool killing = false;
 
-    //delete spike
-    finalize with _delete_obj(surface); end;
+    finalize with
+        _delete_obj(spike);
+        _delete_obj(surface);
+    end;
+
+    var bool killing = false;
 
     par/or do
         every gc in e_DRAW do

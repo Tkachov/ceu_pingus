@@ -21,8 +21,11 @@ class GroundMap with
 do
     var _WorldObj&? ground_map = _PTR2REF(me);
     global:world:add_object(&this);
-    //finalize with _delete_obj(me); end
-    finalize with _delete_obj(gmap); end
+
+    finalize with
+        _delete_obj(ground_map);
+        _delete_obj(gmap);
+    end
 
     par/or do
         every gc in e_DRAW do
