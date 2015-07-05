@@ -23,7 +23,8 @@ do
     emit global:world:get_list():e_INSERT => &this;
     //finalize with _delete_obj(me); end
     finalize with
-        _delete_obj(gmap);        
+        _delete_obj(gmap);
+        _printf("ground\n");
     end
 
     par/or do
