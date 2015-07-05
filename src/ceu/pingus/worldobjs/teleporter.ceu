@@ -19,8 +19,10 @@ do
     global:world:add_object(&this);
 
     //delete teleporter
-    finalize with _delete_obj(sprite); end;
-    finalize with _delete_obj(target_id); end;
+    finalize with
+        _delete_obj(sprite);
+        _delete_obj(target_id);
+    end;
 
     var ITeleporterTarget* target = null;
 

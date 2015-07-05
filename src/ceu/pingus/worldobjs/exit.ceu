@@ -75,7 +75,6 @@ do
         end
     with
         await e_DELETE;
-        _printf("exit DELETE\n");
     end
 end
 

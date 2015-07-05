@@ -21,8 +21,6 @@ do
 
     par/or do
         every gc in e_DRAW do
-_printf("draw hammer");
-
             _gc_color_draw2(gc, &sprite, hammer.pos);
         end
     with
@@ -71,7 +69,6 @@ _printf("draw hammer");
         end
     with
         await e_DELETE;
-        _printf("hammer DELETE\n");
     end
 end
 

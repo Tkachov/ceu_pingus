@@ -50,8 +50,10 @@ do
     var _WorldObj&? surface_background = _PTR2REF(me);
     global:world:add_object(&this);
     //finalize with _delete_obj(me); end
-    finalize with _delete_obj(sprite); end;
-    finalize with _delete_obj(color); end;
+    finalize with
+        _delete_obj(sprite);
+        _delete_obj(color);
+    end;
 
     par/or do
         every gc in e_DRAW do

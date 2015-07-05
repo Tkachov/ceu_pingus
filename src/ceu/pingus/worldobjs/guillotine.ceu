@@ -20,15 +20,15 @@ do
     var _WorldObj&? guillotine = _PTR2REF(me);
     global:world:add_object(&this);
     //delete guillotine
-    finalize with _delete_obj(direction); end;
-    finalize with _delete_obj(sprite_kill_left); end;
-    finalize with _delete_obj(sprite_kill_right); end;
-    finalize with _delete_obj(sprite_idle); end;
+    finalize with
+        _delete_obj(direction);
+        _delete_obj(sprite_kill_left);
+        _delete_obj(sprite_kill_right);
+        _delete_obj(sprite_idle);
+    end;
 
     par/or do
         every gc in e_DRAW do
-_printf("draw guillotine");
-
             if killing then
                 if direction.is_left() then
                     _gc_color_draw2(gc, &sprite_kill_left, guillotine.pos);
@@ -74,7 +74,6 @@ _printf("draw guillotine");
         end
     with
         await e_DELETE;
-        _printf("guillotine DELETE\n");
     end
 end
 

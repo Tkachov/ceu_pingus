@@ -31,20 +31,13 @@
 
 #include "ceuvars.h"
 
-static
-bool WorldObj_less (WorldObj* a, WorldObj* b)
-{
-  return a->get_z_pos () < b->get_z_pos ();
-}
-
 World::World(const PingusLevel& plf) :
   ambient_light(Color(plf.get_ambient_light())),
   mwidth(plf.get_size().width),
   mheight(plf.get_size().height),
   game_time(0),
   do_armageddon(false),
-  armageddon_count(0),
-  world_obj(),     
+  armageddon_count(0),  
   pingus(new PinguHolder(plf)),
   colmap(),
   gravitational_acceleration(0.2f)
@@ -57,9 +50,7 @@ World::World(const PingusLevel& plf) :
   init_worldobjs(plf);
 }
 
-void World::add_object(WorldObj* obj) {
-  if(obj) world_obj.push_back(obj);
-}
+void World::add_object(WorldObj* obj) {}
 
 void
 World::init_worldobjs(const PingusLevel& plf)
@@ -70,8 +61,6 @@ World::init_worldobjs(const PingusLevel& plf)
     for(auto obj: objs)
       add_object(obj);
   }
-
-  std::stable_sort (world_obj.begin (), world_obj.end (), WorldObj_less);
 
   World* self = this;
   ceu_out_go(&CEUapp, CEU_IN_WORLD_STARTUP, &self);
@@ -205,17 +194,6 @@ World::remove(const CollisionMask& mask, int x, int y)
 {
   gfx_map->remove(mask.get_surface(), x, y);
   colmap->remove(mask, x, y);
-}
-
-WorldObj*
-World::get_worldobj(const std::string& id)
-{
-  for(WorldObjIter obj = world_obj.begin(); obj != world_obj.end(); ++obj)
-  {
-    if ((*obj)->get_id() == id)
-      return *obj;
-  }
-  return 0;
 }
 
 Vector2i

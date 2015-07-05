@@ -20,8 +20,10 @@ do
     global:world:add_object(&this);
 
     //delete switch
-    finalize with _delete_obj(switch_sur); end;
-    finalize with _delete_obj(m_target); end;
+    finalize with
+        _delete_obj(switch_sur);
+        _delete_obj(m_target);
+    end;
 
     var ISwitchDoorDoor* m_door = null;
 

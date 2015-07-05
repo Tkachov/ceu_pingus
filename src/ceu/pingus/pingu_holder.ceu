@@ -45,11 +45,8 @@ do
 
     par/or do
         await e_DELETE;
-        _printf("pingu holder DELETE\n");
     with
         every gc in e_DRAW do
-_printf("draw wobj");
-
             emit global:e_PINGU_DRAW_WALKER => gc;
             emit global:e_PINGU_DRAW_OTHERS => gc;
         end

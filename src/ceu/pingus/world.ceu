@@ -105,7 +105,6 @@ do
     var PinguHolder holder with
         this.me = _new_WorldObj();
         this.me:world = &me_;
-        me_.world_obj.push_back(_PTR2REF(this.me));
 
         this.holder = me_.pingus;
 
@@ -115,7 +114,6 @@ do
     var PinguParticlesHolder pingu_particles_holder with
         this.me = _new_WorldObj();
         this.me:world = &me_;
-        me_.world_obj.push_back(_PTR2REF(this.me));
 
         this.sprite = _PTR2REF(_new_SpriteA("particles/pingu_explo"));
         this.particles = _PTR2REF(_new_Vector_PinguParticle());
@@ -126,7 +124,6 @@ do
     var RainParticlesHolder rain_particles_holder with
         this.me = _new_WorldObj();
         this.me:world = &me_;
-        me_.world_obj.push_back(_PTR2REF(this.me));
 
         this.rain1_surf = _PTR2REF(_new_SpriteA("particles/rain1"));
         this.rain2_surf = _PTR2REF(_new_SpriteA("particles/rain2"));
@@ -139,7 +136,6 @@ do
     var SmokeParticlesHolder smoke_particles_holder with
         this.me = _new_WorldObj();
         this.me:world = &me_;
-        me_.world_obj.push_back(_PTR2REF(this.me));
 
         this.surf1 = _PTR2REF(_new_SpriteA("particles/smoke"));
         this.surf2 = _PTR2REF(_new_SpriteA("particles/smoke2"));
@@ -151,7 +147,6 @@ do
     var SnowParticlesHolder snow_particles_holder with
         this.me = _new_WorldObj();
         this.me:world = &me_;
-        me_.world_obj.push_back(_PTR2REF(this.me));
 
         this.snow1 = _PTR2REF(_new_SpriteA("particles/snow1"));
         this.snow2 = _PTR2REF(_new_SpriteA("particles/snow2"));
@@ -173,7 +168,6 @@ do
         this.me:pos.z = 0; //TODO: somehow guarantee that it always stays that way
         me_.gfx_map = _PTR2REF(this.gmap);
         me_.colmap = _PTR2REF(this.gmap.colmap.get());
-        me_.world_obj.push_back(_PTR2REF(this.me));
     end;
 
     function (void) => IPinguHolder* get_pingus do

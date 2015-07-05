@@ -29,10 +29,12 @@ do
     var _WorldObj&? switch_door_door = _PTR2REF(me);
     global:world:add_object(&this);
     //delete door
-    finalize with _delete_obj(door_box); end;
-    finalize with _delete_obj(door_box_cmap); end;
-    finalize with _delete_obj(door_tile); end;
-    finalize with _delete_obj(door_tile_cmap); end;
+    finalize with
+        _delete_obj(door_box);
+        _delete_obj(door_box_cmap);
+        _delete_obj(door_tile);
+        _delete_obj(door_tile_cmap);
+    end;
 
     function (void) => void open_door do
         is_opening = true;
