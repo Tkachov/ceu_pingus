@@ -34,9 +34,11 @@ do
     var _WorldObj&? holder = _PTR2REF(me);
     global:world:add_object(&this);
     //finalize with _delete_obj(me); end
-    finalize with _delete_obj(surf1); end
-    finalize with _delete_obj(surf2); end
-    finalize with _delete_obj(particles); end
+    finalize with
+        _delete_obj(surf1);
+        _delete_obj(surf2);
+        _delete_obj(particles);
+    end
 
     function (int x, int y, float vx, float vy) => void add_particle do
         _SPH_add_particle(particles, x, y, vx, vy);

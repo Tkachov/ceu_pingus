@@ -29,8 +29,10 @@ do
     global:world:add_object(&this);
 
     //delete entrance
-    finalize with _delete_obj(smallmap_symbol); end;
-    finalize with _delete_obj(surface); end;
+    finalize with
+        _delete_obj(smallmap_symbol);
+        _delete_obj(surface);
+    end;
 
     var int last_release = 150 - release_rate;
     var bool go_left = true;
@@ -50,18 +52,12 @@ do
 
     par/or do
         every gc in e_DRAW do
-_printf("draw entrance");
-
             //original FIXME: Why do we still have these hardcoded offsets?!
             _gc_color_draw2(gc, &surface, _Vector3f(entrance.pos.x - 32, entrance.pos.y - 16));
         end
     with
-        every package in WORLDOBJ_DRAW_SMALLMAP do
-            if package:worldobj != &entrance then
-                continue;
-            end
-
-            package:smallmap:draw_sprite(_deref(smallmap_symbol), _PTR2REF(entrance.pos));
+        every smallmap in e_DRAW_SMALLMAP do
+            smallmap:draw_sprite(_deref(smallmap_symbol), _PTR2REF(entrance.pos));
         end
     with
         every e_UPDATE do
@@ -79,7 +75,6 @@ _printf("draw entrance");
         end
     with
         await e_DELETE;
-        _printf("entrance DELETE\n");
     end
 end
 

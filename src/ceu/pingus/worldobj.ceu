@@ -10,8 +10,6 @@ native/pre do
     ##define WorldObj__get_world WorldObj::get_world
     ##define WorldObj__get_world_play_sound WorldObj::get_world()->play_sound
 
-    ##define WOSMPackage WorldObj::WorldObjSmallMapPackage
-
     ##define WOCPackage WorldObjCeuPackage
     ##define new_WorldObj new WorldObj
 
@@ -26,14 +24,12 @@ native @pure _WorldObj__get_world(),
              _WorldObj__get_world_play_sound(),
              _new_WorldObj();
 
-input _WorldObj* DELETE_WORLDOBJ;
-input _WOSMPackage* WORLDOBJ_DRAW_SMALLMAP;
-
 interface IWorldObj with
     var _WorldObj* me;
 
     event void e_STARTUP;
     event _SceneContext* e_DRAW;
+    event _SmallMap* e_DRAW_SMALLMAP;
     event void e_UPDATE;
     event void e_DELETE;
 end

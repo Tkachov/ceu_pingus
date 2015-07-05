@@ -43,7 +43,6 @@ do
         end
     with
         await e_DELETE;
-        _printf("groundpiece DELETE\n");
     end
 end
 

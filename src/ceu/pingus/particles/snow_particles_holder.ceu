@@ -38,13 +38,15 @@ do
     var _WorldObj&? holder = _PTR2REF(me);
     global:world:add_object(&this);
     //finalize with _delete_obj(me); end
-    finalize with _delete_obj(snow1); end
-    finalize with _delete_obj(snow2); end
-    finalize with _delete_obj(snow3); end
-    finalize with _delete_obj(snow4); end
-    finalize with _delete_obj(snow5); end
-    finalize with _delete_obj(ground); end
-    finalize with _delete_obj(particles); end
+    finalize with
+        _delete_obj(snow1);
+        _delete_obj(snow2);
+        _delete_obj(snow3);
+        _delete_obj(snow4);
+        _delete_obj(snow5);
+        _delete_obj(ground);
+        _delete_obj(particles);
+    end
 
     function (int x, int y, bool c) => void add_particle do
         //default c == false

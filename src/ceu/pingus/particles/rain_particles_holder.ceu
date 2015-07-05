@@ -35,10 +35,12 @@ do
     var _WorldObj&? holder = _PTR2REF(me);
     global:world:add_object(&this);
     //finalize with _delete_obj(me); end
-    finalize with _delete_obj(rain1_surf); end
-    finalize with _delete_obj(rain2_surf); end
-    finalize with _delete_obj(rain_splash); end
-    finalize with _delete_obj(particles); end
+    finalize with
+        _delete_obj(rain1_surf);
+        _delete_obj(rain2_surf); 
+        _delete_obj(rain_splash);
+        _delete_obj(particles);
+    end
 
     function (int x, int y) => void add_particle do
         _RPH_add_particle(particles, x, y);

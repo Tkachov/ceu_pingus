@@ -101,10 +101,9 @@ World::draw_smallmap(SmallMap* smallmap)
 {
   WorldObj::set_world(this);
 
-  for(WorldObjIter obj = world_obj.begin(); obj != world_obj.end(); ++obj)
-  {
-    (*obj)->draw_smallmap (smallmap);
-  }
+  WorldDrawSmallmapPackage package(this, smallmap);
+  WorldDrawSmallmapPackage* pp = &package;
+  ceu_out_go(&CEUapp, CEU_IN_WORLD_DRAW_SMALLMAP, &pp);
 }
 
 void

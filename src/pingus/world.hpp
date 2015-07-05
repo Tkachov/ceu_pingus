@@ -43,6 +43,12 @@ struct WorldDrawPackage {
   WorldDrawPackage(World* w, SceneContext* g): world(w), gc(g) {};
 };
 
+struct WorldDrawSmallmapPackage {
+  World* world;
+  SmallMap* smallmap;
+
+  WorldDrawSmallmapPackage(World* w, SmallMap* s): world(w), smallmap(s) {};
+};
 
 /** The World holds all objects of the pingu enviroment.
 

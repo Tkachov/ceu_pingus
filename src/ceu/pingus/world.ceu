@@ -76,11 +76,13 @@ native @pure _reader_read_Groundtype(), _Resource__load_surface(), _opeq(), _new
 
 input _World* WORLD_STARTUP;
 input _WorldDrawPackage* WORLD_DRAW;
+input _WorldDrawSmallmapPackage* WORLD_DRAW_SMALLMAP;
 input _World* WORLD_UPDATE;
 input _World* WORLD_DELETE;
 
 input IWorldObj* WORLD_STARTUP_OBJECT;
 input IWorldObj* WORLD_DRAW_OBJECT;
+input IWorldObj* WORLD_DRAW_SMALLMAP_OBJECT;
 input IWorldObj* WORLD_UPDATE_OBJECT;
 input IWorldObj* WORLD_DELETE_OBJECT;
 
@@ -217,6 +219,9 @@ do
     var bool draw_iterating = false;
     var _SceneContext* gc = null;
 
+    var bool draw_smallmap_iterating = false;
+    var _SmallMap* smallmap = null;
+
     par/or do
         every w in WORLD_STARTUP do
             if w != &me_ then
@@ -241,6 +246,20 @@ do
         every object in WORLD_DRAW_OBJECT do
             if draw_iterating and gc != null then
                 emit object:e_DRAW => gc;
+            end
+        end
+    with
+        every package in WORLD_DRAW_SMALLMAP do
+            draw_smallmap_iterating = true;
+            smallmap = _PTR2REF(package:smallmap);
+            objs.iterate(_CEU_IN_WORLD_DRAW_SMALLMAP_OBJECT);
+            draw_smallmap_iterating = false;
+            smallmap = null;
+        end
+    with
+        every object in WORLD_DRAW_SMALLMAP_OBJECT do
+            if draw_smallmap_iterating and smallmap != null then
+                emit object:e_DRAW_SMALLMAP => smallmap;
             end
         end
     with

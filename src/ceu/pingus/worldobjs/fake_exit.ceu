@@ -21,22 +21,18 @@ do
     var _WorldObj&? fake_exit = _PTR2REF((_WorldObj*)me);
     global:world:add_object(&this);
     //delete fake_exit
-    finalize with _delete_obj(sprite); end;
-    finalize with _delete_obj(smallmap_symbol); end;
+    finalize with
+        _delete_obj(sprite);
+        _delete_obj(smallmap_symbol);
+    end;
 
     par/or do
         every gc in e_DRAW do
-_printf("draw fake_exit");
-
             _gc_color_draw2(gc, &sprite, fake_exit.pos);
         end
     with
-        every package in WORLDOBJ_DRAW_SMALLMAP do
-            if package:worldobj != &fake_exit then
-                continue;
-            end
-
-            package:smallmap:draw_sprite(_deref(smallmap_symbol), _PTR2REF(fake_exit.pos + _Vector3f(0, 115)));
+        every smallmap in e_DRAW_SMALLMAP do
+            smallmap:draw_sprite(_deref(smallmap_symbol), _PTR2REF(fake_exit.pos + _Vector3f(0, 115)));
         end
     with
         every e_UPDATE do
@@ -67,7 +63,6 @@ _printf("draw fake_exit");
         end
     with
         await e_DELETE;
-        _printf("fake DELETE\n");
     end
 end
 

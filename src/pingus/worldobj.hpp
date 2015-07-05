@@ -56,8 +56,7 @@ public:
   WorldObj (const WorldObj&) : id() {}
   WorldObj& operator= (const WorldObj&) { return *this; }
 
-  /** Destroys a world object */
-  virtual ~WorldObj ();
+  virtual ~WorldObj() {};
 
   std::string get_id() const { return id; }
 
@@ -65,16 +64,6 @@ public:
   virtual float get_z_pos() const { return pos.z; }
   virtual void set_pos(const Vector3f& p) { pos = p; }
   virtual Vector3f get_pos() const { return pos; }
-
-  /** Draw the WorldObj to the given SceneContext */  
-  virtual void draw_smallmap(SmallMap* smallmap);
-
-  struct WorldObjSmallMapPackage {
-    WorldObj* worldobj;
-    SmallMap* smallmap;
-
-    WorldObjSmallMapPackage(WorldObj* w, SmallMap* s): worldobj(w), smallmap(s) {};
-  };
 };
 
 #endif

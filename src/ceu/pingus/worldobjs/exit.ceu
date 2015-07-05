@@ -29,15 +29,15 @@ do
     var _WorldObj&? exit = _PTR2REF(me);
     global:world:add_object(&this);
     //finalize with _delete_obj(me); end
-    finalize with _delete_obj(desc); end
-    finalize with _delete_obj(sprite); end;
-    finalize with _delete_obj(flag); end;
-    finalize with _delete_obj(smallmap_symbol); end;
+    finalize with
+        _delete_obj(desc);
+        _delete_obj(sprite);
+        _delete_obj(flag);
+        _delete_obj(smallmap_symbol);
+    end;
 
     par/or do
         every gc in e_DRAW do
-_printf("draw exit");
-
             _gc_color_draw2(gc, &sprite, exit.pos);
             _gc_color_draw2(gc, &flag, exit.pos + _Vector3f(40, 0));
         end
@@ -46,12 +46,8 @@ _printf("draw exit");
             _colmap_remove(exit.world:get_colmap(), desc, (int)exit.pos.x - sprite.get_width()/2, (int)exit.pos.y - sprite.get_height());
         end
     with
-        every package in WORLDOBJ_DRAW_SMALLMAP do
-            if package:worldobj != &exit then
-                continue;
-            end
-
-            package:smallmap:draw_sprite(_deref(smallmap_symbol), _PTR2REF(exit.pos));
+        every smallmap in e_DRAW_SMALLMAP do
+            smallmap:draw_sprite(_deref(smallmap_symbol), _PTR2REF(exit.pos));
         end
     with
         every e_UPDATE do
