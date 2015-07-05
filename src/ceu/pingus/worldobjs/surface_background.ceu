@@ -48,22 +48,24 @@ class SurfaceBackground with
     var float scroll_oy;
 do
     var _WorldObj&? surface_background = _PTR2REF(me);
-    emit global:world:get_list():e_INSERT => &this;
-
     //finalize with _delete_obj(me); end
     finalize with _delete_obj(sprite); end;
     finalize with _delete_obj(color); end;
 
     par/or do
-        every gc in e_DRAW do
+        every package in WORLDOBJ_DRAW do
+            if package:worldobj != &surface_background then
+                continue;
+            end
+
             //_gc_color_draw2(package:gc, &sprite, surface_background.pos);
 
             if not sprite then
                 continue;
             end
 
-            var int offset_x = gc:color().world_to_screen(_Vector2i(0,0)).x - gc:color().get_rect().left;
-            var int offset_y = gc:color().world_to_screen(_Vector2i(0,0)).y - gc:color().get_rect().top;
+            var int offset_x = package:gc:color().world_to_screen(_Vector2i(0,0)).x - package:gc:color().get_rect().left;
+            var int offset_y = package:gc:color().world_to_screen(_Vector2i(0,0)).y - package:gc:color().get_rect().top;
 
             var int start_x = (float)offset_x*para_x + scroll_ox;
             var int start_y = (float)offset_y*para_y + scroll_oy;
@@ -88,7 +90,7 @@ do
                         break;
                     end
 
-                    _gc_color_draw2(gc, &sprite, _Vector3f(x-offset_x, y-offset_y, surface_background.pos.z) finalize with end);
+                    _gc_color_draw2(package:gc, &sprite, _Vector3f(x-offset_x, y-offset_y, surface_background.pos.z) finalize with end);
 
                     x = x + sprite.get_width();
                 end
@@ -97,7 +99,11 @@ do
             end
         end
     with
-        every e_UPDATE do
+        every w in WORLD_UPDATE do
+            if w != surface_background.world then
+                continue;
+            end
+
             sprite.update();
 
             if not sprite or _globals__static_graphics then
@@ -125,7 +131,7 @@ do
             end
         end
     with
-        await e_DELETE;
+        var _WorldObj* e = await DELETE_WORLDOBJ until (e == &surface_background);
     end
 end
 

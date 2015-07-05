@@ -14,8 +14,6 @@ class Liquid with
     var int width;
 do
     var _WorldObj&? liquid = _PTR2REF(me);
-    emit global:world:get_list():e_INSERT => &this;
-
     //finalize with _delete_obj(me); end
     finalize with _delete_obj(sprite); end
 
@@ -26,7 +24,11 @@ do
     end
 
     par/or do
-        every e_STARTUP do
+        every wo in WORLDOBJ_STARTUP do
+            if wo != &liquid then
+                continue;
+            end
+
             var _CollisionMask* mask = _new_CollisionMask("liquids/water_cmap");
 
             loop/100 i in width do
@@ -36,24 +38,32 @@ do
             _delete_obj(mask);
         end
     with
-        every gc in e_DRAW do
+        every package in WORLDOBJ_DRAW do
+            if package:worldobj != &liquid then
+                continue;
+            end
+
             var int x = liquid.pos.x;
             loop/100 do
                 if x >= (int)liquid.pos.x + width then
                     break;
                 end;
 
-                _gc_color_draw2(gc, &sprite, _Vector3f(x, liquid.pos.y) finalize with end);
+                _gc_color_draw2(package:gc, &sprite, _Vector3f(x, liquid.pos.y) finalize with end);
 
                 x = x + sprite.get_width();
             end
         end
     with
-        every e_UPDATE do
+        every w in WORLD_UPDATE do
+            if w != liquid.world then
+                continue;
+            end
+
             sprite.update(0.033);
         end
     with
-        await e_DELETE;
+        var _WorldObj* e = await DELETE_WORLDOBJ until (e == &liquid);
     end
 end
 

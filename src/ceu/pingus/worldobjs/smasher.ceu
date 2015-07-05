@@ -16,7 +16,6 @@ class Smasher with
     var _Sprite&? sprite;
 do
     var _WorldObj&? smasher = _PTR2REF(me);
-    emit global:world:get_list():e_INSERT => &this;
 
     //delete smasher
     finalize with _delete_obj(sprite); end;
@@ -26,18 +25,30 @@ do
     var int count = 0;
 
     par/or do
-        every e_STARTUP do
+        every wo in WORLDOBJ_STARTUP do
+            if wo != &smasher then
+                continue;
+            end
+
             _log_info("Drawing colmap entry");
             var _CollisionMask* mask = _new_CollisionMask("traps/smasher_cmap");
             _world_put(smasher.world, mask, (int)smasher.pos.x, (int)smasher.pos.y, _GT_SOLID);
             _delete_obj(mask);
         end
     with
-        every gc in e_DRAW do
-            _gc_color_draw2(gc, &sprite, smasher.pos);
+        every package in WORLDOBJ_DRAW do
+            if package:worldobj != &smasher then
+                continue;
+            end
+
+            _gc_color_draw2(package:gc, &sprite, smasher.pos);
         end
     with
-        every e_UPDATE do
+        every w in WORLD_UPDATE do
+            if w != smasher.world then
+                continue;
+            end
+
             loop pingu in global:world:get_pingus():all_pingus do
                 if pingu:get_current_action() == _A_SPLASHED or smashing or
                    pingu:get_current_action() == _A_DEAD or pingu:get_current_action() == _A_EXITED then
@@ -100,7 +111,7 @@ do
             end
         end
     with
-        await e_DELETE;
+        var _WorldObj* e = await DELETE_WORLDOBJ until (e == &smasher);
     end
 end
 

@@ -33,12 +33,10 @@ class SmokeParticlesHolder with
 do
     var _WorldObj&? holder = _PTR2REF(me);
     emit global:world:get_list():e_INSERT => &this;
-    finalize with
-        //_delete_obj(me);
-        _delete_obj(surf1);
-        _delete_obj(surf2);
-        _delete_obj(particles);
-    end
+    //finalize with _delete_obj(me); end
+    finalize with _delete_obj(surf1); end
+    finalize with _delete_obj(surf2); end
+    finalize with _delete_obj(particles); end
 
     function (int x, int y, float vx, float vy) => void add_particle do
         _SPH_add_particle(particles, x, y, vx, vy);
@@ -49,11 +47,15 @@ do
            _SPH_draw(particles, gc, surf1, surf2);
         end
     with
-        every e_UPDATE do
+        every w in WORLD_UPDATE do
+            if w != holder.world then
+                continue;
+            end
+
             _SPH_update(particles);
         end
     with
-        await e_DELETE;
+        var _WorldObj* e = await DELETE_WORLDOBJ until (e == &holder);
     end
 end
 

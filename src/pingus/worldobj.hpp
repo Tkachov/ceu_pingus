@@ -56,12 +56,19 @@ public:
   WorldObj (const WorldObj&) : id() {}
   WorldObj& operator= (const WorldObj&) { return *this; }
 
+  /** Destroys a world object */
+  virtual ~WorldObj ();
+
   std::string get_id() const { return id; }
 
   /** Returns the $z$-position of this object. */
   virtual float get_z_pos() const { return pos.z; }
   virtual void set_pos(const Vector3f& p) { pos = p; }
   virtual Vector3f get_pos() const { return pos; }
+
+  /** Draw the WorldObj to the given SceneContext */
+  virtual void draw(SceneContext& gc);
+  virtual void draw_smallmap(SmallMap* smallmap);
 
   struct WorldObjPackage {
     WorldObj* worldobj;
@@ -76,6 +83,15 @@ public:
 
     WorldObjSmallMapPackage(WorldObj* w, SmallMap* s): worldobj(w), smallmap(s) {};
   };
+
+  /** Draws the objects collision map to the main collision map, draws
+      stuff onto the gfx map or do other manipulations to the World */
+  virtual void on_startup ();
+
+  /** The update function is called once a game loop, the delta
+   * specifies how much time is passed since the last update
+   * delta = 1.0 means that one second of realtime has passed. */
+  virtual void update ();
 };
 
 #endif

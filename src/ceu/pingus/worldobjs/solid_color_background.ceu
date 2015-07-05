@@ -20,17 +20,19 @@ class SolidColorBackground with
     var _Color&? color;
 do
     var _WorldObj&? scb = _PTR2REF(me);
-    emit global:world:get_list():e_INSERT => &this;
-
     //finalize with _delete_obj(me); end
     finalize with _delete_obj(color); end
 
     par/or do
-        every gc in e_DRAW do
-            _gc_color_fill_screen(gc, _deref(color));
+        every package in WORLDOBJ_DRAW do
+            if package:worldobj != &scb then
+                continue;
+            end
+
+            _gc_color_fill_screen(package:gc, _deref(color));
         end
     with
-        await e_DELETE;
+        var _WorldObj* e = await DELETE_WORLDOBJ until (e == &scb);
     end
 end
 

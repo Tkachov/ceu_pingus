@@ -19,8 +19,6 @@ class IceBlock with
     var _CollisionMask&? block_sur_cmap;
 do
     var _WorldObj&? ice_block = _PTR2REF(me);
-    emit global:world:get_list():e_INSERT => &this;
-
     //delete ice_block
     finalize with _delete_obj(block_sur); end
     finalize with _delete_obj(block_sur_cmap); end
@@ -30,17 +28,29 @@ do
     var int last_contact = 0;
 
     par/or do
-        every e_STARTUP do
+        every wo in WORLDOBJ_STARTUP do
+            if wo != &ice_block then
+                continue;
+            end
+
             _world_put(ice_block.world, block_sur_cmap, (int)ice_block.pos.x, (int)ice_block.pos.y, _GT_GROUND);
         end
     with
-        every gc in e_DRAW do
+        every package in WORLDOBJ_DRAW do
+            if package:worldobj != &ice_block then
+                continue;
+            end
+
             if not is_finished then
-                _gc_color_draw2(gc, &block_sur, ice_block.pos);
+                _gc_color_draw2(package:gc, &block_sur, ice_block.pos);
             end
         end
     with
-        every e_UPDATE do
+        every w in WORLD_UPDATE do
+            if w != ice_block.world then
+                continue;
+            end
+
             if is_finished then
                 continue;
             end
@@ -63,7 +73,7 @@ do
             end
         end
     with
-        await e_DELETE;
+        var _WorldObj* e = await DELETE_WORLDOBJ until (e == &ice_block);
     end
 end
 

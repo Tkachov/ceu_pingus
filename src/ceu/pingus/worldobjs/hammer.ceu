@@ -13,21 +13,26 @@ class Hammer with
     var _Sprite&? sprite;
 do
     var _WorldObj&? hammer = _PTR2REF(me);
-    emit global:world:get_list():e_INSERT => &this;
+    var int current_frame = 0;
 
     //delete hammer
     finalize with _delete_obj(sprite); end;
 
-    var int current_frame = 0;
-
     par/or do
-        every gc in e_DRAW do
-            _gc_color_draw2(gc, &sprite, hammer.pos);
+        every package in WORLDOBJ_DRAW do
+            if package:worldobj != &hammer then
+                continue;
+            end
+
+            _gc_color_draw2(package:gc, &sprite, hammer.pos);
         end
     with
         loop do
             loop do
-                await e_UPDATE;
+                var _World* w = await WORLD_UPDATE;
+                if w != hammer.world then
+                    continue;
+                end
 
                 current_frame = current_frame + 1;
                 sprite.set_frame(current_frame);
@@ -53,7 +58,10 @@ do
 
             //roll back
             loop do
-                await e_UPDATE;
+                var _World* w = await WORLD_UPDATE;
+                if w != hammer.world then
+                    continue;
+                end
 
                 current_frame = current_frame - 1;
                 sprite.set_frame(current_frame);
@@ -63,7 +71,7 @@ do
             end
         end
     with
-        await e_DELETE;
+        var _WorldObj* e = await DELETE_WORLDOBJ until (e == &hammer);
     end
 end
 

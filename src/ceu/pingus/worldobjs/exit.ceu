@@ -27,8 +27,6 @@ class Exit with
     var _Sprite&? smallmap_symbol;
 do
     var _WorldObj&? exit = _PTR2REF(me);
-    emit global:world:get_list():e_INSERT => &this;
-
     //finalize with _delete_obj(me); end
     finalize with _delete_obj(desc); end
     finalize with _delete_obj(sprite); end;
@@ -36,20 +34,36 @@ do
     finalize with _delete_obj(smallmap_symbol); end;
 
     par/or do
-        every gc in e_DRAW do
-            _gc_color_draw2(gc, &sprite, exit.pos);
-            _gc_color_draw2(gc, &flag, exit.pos + _Vector3f(40, 0));
+        every package in WORLDOBJ_DRAW do
+            if package:worldobj != &exit then
+                continue;
+            end
+
+            _gc_color_draw2(package:gc, &sprite, exit.pos);
+            _gc_color_draw2(package:gc, &flag, exit.pos + _Vector3f(40, 0));
         end
     with
-        every e_STARTUP do
+        every wo in WORLDOBJ_STARTUP do
+            if wo != &exit then
+                continue;
+            end
+
             _colmap_remove(exit.world:get_colmap(), desc, (int)exit.pos.x - sprite.get_width()/2, (int)exit.pos.y - sprite.get_height());
         end
     with
-        every smallmap in e_DRAW_SMALLMAP do
-            smallmap:draw_sprite(_deref(smallmap_symbol), _PTR2REF(exit.pos));
+        every package in WORLDOBJ_DRAW_SMALLMAP do
+            if package:worldobj != &exit then
+                continue;
+            end
+
+            package:smallmap:draw_sprite(_deref(smallmap_symbol), _PTR2REF(exit.pos));
         end
     with
-        every e_UPDATE do
+        every w in WORLD_UPDATE do
+            if w != exit.world then
+                continue;
+            end
+
             sprite.update();
 
             loop pingu in global:world:get_pingus():all_pingus do
@@ -73,7 +87,7 @@ do
             end
         end
     with
-        await e_DELETE;
+        var _WorldObj* e = await DELETE_WORLDOBJ until (e == &exit);
     end
 end
 

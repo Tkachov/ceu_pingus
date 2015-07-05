@@ -19,22 +19,32 @@ class FakeExit with
     var bool smashing;
 do
     var _WorldObj&? fake_exit = _PTR2REF((_WorldObj*)me);
-    emit global:world:get_list():e_INSERT => &this;
-
     //delete fake_exit
     finalize with _delete_obj(sprite); end;
     finalize with _delete_obj(smallmap_symbol); end;
 
     par/or do
-        every gc in e_DRAW do
-            _gc_color_draw2(gc, &sprite, fake_exit.pos);
+        every package in WORLDOBJ_DRAW do
+            if package:worldobj != &fake_exit then
+                continue;
+            end
+
+            _gc_color_draw2(package:gc, &sprite, fake_exit.pos);
         end
     with
-        every smallmap in e_DRAW_SMALLMAP do
-            smallmap:draw_sprite(_deref(smallmap_symbol), _PTR2REF(fake_exit.pos + _Vector3f(0, 115)));
+        every package in WORLDOBJ_DRAW_SMALLMAP do
+            if package:worldobj != &fake_exit then
+                continue;
+            end
+
+            package:smallmap:draw_sprite(_deref(smallmap_symbol), _PTR2REF(fake_exit.pos + _Vector3f(0, 115)));
         end
     with
-        every e_UPDATE do
+        every w in WORLD_UPDATE do
+            if w != fake_exit.world then
+                continue;
+            end
+
             loop pingu in global:world:get_pingus():all_pingus do
                 if sprite.is_finished() then
                     smashing = false;
@@ -61,7 +71,7 @@ do
             end
         end
     with
-        await e_DELETE;
+        var _WorldObj* e = await DELETE_WORLDOBJ until (e == &fake_exit);
     end
 end
 

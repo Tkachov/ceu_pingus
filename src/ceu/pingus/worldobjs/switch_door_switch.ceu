@@ -17,7 +17,6 @@ class SwitchDoorSwitch with
     var bool is_triggered;
 do
     var _WorldObj&? switch_door_switch = _PTR2REF(me);
-    emit global:world:get_list():e_INSERT => &this;
 
     //delete switch
     finalize with _delete_obj(switch_sur); end;
@@ -26,7 +25,11 @@ do
     var ISwitchDoorDoor* m_door = null;
 
     par/or do
-         every e_STARTUP do
+         every wo in WORLDOBJ_STARTUP do
+            if wo != &switch_door_switch then
+                continue;
+            end
+
             if m_target.empty() then
                 _log_error("target-id is empty");
             else
@@ -37,11 +40,19 @@ do
             end
         end
     with
-        every gc in e_DRAW do
-            _gc_color_draw2(gc, &switch_sur, switch_door_switch.pos);
+        every package in WORLDOBJ_DRAW do
+            if package:worldobj != &switch_door_switch then
+                continue;
+            end
+
+            _gc_color_draw2(package:gc, &switch_sur, switch_door_switch.pos);
         end
     with
-        every e_UPDATE do
+        every w in WORLD_UPDATE do
+            if w != switch_door_switch.world then
+                continue;
+            end
+
             if is_triggered or not m_door then
                 continue;
             end
@@ -59,7 +70,7 @@ do
             end
         end
     with
-        await e_DELETE;
+        var _WorldObj* e = await DELETE_WORLDOBJ until (e == &switch_door_switch);
     end
 end
 

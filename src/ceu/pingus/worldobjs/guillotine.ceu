@@ -18,8 +18,6 @@ class Guillotine with
     var bool killing;
 do
     var _WorldObj&? guillotine = _PTR2REF(me);
-    emit global:world:get_list():e_INSERT => &this;
-
     //delete guillotine
     finalize with _delete_obj(direction); end;
     finalize with _delete_obj(sprite_kill_left); end;
@@ -27,19 +25,27 @@ do
     finalize with _delete_obj(sprite_idle); end;
 
     par/or do
-        every gc in e_DRAW do
+        every package in WORLDOBJ_DRAW do
+            if package:worldobj != &guillotine then
+                continue;
+            end
+
             if killing then
                 if direction.is_left() then
-                    _gc_color_draw2(gc, &sprite_kill_left, guillotine.pos);
+                    _gc_color_draw2(package:gc, &sprite_kill_left, guillotine.pos);
                 else
-                    _gc_color_draw2(gc, &sprite_kill_right, guillotine.pos);
+                    _gc_color_draw2(package:gc, &sprite_kill_right, guillotine.pos);
                 end
             else
-                _gc_color_draw2(gc, &sprite_idle, guillotine.pos);
+                _gc_color_draw2(package:gc, &sprite_idle, guillotine.pos);
             end
         end
     with
-        every e_UPDATE do
+        every w in WORLD_UPDATE do
+            if w != guillotine.world then
+                continue;
+            end
+
             // Only have to check one sprite because they update simultaneously
             if sprite_kill_left.is_finished() then
                 killing = false;
@@ -72,7 +78,7 @@ do
             end
         end
     with
-        await e_DELETE;
+        var _WorldObj* e = await DELETE_WORLDOBJ until (e == &guillotine);
     end
 end
 

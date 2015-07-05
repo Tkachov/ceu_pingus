@@ -60,9 +60,7 @@ class Pingu with
     var int owner_id;
     var uint id;
 do
-    finalize with        
-        _delete_obj(&direction);
-    end;
+    finalize with _delete_obj(&direction); end;
 
     velocity.x = 0;
     velocity.y = 0;
