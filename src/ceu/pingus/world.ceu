@@ -70,9 +70,11 @@ native/pre do
 
     ##include "util/container.h"
     ##define new_Container() new Container()
+
+    ##define WorldObj__set_world WorldObj::set_world
 end
 
-native @pure _reader_read_Groundtype(), _Resource__load_surface(), _opeq(), _new_Surface(), _new_Container();
+native @pure _reader_read_Groundtype(), _Resource__load_surface(), _opeq(), _new_Surface(), _new_Container(), _WorldObj__set_world();
 
 input _World* WORLD_STARTUP;
 input _WorldDrawPackage* WORLD_DRAW;
@@ -234,6 +236,13 @@ do
         end
     with
         every package in WORLD_DRAW do
+            if package:world != &me_ then
+                continue;
+            end
+
+            _WorldObj__set_world(me_);
+            package:gc:light().fill_screen(_Color(me_.ambient_light) finalize with end);
+
             draw_iterating = true;
             gc = _PTR2REF(package:gc);
             objs.iterate(_CEU_IN_WORLD_DRAW_OBJECT);
@@ -248,6 +257,12 @@ do
         end
     with
         every package in WORLD_DRAW_SMALLMAP do
+            if package:world != &me_ then
+                continue;
+            end
+
+            _WorldObj__set_world(me_);
+
             draw_smallmap_iterating = true;
             smallmap = _PTR2REF(package:smallmap);
             objs.iterate(_CEU_IN_WORLD_DRAW_SMALLMAP_OBJECT);
@@ -265,6 +280,10 @@ do
             if w != &me_ then
                 continue;
             end
+
+            _WorldObj__set_world(me_);
+
+            me_.game_time = me_.game_time + 1;
 
             if me_.do_armageddon and me_.game_time%4 == 0 then
                 loop pingu in holder.all_pingus do

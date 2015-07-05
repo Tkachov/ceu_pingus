@@ -50,57 +50,32 @@ World::World(const PingusLevel& plf) :
   init_worldobjs(plf);
 }
 
-void World::add_object(WorldObj* obj) {}
-
-void
-World::init_worldobjs(const PingusLevel& plf)
-{
+void World::init_worldobjs(const PingusLevel& plf) {
   const std::vector<FileReader>& objects = plf.get_objects();
-  for(auto i: objects) {
-    std::vector<WorldObj*> objs = WorldObjFactory::instance()->create(i);
-    for(auto obj: objs)
-      add_object(obj);
-  }
+  for(auto i: objects) WorldObjFactory::instance()->create(i);
 
   World* self = this;
   ceu_out_go(&CEUapp, CEU_IN_WORLD_STARTUP, &self);
 }
 
-World::~World()
-{
+World::~World() {
   World* self = this;  
   ceu_out_go(&CEUapp, CEU_IN_WORLD_DELETE, &self);
 }
 
-void
-World::draw (SceneContext& gc)
-{
-  WorldObj::set_world(this);
-
-  gc.light().fill_screen(Color(ambient_light));
-
+void World::draw(SceneContext& gc) {
   WorldDrawPackage package(this, &gc);
   WorldDrawPackage* pp = &package;
   ceu_out_go(&CEUapp, CEU_IN_WORLD_DRAW, &pp);
 }
 
-void
-World::draw_smallmap(SmallMap* smallmap)
-{
-  WorldObj::set_world(this);
-
+void World::draw_smallmap(SmallMap* smallmap) {
   WorldDrawSmallmapPackage package(this, smallmap);
   WorldDrawSmallmapPackage* pp = &package;
   ceu_out_go(&CEUapp, CEU_IN_WORLD_DRAW_SMALLMAP, &pp);
 }
 
-void
-World::update()
-{
-  WorldObj::set_world(this);
-
-  game_time += 1;
-
+void World::update() {
   World* self = this;
   ceu_out_go(&CEUapp, CEU_IN_WORLD_UPDATE, &self);
 }

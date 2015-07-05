@@ -75,12 +75,12 @@ private:
       of them, should use pingus_id instead */
   unsigned int armageddon_count;
     
-  PinguHolder*                    pingus;
+  PinguHolder* pingus;
 
   // Pointers which are references to objects from other classes
-  CollisionMap*         colmap;
+  CollisionMap* colmap;
 
-  void    init_worldobjs (const PingusLevel& plf);
+  void init_worldobjs(const PingusLevel& plf);
 
   /** Acceleration due to gravity in the world */
   const float gravitational_acceleration;
@@ -88,10 +88,6 @@ private:
 public:
   World(const PingusLevel& level);
   virtual ~World();
-
-  /** Add an object to the world, obj needs to be new'ed the World
-      make sure that it will get deleted */
-  void add_object (WorldObj* obj);
 
   /** Draw the world onto the given SceneContext */
   void    draw (SceneContext& gc);
