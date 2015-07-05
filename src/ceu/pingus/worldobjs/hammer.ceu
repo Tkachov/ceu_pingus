@@ -20,12 +20,10 @@ do
     finalize with _delete_obj(sprite); end;
 
     par/or do
-        every package in WORLDOBJ_DRAW do
-            if package:worldobj != &hammer then
-                continue;
-            end
+        every gc in e_DRAW do
+_printf("draw hammer");
 
-            _gc_color_draw2(package:gc, &sprite, hammer.pos);
+            _gc_color_draw2(gc, &sprite, hammer.pos);
         end
     with
         loop do

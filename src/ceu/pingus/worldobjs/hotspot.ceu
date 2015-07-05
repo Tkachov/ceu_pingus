@@ -19,13 +19,11 @@ do
     finalize with _delete_obj(sprite); end
 
     par/or do
-        every package in WORLDOBJ_DRAW do
-            if package:worldobj != &hotspot then
-                continue;
-            end
+        every gc in e_DRAW do
+_printf("draw hotspot");
 
             //original FIXME: para support doesnn't work correctly
-            _gc_color_draw2(package:gc, &sprite, hotspot.pos);
+            _gc_color_draw2(gc, &sprite, hotspot.pos);
         end
     with
         every w in WORLD_UPDATE do

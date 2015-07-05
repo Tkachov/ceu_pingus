@@ -20,12 +20,10 @@ do
     finalize with _delete_obj(surface); end
 
     par/or do
-        every package in WORLDOBJ_DRAW do
-            if package:worldobj != &exit then
-                continue;
-            end
+        every gc in e_DRAW do
+_printf("draw exit");
 
-            _gc_color_draw2(package:gc, &surface, exit.pos);
+            _gc_color_draw2(gc, &surface, exit.pos);
         end
     with
         every w in WORLD_UPDATE do

@@ -41,12 +41,8 @@ do
             end
         end
     with
-        every package in WORLDOBJ_DRAW do
-            if package:worldobj != &teleporter then
-                continue;
-            end
-
-            _gc_color_draw2(package:gc, &sprite, teleporter.pos);
+        every gc in e_DRAW do
+            _gc_color_draw2(gc, &sprite, teleporter.pos);
         end
     with
         every w in WORLD_UPDATE do
@@ -69,7 +65,6 @@ do
         end
     with
         await e_DELETE;
-        _printf("teleporter DELETE\n");
     end
 end
 

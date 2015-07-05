@@ -35,13 +35,11 @@ do
     finalize with _delete_obj(smallmap_symbol); end;
 
     par/or do
-        every package in WORLDOBJ_DRAW do
-            if package:worldobj != &exit then
-                continue;
-            end
+        every gc in e_DRAW do
+_printf("draw exit");
 
-            _gc_color_draw2(package:gc, &sprite, exit.pos);
-            _gc_color_draw2(package:gc, &flag, exit.pos + _Vector3f(40, 0));
+            _gc_color_draw2(gc, &sprite, exit.pos);
+            _gc_color_draw2(gc, &flag, exit.pos + _Vector3f(40, 0));
         end
     with
         every wo in WORLDOBJ_STARTUP do

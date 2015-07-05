@@ -37,13 +37,11 @@ do
             _world_put(ice_block.world, block_sur_cmap, (int)ice_block.pos.x, (int)ice_block.pos.y, _GT_GROUND);
         end
     with
-        every package in WORLDOBJ_DRAW do
-            if package:worldobj != &ice_block then
-                continue;
-            end
+        every gc in e_DRAW do
+_printf("draw ice_block");
 
             if not is_finished then
-                _gc_color_draw2(package:gc, &block_sur, ice_block.pos);
+                _gc_color_draw2(gc, &block_sur, ice_block.pos);
             end
         end
     with

@@ -49,13 +49,11 @@ do
     end
 
     par/or do
-        every package in WORLDOBJ_DRAW do
-            if package:worldobj != &entrance then
-                continue;
-            end
+        every gc in e_DRAW do
+_printf("draw entrance");
 
             //original FIXME: Why do we still have these hardcoded offsets?!
-            _gc_color_draw2(package:gc, &surface, _Vector3f(entrance.pos.x - 32, entrance.pos.y - 16));
+            _gc_color_draw2(gc, &surface, _Vector3f(entrance.pos.x - 32, entrance.pos.y - 16));
         end
     with
         every package in WORLDOBJ_DRAW_SMALLMAP do

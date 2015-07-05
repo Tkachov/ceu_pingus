@@ -25,12 +25,10 @@ do
     finalize with _delete_obj(smallmap_symbol); end;
 
     par/or do
-        every package in WORLDOBJ_DRAW do
-            if package:worldobj != &fake_exit then
-                continue;
-            end
+        every gc in e_DRAW do
+_printf("draw fake_exit");
 
-            _gc_color_draw2(package:gc, &sprite, fake_exit.pos);
+            _gc_color_draw2(gc, &sprite, fake_exit.pos);
         end
     with
         every package in WORLDOBJ_DRAW_SMALLMAP do

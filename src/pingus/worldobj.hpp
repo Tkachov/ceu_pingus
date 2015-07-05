@@ -70,13 +70,6 @@ public:
   virtual void draw(SceneContext& gc);
   virtual void draw_smallmap(SmallMap* smallmap);
 
-  struct WorldObjPackage {
-    WorldObj* worldobj;
-    SceneContext* gc;
-
-    WorldObjPackage(WorldObj* w, SceneContext* g): worldobj(w), gc(g) {};
-  };
-
   struct WorldObjSmallMapPackage {
     WorldObj* worldobj;
     SmallMap* smallmap;

@@ -63,15 +63,13 @@ do
             end
         end
     with
-        every package in WORLDOBJ_DRAW do
-            if package:worldobj != &switch_door_door then
-                continue;
-            end
+        every gc in e_DRAW do
+_printf("draw switch_door_door");
 
-            _gc_color_draw2(package:gc, &door_box, switch_door_door.pos);
+            _gc_color_draw2(gc, &door_box, switch_door_door.pos);
             loop/500 i in current_door_height do
                 _gc_color_draw2(
-                    package:gc,
+                    gc,
                     &door_tile,
                     _Vector3f(
                         switch_door_door.pos.x,

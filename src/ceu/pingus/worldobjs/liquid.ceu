@@ -39,10 +39,8 @@ do
             _delete_obj(mask);
         end
     with
-        every package in WORLDOBJ_DRAW do
-            if package:worldobj != &liquid then
-                continue;
-            end
+        every gc in e_DRAW do
+_printf("draw liquid");
 
             var int x = liquid.pos.x;
             loop/100 do
@@ -50,7 +48,7 @@ do
                     break;
                 end;
 
-                _gc_color_draw2(package:gc, &sprite, _Vector3f(x, liquid.pos.y) finalize with end);
+                _gc_color_draw2(gc, &sprite, _Vector3f(x, liquid.pos.y) finalize with end);
 
                 x = x + sprite.get_width();
             end

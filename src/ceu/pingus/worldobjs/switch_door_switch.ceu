@@ -41,12 +41,8 @@ do
             end
         end
     with
-        every package in WORLDOBJ_DRAW do
-            if package:worldobj != &switch_door_switch then
-                continue;
-            end
-
-            _gc_color_draw2(package:gc, &switch_sur, switch_door_switch.pos);
+        every gc in e_DRAW do
+            _gc_color_draw2(gc, &switch_sur, switch_door_switch.pos);
         end
     with
         every w in WORLD_UPDATE do

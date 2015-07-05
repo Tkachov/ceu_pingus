@@ -59,11 +59,7 @@ WorldObj::update()
   // do nothing
 }
 
-void WorldObj::draw(SceneContext& gc) {
-  WorldObjPackage package(this, &gc);
-  WorldObjPackage* pp = &package;
-  ceu_out_go(&CEUapp, CEU_IN_WORLDOBJ_DRAW, &pp);
-}
+void WorldObj::draw(SceneContext& gc) {}
 
 void WorldObj::draw_smallmap(SmallMap* smallmap) {
   WorldObjSmallMapPackage package(this, smallmap);

@@ -20,13 +20,11 @@ do
     finalize with _delete_obj(surface); end;
 
     par/or do
-        every package in WORLDOBJ_DRAW do
-            if package:worldobj != &spike then
-                continue;
-            end
+        every gc in e_DRAW do
+_printf("draw spike");
 
             if killing then
-                _gc_color_draw2(package:gc, &surface, spike.pos);
+                _gc_color_draw2(gc, &surface, spike.pos);
             end
         end
     with

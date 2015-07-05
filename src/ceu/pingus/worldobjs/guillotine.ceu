@@ -26,19 +26,17 @@ do
     finalize with _delete_obj(sprite_idle); end;
 
     par/or do
-        every package in WORLDOBJ_DRAW do
-            if package:worldobj != &guillotine then
-                continue;
-            end
+        every gc in e_DRAW do
+_printf("draw guillotine");
 
             if killing then
                 if direction.is_left() then
-                    _gc_color_draw2(package:gc, &sprite_kill_left, guillotine.pos);
+                    _gc_color_draw2(gc, &sprite_kill_left, guillotine.pos);
                 else
-                    _gc_color_draw2(package:gc, &sprite_kill_right, guillotine.pos);
+                    _gc_color_draw2(gc, &sprite_kill_right, guillotine.pos);
                 end
             else
-                _gc_color_draw2(package:gc, &sprite_idle, guillotine.pos);
+                _gc_color_draw2(gc, &sprite_idle, guillotine.pos);
             end
         end
     with

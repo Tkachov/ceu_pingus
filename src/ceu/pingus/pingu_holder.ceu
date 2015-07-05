@@ -47,13 +47,11 @@ do
         await e_DELETE;
         _printf("pingu holder DELETE\n");
     with
-        every package in WORLDOBJ_DRAW do
-            if package:worldobj != &wobj then
-                continue;
-            end
+        every gc in e_DRAW do
+_printf("draw wobj");
 
-            emit global:e_PINGU_DRAW_WALKER => package:gc;
-            emit global:e_PINGU_DRAW_OTHERS => package:gc;
+            emit global:e_PINGU_DRAW_WALKER => gc;
+            emit global:e_PINGU_DRAW_OTHERS => gc;
         end
     with
         every w in WORLD_UPDATE do

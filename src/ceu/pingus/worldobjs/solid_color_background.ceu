@@ -25,12 +25,10 @@ do
     finalize with _delete_obj(color); end
 
     par/or do
-        every package in WORLDOBJ_DRAW do
-            if package:worldobj != &scb then
-                continue;
-            end
+        every gc in e_DRAW do
+_printf("draw scb");
 
-            _gc_color_fill_screen(package:gc, _deref(color));
+            _gc_color_fill_screen(gc, _deref(color));
         end
     with
         await e_DELETE;

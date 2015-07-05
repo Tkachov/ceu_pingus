@@ -37,12 +37,10 @@ do
             _delete_obj(mask);
         end
     with
-        every package in WORLDOBJ_DRAW do
-            if package:worldobj != &smasher then
-                continue;
-            end
+        every gc in e_DRAW do
+_printf("draw smasher");
 
-            _gc_color_draw2(package:gc, &sprite, smasher.pos);
+            _gc_color_draw2(gc, &sprite, smasher.pos);
         end
     with
         every w in WORLD_UPDATE do

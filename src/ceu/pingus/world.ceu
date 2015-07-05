@@ -77,6 +77,9 @@ end
 
 native @pure _reader_read_Groundtype(), _Resource__load_surface(), _opeq(), _new_Surface(), _new_Container();
 
+input _WorldDrawPackage* WORLD_DRAW;
+input IWorldObj* WORLD_DRAW_OBJECT;
+
 class World with
     interface IWorld;
     var _World& me;
@@ -207,25 +210,22 @@ do
         return null;
     end
 
+    var bool draw_iterating = false;
+    var _SceneContext* gc = null;
+
     par/or do
-        every package in WORLDOBJ_DRAW do
-        /*            
-            var Node* n = objs.first;
-            loop do
-                if n == null then
-                    break;
-                end
-
-                //TODO: remove the check
-                //it can be done when all world objects would be registered in SortedList
-                //and for that we need to port all these world objects
-                if package:worldobj == n:ceu:me then
-                    emit n:ceu:e_DRAW => package:gc;
-                end
-
-                n = (Node*)n:next;
+        every package in WORLD_DRAW do
+            draw_iterating = true;
+            gc = _PTR2REF(package:gc);            
+            objs.iterate(_CEU_IN_WORLD_DRAW_OBJECT);            
+            draw_iterating = false;
+            gc = null;
+        end
+    with
+        every object in WORLD_DRAW_OBJECT do            
+            if draw_iterating and gc != null then                
+                emit object:e_DRAW => gc;
             end
-        */
         end
     with
         every w in WORLD_UPDATE do
@@ -681,68 +681,20 @@ do
             if w != &me_ then
                 continue;
             end
-
-            /*
-            _printf("CLEAN_WORLD (current count: %d)\n", objs.cnt);
-
-            if objs.first != null then        
-                if objs.first:ceu != null then                    
-                    emit objs.first:ceu:e_DELETE;
-                    _fflush(_stdout);
-                    objs.first:ceu = null;
-                end
-
-                objs.first = (Node*)objs.first:next;
-                objs.cnt = objs.cnt - 1;
-            end
-            */
-
-            _printf("called iterate:\n");
+            
             objs.iterate(_CEU_IN_WORLD_DELETE_OBJECT);
-            _printf("done iteratin'\n");
         end
     with
-        every object in WORLD_DELETE_OBJECT do
-            _printf("remove object\n");
+        every object in WORLD_DELETE_OBJECT do            
             emit object:e_DELETE;
-            _printf("done\n");
         end 
     with
         every w in DELETE_WORLD do
             if w == &me_ then
                 break;
             end
-/*
-            if w != &me_ then
-                continue;
-            end
-
-            _printf("~world ceu: removing %d items\n", objs.cnt);
-
-            var Node* n = objs.first;
-            var int ccnt = 0;
-            loop do
-                if n == null then
-                    break;
-                end
-                
-                if n:ceu != null then
-                    _printf("%d: ", ccnt);                    
-                    emit n:ceu:e_DELETE;
-                    _fflush(_stdout);
-                end
-
-                ccnt = ccnt + 1;
-
-                n = (Node*)n:next;
-            end
-
-            break;
-*/
         end
     end
-
-    finalize with _printf("ceu world finalized\n"); end
 end
 
 #endif

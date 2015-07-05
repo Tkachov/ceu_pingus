@@ -54,19 +54,17 @@ do
     finalize with _delete_obj(color); end;
 
     par/or do
-        every package in WORLDOBJ_DRAW do
-            if package:worldobj != &surface_background then
-                continue;
-            end
+        every gc in e_DRAW do
+_printf("draw surface_background");
 
-            //_gc_color_draw2(package:gc, &sprite, surface_background.pos);
+            //_gc_color_draw2(gc, &sprite, surface_background.pos);
 
             if not sprite then
                 continue;
             end
 
-            var int offset_x = package:gc:color().world_to_screen(_Vector2i(0,0)).x - package:gc:color().get_rect().left;
-            var int offset_y = package:gc:color().world_to_screen(_Vector2i(0,0)).y - package:gc:color().get_rect().top;
+            var int offset_x = gc:color().world_to_screen(_Vector2i(0,0)).x - gc:color().get_rect().left;
+            var int offset_y = gc:color().world_to_screen(_Vector2i(0,0)).y - gc:color().get_rect().top;
 
             var int start_x = (float)offset_x*para_x + scroll_ox;
             var int start_y = (float)offset_y*para_y + scroll_oy;
@@ -91,7 +89,7 @@ do
                         break;
                     end
 
-                    _gc_color_draw2(package:gc, &sprite, _Vector3f(x-offset_x, y-offset_y, surface_background.pos.z) finalize with end);
+                    _gc_color_draw2(gc, &sprite, _Vector3f(x-offset_x, y-offset_y, surface_background.pos.z) finalize with end);
 
                     x = x + sprite.get_width();
                 end

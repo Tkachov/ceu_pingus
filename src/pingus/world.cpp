@@ -84,8 +84,7 @@ World::init_worldobjs(const PingusLevel& plf)
 World::~World()
 {
   World* self = this;
-  //for(int i=0; i<world_obj.size(); ++i)
-    ceu_out_go(&CEUapp, CEU_IN_CLEAN_WORLD, &self);
+  ceu_out_go(&CEUapp, CEU_IN_CLEAN_WORLD, &self);
   ceu_out_go(&CEUapp, CEU_IN_DELETE_WORLD, &self);
 }
 
@@ -96,10 +95,9 @@ World::draw (SceneContext& gc)
 
   gc.light().fill_screen(Color(ambient_light));
 
-  for(WorldObjIter obj = world_obj.begin(); obj != world_obj.end(); ++obj)
-  {
-    (*obj)->draw(gc);
-  }
+  WorldDrawPackage package(this, &gc);
+  WorldDrawPackage* pp = &package;
+  ceu_out_go(&CEUapp, CEU_IN_WORLD_DRAW, &pp);
 }
 
 void
