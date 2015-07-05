@@ -29,8 +29,10 @@ do
     emit global:world:get_list():e_INSERT => &this;
 
     //delete entrance
-    finalize with _delete_obj(smallmap_symbol); end;
-    finalize with _delete_obj(surface); end;
+    finalize with        
+        _delete_obj(smallmap_symbol);
+        _delete_obj(surface);        
+    end;
 
     var int last_release = 150 - release_rate;
     var bool go_left = true;
@@ -73,6 +75,7 @@ do
         end
     with
         await e_DELETE;
+        _printf("entrance DELETE\n");
     end
 end
 

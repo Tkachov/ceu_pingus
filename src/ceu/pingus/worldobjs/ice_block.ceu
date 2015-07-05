@@ -64,6 +64,7 @@ do
         end
     with
         await e_DELETE;
+        _printf("ice_block DELETE\n");
     end
 end
 

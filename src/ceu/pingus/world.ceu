@@ -80,7 +80,9 @@ native @pure _reader_read_Groundtype(), _Resource__load_surface(), _opeq(), _new
         if n == null then \
             break; \
         end \
-        e \
+        if n:ceu != null then \
+            e \
+        end \
         n = (Node*)n:next; \
     end
 
@@ -365,7 +367,7 @@ do
                 package:result = this.me;
 
                 package:reader:read_vector("position", _PTR2REF(this.me:pos));
-                this.desc = _PTR2REF(_new_ResDescriptor());
+                this.desc = _PTR2REF(_new_ResDescriptor());                
                 package:reader:read_desc("surface", _deref(this.desc));
                 this.gptype = _GT_GROUND;
                 _reader_read_Groundtype(package:reader, "type", _PTR2REF(this.gptype));
@@ -676,9 +678,18 @@ do
     with
         var _World* p = await DELETE_WORLD until (p == &me_);
     end
-    
+
+/*
+    await 1s;
+    emit objs.e_REMOVE => &holder;
+    emit objs.e_REMOVE => &pingu_particles_holder;
+    emit objs.e_REMOVE => &rain_particles_holder;
+    emit objs.e_REMOVE => &smoke_particles_holder;
+    emit objs.e_REMOVE => &snow_particles_holder;
+    emit objs.e_REMOVE => &gfx_map;
+*/
     emit objs.e_DELETE;
-    global:world = null;
+    //global:world = null;
 end
 
 #endif

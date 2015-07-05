@@ -21,8 +21,8 @@ do
 
     par/or do
         every gc in e_DRAW do
-            //original FIXME: para support doesnn't work correctly
-            _gc_color_draw2(gc, &sprite, hotspot.pos);
+            //original FIXME: para support doesnn't work correctly            
+            _gc_color_draw2(gc, &sprite, hotspot.pos);            
         end
     with
         every e_UPDATE do
@@ -30,6 +30,7 @@ do
         end
     with
         await e_DELETE;
+        _printf("hotspot DELETE\n");
     end
 end
 

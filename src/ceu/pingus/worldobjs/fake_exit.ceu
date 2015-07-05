@@ -62,6 +62,7 @@ do
         end
     with
         await e_DELETE;
+        _printf("fake_exit DELETE\n");
     end
 end
 
