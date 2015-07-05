@@ -3,7 +3,6 @@
 
 #include "../c.ceu"
 #include "../sdl.ceu"
-#include "../sorted_list.ceu"
 #include "iworld.ceu"
 #include "pingu.ceu"
 #include "pingu_holder.ceu"
@@ -34,6 +33,8 @@
 #include "worldobjs/switch_door_switch.ceu"
 #include "worldobjs/teleporter.ceu"
 #include "worldobjs/teleporter_target.ceu"
+
+input IWorldObj* WORLD_DELETE_OBJECT;
 
 input _World* DELETE_WORLD;
 input _WOCPackage* NEW_CONVEYOR_BELT;
@@ -69,9 +70,12 @@ native/pre do
 
     ##define opeq(x, y) *x = y
     ##define new_Surface() new Surface()
+
+    ##include "util/container.h"
+    ##define new_Container() new Container()
 end
 
-native @pure _reader_read_Groundtype(), _Resource__load_surface(), _opeq(), _new_Surface();
+native @pure _reader_read_Groundtype(), _Resource__load_surface(), _opeq(), _new_Surface(), _new_Container();
 
 class World with
     interface IWorld;
@@ -81,7 +85,13 @@ class World with
     pool ISwitchDoorDoor[] switch_door_doors;
 do
     var _World&? me_ = _PTR2REF((_World*)&this.me);
-    var SortedList objs;
+    var _Container&? objs = _PTR2REF(_new_Container());
+    finalize with _delete_obj(objs); end
+
+    function (IWorldObj* o) => void add_object do
+        objs.add((void*)o, o:me:get_z_pos());
+        objs.sort();
+    end
 
     var PinguHolder holder with
         this.me = _new_WorldObj();
@@ -157,10 +167,6 @@ do
         me_.world_obj.push_back(_PTR2REF(this.me));
     end;
 
-    function (void) => ISortedList* get_list do
-        return objs;
-    end
-
     function (void) => IPinguHolder* get_pingus do
         return holder;
     end
@@ -203,6 +209,7 @@ do
 
     par/or do
         every package in WORLDOBJ_DRAW do
+        /*            
             var Node* n = objs.first;
             loop do
                 if n == null then
@@ -218,6 +225,7 @@ do
 
                 n = (Node*)n:next;
             end
+        */
         end
     with
         every w in WORLD_UPDATE do
@@ -669,10 +677,72 @@ do
             end;
         end
     with
-        var _World* p = await DELETE_WORLD until (p == &me_);
+        every w in CLEAN_WORLD do
+            if w != &me_ then
+                continue;
+            end
+
+            /*
+            _printf("CLEAN_WORLD (current count: %d)\n", objs.cnt);
+
+            if objs.first != null then        
+                if objs.first:ceu != null then                    
+                    emit objs.first:ceu:e_DELETE;
+                    _fflush(_stdout);
+                    objs.first:ceu = null;
+                end
+
+                objs.first = (Node*)objs.first:next;
+                objs.cnt = objs.cnt - 1;
+            end
+            */
+
+            _printf("called iterate:\n");
+            objs.iterate(_CEU_IN_WORLD_DELETE_OBJECT);
+            _printf("done iteratin'\n");
+        end
+    with
+        every object in WORLD_DELETE_OBJECT do
+            _printf("remove object\n");
+            emit object:e_DELETE;
+            _printf("done\n");
+        end 
+    with
+        every w in DELETE_WORLD do
+            if w == &me_ then
+                break;
+            end
+/*
+            if w != &me_ then
+                continue;
+            end
+
+            _printf("~world ceu: removing %d items\n", objs.cnt);
+
+            var Node* n = objs.first;
+            var int ccnt = 0;
+            loop do
+                if n == null then
+                    break;
+                end
+                
+                if n:ceu != null then
+                    _printf("%d: ", ccnt);                    
+                    emit n:ceu:e_DELETE;
+                    _fflush(_stdout);
+                end
+
+                ccnt = ccnt + 1;
+
+                n = (Node*)n:next;
+            end
+
+            break;
+*/
+        end
     end
 
-    await 1s;
+    finalize with _printf("ceu world finalized\n"); end
 end
 
 #endif

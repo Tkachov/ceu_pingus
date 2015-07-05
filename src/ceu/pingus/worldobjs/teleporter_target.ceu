@@ -15,6 +15,7 @@ class TeleporterTarget with
     var _Sprite&? sprite;
 do
     var _WorldObj&? teleporter = _PTR2REF(me);
+    global:world:add_object(&this);
 
     //delete teleporter_target
     finalize with _delete_obj(sprite); end;
@@ -40,7 +41,8 @@ do
             sprite.update();
         end
     with
-        var _WorldObj* e = await DELETE_WORLDOBJ until (e == &teleporter);
+        await e_DELETE;
+        _printf("teleporter_target DELETE\n");
     end
 end
 

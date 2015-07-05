@@ -83,11 +83,9 @@ World::init_worldobjs(const PingusLevel& plf)
 
 World::~World()
 {
-  for (WorldObjIter it = world_obj.begin(); it != world_obj.end(); ++it) {
-    delete *it;
-  }
-
   World* self = this;
+  //for(int i=0; i<world_obj.size(); ++i)
+    ceu_out_go(&CEUapp, CEU_IN_CLEAN_WORLD, &self);
   ceu_out_go(&CEUapp, CEU_IN_DELETE_WORLD, &self);
 }
 

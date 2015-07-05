@@ -18,6 +18,7 @@ native/pre do
 end
 
 input _World* WORLD_UPDATE;
+input _World* CLEAN_WORLD;
 
 interface IWorld with
     function (void) => IPinguHolder* get_pingus;
@@ -28,7 +29,7 @@ interface IWorld with
     function (_const_char_string id) => ITeleporterTarget* get_teleporter_target;
     function (_const_char_string id) => ISwitchDoorDoor* get_switch_door_door;
 
-    function (void) => ISortedList* get_list;
+    function (IWorldObj* o) => void add_object;
 end
 
 #endif

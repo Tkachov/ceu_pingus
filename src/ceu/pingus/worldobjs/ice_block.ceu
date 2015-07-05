@@ -19,6 +19,7 @@ class IceBlock with
     var _CollisionMask&? block_sur_cmap;
 do
     var _WorldObj&? ice_block = _PTR2REF(me);
+    global:world:add_object(&this);
     //delete ice_block
     finalize with _delete_obj(block_sur); end
     finalize with _delete_obj(block_sur_cmap); end
@@ -73,7 +74,8 @@ do
             end
         end
     with
-        var _WorldObj* e = await DELETE_WORLDOBJ until (e == &ice_block);
+        await e_DELETE;
+        _printf("ice_block DELETE\n");
     end
 end
 

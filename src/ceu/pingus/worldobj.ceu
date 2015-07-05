@@ -36,6 +36,7 @@ interface IWorldObj with
     var _WorldObj* me;
 
     event _SceneContext* e_DRAW;
+    event void e_DELETE;
 end
 
 #endif

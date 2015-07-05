@@ -26,7 +26,7 @@ do
     var int pingus_dead = 0;
 
     var _WorldObj&? wobj = _PTR2REF(me);
-    emit global:world:get_list():e_INSERT => &this;
+    global:world:add_object(&this);
     //finalize with _delete_obj(me); end
 
     function @rec (int id) => IPingu* get_pingu do
@@ -43,7 +43,10 @@ do
         return result;
     end
 
-    par do
+    par/or do
+        await e_DELETE;
+        _printf("pingu holder DELETE\n");
+    with
         every package in WORLDOBJ_DRAW do
             if package:worldobj != &wobj then
                 continue;

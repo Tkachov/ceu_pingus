@@ -22,6 +22,7 @@ class Groundpiece with
     var int gptype;
 do
     var _WorldObj&? groundpiece = _PTR2REF(me);
+    global:world:add_object(&this);
     //finalize with _delete_obj(me); end
     finalize with _delete_obj(desc); end
 
@@ -45,7 +46,8 @@ do
             _delete_obj(mask);
         end
     with
-        var _WorldObj* e = await DELETE_WORLDOBJ until (e == &groundpiece);
+        await e_DELETE;
+        _printf("groundpiece DELETE\n");
     end
 end
 

@@ -13,6 +13,7 @@ class LaserExit with
     var _Sprite&? surface;
 do
     var _WorldObj&? exit = _PTR2REF(me);
+    global:world:add_object(&this);
     var bool killing = false;
 
     //delete laser_exit
@@ -58,7 +59,8 @@ do
             end
         end
     with
-        var _WorldObj* e = await DELETE_WORLDOBJ until (e == &exit);
+        await e_DELETE;
+        _printf("laser_exit DELETE\n");
     end
 end
 

@@ -14,6 +14,7 @@ class Hotspot with
     var float para;
 do
     var _WorldObj&? hotspot = _PTR2REF(me);
+    global:world:add_object(&this);
     //finalize with _delete_obj(me); end
     finalize with _delete_obj(sprite); end
 
@@ -35,7 +36,8 @@ do
             sprite.update();
         end
     with
-        var _WorldObj* e = await DELETE_WORLDOBJ until (e == &hotspot);
+        await e_DELETE;
+        _printf("hotspot DELETE\n");
     end
 end
 

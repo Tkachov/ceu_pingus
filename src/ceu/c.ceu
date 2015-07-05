@@ -4,11 +4,12 @@
 native _assert(),
        _malloc();
 
-native @const _stderr;
+native @const _stdout, _stderr;
 
 native @nohold _FILE,
                _fopen(),
                _fprintf(),
+               _fflush(),
                _free(),
                _printf(),
                _sprintf(),

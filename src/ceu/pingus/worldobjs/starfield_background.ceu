@@ -17,6 +17,7 @@ class StarfieldBackground with
     var int large_stars_count;
 do
     var _WorldObj&? hotspot = _PTR2REF(me);
+    global:world:add_object(&this);
     //finalize with _delete_obj(me); end
 
     pool StarfieldBackgroundStars[] stars;
@@ -60,7 +61,8 @@ do
             end
         end
     with
-        var _WorldObj* e = await DELETE_WORLDOBJ until (e == &hotspot);
+        await e_DELETE;
+        _printf("starfield_background DELETE\n");
     end
 end
 

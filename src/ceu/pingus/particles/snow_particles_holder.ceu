@@ -36,7 +36,7 @@ class SnowParticlesHolder with
     var _Vector_SnowParticle&? particles;
 do
     var _WorldObj&? holder = _PTR2REF(me);
-    emit global:world:get_list():e_INSERT => &this;
+    global:world:add_object(&this);
     //finalize with _delete_obj(me); end
     finalize with _delete_obj(snow1); end
     finalize with _delete_obj(snow2); end
@@ -64,7 +64,8 @@ do
             _SnPH_update(particles, holder.world, ground);
         end
     with
-        var _WorldObj* e = await DELETE_WORLDOBJ until (e == &holder);
+        await e_DELETE;
+        _printf("SnPH DELETE\n");
     end
 end
 

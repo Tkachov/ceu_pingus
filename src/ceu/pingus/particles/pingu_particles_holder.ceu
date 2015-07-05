@@ -31,7 +31,7 @@ class PinguParticlesHolder with
     var _Vector_PinguParticle&? particles;
 do
     var _WorldObj&? holder = _PTR2REF(me);
-    emit global:world:get_list():e_INSERT => &this;
+    global:world:add_object(&this);
     //finalize with _delete_obj(me); end
     finalize with _delete_obj(sprite); end
     finalize with _delete_obj(particles); end
@@ -53,7 +53,8 @@ do
             _PPH_update(particles, holder.world);
         end
     with
-        var _WorldObj* e = await DELETE_WORLDOBJ until (e == &holder);
+        await e_DELETE;
+        _printf("PPH DELETE\n");
     end
 end
 

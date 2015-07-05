@@ -14,6 +14,7 @@ class Liquid with
     var int width;
 do
     var _WorldObj&? liquid = _PTR2REF(me);
+    global:world:add_object(&this);
     //finalize with _delete_obj(me); end
     finalize with _delete_obj(sprite); end
 
@@ -63,7 +64,8 @@ do
             sprite.update(0.033);
         end
     with
-        var _WorldObj* e = await DELETE_WORLDOBJ until (e == &liquid);
+        await e_DELETE;
+        _printf("liquid DELETE\n");
     end
 end
 

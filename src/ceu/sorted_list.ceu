@@ -17,25 +17,19 @@ class Node with
     interface INode;
     var INode* next;
 do
-    every 1s do
-        if destroy then
-            break;
-        end
+    finalize with
+        _printf("~Node\n");
     end
-
-    if next != null then
-        next:destroy = true;
-    end
+    await FOREVER;
 end
 
 class SortedList with
     interface ISortedList;
     var Node* first = null;
+    var int cnt = 0;
 do
     finalize with
-        if first != null then
-            first:destroy = true;
-        end
+        _printf("~SortedList\n");
     end
 
     every object in e_INSERT do
@@ -63,6 +57,8 @@ do
             this.destroy = false;
             new_node = &this;
         end;
+
+        cnt = cnt + 1;
 
         if before == null then
             new_node:next = first;
