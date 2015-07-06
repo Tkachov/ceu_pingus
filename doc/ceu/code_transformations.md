@@ -69,3 +69,42 @@ Having a special "none" value can give us more headache, though. Can a Pingu cha
 ### Having `WORLDOBJ_STARTUP`
 
 That exact event should be passed to a world object only once. But as it's emitted in C++, we can't make that a Céu class method yet. That means each time there is a new world object, all others will get an event and ignore it, as it's not for them. I'm not sure if that world object even have to get such event, so I can't just move it out of `par` section for organism to first await his startup event, and then function as usual.
+
+### Particles holders and `GroundMap` ports
+
+These keep a `std::vector` of special particle `struct`s or `MapTile` `class` and iterate over it during `DRAW` and `UPDATE` events. Instead of doing something like
+
+```
+	loop i in v.size() do
+		...
+	end
+```
+
+I just left all code in C++ as global (in a namespace) functions. Now Céu organisms call these, passing inner fields (like `vector` or some sprites) as parameters of these functions.
+
+I needed the classes ported to remove `WorldObj`, so that was the simplest solution. I'll do an actual port of these later.
+
+### `Container`
+
+The `Container` class is needed to storage Céu organisms and iterate over that collection inside Céu.
+
+I tried the approach with Céu `SortedList` class, which was a linked list of `Node` organisms, and it actually worked... more or less. Somehow `loop` iterations were stopping and then continuing after a few seconds. Usually it just crashed with segfault after first stop.
+
+So, when C++ iterates over whole collection and calls `update()`, it's OK. When C++ iterates over it and emits Céu `UPDATE` events, that's also OK. When C++ emits one `UPDATE` event and in Céu we do a `loop` and emit `e_UPDATE` events of organisms themselves, that either stops (not all organisms are updated) or crashes.
+
+That's why I decided that `Container` will have an `iterate(int event)` method, in which C++ will iterate over storaged pointers to Céu organisms and emit passed `event`. As we usually want to iterate a collection to notify about some event we just been notified about, it becomes something like that:
+
+```
+par do
+    every WORLD_UPDATE do
+        ...
+        container.iterate(_CEU_IN_WORLD_UPDATE_OBJECT);
+    end
+with
+    every object in WORLD_UPDATE_OBJECT do
+        emit object:e_UPDATE;
+    end
+end
+```
+
+Yes, it guarantees that **all** objects are updated in **necessary order**. But as `Container` can't emit an event of object itself, we have to add more Céu events. More than that, if we want to pass a parameter, we have to remember it in a local variable and use it in another `every` block (actually, that can be fixed by adding a special "package" `struct`, which would contain both current object pointer and passed parameter).

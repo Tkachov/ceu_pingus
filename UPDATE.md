@@ -2,13 +2,33 @@
 
 ## What I was supposed to do the past week?
 
+Remove C++ `WorldObj` instance from Céu `IWorldObj`;
+Port more of `World` (port all of it, if there is time, because it requires porting other classes);
+Add a Céu wrapper for `Sprite`.
+
+## What I actually did the past week?
+
+## What I'll do this week?
+
+# Week 6 (29/06--5/07)
+
+## What I was supposed to do the past week?
+
 Port world objects;
 Sprites;
 Document bad and good examples of ported code?
 
 ## What I actually did the past week?
 
+Ported all world objects;
+Ported `World`'s part where it contains and iterates over `WorldObj`s;
+Documented bad and good examples of ported code.
+
 ## What I'll do this week?
+
+Remove C++ `WorldObj` instance from Céu `IWorldObj`;
+Port more of `World` (port all of it, if there is time, because it requires porting other classes);
+Add a Céu wrapper for `Sprite`.
 
 # Week 4 and 5 (15/06--28/06)
 
