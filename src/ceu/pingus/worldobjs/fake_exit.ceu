@@ -17,25 +17,35 @@ class FakeExit with
     var _Sprite&? sprite;
     var _Sprite&? smallmap_symbol;
     var bool smashing;
-do
-    var _WorldObj&? fake_exit = _PTR2REF((_WorldObj*)me);
-    global:world:add_object(&this);
+do    
+    call/rec global:world:add_object(&this);
 
     function (_FileReader* reader) => void construct do end;
 
+    function (void) => float get_z_pos do
+        return pos.z;
+    end
+
+    function (Vector3f p) => void set_pos do
+        pos = p;
+    end
+
+    function (void) => Vector3f get_pos do
+        return pos;
+    end
+
     finalize with
-        _delete_obj(fake_exit);
         _delete_obj(sprite);
         _delete_obj(smallmap_symbol);
     end;
 
     par/or do
         every gc in e_DRAW do
-            _gc_color_draw2(gc, &sprite, fake_exit.pos);
+            _gc_color_draw2(gc, &sprite, _toVector3f(pos));
         end
     with
         every smallmap in e_DRAW_SMALLMAP do
-            smallmap:draw_sprite(_deref(smallmap_symbol), _PTR2REF(fake_exit.pos + _Vector3f(0, 115)));
+            smallmap:draw_sprite(_deref(smallmap_symbol), _toVector3f(pos) + _Vector3f(0, 115));
         end
     with
         every e_UPDATE do
@@ -44,8 +54,8 @@ do
                     smashing = false;
                 end
 
-                if pingu:get_x() > fake_exit.pos.x+31 and pingu:get_x() < fake_exit.pos.x+31+15 and
-                   pingu:get_y() > fake_exit.pos.y+56 and pingu:get_y() < fake_exit.pos.y+56+56 then
+                if pingu:get_x() > pos.x+31 and pingu:get_x() < pos.x+31+15 and
+                   pingu:get_y() > pos.y+56 and pingu:get_y() < pos.y+56+56 then
                     if pingu:get_current_action() != _A_SPLASHED and
                        pingu:get_current_action() != _A_DEAD and pingu:get_current_action() != _A_EXITED then
                         if not smashing then

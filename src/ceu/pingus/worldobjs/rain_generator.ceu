@@ -19,13 +19,14 @@ class RainGenerator with
     var float thunder_count;
     var float waiter_count;
 
-do
-    var _WorldObj&? rain_generator = _PTR2REF(me);
-    global:world:add_object(&this);
+do    
+    call/rec global:world:add_object(&this);
 
     function (_FileReader* reader) => void construct do end;
 
-    finalize with _delete_obj(rain_generator); end
+    function (void) => float get_z_pos do return 1000; end
+    function (Vector3f p) => void set_pos do end
+    function (void) => Vector3f get_pos do return pos; end
 
     do_thunder = false;
     thunder_count = 0;
@@ -61,7 +62,7 @@ do
             waiter_count = waiter_count - 20.0 * 0.025;
 
             loop i in 16 do
-                global:world:get_rain_particles_holder():add_particle(_rand()%(rain_generator.world:get_width()*2), -32);
+                global:world:get_rain_particles_holder():add_particle(_rand()%(_WorldObj__get_world():get_width()*2), -32);
             end
         end
     with

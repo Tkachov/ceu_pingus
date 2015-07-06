@@ -11,21 +11,31 @@
 class Hammer with
     interface IWorldObj;
     var _Sprite&? sprite;
-do
-    var _WorldObj&? hammer = _PTR2REF(me);
-    global:world:add_object(&this);
+do    
+    call/rec global:world:add_object(&this);
     var int current_frame = 0;
 
     function (_FileReader* reader) => void construct do end;
 
-    finalize with
-        _delete_obj(hammer);
+    function (void) => float get_z_pos do
+        return pos.z;
+    end
+
+    function (Vector3f p) => void set_pos do
+        pos = p;
+    end
+
+    function (void) => Vector3f get_pos do
+        return pos;
+    end
+
+    finalize with        
         _delete_obj(sprite);
     end;
 
     par/or do
         every gc in e_DRAW do
-            _gc_color_draw2(gc, &sprite, hammer.pos);
+            _gc_color_draw2(gc, &sprite, _toVector3f(pos));
         end
     with
         loop do
@@ -42,8 +52,8 @@ do
                             continue;
                         end
 
-                        if pingu:get_x() <= hammer.pos.x+55 or pingu:get_x() >= hammer.pos.x+77 or
-                           pingu:get_y() <= hammer.pos.y+146 or pingu:get_y() >= hammer.pos.y+185 then
+                        if pingu:get_x() <= pos.x+55 or pingu:get_x() >= pos.x+77 or
+                           pingu:get_y() <= pos.y+146 or pingu:get_y() >= pos.y+185 then
                             continue;
                         end
 

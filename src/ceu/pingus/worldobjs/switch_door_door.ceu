@@ -25,14 +25,16 @@ class SwitchDoorDoor with
     // The current height of the door, it might decrease when the door
     // is opening, it will be zero when the door is fully opened
     var int current_door_height;
-do
-    var _WorldObj&? switch_door_door = _PTR2REF(me);
-    global:world:add_object(&this);
+do    
+    call/rec global:world:add_object(&this);
 
     function (_FileReader* reader) => void construct do end;
 
+    function (void) => float get_z_pos do return 100; end
+    function (Vector3f p) => void set_pos do pos = p; end
+    function (void) => Vector3f get_pos do return pos; end
+
     finalize with
-        _delete_obj(switch_door_door);
         _delete_obj(id);
         _delete_obj(door_box);
         _delete_obj(door_box_cmap);
@@ -47,34 +49,34 @@ do
     par/or do
          every e_STARTUP do
             _world_put(
-                switch_door_door.world:get_colmap(),
+                _WorldObj__get_world():get_colmap(),
                 door_box_cmap,
-                (int)switch_door_door.pos.x,
-                (int)switch_door_door.pos.y,
+                (int)pos.x,
+                (int)pos.y,
                 _GT_SOLID
             );
 
             loop/100 i in door_height do
                 _world_put(
-                    switch_door_door.world:get_colmap(),
+                    _WorldObj__get_world():get_colmap(),
                     door_tile_cmap,
-                    (int)switch_door_door.pos.x,
-                    (int)switch_door_door.pos.y + i*door_tile.get_height() + door_box.get_height(),
+                    (int)pos.x,
+                    (int)pos.y + i*door_tile.get_height() + door_box.get_height(),
                     _GT_SOLID
                 );
             end
         end
     with
         every gc in e_DRAW do
-            _gc_color_draw2(gc, &door_box, switch_door_door.pos);
+            _gc_color_draw2(gc, &door_box, _toVector3f(pos));
             loop/500 i in current_door_height do
                 _gc_color_draw2(
                     gc,
                     &door_tile,
                     _Vector3f(
-                        switch_door_door.pos.x,
-                        switch_door_door.pos.y + (float)(i*door_tile.get_height() + door_box.get_height())
-                    ) finalize with end
+                        pos.x,
+                        pos.y + (float)(i*door_tile.get_height() + door_box.get_height())
+                    )
                 );
             end
         end
@@ -88,19 +90,19 @@ do
                 // it, we remove the door from the colmap
                 if current_door_height+10 < door_height then
                     _world_put(
-                        switch_door_door.world:get_colmap(),
+                        _WorldObj__get_world():get_colmap(),
                         door_box_cmap,
-                        (int)switch_door_door.pos.x,
-                        (int)switch_door_door.pos.y,
+                        (int)pos.x,
+                        (int)pos.y,
                         _GT_NOTHING
                     );
 
                     loop/100 i in door_height do
                         _world_put(
-                            switch_door_door.world:get_colmap(),
+                            _WorldObj__get_world():get_colmap(),
                             door_tile_cmap,
-                            (int)switch_door_door.pos.x,
-                            (int)switch_door_door.pos.y + i*door_tile.get_height() + door_box.get_height(),
+                            (int)pos.x,
+                            (int)pos.y + i*door_tile.get_height() + door_box.get_height(),
                             _GT_NOTHING
                         );
                     end

@@ -16,13 +16,14 @@ end
 class SnowGenerator with
     interface IWorldObj;
     var float intensity;
-do
-    var _WorldObj&? snow_generator = _PTR2REF(me);
-    global:world:add_object(&this);
+do    
+    call/rec global:world:add_object(&this);
 
     function (_FileReader* reader) => void construct do end;
 
-    finalize with _delete_obj(snow_generator); end
+    function (void) => float get_z_pos do return 1000; end
+    function (Vector3f p) => void set_pos do end
+    function (void) => Vector3f get_pos do return pos; end    
 
     par/or do
         every e_STARTUP do
@@ -40,16 +41,16 @@ do
         every e_UPDATE do
             loop/5000 i in _Math__floor(intensity) do
                 if _rand()%3 != 0 then
-                    global:world:get_snow_particles_holder():add_particle(_rand()%snow_generator.world:get_width(), -_globals__tile_size, false);
+                    global:world:get_snow_particles_holder():add_particle(_rand()%_WorldObj__get_world():get_width(), -_globals__tile_size, false);
                 else
-                    global:world:get_snow_particles_holder():add_particle(_rand()%snow_generator.world:get_width(), -_globals__tile_size, true);
+                    global:world:get_snow_particles_holder():add_particle(_rand()%_WorldObj__get_world():get_width(), -_globals__tile_size, true);
                 end
 
                 if (intensity - (float)(int)intensity) > _Math__frand() then
                     if _rand()%3 != 0 then
-                        global:world:get_snow_particles_holder():add_particle(_rand()%snow_generator.world:get_width(), -_globals__tile_size, false);
+                        global:world:get_snow_particles_holder():add_particle(_rand()%_WorldObj__get_world():get_width(), -_globals__tile_size, false);
                     else
-                        global:world:get_snow_particles_holder():add_particle(_rand()%snow_generator.world:get_width(), -_globals__tile_size, true);
+                        global:world:get_snow_particles_holder():add_particle(_rand()%_WorldObj__get_world():get_width(), -_globals__tile_size, true);
                     end
                 end
             end

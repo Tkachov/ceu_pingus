@@ -16,14 +16,24 @@ class Guillotine with
 
     var _Direction&? direction;
     var bool killing;
-do
-    var _WorldObj&? guillotine = _PTR2REF(me);
-    global:world:add_object(&this);
+do    
+    call/rec global:world:add_object(&this);
 
     function (_FileReader* reader) => void construct do end;
 
-    finalize with
-        _delete_obj(guillotine);
+    function (void) => float get_z_pos do
+        return pos.z;
+    end
+
+    function (Vector3f p) => void set_pos do
+        pos = p;
+    end
+
+    function (void) => Vector3f get_pos do
+        return pos;
+    end
+
+    finalize with        
         _delete_obj(direction);
         _delete_obj(sprite_kill_left);
         _delete_obj(sprite_kill_right);
@@ -34,12 +44,12 @@ do
         every gc in e_DRAW do
             if killing then
                 if direction.is_left() then
-                    _gc_color_draw2(gc, &sprite_kill_left, guillotine.pos);
+                    _gc_color_draw2(gc, &sprite_kill_left, _toVector3f(pos));
                 else
-                    _gc_color_draw2(gc, &sprite_kill_right, guillotine.pos);
+                    _gc_color_draw2(gc, &sprite_kill_right, _toVector3f(pos));
                 end
             else
-                _gc_color_draw2(gc, &sprite_idle, guillotine.pos);
+                _gc_color_draw2(gc, &sprite_idle, _toVector3f(pos));
             end
         end
     with
@@ -51,7 +61,7 @@ do
 
             if not killing then
                 loop pingu in global:world:get_pingus():all_pingus do
-                    if pingu:is_inside((int)(guillotine.pos.x + 38), (int)(guillotine.pos.y + 90), (int)(guillotine.pos.x + 42), (int)(guillotine.pos.y + 98)) then
+                    if pingu:is_inside((int)(pos.x + 38), (int)(pos.y + 90), (int)(pos.x + 42), (int)(pos.y + 98)) then
                         killing = true;
                         direction = _PTR2REF(pingu:direction);
                         emit pingu:e_CHANGE_ACTION => _A_DEAD;
@@ -69,7 +79,7 @@ do
 
                 // original FIXME: Should be a different sound
                 if sprite_kill_left.get_current_frame() == 7 then
-                    _WorldObj__get_world_play_sound("splash", guillotine.pos);
+                    _WorldObj__get_world_play_sound("splash", _toVector3f(pos));
                 end
             else
                 sprite_idle.update();

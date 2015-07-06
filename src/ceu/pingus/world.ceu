@@ -58,6 +58,7 @@ input _WOCPackage* NEW_TELEPORTER;
 input _WOCPackage* NEW_TELEPORTER_TARGET;
 
 input _GetStartPosPackage* WORLD_GET_START_POS;
+input _PrefabPackage* PREFAB_POS;
 
 native/pre do
     ##define reader_read_Groundtype(r, s, v) r->read_enum(s, v, &Groundtype::string_to_type);
@@ -72,9 +73,13 @@ native/pre do
     ##define new_Container() new Container()
 
     ##define WorldObj__set_world WorldObj::set_world
+
+    ##define read_position(r, p) Vector3f __v; r->read_vector("position", __v); p.x = __v.x; p.y = __v.y; p.z = __v.z;
+    ##define read_position2(r, p, res) Vector3f __v; res = r->read_vector("position", __v); p.x = __v.x; p.y = __v.y; p.z = __v.z;
 end
 
-native @pure _reader_read_Groundtype(), _Resource__load_surface(), _opeq(), _new_Surface(), _new_Container(), _WorldObj__set_world();
+native @pure _reader_read_Groundtype(), _Resource__load_surface(), _opeq(), _new_Surface(), _new_Container(), _WorldObj__set_world(),
+             _read_position(), _read_position2();
 
 input _World* WORLD_STARTUP;
 input _WorldDrawSmallmapPackage* WORLD_DRAW_SMALLMAP;
@@ -97,8 +102,8 @@ do
     var _Container&? objs = _PTR2REF(_new_Container());
     finalize with _delete_obj(objs); end
 
-    function (IWorldObj* o) => void add_object do
-        objs.add((void*)o, o:me:get_z_pos());
+    function @rec (IWorldObj* o) => void add_object do
+        objs.add((void*)o, o:get_z_pos());
         objs.sort();
     end
 
@@ -106,52 +111,29 @@ do
         objs.remove((void*)o);
     end
 
-    var PinguHolder holder with
-        this.me = _new_WorldObj();
-        this.me:world = &me_;
-
+    var PinguHolder holder with        
         this.holder = me_.pingus;
-
-        this.me:pos.z = 50; //TODO: somehow guarantee that it always stays that way
     end;
 
     var PinguParticlesHolder pingu_particles_holder with
-        this.me = _new_WorldObj();
-        this.me:world = &me_;
-
         this.sprite = _PTR2REF(_new_SpriteA("particles/pingu_explo"));
         this.particles = _PTR2REF(_new_Vector_PinguParticle());
-
-        this.me:pos.z = 1000; //TODO: somehow guarantee that it always stays that way
     end;
 
     var RainParticlesHolder rain_particles_holder with
-        this.me = _new_WorldObj();
-        this.me:world = &me_;
-
         this.rain1_surf = _PTR2REF(_new_SpriteA("particles/rain1"));
         this.rain2_surf = _PTR2REF(_new_SpriteA("particles/rain2"));
         this.rain_splash = _PTR2REF(_new_SpriteA("particles/rain_splash"));
         this.particles = _PTR2REF(_new_Vector_RainParticle());
-
-        this.me:pos.z = 1000; //TODO: somehow guarantee that it always stays that way
     end;
 
     var SmokeParticlesHolder smoke_particles_holder with
-        this.me = _new_WorldObj();
-        this.me:world = &me_;
-
         this.surf1 = _PTR2REF(_new_SpriteA("particles/smoke"));
         this.surf2 = _PTR2REF(_new_SpriteA("particles/smoke2"));
         this.particles = _PTR2REF(_new_Vector_SmokeParticle());
-
-        this.me:pos.z = 1000; //TODO: somehow guarantee that it always stays that way
     end;
 
     var SnowParticlesHolder snow_particles_holder with
-        this.me = _new_WorldObj();
-        this.me:world = &me_;
-
         this.snow1 = _PTR2REF(_new_SpriteA("particles/snow1"));
         this.snow2 = _PTR2REF(_new_SpriteA("particles/snow2"));
         this.snow3 = _PTR2REF(_new_SpriteA("particles/snow3"));
@@ -159,17 +141,11 @@ do
         this.snow5 = _PTR2REF(_new_SpriteA("particles/snow5"));
         this.ground = _PTR2REF(_new_CollisionMask("particles/ground_snow"));
         this.particles = _PTR2REF(_new_Vector_SnowParticle());
-
-        this.me:pos.z = 1000; //TODO: somehow guarantee that it always stays that way
     end;
 
     var GroundMap gfx_map with
-        this.me = _new_WorldObj();
-        this.me:world = &me_;
-
         this.gmap = _PTR2REF(_new_GroundMap(me_.mwidth, me_.mheight));
 
-        this.me:pos.z = 0; //TODO: somehow guarantee that it always stays that way
         me_.gfx_map = _PTR2REF(this.gmap);
         me_.colmap = _PTR2REF(this.gmap.colmap.get());
     end;
@@ -301,38 +277,45 @@ do
             me_.armageddon_count = 0;
         end
     with
-        every package in WORLD_GET_START_POS do
-            if package:world != &me_ then
+        every p4ckage in PREFAB_POS do
+            var IWorldObj* wobject = (IWorldObj*)p4ckage:object;
+            //wobject:set_pos(wobject:get_pos() + p4ckage:pos);
+            wobject:pos.x = wobject:pos.x + p4ckage:pos.x;
+            wobject:pos.y = wobject:pos.y + p4ckage:pos.y;
+            wobject:pos.z = wobject:pos.z + p4ckage:pos.z;            
+        end
+    with
+        every packag3 in WORLD_GET_START_POS do
+            if packag3:world != &me_ then
                 continue;
             end
 
             var int num_entrances = 0;
 
             loop entrance in entrances do
-                if entrance:owner_id == package:player_id then
-                    package:pos.x = package:pos.x + entrance:me:get_pos().x;
-                    package:pos.y = package:pos.y + entrance:me:get_pos().y;
+                if entrance:owner_id == packag3:player_id then
+                    packag3:pos.x = packag3:pos.x + entrance:get_pos().x;
+                    packag3:pos.y = packag3:pos.y + entrance:get_pos().y;
                     num_entrances = num_entrances + 1;
                 end
             end
 
             if num_entrances>0 then
-                package:pos.x = package:pos.x/num_entrances;
-                package:pos.y = package:pos.y/num_entrances;
-                package:pos.y = package:pos.y+100;
+                packag3:pos.x = packag3:pos.x/num_entrances;
+                packag3:pos.y = packag3:pos.y/num_entrances;
+                packag3:pos.y = packag3:pos.y+100;
             end
         end
     with
         every package in NEW_CONVEYOR_BELT do
             spawn ConveyorBelt with
-                this.me = _new_WorldObj();
-                package:result = this.me;
+                package:result = &this;
 
                 this.left_sur = _PTR2REF(_new_SpriteA("worldobjs/conveyorbelt_left"));
                 this.right_sur = _PTR2REF(_new_SpriteA("worldobjs/conveyorbelt_right"));
                 this.middle_sur = _PTR2REF(_new_SpriteA("worldobjs/conveyorbelt_middle"));
 
-                package:reader:read_vector("position", _PTR2REF(this.me:pos));
+                _read_position(package:reader, this.pos);
                 if not package:reader:read_int("repeat", _PTR2REF(this.width)) then
                     _log_warn("old 'width' tag used");
                     package:reader:read_int("width", _PTR2REF(this.width));
@@ -343,8 +326,7 @@ do
     with
         every package in NEW_ENTRANCE do
             spawn Entrance in entrances with
-                this.me = _new_WorldObj();
-                package:result = this.me;
+                package:result = &this;
 
                 this.direction = ED_MISC;
                 this.release_rate = 150;
@@ -353,7 +335,7 @@ do
                 this.surface = _PTR2REF(_new_Sprite());
 
                 package:reader:read_int("owner-id", _PTR2REF(this.owner_id));
-                package:reader:read_vector("position", _PTR2REF(this.me:pos));
+                _read_position(package:reader, this.pos);
                 package:reader:read_int("release-rate",  _PTR2REF(this.release_rate));
 
                 // Set default owner ID to 0
@@ -381,12 +363,12 @@ do
     with
         every package in NEW_EXIT do
             spawn Exit with
-                this.me = _new_WorldObj();
-                package:result = this.me;
+                package:result = &this;
 
                 this.desc = _PTR2REF(_new_ResDescriptor());
                 this.smallmap_symbol = _PTR2REF(_new_SpriteA("core/misc/smallmap_exit"));
 
+                _read_position(package:reader, this.pos);
                 this.construct(package:reader); //can't put reference initiation there =(
 
                 this.flag = _PTR2REF(_new_SpriteA(_scc2("core/misc/flag", _StringUtil__to_string(this.owner_id))));
@@ -396,25 +378,23 @@ do
     with
         every package in NEW_FAKE_EXIT do
             spawn FakeExit with
-                this.me = _new_WorldObj();
-                package:result = this.me;
+                package:result = &this;
 
                 this.sprite = _PTR2REF(_new_SpriteA("traps/fake_exit"));
                 this.smallmap_symbol = _PTR2REF(_new_SpriteA("core/misc/smallmap_exit"));
                 this.smashing = false;
 
-                package:reader:read_vector("position", _PTR2REF(this.me:pos));
-                this.me:pos.x = this.me:pos.x - (float)this.sprite.get_width()/2;
-                this.me:pos.y = this.me:pos.y - (float)this.sprite.get_height();
+                _read_position(package:reader, this.pos);
+                this.pos.x = this.pos.x - (float)this.sprite.get_width()/2;
+                this.pos.y = this.pos.y - (float)this.sprite.get_height();
             end;
         end
     with
         every package in NEW_GROUNDPIECE do
             spawn Groundpiece with
-                this.me = _new_WorldObj();
-                package:result = this.me;
+                package:result = &this;
 
-                package:reader:read_vector("position", _PTR2REF(this.me:pos));
+                _read_position(package:reader, this.pos);
                 this.desc = _PTR2REF(_new_ResDescriptor());
                 package:reader:read_desc("surface", _deref(this.desc));
                 this.gptype = _GT_GROUND;
@@ -424,8 +404,7 @@ do
     with
         every package in NEW_GUILLOTINE do
             spawn Guillotine with
-                this.me = _new_WorldObj();
-                package:result = this.me;
+                package:result = &this;
 
                 this.sprite_kill_right = _PTR2REF(_new_SpriteA("traps/guillotinekill/right"));
                 this.sprite_kill_left = _PTR2REF(_new_SpriteA("traps/guillotinekill/left"));
@@ -433,7 +412,7 @@ do
                 this.direction = _new_Direction();
                 this.killing = false;
 
-                package:reader:read_vector("position", _PTR2REF(this.me:pos));
+                _read_position(package:reader, this.pos);
                 this.sprite_kill_right.set_play_loop(false);
                 this.sprite_kill_left.set_play_loop(false);
                 this.sprite_idle.set_play_loop(true);
@@ -442,22 +421,20 @@ do
     with
         every package in NEW_HAMMER do
             spawn Hammer with
-                this.me = _new_WorldObj();
-                package:result = this.me;
+                package:result = &this;
 
                 this.sprite = _PTR2REF(_new_SpriteA("traps/hammer"));
-                package:reader:read_vector("position", _PTR2REF(this.me:pos));
+                _read_position(package:reader, this.pos);
             end;
         end
     with
         every package in NEW_HOTSPOT do
             spawn Hotspot with
-                this.me = _new_WorldObj();
-                package:result = this.me;
+                package:result = &this;
 
                 var _ResDescriptor&? desc = _PTR2REF(_new_ResDescriptor());
 
-                package:reader:read_vector("position", _PTR2REF(this.me:pos));
+                _read_position(package:reader, this.pos);
                 package:reader:read_desc  ("surface",  _deref(desc));
                 package:reader:read_float ("parallax", _PTR2REF(this.para));
 
@@ -469,13 +446,12 @@ do
     with
         every package in NEW_ICE_BLOCK do
             spawn IceBlock with
-                this.me = _new_WorldObj();
-                package:result = this.me;
+                package:result = &this;
 
                 this.block_sur = _PTR2REF(_new_SpriteA("worldobjs/iceblock"));
                 this.block_sur_cmap = _PTR2REF(_new_CollisionMask("worldobjs/iceblock_cmap"));
 
-                package:reader:read_vector("position", _PTR2REF(this.me:pos));
+                _read_position(package:reader, this.pos);
                 if not package:reader:read_int("repeat", _PTR2REF(this.width)) then
                     _log_warn("old 'width' tag used");
                     package:reader:read_int("width", _PTR2REF(this.width));
@@ -485,24 +461,22 @@ do
     with
         every package in NEW_LASER_EXIT do
             spawn LaserExit with
-                this.me = _new_WorldObj();
-                package:result = this.me;
+                package:result = &this;
 
                 this.surface = _PTR2REF(_new_SpriteA("traps/laser_exit"));
-                package:reader:read_vector("position", _PTR2REF(this.me:pos));
+                _read_position(package:reader, this.pos);
             end;
         end
     with
         every package in NEW_LIQUID do
             spawn Liquid with
-                this.me = _new_WorldObj();
-                package:result = this.me;
+                package:result = &this;
 
                 this.width = 0;
 
                 var _ResDescriptor&? desc = _PTR2REF(_new_ResDescriptor());
 
-                package:reader:read_vector("position", _PTR2REF(this.me:pos));
+                _read_position(package:reader, this.pos);
                 package:reader:read_desc  ("surface",  _deref(desc));
                 package:reader:read_int   ("repeat",   _PTR2REF(this.width));
 
@@ -512,62 +486,52 @@ do
     with
         every package in NEW_RAIN_GENERATOR do
             spawn RainGenerator with
-                this.me = _new_WorldObj();
-                package:result = this.me;
-
-                this.me:pos.z = 1000; //TODO: somehow guarantee that it always stays that way
+                package:result = &this;
             end;
         end
     with
         every package in NEW_SMASHER do
             spawn Smasher with
-                this.me = _new_WorldObj();
-                package:result = this.me;
+                package:result = &this;
 
                 this.sprite = _PTR2REF(_new_SpriteA("traps/smasher"));
-                package:reader:read_vector("position", _PTR2REF(this.me:pos));
+                _read_position(package:reader, this.pos);
                 _assert(this.sprite.get_frame_count() == 6);
             end;
         end
     with
         every package in NEW_SNOW_GENERATOR do
             spawn SnowGenerator with
-                this.me = _new_WorldObj();
-                package:result = this.me;
+                package:result = &this;
 
                 this.intensity = 1;
                 package:reader:read_float("intensity", _PTR2REF(this.intensity));
-                this.me:pos.z = 1000; //TODO: somehow guarantee that it always stays that way
             end;
         end
     with
         every package in NEW_SOLID_COLOR_BACKGROUND do
             spawn SolidColorBackground with
-                this.me = _new_WorldObj();
-                package:result = this.me;
+                package:result = &this;
 
                 this.color = _PTR2REF(_new_Color());
                 if not package:reader:read_colori("colori", _deref(this.color)) then
                     package:reader:read_colorf("color", _deref(this.color));
-                end
-                this.me:pos.z = -10; //TODO: somehow guarantee that it always stays that way
+                end                
             end;
         end
     with
         every package in NEW_SPIKE do
             spawn Spike with
-                this.me = _new_WorldObj();
-                package:result = this.me;
+                package:result = &this;
 
                 this.surface = _PTR2REF(_new_SpriteA("traps/spike"));
-                package:reader:read_vector("position", _PTR2REF(this.me:pos));
+                _read_position(package:reader, this.pos);
             end;
         end
     with
         every package in NEW_STARFIELD_BACKGROUND do
             spawn StarfieldBackground with
-                this.me = _new_WorldObj();
-                package:result = this.me;
+                package:result = &this;
 
                 this.small_stars_count = 100;
                 this.middle_stars_count = 50;
@@ -576,16 +540,12 @@ do
                 package:reader:read_int("small-stars", _PTR2REF(this.small_stars_count));
                 package:reader:read_int("middle-stars", _PTR2REF(this.middle_stars_count));
                 package:reader:read_int("large-stars", _PTR2REF(this.large_stars_count));
-
-                //original FIXME: Make z_pos handling editable via xml
-                this.me:pos.z = -10; //TODO: somehow guarantee that it always stays that way
             end;
         end
     with
         every package in NEW_SURFACE_BACKGROUND do
             spawn SurfaceBackground with
-                this.me = _new_WorldObj();
-                package:result = this.me;
+                package:result = &this;
 
                 this.para_x = 0.5;
                 this.para_y = 0.5;
@@ -598,10 +558,12 @@ do
                 this.scroll_ox = 0;
                 this.scroll_oy = 0;
 
-                if not package:reader:read_vector("position", _PTR2REF(this.me:pos)) then
-                    this.me:pos.x = 0;
-                    this.me:pos.y = 0;
-                    this.me:pos.z = -150;
+                var bool res;
+                _read_position2(package:reader, this.pos, res);
+                if not res then
+                    this.pos.x = 0;
+                    this.pos.y = 0;
+                    this.pos.z = -150;
                 end
 
                 var _ResDescriptor&? desc = _PTR2REF(_new_ResDescriptor());
@@ -642,20 +604,20 @@ do
 
                     // Scaling Code
                     if this.stretch_x and this.stretch_y then
-                        _opeq(surface, surface.scale(this.me:world:get_width(), this.me:world:get_height()));
+                        _opeq(surface, surface.scale(_WorldObj__get_world():get_width(), _WorldObj__get_world():get_height()));
                     else/if this.stretch_x and not this.stretch_y then
                         if this.keep_aspect then
                             var float aspect = (float)surface.get_height() / (float)surface.get_width();
-                            _opeq(surface, surface.scale(this.me:world:get_width(), (int)((float)this.me:world:get_width()*aspect)));
+                            _opeq(surface, surface.scale(_WorldObj__get_world():get_width(), (int)((float)_WorldObj__get_world():get_width()*aspect)));
                         else
-                            _opeq(surface, surface.scale(this.me:world:get_width(), surface.get_height()));
+                            _opeq(surface, surface.scale(_WorldObj__get_world():get_width(), surface.get_height()));
                         end
                     else/if not this.stretch_x and this.stretch_y then
                         if this.keep_aspect then
                             var float aspect = (float)surface.get_width() / (float)surface.get_height();
-                            _opeq(surface, surface.scale((int)((float)this.me:world:get_height()*aspect), this.me:world:get_height()));
+                            _opeq(surface, surface.scale((int)((float)_WorldObj__get_world():get_height()*aspect), _WorldObj__get_world():get_height()));
                         else
-                            _opeq(surface, surface.scale(surface.get_width(), this.me:world:get_height()));
+                            _opeq(surface, surface.scale(surface.get_width(), _WorldObj__get_world():get_height()));
                         end
                     end
 
@@ -668,8 +630,7 @@ do
     with
         every package in NEW_SWITCH_DOOR_DOOR do
             spawn SwitchDoorDoor in switch_door_doors with
-                this.me = _new_WorldObj();
-                package:result = this.me;
+                package:result = &this;
 
                 this.id = _PTR2REF(_new_String());
                 _string_read_string(this.id, package:reader, "id");
@@ -680,8 +641,7 @@ do
                 this.door_tile_cmap = _PTR2REF(_new_CollisionMask("worldobjs/switchdoor_tile_cmap"));
                 this.is_opening = false;
 
-                package:reader:read_vector("position", _PTR2REF(this.me:pos));
-                this.me:pos.z = 100; //TODO: somehow guarantee that it always stays that way
+                _read_position(package:reader, this.pos);
 
                 package:reader:read_int("height", _PTR2REF(this.door_height));
                 this.current_door_height = this.door_height;
@@ -690,25 +650,22 @@ do
     with
         every package in NEW_SWITCH_DOOR_SWITCH do
             spawn SwitchDoorSwitch with
-                this.me = _new_WorldObj();
-                package:result = this.me;
+                package:result = &this;
 
                 this.switch_sur = _PTR2REF(_new_SpriteA("worldobjs/switchdoor_switch"));
                 this.is_triggered = false;
                 this.m_target = _PTR2REF(_new_String());
                 _string_read_string(this.m_target, package:reader, "target-id");
-                package:reader:read_vector("position", _PTR2REF(this.me:pos));
-                this.me:pos.z = 100; //TODO: somehow guarantee that it always stays that way
+                _read_position(package:reader, this.pos);
             end;
         end
     with
         every package in NEW_TELEPORTER do
             spawn Teleporter with
-                this.me = _new_WorldObj();
-                package:result = this.me;
+                package:result = &this;
 
                 this.sprite = _PTR2REF(_new_SpriteA("worldobjs/teleporter"));
-                package:reader:read_vector("position", _PTR2REF(this.me:pos));
+                _read_position(package:reader, this.pos);
                 this.target_id = _PTR2REF(_new_String());
                 _string_read_string(this.target_id, package:reader, "target-id");
             end;
@@ -716,13 +673,12 @@ do
     with
         every package in NEW_TELEPORTER_TARGET do
             spawn TeleporterTarget in teleporter_targets with
-                this.me = _new_WorldObj();
-                package:result = this.me;
+                package:result = &this;
 
                 this.id = _PTR2REF(_new_String());
                 _string_read_string(this.id, package:reader, "id");
                 this.sprite = _PTR2REF(_new_SpriteA("worldobjs/teleportertarget"));
-                package:reader:read_vector("position", _PTR2REF(this.me:pos));
+                _read_position(package:reader, this.pos);
             end;
         end
     with

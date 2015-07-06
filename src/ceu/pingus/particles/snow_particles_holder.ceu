@@ -34,14 +34,16 @@ class SnowParticlesHolder with
     var _Sprite&? snow5;
     var _CollisionMask&? ground;
     var _Vector_SnowParticle&? particles;
-do
-    var _WorldObj&? holder = _PTR2REF(me);
-    global:world:add_object(&this);
+do    
+    call/rec global:world:add_object(&this);
 
     function (_FileReader* reader) => void construct do end;
 
-    finalize with
-        _delete_obj(holder);
+    function (void) => float get_z_pos do return 1000; end
+    function (Vector3f p) => void set_pos do end
+    function (void) => Vector3f get_pos do return pos; end
+
+    finalize with        
         _delete_obj(snow1);
         _delete_obj(snow2);
         _delete_obj(snow3);
@@ -62,7 +64,7 @@ do
         end
     with
         every e_UPDATE do
-            _SnPH_update(particles, holder.world, ground);
+            _SnPH_update(particles, _WorldObj__get_world(), ground);
         end
     with
         await e_DELETE;

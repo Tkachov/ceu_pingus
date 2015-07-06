@@ -10,24 +10,23 @@ native/pre do
     ##define WorldObj__get_world WorldObj::get_world
     ##define WorldObj__get_world_play_sound WorldObj::get_world()->play_sound
 
-    ##define WOCPackage WorldObjCeuPackage
-    ##define new_WorldObj new WorldObj
+    ##define WOCPackage WorldObjCeuPackage    
 
     ##define world_put(w, m, x, y, t) {CollisionMask& __msk = *m; w->put(__msk, x, y, t);}
     ##define world_remove(w, m, x, y) {CollisionMask& __msk = *m; w->remove(__msk, x, y);}
     ##define new_CollisionMask new CollisionMask
 end
 
+#include "../math/vector3f.ceu"
 #include "../string.ceu"
 
 native @pure _world_put(), _world_remove(), _new_CollisionMask();
 
 native @pure _WorldObj__get_world(),
-             _WorldObj__get_world_play_sound(),
-             _new_WorldObj();
+             _WorldObj__get_world_play_sound();
 
-interface IWorldObj with
-    var _WorldObj* me;
+interface IWorldObj with    
+    var Vector3f pos;
 
     event void e_STARTUP;
     event _SceneContext* e_DRAW;
@@ -36,6 +35,9 @@ interface IWorldObj with
     event void e_DELETE;
 
     function (_FileReader* reader) => void construct;
+    function (void) => float get_z_pos;
+    function (Vector3f p) => void set_pos;
+    function (void) => Vector3f get_pos;
 end
 
 #endif

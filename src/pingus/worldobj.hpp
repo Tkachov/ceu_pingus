@@ -36,7 +36,6 @@ class WorldObj
 protected:
   /** The World all WorldObjects live in. */
   static World*  world;
-  Vector3f  pos;
 
 public:
   /** Set the world pointer for all world objects */
@@ -44,12 +43,6 @@ public:
 
   /** Return the current active world */
   static World* get_world () { return world; }
-
-public:
-  /** Returns the $z$-position of this object. */
-  virtual float get_z_pos() const { return pos.z; }
-  virtual void set_pos(const Vector3f& p) { pos = p; }
-  virtual Vector3f get_pos() const { return pos; }
 };
 
 #endif

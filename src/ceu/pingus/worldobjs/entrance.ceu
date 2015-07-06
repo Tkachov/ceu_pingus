@@ -25,13 +25,23 @@ class Entrance with
     var _Sprite&? smallmap_symbol;
     var _Sprite&? surface;
 do
-    var _WorldObj&? entrance = _PTR2REF(me);
-    global:world:add_object(&this);
+    call/rec global:world:add_object(&this);
 
     function (_FileReader* reader) => void construct do end;
 
+    function (void) => float get_z_pos do
+        return pos.z;
+    end
+
+    function (Vector3f p) => void set_pos do
+        pos = p;
+    end
+
+    function (void) => Vector3f get_pos do
+        return pos;
+    end
+
     finalize with
-        _delete_obj(entrance);
         _delete_obj(smallmap_symbol);
         _delete_obj(surface);
     end;
@@ -44,8 +54,8 @@ do
     end
 
     function (void) => bool pingu_ready do
-        if (last_release + release_rate) < entrance.world:get_time() then
-            last_release = _PTR2REF(entrance.world:get_time()); //that's not a pointer even
+        if (last_release + release_rate) < _WorldObj__get_world():get_time() then
+            last_release = _PTR2REF(_WorldObj__get_world():get_time()); //that's not a pointer even
             return true;
         end
 
@@ -55,17 +65,17 @@ do
     par/or do
         every gc in e_DRAW do
             //original FIXME: Why do we still have these hardcoded offsets?!
-            _gc_color_draw2(gc, &surface, _Vector3f(entrance.pos.x - 32, entrance.pos.y - 16));
+            _gc_color_draw2(gc, &surface, _Vector3f(pos.x - 32, pos.y - 16));
         end
     with
         every smallmap in e_DRAW_SMALLMAP do
-            smallmap:draw_sprite(_deref(smallmap_symbol), _PTR2REF(entrance.pos));
+            smallmap:draw_sprite(_deref(smallmap_symbol), _toVector3f(pos));
         end
     with
         every e_UPDATE do
-            if pingu_ready() and not entrance.world:check_armageddon() then
+            if pingu_ready() and not _WorldObj__get_world():check_armageddon() then
                 var _PHPackage* package = _new_PHPackage();
-                package:entrance = &entrance;
+                package:entrance = &this;
                 package:owner_id = owner_id;
                 package:left = go_left;
                 emit global:world:get_pingus():e_MAKE_PINGU => package;

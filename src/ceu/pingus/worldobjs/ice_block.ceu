@@ -17,14 +17,24 @@ class IceBlock with
 
     var _Sprite&? block_sur;
     var _CollisionMask&? block_sur_cmap;
-do
-    var _WorldObj&? ice_block = _PTR2REF(me);
-    global:world:add_object(&this);
+do    
+    call/rec global:world:add_object(&this);
 
     function (_FileReader* reader) => void construct do end;
 
-    finalize with
-        _delete_obj(ice_block);
+    function (void) => float get_z_pos do
+        return pos.z;
+    end
+
+    function (Vector3f p) => void set_pos do
+        pos = p;
+    end
+
+    function (void) => Vector3f get_pos do
+        return pos;
+    end
+
+    finalize with        
         _delete_obj(block_sur);
         _delete_obj(block_sur_cmap);
     end
@@ -35,12 +45,12 @@ do
 
     par/or do
         every e_STARTUP do
-            _world_put(ice_block.world, block_sur_cmap, (int)ice_block.pos.x, (int)ice_block.pos.y, _GT_GROUND);
+            _world_put(_WorldObj__get_world(), block_sur_cmap, (int)pos.x, (int)pos.y, _GT_GROUND);
         end
     with
         every gc in e_DRAW do
             if not is_finished then
-                _gc_color_draw2(gc, &block_sur, ice_block.pos);
+                _gc_color_draw2(gc, &block_sur, _toVector3f(pos));
             end
         end
     with
@@ -50,19 +60,19 @@ do
             end
 
             loop pingu in global:world:get_pingus():all_pingus do
-                if pingu:get_x() > ice_block.pos.x and pingu:get_x() < ice_block.pos.x+(float)block_sur.get_width() and
-                   pingu:get_y() > ice_block.pos.y-4 and pingu:get_y() < ice_block.pos.y+(float)block_sur.get_height() then
-                    last_contact = ice_block.world:get_time();
+                if pingu:get_x() > pos.x and pingu:get_x() < pos.x+(float)block_sur.get_width() and
+                   pingu:get_y() > pos.y-4 and pingu:get_y() < pos.y+(float)block_sur.get_height() then
+                    last_contact = _WorldObj__get_world():get_time();
                 end
             end
 
-            if last_contact and last_contact+1000 > ice_block.world:get_time() then
+            if last_contact and last_contact+1000 > _WorldObj__get_world():get_time() then
                 thickness = thickness - 0.01;
 
                 if thickness<0 then
                     is_finished = true;
                     thickness = 0;
-                    _world_remove(ice_block.world, block_sur_cmap, (int)ice_block.pos.x, (int)ice_block.pos.y);
+                    _world_remove(_WorldObj__get_world(), block_sur_cmap, (int)pos.x, (int)pos.y);
                 end
             end
         end

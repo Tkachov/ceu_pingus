@@ -10,7 +10,7 @@ native/pre do
     ##include "pingus/worldobj.hpp"
 
     struct PHPackage {
-        WorldObj* entrance;
+        void* entrance;
         int owner_id;
         bool left;
     };

@@ -15,14 +15,16 @@ class SwitchDoorSwitch with
     var _Sprite&? switch_sur;
     var _String&? m_target;
     var bool is_triggered;
-do
-    var _WorldObj&? switch_door_switch = _PTR2REF(me);
-    global:world:add_object(&this);
+do    
+    call/rec global:world:add_object(&this);
 
     function (_FileReader* reader) => void construct do end;
 
-    finalize with
-        _delete_obj(switch_door_switch);
+    function (void) => float get_z_pos do return 100; end
+    function (Vector3f p) => void set_pos do pos = p; end 
+    function (void) => Vector3f get_pos do return pos; end
+
+    finalize with        
         _delete_obj(switch_sur);
         _delete_obj(m_target);
     end;
@@ -42,7 +44,7 @@ do
         end
     with
         every gc in e_DRAW do
-            _gc_color_draw2(gc, &switch_sur, switch_door_switch.pos);
+            _gc_color_draw2(gc, &switch_sur, _toVector3f(pos));
         end
     with
         every e_UPDATE do
@@ -52,10 +54,10 @@ do
 
             // Check if a pingu is passing the switch
             loop pingu in global:world:get_pingus():all_pingus do
-                if pingu:get_x() > switch_door_switch.pos.x and
-                   pingu:get_x() < switch_door_switch.pos.x+(float)switch_sur.get_width() and
-                   pingu:get_y() > switch_door_switch.pos.y and
-                   pingu:get_y() < switch_door_switch.pos.y+(float)switch_sur.get_height() then
+                if pingu:get_x() > pos.x and
+                   pingu:get_x() < pos.x+(float)switch_sur.get_width() and
+                   pingu:get_y() > pos.y and
+                   pingu:get_y() < pos.y+(float)switch_sur.get_height() then
                     is_triggered = true;
                     m_door:open_door();
                     break;

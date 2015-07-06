@@ -26,7 +26,7 @@ interface IWorld with
     function (_const_char_string id) => ITeleporterTarget* get_teleporter_target;
     function (_const_char_string id) => ISwitchDoorDoor* get_switch_door_door;
 
-    function (IWorldObj* o) => void add_object;
+    function @rec (IWorldObj* o) => void add_object;
     function (IWorldObj* o) => void remove_object;
 
     event _SceneContext* e_DRAW;

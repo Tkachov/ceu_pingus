@@ -21,13 +21,23 @@ class Groundpiece with
     var _ResDescriptor&? desc;
     var int gptype;
 do
-    var _WorldObj&? groundpiece = _PTR2REF(me);
-    global:world:add_object(&this);
+    call/rec global:world:add_object(&this);
 
     function (_FileReader* reader) => void construct do end;
 
+    function (void) => float get_z_pos do
+        return pos.z;
+    end
+
+    function (Vector3f p) => void set_pos do
+        pos = p;
+    end
+
+    function (void) => Vector3f get_pos do
+        return pos;
+    end
+
     finalize with
-        _delete_obj(groundpiece);
         _delete_obj(desc);
     end
 
@@ -38,9 +48,9 @@ do
 
     //original FIXME: overdrawing of bridges and similar things aren't handled here
     if gptype == _GT_REMOVE then
-        _world_remove(groundpiece.get_world(), mask, (int)groundpiece.pos.x, (int)groundpiece.pos.y);
+        _world_remove(_WorldObj__get_world(), mask, (int)pos.x, (int)pos.y);
     else
-        _world_put(groundpiece.get_world(), mask, (int)groundpiece.pos.x, (int)groundpiece.pos.y, _to_GT(gptype));
+        _world_put(_WorldObj__get_world(), mask, (int)pos.x, (int)pos.y, _to_GT(gptype));
     end
 
     _delete_obj(mask);

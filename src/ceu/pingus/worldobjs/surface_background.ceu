@@ -47,13 +47,23 @@ class SurfaceBackground with
     /* The vertical scrolling speed in pixels per tick */
     var float scroll_oy;
 do
-    var _WorldObj&? surface_background = _PTR2REF(me);
-    global:world:add_object(&this);
+    call/rec global:world:add_object(&this);
 
     function (_FileReader* reader) => void construct do end;
 
-    finalize with
-        _delete_obj(surface_background);
+    function (void) => float get_z_pos do
+        return pos.z;
+    end
+
+    function (Vector3f p) => void set_pos do
+        pos = p;
+    end
+
+    function (void) => Vector3f get_pos do
+        return pos;
+    end
+
+    finalize with        
         _delete_obj(sprite);
         _delete_obj(color);
     end;
@@ -80,17 +90,17 @@ do
 
             var int y = start_y;
             loop/1000 do
-                if y >= surface_background.world:get_height() then
+                if y >= _WorldObj__get_world():get_height() then
                     break;
                 end
 
                 var int x = start_x;
                 loop/1000 do
-                    if x >= surface_background.world:get_width() then
+                    if x >= _WorldObj__get_world():get_width() then
                         break;
                     end
 
-                    _gc_color_draw2(gc, &sprite, _Vector3f(x-offset_x, y-offset_y, surface_background.pos.z) finalize with end);
+                    _gc_color_draw2(gc, &sprite, _Vector3f(x-offset_x, y-offset_y, pos.z));
 
                     x = x + sprite.get_width();
                 end

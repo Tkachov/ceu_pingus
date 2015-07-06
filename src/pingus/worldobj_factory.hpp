@@ -20,9 +20,9 @@
 #include <map>
 #include <vector>
 
+#include "math/vector3f.hpp"
 #include "util/file_reader.hpp"
 
-class WorldObj;
 class WorldObjAbstractFactory;
 
 /** WorldObjFactory which can be used to create all kinds of
@@ -47,7 +47,7 @@ public:
 
   /** Create a WorldObj type from a given piece of xml, use the
       'type' property for determinating the object type. */
-  std::vector<WorldObj*> create(const FileReader& reader);
+  std::vector<void*> create(const FileReader& reader);
 
 private:
   WorldObjFactory (const WorldObjFactory&);
@@ -56,8 +56,14 @@ private:
 
 struct WorldObjCeuPackage {
   FileReader* reader;
-  WorldObj* result;
+  void* result;
   WorldObjCeuPackage(const FileReader& r): reader(const_cast<FileReader*>(&r)), result(0) {};
+};
+
+struct PrefabPackage {  
+  void* object;
+  Vector3f pos;
+  PrefabPackage(void* o, Vector3f p): object(o), pos(p) {};
 };
 
 #endif

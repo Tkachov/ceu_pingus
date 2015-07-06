@@ -29,14 +29,16 @@ class PinguParticlesHolder with
 
     var _Sprite&? sprite;
     var _Vector_PinguParticle&? particles;
-do
-    var _WorldObj&? holder = _PTR2REF(me);
-    global:world:add_object(&this);
+do    
+    call/rec global:world:add_object(&this);
 
     function (_FileReader* reader) => void construct do end;
 
+    function (void) => float get_z_pos do return 1000; end
+    function (Vector3f p) => void set_pos do end
+    function (void) => Vector3f get_pos do return pos; end
+
     finalize with
-        _delete_obj(holder);
         _delete_obj(sprite);
         _delete_obj(particles);
     end
@@ -51,7 +53,7 @@ do
         end
     with
         every e_UPDATE do
-            _PPH_update(particles, holder.world);
+            _PPH_update(particles, _WorldObj__get_world());
         end
     with
         await e_DELETE;

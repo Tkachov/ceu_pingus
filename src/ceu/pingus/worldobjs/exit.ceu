@@ -31,8 +31,7 @@ do
         //(i.e. hide it from interface in the body)
         //because this function's meant to be called in constructor
         //when the body is not executed yet
-
-        reader:read_vector("position", _PTR2REF(me:pos));
+        
         reader:read_desc  ("surface",  _deref(desc));
         reader:read_int   ("owner-id", _PTR2REF(owner_id));
 
@@ -44,11 +43,21 @@ do
 
     ///////////////////////////////////////////////////
 
-    var _WorldObj&? exit = _PTR2REF(me);
-    global:world:add_object(&this);
+    function (void) => float get_z_pos do
+        return pos.z;
+    end
 
-    finalize with
-        _delete_obj(exit);
+    function (Vector3f p) => void set_pos do
+        pos = p;
+    end
+
+    function (void) => Vector3f get_pos do
+        return pos;
+    end
+    
+    call/rec global:world:add_object(&this);
+
+    finalize with        
         _delete_obj(desc);
         _delete_obj(sprite);
         _delete_obj(flag);
@@ -57,16 +66,16 @@ do
 
     par/or do
         every gc in e_DRAW do
-            _gc_color_draw2(gc, &sprite, exit.pos);
-            _gc_color_draw2(gc, &flag, exit.pos + _Vector3f(40, 0));
+            _gc_color_draw2(gc, &sprite, _toVector3f(pos));
+            _gc_color_draw2(gc, &flag, _toVector3f(pos) + _Vector3f(40, 0));
         end
     with
         every e_STARTUP do
-            _colmap_remove(exit.world:get_colmap(), desc, (int)exit.pos.x - sprite.get_width()/2, (int)exit.pos.y - sprite.get_height());
+            _colmap_remove(_WorldObj__get_world():get_colmap(), desc, (int)pos.x - sprite.get_width()/2, (int)pos.y - sprite.get_height());
         end
     with
         every smallmap in e_DRAW_SMALLMAP do
-            smallmap:draw_sprite(_deref(smallmap_symbol), _PTR2REF(exit.pos));
+            smallmap:draw_sprite(_deref(smallmap_symbol), _toVector3f(pos));
         end
     with
         every e_UPDATE do
@@ -79,8 +88,8 @@ do
                 end
 
                 // Now, make sure the pingu is within range
-                if pingu:get_x() <= exit.pos.x-1 or pingu:get_x() >= exit.pos.x+1 or
-                   pingu:get_y() <= exit.pos.y-5 or pingu:get_y() >= exit.pos.y+5 then
+                if pingu:get_x() <= pos.x-1 or pingu:get_x() >= pos.x+1 or
+                   pingu:get_y() <= pos.y-5 or pingu:get_y() >= pos.y+5 then
                     continue;
                 end
 

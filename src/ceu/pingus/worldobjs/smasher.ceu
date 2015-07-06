@@ -14,14 +14,24 @@
 class Smasher with
     interface IWorldObj;
     var _Sprite&? sprite;
-do
-    var _WorldObj&? smasher = _PTR2REF(me);
-    global:world:add_object(&this);
+do    
+    call/rec global:world:add_object(&this);
 
     function (_FileReader* reader) => void construct do end;
 
-    finalize with
-        _delete_obj(smasher);
+    function (void) => float get_z_pos do
+        return pos.z;
+    end
+
+    function (Vector3f p) => void set_pos do
+        pos = p;
+    end
+
+    function (void) => Vector3f get_pos do
+        return pos;
+    end
+
+    finalize with        
         _delete_obj(sprite);
     end;
 
@@ -33,12 +43,12 @@ do
         every e_STARTUP do
             _log_info("Drawing colmap entry");
             var _CollisionMask* mask = _new_CollisionMask("traps/smasher_cmap");
-            _world_put(smasher.world, mask, (int)smasher.pos.x, (int)smasher.pos.y, _GT_SOLID);
+            _world_put(_WorldObj__get_world(), mask, (int)pos.x, (int)pos.y, _GT_SOLID);
             _delete_obj(mask);
         end
     with
         every gc in e_DRAW do
-            _gc_color_draw2(gc, &sprite, smasher.pos);
+            _gc_color_draw2(gc, &sprite, _toVector3f(pos));
         end
     with
         every e_UPDATE do
@@ -48,8 +58,8 @@ do
                     continue;
                 end
 
-                if not (pingu:direction.is_left() and pingu:get_x() > smasher.pos.x+65 and pingu:get_x() < smasher.pos.x+85) and
-                   not (pingu:direction.is_right() and pingu:get_x() > smasher.pos.x+190 and pingu:get_x() < smasher.pos.x+210) then
+                if not (pingu:direction.is_left() and pingu:get_x() > pos.x+65 and pingu:get_x() < pos.x+85) and
+                   not (pingu:direction.is_right() and pingu:get_x() > pos.x+190 and pingu:get_x() < pos.x+210) then
                     continue;
                 end
 
@@ -76,8 +86,8 @@ do
 
                     loop i in 20 do
                         global:world:get_smoke_particles_holder():add_particle(
-                            smasher.pos.x + 20 + (float)(_rand()%260),
-                            smasher.pos.y + 180,
+                            pos.x + 20 + (float)(_rand()%260),
+                            pos.y + 180,
                             _Math__frand()-0.5,
                             _Math__frand()-0.5
                         );
@@ -89,7 +99,7 @@ do
                             continue;
                         end
 
-                        if pingu:is_inside(smasher.pos.x + 30, smasher.pos.y + 90, smasher.pos.x + 250, smasher.pos.y + 190) then
+                        if pingu:is_inside(pos.x + 30, pos.y + 90, pos.x + 250, pos.y + 190) then
                             emit pingu:e_CHANGE_ACTION => _A_SPLASHED;
                         end
                     end

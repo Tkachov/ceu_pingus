@@ -19,13 +19,14 @@ native @pure _new_Direction();
 class PinguHolder with
     interface IPinguHolder;
     var _PinguHolder& holder;
-do
-    var _WorldObj&? wobj = _PTR2REF(me);
-    global:world:add_object(&this);
+do    
+    call/rec global:world:add_object(&this);
 
     function (_FileReader* reader) => void construct do end;
 
-    finalize with _delete_obj(wobj); end
+    function (void) => float get_z_pos do return 50; end
+    function (Vector3f p) => void set_pos do end
+    function (void) => Vector3f get_pos do return pos; end
 
     var _PinguHolder&? pingu_holder = _PTR2REF((_PinguHolder*)&holder);
     var int pingus_emitted = 0;
@@ -62,8 +63,9 @@ do
             if pingu_holder.number_of_allowed > pingus_emitted then
                 // We use all_pingus.size() as pingu_id, so that id == array index
                 spawn Pingu in all_pingus with
-                    this.pos_x = package:entrance:pos.x;
-                    this.pos_y = package:entrance:pos.y;
+                    var IWorldObj* entr = (IWorldObj*)package:entrance;
+                    this.pos_x = entr:pos.x;
+                    this.pos_y = entr:pos.y;
                     this.owner_id = package:owner_id;
                     this.id = pingus_emitted;
 

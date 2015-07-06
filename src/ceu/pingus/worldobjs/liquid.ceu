@@ -10,16 +10,26 @@
 
 class Liquid with
     interface IWorldObj;
-    var _Sprite&? sprite; //Sprite sur;
+    var _Sprite&? sprite;
     var int width;
-do
-    var _WorldObj&? liquid = _PTR2REF(me);
-    global:world:add_object(&this);
+do    
+    call/rec global:world:add_object(&this);
 
     function (_FileReader* reader) => void construct do end;
 
-    finalize with
-        _delete_obj(liquid);
+    function (void) => float get_z_pos do
+        return pos.z;
+    end
+
+    function (Vector3f p) => void set_pos do
+        pos = p;
+    end
+
+    function (void) => Vector3f get_pos do
+        return pos;
+    end
+
+    finalize with        
         _delete_obj(sprite);
     end
 
@@ -34,20 +44,20 @@ do
             var _CollisionMask* mask = _new_CollisionMask("liquids/water_cmap");
 
             loop/100 i in width do
-                _world_put(liquid.world:get_colmap(), mask, (int)(liquid.pos.x + (float)i), (int)liquid.pos.y, _GT_WATER);
+                _world_put(_WorldObj__get_world():get_colmap(), mask, (int)(pos.x + (float)i), (int)pos.y, _GT_WATER);
             end
 
             _delete_obj(mask);
         end
     with
         every gc in e_DRAW do
-            var int x = liquid.pos.x;
+            var int x = pos.x;
             loop/100 do
-                if x >= (int)liquid.pos.x + width then
+                if x >= (int)pos.x + width then
                     break;
                 end;
 
-                _gc_color_draw2(gc, &sprite, _Vector3f(x, liquid.pos.y) finalize with end);
+                _gc_color_draw2(gc, &sprite, _Vector3f(x, pos.y));
 
                 x = x + sprite.get_width();
             end

@@ -14,14 +14,24 @@ class Teleporter with
     interface IWorldObj;
     var _Sprite&? sprite;
     var _String&? target_id;
-do
-    var _WorldObj&? teleporter = _PTR2REF(me);
-    global:world:add_object(&this);
+do    
+    call/rec global:world:add_object(&this);
 
     function (_FileReader* reader) => void construct do end;
 
-    finalize with
-        _delete_obj(teleporter);
+    function (void) => float get_z_pos do
+        return pos.z;
+    end
+
+    function (Vector3f p) => void set_pos do
+        pos = p;
+    end
+
+    function (void) => Vector3f get_pos do
+        return pos;
+    end
+
+    finalize with        
         _delete_obj(sprite);
         _delete_obj(target_id);
     end;
@@ -42,7 +52,7 @@ do
         end
     with
         every gc in e_DRAW do
-            _gc_color_draw2(gc, &sprite, teleporter.pos);
+            _gc_color_draw2(gc, &sprite, _toVector3f(pos));
         end
     with
         every e_UPDATE do
@@ -50,9 +60,9 @@ do
 
             if target != null then
                 loop pingu in global:world:get_pingus():all_pingus do
-                    if pingu:get_x() > teleporter.pos.x-3 and pingu:get_x() < teleporter.pos.x+3 and
-                       pingu:get_y() > teleporter.pos.y-52 and pingu:get_y() < teleporter.pos.y then
-                        pingu:set_posf(target:me:get_pos().x, target:me:get_pos().y);
+                    if pingu:get_x() > pos.x-3 and pingu:get_x() < pos.x+3 and
+                       pingu:get_y() > pos.y-52 and pingu:get_y() < pos.y then
+                        pingu:set_posf(target:get_pos().x, target:get_pos().y);
                         target:teleporter_used();
                         sprite.restart();
                     end

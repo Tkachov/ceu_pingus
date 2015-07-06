@@ -19,13 +19,15 @@ class SolidColorBackground with
     interface IWorldObj;
     var _Color&? color;
 do
-    var _WorldObj&? scb = _PTR2REF(me);
-    global:world:add_object(&this);
+    call/rec global:world:add_object(&this);
 
     function (_FileReader* reader) => void construct do end;
 
+    function (void) => float get_z_pos do return -10; end
+    function (Vector3f p) => void set_pos do end
+    function (void) => Vector3f get_pos do return pos; end
+
     finalize with
-        _delete_obj(scb);
         _delete_obj(color);
     end
 

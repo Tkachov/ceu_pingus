@@ -15,13 +15,15 @@ class StarfieldBackground with
     var int small_stars_count;
     var int middle_stars_count;
     var int large_stars_count;
-do
-    var _WorldObj&? hotspot = _PTR2REF(me);
-    global:world:add_object(&this);
+do    
+    call/rec global:world:add_object(&this);
 
     function (_FileReader* reader) => void construct do end;
 
-    finalize with _delete_obj(hotspot); end
+    //original FIXME: Make z_pos handling editable via xml
+    function (void) => float get_z_pos do return -10; end
+    function (Vector3f p) => void set_pos do end
+    function (void) => Vector3f get_pos do return pos; end
 
     pool StarfieldBackgroundStars[] stars;
 

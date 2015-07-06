@@ -19,13 +19,15 @@ class GroundMap with
 
     var _GroundMap&? gmap;
 do
-    var _WorldObj&? ground_map = _PTR2REF(me);
-    global:world:add_object(&this);
+    call/rec global:world:add_object(&this);
 
     function (_FileReader* reader) => void construct do end;
 
+    function (void) => float get_z_pos do return 0; end
+    function (Vector3f p) => void set_pos do end
+    function (void) => Vector3f get_pos do return pos; end
+
     finalize with
-        _delete_obj(ground_map);
         _delete_obj(gmap);
     end
 
