@@ -78,7 +78,6 @@ native @pure _reader_read_Groundtype(), _Resource__load_surface(), _opeq(), _new
 
 input _World* WORLD_STARTUP;
 input _WorldDrawSmallmapPackage* WORLD_DRAW_SMALLMAP;
-input _World* WORLD_UPDATE;
 input _World* WORLD_DELETE;
 
 input IWorldObj* WORLD_STARTUP_OBJECT;
@@ -271,11 +270,7 @@ do
             end
         end
     with
-        every w in WORLD_UPDATE do
-            if w != &me_ then
-                continue;
-            end
-
+        every e_UPDATE do
             _WorldObj__set_world(me_);
 
             me_.game_time = me_.game_time + 1;
@@ -298,6 +293,12 @@ do
     with
         every object in WORLD_UPDATE_OBJECT do
             emit object:e_UPDATE;
+        end
+    with
+        every e_ARMAGEDDON do
+            _Sound_PingusSound_play_sound("goodidea");
+            me_.do_armageddon = true;
+            me_.armageddon_count = 0;
         end
     with
         every package in WORLD_GET_START_POS do

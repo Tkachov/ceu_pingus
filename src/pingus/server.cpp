@@ -103,19 +103,14 @@ Server::get_world()
   return world.get();
 }
 
-void
-Server::update()
-{
-  world->update();
-  goal_manager->update();
+void Server::update() {
+  Server* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_SERVER_UPDATE, &self);
 }
 
-void
-Server::send_armageddon_event ()
-{
-  record(ServerEvent::make_armageddon_event(get_time()));
-
-  world->armageddon();
+void Server::send_armageddon_event() { //used in game_session.cpp
+  Server* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_SERVER_ARMAGEDDON, &self);
 }
 
 void

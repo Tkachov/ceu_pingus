@@ -11,16 +11,21 @@ native/pre do
     ##include "pingus/server.hpp"
     ##include "pingus/server_event.hpp"
     ##include "pingus/action_name.hpp"
+    ##include "pingus/goal_manager.hpp"
     ##define ServerEvent__make_pingu_action_event ServerEvent::make_pingu_action_event
+    ##define ServerEvent__make_armageddon_event ServerEvent::make_armageddon_event
     ##define to_AN(x) (ActionName::Enum)x
 end
 
 input _Server* NEW_SERVER;
+input _Server* SERVER_ARMAGEDDON;
+input _Server* SERVER_UPDATE;
 input _Server* DELETE_SERVER;
 
 class Server with
     var _Server* me;
     function @rec (IPingu* pingu, int action) => void send_pingu_action_event;
+    event void e_ARMAGEDDON;
 do
     var _Server&? server = _PTR2REF((_Server*)me);
     var Server* self = &this;
@@ -43,8 +48,35 @@ do
         end
     end
 
-    par/or do
-        await FOREVER;
+    par/or do        
+        every s in SERVER_ARMAGEDDON do
+            if s != &server then
+                continue;
+            end
+
+            //TODO: remove after GameSession is ported
+
+            emit e_ARMAGEDDON;
+        end
+    with
+        every e_ARMAGEDDON do
+            server.record(
+                _ServerEvent__make_armageddon_event(
+                    server.get_time()
+                )
+            );
+            
+            emit global:world:e_ARMAGEDDON;
+        end
+    with
+        every s in SERVER_UPDATE do
+            if s != &server then
+                continue;
+            end
+
+            emit global:world:e_UPDATE;
+            server.goal_manager:update();
+        end
     with
         var _Server* e = await DELETE_SERVER until (e == &server);
     end

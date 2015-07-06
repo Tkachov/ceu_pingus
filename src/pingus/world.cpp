@@ -69,11 +69,6 @@ void World::draw_smallmap(SmallMap* smallmap) {
   ceu_out_go(&CEUapp, CEU_IN_WORLD_DRAW_SMALLMAP, &pp);
 }
 
-void World::update() {
-  World* self = this;
-  ceu_out_go(&CEUapp, CEU_IN_WORLD_UPDATE, &self);
-}
-
 PinguHolder*
 World::get_pingus()
 {
@@ -98,14 +93,6 @@ int
 World::get_time()
 {
   return game_time;
-}
-
-void
-World::armageddon(void)
-{
-  Sound::PingusSound::play_sound("goodidea");
-  do_armageddon = true;
-  armageddon_count = 0;
 }
 
 CollisionMap*

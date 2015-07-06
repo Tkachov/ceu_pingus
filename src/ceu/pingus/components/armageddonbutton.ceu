@@ -5,6 +5,7 @@
 #include "../../sdl.ceu"
 #include "../../engine/gui/igui_component.ceu"
 #include "../../proxies/primarybuttonproxy.ceu"
+#include "../server.ceu"
 
 native/pre do
     ##include "pingus/components/action_button.hpp"
@@ -25,7 +26,9 @@ do
     par/or do
         loop do
             await mouse_double_click;
-            me_.server:send_armageddon_event();
+            
+            var Server*? server = _PTR2REF((Server*)me_.server:ceu());
+            emit server:e_ARMAGEDDON;
         end
     with
         var _ArmageddonButton* b = await DELETE_ARMAGEDDONBUTTON until (b == &me_);

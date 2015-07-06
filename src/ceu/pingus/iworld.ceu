@@ -30,6 +30,8 @@ interface IWorld with
     function (IWorldObj* o) => void remove_object;
 
     event _SceneContext* e_DRAW;
+    event void e_UPDATE;
+    event void e_ARMAGEDDON;
 end
 
 #endif

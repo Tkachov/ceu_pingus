@@ -85,12 +85,6 @@ public:
   /** Draw the world onte the given SmallMap*/
   void    draw_smallmap(SmallMap* smallmap);
 
-  /** Update the World */
-  void    update ();
-
-  /** Issue an armageddon, all Pingus will explode in some seconds. */
-  void    armageddon ();
-
   /** @return The absolute height of the world. */
   int     get_height ();
   /** @return The absolute width of the world */

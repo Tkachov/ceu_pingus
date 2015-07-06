@@ -51,7 +51,7 @@ do
             end
 
             if server_event.type == _SE_ARMAGEDDON_EVENT then
-                server:me:send_armageddon_event();
+                emit server:e_ARMAGEDDON;
             else/if server_event.type == _SE_FINISH_EVENT then
                 server:me:send_finish_event();
             else/if server_event.type == _SE_END_EVENT then
