@@ -17,6 +17,8 @@ do
     var _WorldObj&? teleporter = _PTR2REF(me);
     global:world:add_object(&this);
 
+    function (_FileReader* reader) => void construct do end;
+
     finalize with
         _delete_obj(teleporter);
         _delete_obj(id);

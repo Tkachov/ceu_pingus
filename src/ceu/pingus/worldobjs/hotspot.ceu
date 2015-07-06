@@ -16,6 +16,8 @@ do
     var _WorldObj&? hotspot = _PTR2REF(me);
     global:world:add_object(&this);
 
+    function (_FileReader* reader) => void construct do end;
+
     finalize with
         _delete_obj(hotspot);
         _delete_obj(sprite);

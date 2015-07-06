@@ -16,6 +16,8 @@ do
     var _WorldObj&? liquid = _PTR2REF(me);
     global:world:add_object(&this);
 
+    function (_FileReader* reader) => void construct do end;
+
     finalize with
         _delete_obj(liquid);
         _delete_obj(sprite);

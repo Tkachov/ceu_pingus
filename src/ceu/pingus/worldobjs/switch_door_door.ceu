@@ -29,6 +29,8 @@ do
     var _WorldObj&? switch_door_door = _PTR2REF(me);
     global:world:add_object(&this);
 
+    function (_FileReader* reader) => void construct do end;
+
     finalize with
         _delete_obj(switch_door_door);
         _delete_obj(id);

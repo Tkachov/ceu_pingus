@@ -22,6 +22,8 @@ do
     var _WorldObj&? ground_map = _PTR2REF(me);
     global:world:add_object(&this);
 
+    function (_FileReader* reader) => void construct do end;
+
     finalize with
         _delete_obj(ground_map);
         _delete_obj(gmap);

@@ -16,6 +16,8 @@ do
     global:world:add_object(&this);
     var int current_frame = 0;
 
+    function (_FileReader* reader) => void construct do end;
+
     finalize with
         _delete_obj(hammer);
         _delete_obj(sprite);

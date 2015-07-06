@@ -30,6 +30,8 @@ do
     var _WorldObj&? conveyor_belt = _PTR2REF(me);
     global:world:add_object(&this);
 
+    function (_FileReader* reader) => void construct do end;
+
     finalize with
         _delete_obj(conveyor_belt);
         _delete_obj(left_sur);

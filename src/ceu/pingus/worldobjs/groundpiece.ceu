@@ -24,6 +24,8 @@ do
     var _WorldObj&? groundpiece = _PTR2REF(me);
     global:world:add_object(&this);
 
+    function (_FileReader* reader) => void construct do end;
+
     finalize with
         _delete_obj(groundpiece);
         _delete_obj(desc);

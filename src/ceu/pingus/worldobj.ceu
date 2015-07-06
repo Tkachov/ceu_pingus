@@ -34,6 +34,8 @@ interface IWorldObj with
     event _SmallMap* e_DRAW_SMALLMAP;
     event void e_UPDATE;
     event void e_DELETE;
+
+    function (_FileReader* reader) => void construct;
 end
 
 #endif

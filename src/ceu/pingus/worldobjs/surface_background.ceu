@@ -50,6 +50,8 @@ do
     var _WorldObj&? surface_background = _PTR2REF(me);
     global:world:add_object(&this);
 
+    function (_FileReader* reader) => void construct do end;
+
     finalize with
         _delete_obj(surface_background);
         _delete_obj(sprite);

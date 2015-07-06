@@ -34,6 +34,8 @@ do
     var _WorldObj&? holder = _PTR2REF(me);
     global:world:add_object(&this);
 
+    function (_FileReader* reader) => void construct do end;
+
     finalize with
         _delete_obj(holder);
         _delete_obj(surf1);

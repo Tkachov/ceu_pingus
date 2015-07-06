@@ -21,6 +21,8 @@ do
     var _WorldObj&? fake_exit = _PTR2REF((_WorldObj*)me);
     global:world:add_object(&this);
 
+    function (_FileReader* reader) => void construct do end;
+
     finalize with
         _delete_obj(fake_exit);
         _delete_obj(sprite);

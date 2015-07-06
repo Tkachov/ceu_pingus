@@ -23,6 +23,8 @@ do
     var _WorldObj&? wobj = _PTR2REF(me);
     global:world:add_object(&this);
 
+    function (_FileReader* reader) => void construct do end;
+
     finalize with _delete_obj(wobj); end
 
     var _PinguHolder&? pingu_holder = _PTR2REF((_PinguHolder*)&holder);
