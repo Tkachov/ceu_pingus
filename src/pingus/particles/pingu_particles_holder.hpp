@@ -5,7 +5,9 @@
 
 #include "engine/display/sprite.hpp"
 #include "math/vector3f.hpp"
-#include "pingus/worldobj.hpp"
+
+class SceneContext;
+class World;
 
 struct PinguParticle {
     int  livetime;

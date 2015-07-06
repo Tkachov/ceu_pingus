@@ -11,7 +11,6 @@
 
 native/pre do
     ##include "math/vector3f.hpp"
-    ##include "pingus/worldobj.hpp"
     ##include "engine/display/scene_context.hpp"
     ##include "pingus/pingu_holder.hpp"
     ##include "pingus/world.hpp"
@@ -72,7 +71,7 @@ do
             var _CollisionMask* mask = _new_CollisionMask("worldobjs/conveyorbelt_cmap");
 
             loop/100 i in width+2 do
-                _world_put(_WorldObj__get_world(), mask, (int)pos.x + 15*i, (int)pos.y, _GT_SOLID);
+                _world_put(global:world:world, mask, (int)pos.x + 15*i, (int)pos.y, _GT_SOLID);
             end
 
             _delete_obj(mask);

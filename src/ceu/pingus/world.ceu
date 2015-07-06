@@ -72,13 +72,11 @@ native/pre do
     ##include "util/container.h"
     ##define new_Container() new Container()
 
-    ##define WorldObj__set_world WorldObj::set_world
-
     ##define read_position(r, p) Vector3f __v; r->read_vector("position", __v); p.x = __v.x; p.y = __v.y; p.z = __v.z;
     ##define read_position2(r, p, res) Vector3f __v; res = r->read_vector("position", __v); p.x = __v.x; p.y = __v.y; p.z = __v.z;
 end
 
-native @pure _reader_read_Groundtype(), _Resource__load_surface(), _opeq(), _new_Surface(), _new_Container(), _WorldObj__set_world(),
+native @pure _reader_read_Groundtype(), _Resource__load_surface(), _opeq(), _new_Surface(), _new_Container(),
              _read_position(), _read_position2();
 
 input _World* WORLD_STARTUP;
@@ -93,12 +91,11 @@ input IWorldObj* WORLD_DELETE_OBJECT;
 
 class World with
     interface IWorld;
-    var _World& me;
     pool Entrance[] entrances;
     pool ITeleporterTarget[] teleporter_targets;
     pool ISwitchDoorDoor[] switch_door_doors;
 do
-    var _World&? me_ = _PTR2REF((_World*)&this.me);
+    var _World&? me = _PTR2REF((_World*)world);
     var _Container&? objs = _PTR2REF(_new_Container());
     finalize with _delete_obj(objs); end
 
@@ -111,8 +108,8 @@ do
         objs.remove((void*)o);
     end
 
-    var PinguHolder holder with        
-        this.holder = me_.pingus;
+    var PinguHolder holder with
+        this.holder = me.pingus;
     end;
 
     var PinguParticlesHolder pingu_particles_holder with
@@ -144,10 +141,10 @@ do
     end;
 
     var GroundMap gfx_map with
-        this.gmap = _PTR2REF(_new_GroundMap(me_.mwidth, me_.mheight));
+        this.gmap = _PTR2REF(_new_GroundMap(me.mwidth, me.mheight));
 
-        me_.gfx_map = _PTR2REF(this.gmap);
-        me_.colmap = _PTR2REF(this.gmap.colmap.get());
+        me.gfx_map = _PTR2REF(this.gmap);
+        me.colmap = _PTR2REF(this.gmap.colmap.get());
     end;
 
     function (void) => IPinguHolder* get_pingus do
@@ -198,7 +195,7 @@ do
 
     par/or do
         every w in WORLD_STARTUP do
-            if w != &me_ then
+            if w != &me then
                 continue;
             end
 
@@ -210,8 +207,7 @@ do
         end
     with
         every wgc in e_DRAW do
-            _WorldObj__set_world(me_);
-            wgc:light().fill_screen(_Color(me_.ambient_light) finalize with end);
+            wgc:light().fill_screen(_Color(me.ambient_light) finalize with end);
 
             draw_iterating = true;
             gc = _PTR2REF(wgc);
@@ -227,11 +223,9 @@ do
         end
     with
         every package in WORLD_DRAW_SMALLMAP do
-            if package:world != &me_ then
+            if package:world != &me then
                 continue;
             end
-
-            _WorldObj__set_world(me_);
 
             draw_smallmap_iterating = true;
             smallmap = _PTR2REF(package:smallmap);
@@ -247,11 +241,9 @@ do
         end
     with
         every e_UPDATE do
-            _WorldObj__set_world(me_);
+            me.game_time = me.game_time + 1;
 
-            me_.game_time = me_.game_time + 1;
-
-            if me_.do_armageddon and me_.game_time%4 == 0 then
+            if me.do_armageddon and me.game_time%4 == 0 then
                 loop pingu in holder.all_pingus do
                     if pingu:get_current_action() == _A_BOMBER or pingu:get_current_action() == _A_DROWN or
                        pingu:get_current_action() == _A_SPLASHED or pingu:get_current_action() == _A_LASERKILL or
@@ -273,8 +265,8 @@ do
     with
         every e_ARMAGEDDON do
             _Sound_PingusSound_play_sound("goodidea");
-            me_.do_armageddon = true;
-            me_.armageddon_count = 0;
+            me.do_armageddon = true;
+            me.armageddon_count = 0;
         end
     with
         every p4ckage in PREFAB_POS do
@@ -282,11 +274,11 @@ do
             //wobject:set_pos(wobject:get_pos() + p4ckage:pos);
             wobject:pos.x = wobject:pos.x + p4ckage:pos.x;
             wobject:pos.y = wobject:pos.y + p4ckage:pos.y;
-            wobject:pos.z = wobject:pos.z + p4ckage:pos.z;            
+            wobject:pos.z = wobject:pos.z + p4ckage:pos.z;
         end
     with
         every packag3 in WORLD_GET_START_POS do
-            if packag3:world != &me_ then
+            if packag3:world != &me then
                 continue;
             end
 
@@ -516,7 +508,7 @@ do
                 this.color = _PTR2REF(_new_Color());
                 if not package:reader:read_colori("colori", _deref(this.color)) then
                     package:reader:read_colorf("color", _deref(this.color));
-                end                
+                end
             end;
         end
     with
@@ -604,20 +596,20 @@ do
 
                     // Scaling Code
                     if this.stretch_x and this.stretch_y then
-                        _opeq(surface, surface.scale(_WorldObj__get_world():get_width(), _WorldObj__get_world():get_height()));
+                        _opeq(surface, surface.scale(global:world:world:get_width(), global:world:world:get_height()));
                     else/if this.stretch_x and not this.stretch_y then
                         if this.keep_aspect then
                             var float aspect = (float)surface.get_height() / (float)surface.get_width();
-                            _opeq(surface, surface.scale(_WorldObj__get_world():get_width(), (int)((float)_WorldObj__get_world():get_width()*aspect)));
+                            _opeq(surface, surface.scale(global:world:world:get_width(), (int)((float)global:world:world:get_width()*aspect)));
                         else
-                            _opeq(surface, surface.scale(_WorldObj__get_world():get_width(), surface.get_height()));
+                            _opeq(surface, surface.scale(global:world:world:get_width(), surface.get_height()));
                         end
                     else/if not this.stretch_x and this.stretch_y then
                         if this.keep_aspect then
                             var float aspect = (float)surface.get_width() / (float)surface.get_height();
-                            _opeq(surface, surface.scale((int)((float)_WorldObj__get_world():get_height()*aspect), _WorldObj__get_world():get_height()));
+                            _opeq(surface, surface.scale((int)((float)global:world:world:get_height()*aspect), global:world:world:get_height()));
                         else
-                            _opeq(surface, surface.scale(surface.get_width(), _WorldObj__get_world():get_height()));
+                            _opeq(surface, surface.scale(surface.get_width(), global:world:world:get_height()));
                         end
                     end
 
@@ -683,7 +675,7 @@ do
         end
     with
         every w in WORLD_DELETE do
-            if w == &me_ then
+            if w == &me then
                 objs.iterate(_CEU_IN_WORLD_DELETE_OBJECT);
                 break;
             end

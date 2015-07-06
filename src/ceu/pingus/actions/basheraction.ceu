@@ -57,7 +57,7 @@ do
     var int max_bash_height = 33;
 
     function @rec (void) => void bash do
-        _world_remove(_WorldObj__get_world(), bash_radius,
+        _world_remove(global:world:world, bash_radius,
                                     (int)pingu.get_x() - bash_radius.get_width()/2,
                                     (int)pingu.get_y() - bash_radius.get_height()+1);
     end

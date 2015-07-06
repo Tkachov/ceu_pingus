@@ -19,7 +19,7 @@ native @pure _new_Direction();
 class PinguHolder with
     interface IPinguHolder;
     var _PinguHolder& holder;
-do    
+do
     call/rec global:world:add_object(&this);
 
     function (_FileReader* reader) => void construct do end;

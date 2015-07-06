@@ -15,7 +15,7 @@ class StarfieldBackground with
     var int small_stars_count;
     var int middle_stars_count;
     var int large_stars_count;
-do    
+do
     call/rec global:world:add_object(&this);
 
     function (_FileReader* reader) => void construct do end;

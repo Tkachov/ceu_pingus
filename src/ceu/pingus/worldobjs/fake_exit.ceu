@@ -17,7 +17,7 @@ class FakeExit with
     var _Sprite&? sprite;
     var _Sprite&? smallmap_symbol;
     var bool smashing;
-do    
+do
     call/rec global:world:add_object(&this);
 
     function (_FileReader* reader) => void construct do end;

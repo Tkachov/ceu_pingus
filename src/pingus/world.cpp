@@ -42,8 +42,6 @@ World::World(const PingusLevel& plf) :
   colmap(),
   gravitational_acceleration(0.2f)
 {
-  WorldObj::set_world(this);
-
   World* self = this;
   ceu_out_go(&CEUapp, CEU_IN_NEW_WORLD, &self);
 

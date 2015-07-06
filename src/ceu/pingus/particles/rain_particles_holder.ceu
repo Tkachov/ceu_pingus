@@ -16,7 +16,7 @@ native/pre do
 
     ##define RPH_add_particle(a, b, c) Particles::RainParticleHolder_add_particle(a, b, c)
     ##define RPH_update(a, b, c) Particles::RainParticleHolder_update(a, b, c)
-    ##define RPH_draw(a, b, c, d, e) Particles::RainParticleHolder_draw(a, b, c, d, e)
+    ##define RPH_draw(a, b, c, d, e, f) Particles::RainParticleHolder_draw(a, b, c, d, e, f)
 end
 
 native @pure _new_Vector_RainParticle(),
@@ -31,7 +31,7 @@ class RainParticlesHolder with
     var _Sprite&? rain2_surf;
     var _Sprite&? rain_splash;
     var _Vector_RainParticle&? particles;
-do    
+do
     call/rec global:world:add_object(&this);
 
     function (_FileReader* reader) => void construct do end;
@@ -40,7 +40,7 @@ do
     function (Vector3f p) => void set_pos do end
     function (void) => Vector3f get_pos do return pos; end
 
-    finalize with        
+    finalize with
         _delete_obj(rain1_surf);
         _delete_obj(rain2_surf);
         _delete_obj(rain_splash);
@@ -53,11 +53,11 @@ do
 
     par/or do
         every gc in e_DRAW do
-           _RPH_draw(particles, gc, rain1_surf, rain2_surf, rain_splash);
+           _RPH_draw(particles, global:world:world, gc, rain1_surf, rain2_surf, rain_splash);
         end
     with
         every e_UPDATE do
-            _RPH_update(particles, _WorldObj__get_world(), rain_splash);
+            _RPH_update(particles, global:world:world, rain_splash);
         end
     with
         await e_DELETE;

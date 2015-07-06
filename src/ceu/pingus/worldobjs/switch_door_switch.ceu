@@ -15,16 +15,16 @@ class SwitchDoorSwitch with
     var _Sprite&? switch_sur;
     var _String&? m_target;
     var bool is_triggered;
-do    
+do
     call/rec global:world:add_object(&this);
 
     function (_FileReader* reader) => void construct do end;
 
     function (void) => float get_z_pos do return 100; end
-    function (Vector3f p) => void set_pos do pos = p; end 
+    function (Vector3f p) => void set_pos do pos = p; end
     function (void) => Vector3f get_pos do return pos; end
 
-    finalize with        
+    finalize with
         _delete_obj(switch_sur);
         _delete_obj(m_target);
     end;

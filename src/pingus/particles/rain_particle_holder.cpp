@@ -81,12 +81,12 @@ void RainParticleHolder_update(std::vector<RainParticle>* particles, World* worl
 
 }
 
-void RainParticleHolder_draw(std::vector<RainParticle>* particles, SceneContext* gc, Sprite* rain1_surf, Sprite* rain2_surf, Sprite* rain_splash)
+void RainParticleHolder_draw(std::vector<RainParticle>* particles, World* world, SceneContext* gc, Sprite* rain1_surf, Sprite* rain2_surf, Sprite* rain_splash)
 {
   for (std::vector<RainParticle>::iterator it=particles->begin(); it != particles->end(); ++it)
   {
     // skip dead/invisible particles
-    if (!it->alive || it->pos.x > WorldObj::get_world()->get_width())
+    if (!it->alive || it->pos.x > world->get_width())
       continue;
 
     if (it->splash)

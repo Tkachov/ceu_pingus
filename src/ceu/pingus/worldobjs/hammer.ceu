@@ -11,7 +11,7 @@
 class Hammer with
     interface IWorldObj;
     var _Sprite&? sprite;
-do    
+do
     call/rec global:world:add_object(&this);
     var int current_frame = 0;
 
@@ -29,7 +29,7 @@ do
         return pos;
     end
 
-    finalize with        
+    finalize with
         _delete_obj(sprite);
     end;
 

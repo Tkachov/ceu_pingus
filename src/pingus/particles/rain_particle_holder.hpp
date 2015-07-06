@@ -5,7 +5,7 @@
 
 #include "engine/display/sprite.hpp"
 #include "math/vector3f.hpp"
-#include "pingus/worldobj.hpp"
+#include "pingus/world.hpp"
 
 struct RainParticle {
   bool  alive;
@@ -33,7 +33,7 @@ struct RainParticle {
 namespace Particles {
   void RainParticleHolder_add_particle(std::vector<RainParticle>* particles, int x, int y);
   void RainParticleHolder_update(std::vector<RainParticle>* particles, World* world, Sprite* s3);
-  void RainParticleHolder_draw(std::vector<RainParticle>* particles, SceneContext* gc, Sprite* s1, Sprite* s2, Sprite* s3);
+  void RainParticleHolder_draw(std::vector<RainParticle>* particles, World* world, SceneContext* gc, Sprite* s1, Sprite* s2, Sprite* s3);
 }
 
 #endif

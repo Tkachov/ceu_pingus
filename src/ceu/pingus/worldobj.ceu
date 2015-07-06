@@ -3,14 +3,10 @@
 
 native/pre do
     ##include "pingus/world.hpp"
-    ##include "pingus/worldobj.hpp"
     ##include "pingus/worldobj_factory.hpp"
     ##include "pingus/collision_mask.hpp"
 
-    ##define WorldObj__get_world WorldObj::get_world
-    ##define WorldObj__get_world_play_sound WorldObj::get_world()->play_sound
-
-    ##define WOCPackage WorldObjCeuPackage    
+    ##define WOCPackage WorldObjCeuPackage
 
     ##define world_put(w, m, x, y, t) {CollisionMask& __msk = *m; w->put(__msk, x, y, t);}
     ##define world_remove(w, m, x, y) {CollisionMask& __msk = *m; w->remove(__msk, x, y);}
@@ -22,10 +18,7 @@ end
 
 native @pure _world_put(), _world_remove(), _new_CollisionMask();
 
-native @pure _WorldObj__get_world(),
-             _WorldObj__get_world_play_sound();
-
-interface IWorldObj with    
+interface IWorldObj with
     var Vector3f pos;
 
     event void e_STARTUP;

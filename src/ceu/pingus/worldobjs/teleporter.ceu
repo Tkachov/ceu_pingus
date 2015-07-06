@@ -14,7 +14,7 @@ class Teleporter with
     interface IWorldObj;
     var _Sprite&? sprite;
     var _String&? target_id;
-do    
+do
     call/rec global:world:add_object(&this);
 
     function (_FileReader* reader) => void construct do end;
@@ -31,7 +31,7 @@ do
         return pos;
     end
 
-    finalize with        
+    finalize with
         _delete_obj(sprite);
         _delete_obj(target_id);
     end;

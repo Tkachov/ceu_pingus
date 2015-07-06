@@ -9,13 +9,6 @@
 #include "../iaction.ceu"
 #include "../ipingu.ceu"
 
-native/pre do
-    ##include "pingus/worldobj.hpp"
-    ##define WorldObj__get_world WorldObj::get_world
-end
-
-native @pure _WorldObj__get_world();
-
 class SplashedAction with
     interface IAction;
     interface IPinguAction;
@@ -57,7 +50,7 @@ do
         end
     with
         await global:e_PINGU_UPDATE_ALL;
-        _WorldObj__get_world():play_sound("splash", pingu.get_pos());
+        global:world:world:play_sound("splash", pingu.get_pos());
     end
 end
 

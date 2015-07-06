@@ -7,8 +7,6 @@
 #include "worldobj.ceu"
 
 native/pre do
-    ##include "pingus/worldobj.hpp"
-
     struct PHPackage {
         void* entrance;
         int owner_id;

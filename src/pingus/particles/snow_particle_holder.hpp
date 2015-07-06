@@ -6,9 +6,9 @@
 #include "engine/display/sprite.hpp"
 #include "math/vector3f.hpp"
 #include "pingus/collision_mask.hpp"
-#include "pingus/worldobj.hpp"
 
 class SceneContext;
+class World;
 
 enum ParticleType { Snow1, Snow2, Snow3, Snow4, Snow5 };
 

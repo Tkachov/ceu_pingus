@@ -14,13 +14,10 @@
 native/pre do
     ##include "pingus/colliders/pingu_collider.hpp"
     ##include "pingus/pingu_enums.hpp"
-    ##include "pingus/worldobj.hpp"
-    ##define WorldObj__get_world WorldObj::get_world
     ##define Colliders__PinguCollider Colliders::PinguCollider
 end
 
-native @pure _Colliders__PinguCollider(),
-             _WorldObj__get_world();
+native @pure _Colliders__PinguCollider();
 
 class FallerAction with
     interface IAction;
@@ -51,7 +48,7 @@ do
     load_file_directions(sprite, "/faller/");
     load_file_directions(tumbler, "/tumbler/");
 
-    var _Movers_LinearMover&? mover = _new_LinearMover();
+    var _Movers_LinearMover&? mover = _new_LinearMover(global:world:world);
     finalize with _delete_obj(mover); end;
 
     function @rec (void) => bool is_tumbling do
@@ -88,7 +85,7 @@ do
 
             // Apply gravity
             var Vector3f vel = pingu.get_velocity();
-            vel.y = vel.y + _WorldObj__get_world():get_gravity();
+            vel.y = vel.y + global:world:world:get_gravity();
             pingu.set_velocity(vel);
 
             // Move the Pingu as far is it can go

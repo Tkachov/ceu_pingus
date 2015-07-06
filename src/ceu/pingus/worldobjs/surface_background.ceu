@@ -63,7 +63,7 @@ do
         return pos;
     end
 
-    finalize with        
+    finalize with
         _delete_obj(sprite);
         _delete_obj(color);
     end;
@@ -90,13 +90,13 @@ do
 
             var int y = start_y;
             loop/1000 do
-                if y >= _WorldObj__get_world():get_height() then
+                if y >= global:world:world:get_height() then
                     break;
                 end
 
                 var int x = start_x;
                 loop/1000 do
-                    if x >= _WorldObj__get_world():get_width() then
+                    if x >= global:world:world:get_width() then
                         break;
                     end
 

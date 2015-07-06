@@ -12,7 +12,7 @@ class Liquid with
     interface IWorldObj;
     var _Sprite&? sprite;
     var int width;
-do    
+do
     call/rec global:world:add_object(&this);
 
     function (_FileReader* reader) => void construct do end;
@@ -29,7 +29,7 @@ do
         return pos;
     end
 
-    finalize with        
+    finalize with
         _delete_obj(sprite);
     end
 
@@ -44,7 +44,7 @@ do
             var _CollisionMask* mask = _new_CollisionMask("liquids/water_cmap");
 
             loop/100 i in width do
-                _world_put(_WorldObj__get_world():get_colmap(), mask, (int)(pos.x + (float)i), (int)pos.y, _GT_WATER);
+                _world_put(global:world:world:get_colmap(), mask, (int)(pos.x + (float)i), (int)pos.y, _GT_WATER);
             end
 
             _delete_obj(mask);

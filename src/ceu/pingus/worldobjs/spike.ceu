@@ -11,7 +11,7 @@
 class Spike with
     interface IWorldObj;
     var _Sprite&? surface;
-do    
+do
     call/rec global:world:add_object(&this);
 
     function (_FileReader* reader) => void construct do end;
@@ -28,7 +28,7 @@ do
         return pos;
     end
 
-    finalize with  
+    finalize with
         _delete_obj(surface);
     end;
 

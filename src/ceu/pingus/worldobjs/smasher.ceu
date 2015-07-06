@@ -14,7 +14,7 @@
 class Smasher with
     interface IWorldObj;
     var _Sprite&? sprite;
-do    
+do
     call/rec global:world:add_object(&this);
 
     function (_FileReader* reader) => void construct do end;
@@ -31,7 +31,7 @@ do
         return pos;
     end
 
-    finalize with        
+    finalize with
         _delete_obj(sprite);
     end;
 
@@ -43,7 +43,7 @@ do
         every e_STARTUP do
             _log_info("Drawing colmap entry");
             var _CollisionMask* mask = _new_CollisionMask("traps/smasher_cmap");
-            _world_put(_WorldObj__get_world(), mask, (int)pos.x, (int)pos.y, _GT_SOLID);
+            _world_put(global:world:world, mask, (int)pos.x, (int)pos.y, _GT_SOLID);
             _delete_obj(mask);
         end
     with

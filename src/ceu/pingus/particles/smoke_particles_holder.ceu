@@ -30,12 +30,12 @@ class SmokeParticlesHolder with
     var _Sprite&? surf1;
     var _Sprite&? surf2;
     var _Vector_SmokeParticle&? particles;
-do    
+do
     call/rec global:world:add_object(&this);
 
     function (_FileReader* reader) => void construct do end;
 
-    function (void) => float get_z_pos do return 1000; end 
+    function (void) => float get_z_pos do return 1000; end
     function (Vector3f p) => void set_pos do end
     function (void) => Vector3f get_pos do return pos; end
 

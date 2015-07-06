@@ -29,7 +29,7 @@ class PinguParticlesHolder with
 
     var _Sprite&? sprite;
     var _Vector_PinguParticle&? particles;
-do    
+do
     call/rec global:world:add_object(&this);
 
     function (_FileReader* reader) => void construct do end;
@@ -53,7 +53,7 @@ do
         end
     with
         every e_UPDATE do
-            _PPH_update(particles, _WorldObj__get_world());
+            _PPH_update(particles, global:world:world);
         end
     with
         await e_DELETE;

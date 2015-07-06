@@ -26,7 +26,7 @@ do
     par/or do
         loop do
             await mouse_double_click;
-            
+
             var Server*? server = _PTR2REF((Server*)me_.server:ceu());
             emit server:e_ARMAGEDDON;
         end

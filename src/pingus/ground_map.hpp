@@ -21,7 +21,6 @@
 
 #include "engine/display/surface.hpp"
 #include "pingus/globals.hpp"
-#include "pingus/worldobj.hpp"
 
 class SceneContext;
 class CollisionMap;

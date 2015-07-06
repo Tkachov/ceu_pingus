@@ -68,7 +68,7 @@ with
 with
     every new_world in NEW_WORLD do
         spawn World with
-            this.me = _PTR2REF(new_world);
+            this.world = _PTR2REF(new_world);
             world = &this;
         end;
     end

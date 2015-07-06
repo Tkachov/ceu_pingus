@@ -54,8 +54,8 @@ do
     end
 
     function (void) => bool pingu_ready do
-        if (last_release + release_rate) < _WorldObj__get_world():get_time() then
-            last_release = _PTR2REF(_WorldObj__get_world():get_time()); //that's not a pointer even
+        if (last_release + release_rate) < global:world:world:get_time() then
+            last_release = _PTR2REF(global:world:world:get_time()); //that's not a pointer even
             return true;
         end
 
@@ -73,7 +73,7 @@ do
         end
     with
         every e_UPDATE do
-            if pingu_ready() and not _WorldObj__get_world():check_armageddon() then
+            if pingu_ready() and not global:world:world:check_armageddon() then
                 var _PHPackage* package = _new_PHPackage();
                 package:entrance = &this;
                 package:owner_id = owner_id;

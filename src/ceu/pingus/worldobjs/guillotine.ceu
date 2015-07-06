@@ -16,7 +16,7 @@ class Guillotine with
 
     var _Direction&? direction;
     var bool killing;
-do    
+do
     call/rec global:world:add_object(&this);
 
     function (_FileReader* reader) => void construct do end;
@@ -33,7 +33,7 @@ do
         return pos;
     end
 
-    finalize with        
+    finalize with
         _delete_obj(direction);
         _delete_obj(sprite_kill_left);
         _delete_obj(sprite_kill_right);
@@ -79,7 +79,7 @@ do
 
                 // original FIXME: Should be a different sound
                 if sprite_kill_left.get_current_frame() == 7 then
-                    _WorldObj__get_world_play_sound("splash", _toVector3f(pos));
+                    global:world:world:play_sound("splash", _toVector3f(pos));
                 end
             else
                 sprite_idle.update();

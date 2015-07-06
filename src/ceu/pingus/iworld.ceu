@@ -4,7 +4,6 @@
 #include "../c.ceu"
 #include "../sdl.ceu"
 #include "../string.ceu"
-#include "../isorted_list.ceu"
 #include "ipingu_holder.ceu"
 #include "particles/ipingu_particles_holder.ceu"
 #include "particles/irain_particles_holder.ceu"
@@ -18,6 +17,8 @@ native/pre do
 end
 
 interface IWorld with
+    var _World* world;
+
     function (void) => IPinguHolder* get_pingus;
     function (void) => IPinguParticlesHolder* get_pingu_particles_holder;
     function (void) => IRainParticlesHolder* get_rain_particles_holder;

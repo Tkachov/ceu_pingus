@@ -48,7 +48,7 @@ do
         end
     end
 
-    par/or do        
+    par/or do
         every s in SERVER_ARMAGEDDON do
             if s != &server then
                 continue;
@@ -65,7 +65,7 @@ do
                     server.get_time()
                 )
             );
-            
+
             emit global:world:e_ARMAGEDDON;
         end
     with

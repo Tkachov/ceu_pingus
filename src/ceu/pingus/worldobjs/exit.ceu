@@ -31,7 +31,7 @@ do
         //(i.e. hide it from interface in the body)
         //because this function's meant to be called in constructor
         //when the body is not executed yet
-        
+
         reader:read_desc  ("surface",  _deref(desc));
         reader:read_int   ("owner-id", _PTR2REF(owner_id));
 
@@ -54,10 +54,10 @@ do
     function (void) => Vector3f get_pos do
         return pos;
     end
-    
+
     call/rec global:world:add_object(&this);
 
-    finalize with        
+    finalize with
         _delete_obj(desc);
         _delete_obj(sprite);
         _delete_obj(flag);
@@ -71,7 +71,7 @@ do
         end
     with
         every e_STARTUP do
-            _colmap_remove(_WorldObj__get_world():get_colmap(), desc, (int)pos.x - sprite.get_width()/2, (int)pos.y - sprite.get_height());
+            _colmap_remove(global:world:world:get_colmap(), desc, (int)pos.x - sprite.get_width()/2, (int)pos.y - sprite.get_height());
         end
     with
         every smallmap in e_DRAW_SMALLMAP do
