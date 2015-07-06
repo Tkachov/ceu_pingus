@@ -43,7 +43,7 @@ do
 
     _delete_obj(mask);
 
-    global:world:remove_object(&this);     
+    global:world:remove_object(&this);
 end
 
 #endif

@@ -21,6 +21,7 @@ native @pure _new_String(),
 class String with
     function (_const_char_string v) => void set;
     function (_const_char_string v) => void add;
+    function (_const_char_string v) => bool equals;
     function (_FileReader* reader, _const_char_string id) => void read_from_reader;
     function (void) => bool empty;
     function (void) => _const_char_string get;
@@ -34,6 +35,10 @@ do
 
     function (_const_char_string v) => void add do
         _string_add(ss, v);
+    end
+
+    function (_const_char_string v) => bool equals do
+        return ss == v;
     end
 
     function (_FileReader* reader, _const_char_string id) => void read_from_reader do

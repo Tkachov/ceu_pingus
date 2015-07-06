@@ -31,6 +31,7 @@ do
 
     finalize with
         _delete_obj(switch_door_door);
+        _delete_obj(id);
         _delete_obj(door_box);
         _delete_obj(door_box_cmap);
         _delete_obj(door_tile);

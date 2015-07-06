@@ -1,4 +1,4 @@
-# Week 6 (29/06--5/07)
+# Week 7 (6/07--12/07)
 
 ## What I was supposed to do the past week?
 

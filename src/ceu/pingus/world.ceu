@@ -197,7 +197,7 @@ do
 
     function (_const_char_string id) => ITeleporterTarget* get_teleporter_target do
         loop target in teleporter_targets do
-            if target:me:id == id then
+            if target:id == id then
                 return target;
             end
         end
@@ -207,7 +207,7 @@ do
 
     function (_const_char_string id) => ISwitchDoorDoor* get_switch_door_door do
         loop door in switch_door_doors do
-            if door:me:id == id then
+            if door:id == id then
                 return door;
             end
         end
@@ -677,7 +677,8 @@ do
                 this.me = _new_WorldObj();
                 package:result = this.me;
 
-                package:reader:read_string("id", _PTR2REF(this.me:id));
+                this.id = _PTR2REF(_new_String());
+                _string_read_string(this.id, package:reader, "id");
 
                 this.door_box = _PTR2REF(_new_SpriteA("worldobjs/switchdoor_box"));
                 this.door_box_cmap = _PTR2REF(_new_CollisionMask("worldobjs/switchdoor_box"));
@@ -724,7 +725,8 @@ do
                 this.me = _new_WorldObj();
                 package:result = this.me;
 
-                package:reader:read_string("id", _PTR2REF(this.me:id));
+                this.id = _PTR2REF(_new_String());
+                _string_read_string(this.id, package:reader, "id");
                 this.sprite = _PTR2REF(_new_SpriteA("worldobjs/teleportertarget"));
                 package:reader:read_vector("position", _PTR2REF(this.me:pos));
             end;

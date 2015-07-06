@@ -16,28 +16,12 @@
 
 #include "pingus/worldobj.hpp"
 
-#include "util/log.hpp"
-
-#include "ceuvars.h"
-
 World* WorldObj::world;
 
 void
 WorldObj::set_world(World* arg_world)
 {
   world = arg_world;
-}
-
-WorldObj::WorldObj(const FileReader& reader) :
-  id()
-{
-  reader.read_string("id", id);
-}
-
-WorldObj::WorldObj() :
-  id()
-{
-  // z_pos = 0;
 }
 
 /* EOF */

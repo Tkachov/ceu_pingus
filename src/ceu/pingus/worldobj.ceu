@@ -18,6 +18,8 @@ native/pre do
     ##define new_CollisionMask new CollisionMask
 end
 
+#include "../string.ceu"
+
 native @pure _world_put(), _world_remove(), _new_CollisionMask();
 
 native @pure _WorldObj__get_world(),

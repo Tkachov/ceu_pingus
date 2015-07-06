@@ -45,21 +45,7 @@ public:
   /** Return the current active world */
   static World* get_world () { return world; }
 
-private:
-  std::string id;
-
 public:
-  /** Creates a new WorldObj*/
-  WorldObj ();
-  WorldObj(const FileReader& reader);
-
-  WorldObj (const WorldObj&) : id() {}
-  WorldObj& operator= (const WorldObj&) { return *this; }
-
-  virtual ~WorldObj() {};
-
-  std::string get_id() const { return id; }
-
   /** Returns the $z$-position of this object. */
   virtual float get_z_pos() const { return pos.z; }
   virtual void set_pos(const Vector3f& p) { pos = p; }

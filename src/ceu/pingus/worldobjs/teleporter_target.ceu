@@ -19,6 +19,7 @@ do
 
     finalize with
         _delete_obj(teleporter);
+        _delete_obj(id);
         _delete_obj(sprite);
     end;
 

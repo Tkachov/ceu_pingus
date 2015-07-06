@@ -7,6 +7,8 @@
 
 interface ISwitchDoorDoor with
     interface IWorldObj;
+    var _String&? id;
+
     function (void) => void open_door;
 end
 
