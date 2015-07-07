@@ -50,7 +50,7 @@ do
         end
     with
         await global:e_PINGU_UPDATE_ALL;
-        global:world:world:play_sound("splash", pingu.get_pos());
+        global:world:play_sound("splash", pingu.get_ceu_pos(), 0.5);
     end
 end
 

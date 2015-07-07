@@ -97,26 +97,6 @@ World::get_gfx_map()
   return gfx_map;
 }
 
-void
-World::play_sound(std::string name, const Vector3f& pos, float volume)
-{
-  // FIXME: Stereo is for the moment disabled
-  /*
-    Vector3f center = view->get_center();
-    float panning = pos.x - center.x;
-    panning /= view->get_width()/2;
-
-    if (panning > 1.0f)
-    panning = 1.0f;
-
-    if (panning < -1.0f)
-    panning = -1.0f;
-  */
-  float panning = 0.0f;
-
-  Sound::PingusSound::play_sound(name, volume, panning);
-}
-
 float World::get_gravity()
 {
   return gravitational_acceleration;

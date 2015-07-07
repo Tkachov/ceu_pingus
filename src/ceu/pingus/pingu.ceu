@@ -101,6 +101,14 @@ do
         return _Vector3f(pos_x, pos_y, 0);
     end
 
+    function (void) => Vector3f get_ceu_pos do
+        var Vector3f p;
+        p.x = pos_x;
+        p.y = pos_y;
+        p.z = 0;
+        return p;
+    end
+
     function (float x) => void set_x do
         pos_x = x;
     end

@@ -80,16 +80,6 @@ public:
   /** @return A pointer to the gfx map used in this world */
   GroundMap* get_gfx_map();
 
-  /** Play a sound as if it would have been generated at the given
-      position, adjust panning and volume by the position relative to
-      the center of the screen
-      @param name The name of the sound to play ("ohno", not "sounds/ohno.wav")
-      @param pos Position from which the sound seems to come (z-pos is
-      going to be ignored) void play_sound (std::string name, const
-      @param volume The volume of the sound
-  */
-  void play_sound (std::string name, const Vector3f& pos, float volume = 0.5f);
-
   PinguHolder* get_pingus(void);
 
   /** Get the acceleration due to gravity in the world */

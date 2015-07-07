@@ -61,7 +61,7 @@ do
     var _Movers_LinearMover&? mover = _new_LinearMover(global:world:world);
     finalize with _delete_obj(mover); end;
 
-    global:world:world:play_sound("ohno", pingu.get_pos());
+    global:world:play_sound("ohno", pingu.get_ceu_pos(), 0.5);
 
     par do
         every global:e_PINGU_UPDATE_ALL do
@@ -100,7 +100,7 @@ do
         end
 
         //Play sound at 10th frame (>9)
-        global:world:world:play_sound("plop", pingu.get_pos());
+        global:world:play_sound("plop", pingu.get_ceu_pos(), 0.5);
 
         //Wait for 13th frame to throw particles
         await global:e_PINGU_UPDATE_ALL until (sprite.get(pingu.direction):get_current_frame() > 12);

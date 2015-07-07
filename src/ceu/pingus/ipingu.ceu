@@ -54,6 +54,7 @@ interface IPingu with
     function (void) => float get_x;
     function (void) => float get_y;
     function (void) => _Vector3f get_pos;
+    function (void) => Vector3f get_ceu_pos;
 
     function (float x, float y) => void set_posf;
     function (_Vector3f arg) => void set_pos;

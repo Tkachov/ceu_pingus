@@ -105,6 +105,23 @@ do
         return do_armageddon;
     end
 
+    function (_const_char_string name, Vector3f pos, float volume) => void play_sound do
+        //original FIXME: Stereo is for the moment disabled
+        /*
+        Vector3f center = view->get_center();
+        float panning = pos.x - center.x;
+        panning /= view->get_width()/2;
+
+        if (panning > 1.0f)
+            panning = 1.0f;
+
+        if (panning < -1.0f)
+            panning = -1.0f;
+        */
+        var float panning = 0;
+        _Sound_PingusSound_play_sound(name, volume, panning);
+    end
+
     function @rec (IWorldObj* o) => void add_object do
         objs.add((void*)o, o:get_z_pos());
         objs.sort();

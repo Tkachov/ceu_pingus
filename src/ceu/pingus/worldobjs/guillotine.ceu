@@ -79,7 +79,7 @@ do
 
                 // original FIXME: Should be a different sound
                 if sprite_kill_left.get_current_frame() == 7 then
-                    global:world:world:play_sound("splash", _toVector3f(pos));
+                    global:world:play_sound("splash", pos, 0.5);
                 end
             else
                 sprite_idle.update();

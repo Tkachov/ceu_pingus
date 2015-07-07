@@ -29,6 +29,17 @@ interface IWorld with
 
     function (void) => bool check_armageddon;
 
+    /*
+        Play a sound as if it would have been generated at the given
+        position, adjust panning and volume by the position relative to
+        the center of the screen
+
+        @param name The name of the sound to play ("ohno", not "sounds/ohno.wav")
+        @param pos Position from which the sound seems to come (z-pos is going to be ignored)
+        @param volume The volume of the sound
+    */
+    function (_const_char_string name, Vector3f pos, float volume) => void play_sound;
+
     function @rec (_CollisionMask* mask, int x, int y, int t) => void put;
     function @rec (_CollisionMask* mask, int x, int y) => void remove;
     function @rec (_const_char_string mask, int x, int y, int t) => void put_str;

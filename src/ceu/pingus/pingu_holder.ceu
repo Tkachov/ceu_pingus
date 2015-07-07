@@ -78,7 +78,7 @@ do
                 end;
 
                 // FIXME: Find the "oing" sound
-                //world->play_sound("oing", pos);
+                //world->play_sound("oing", pos, 0.5);
 
                 pingus_emitted = pingus_emitted + 1;
                 pingu_holder.released = pingus_emitted;
