@@ -73,7 +73,7 @@ do
         end
     with
         every e_UPDATE do
-            if pingu_ready() and not global:world:world:check_armageddon() then
+            if pingu_ready() and not global:world:check_armageddon() then
                 var _PHPackage* package = _new_PHPackage();
                 package:entrance = &this;
                 package:owner_id = owner_id;

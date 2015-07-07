@@ -51,13 +51,6 @@ private:
 
   /** manager class for the time in the pingus world */
   int game_time;
-
-  /** set to true once an armageddon got started */
-  bool do_armageddon;
-
-  /** FIXME: ugly hack to iterate over all pingus and make bombers out
-      of them, should use pingus_id instead */
-  unsigned int armageddon_count;
     
   PinguHolder* pingus;
 
@@ -86,9 +79,6 @@ public:
 
   /** @return A pointer to the gfx map used in this world */
   GroundMap* get_gfx_map();
-
-  /** @return true if the world is currently doing an armageddon */
-  bool check_armageddon() { return do_armageddon; }
 
   /** Play a sound as if it would have been generated at the given
       position, adjust panning and volume by the position relative to

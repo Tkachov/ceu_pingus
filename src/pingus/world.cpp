@@ -35,9 +35,7 @@ World::World(const PingusLevel& plf) :
   ambient_light(Color(plf.get_ambient_light())),
   mwidth(plf.get_size().width),
   mheight(plf.get_size().height),
-  game_time(0),
-  do_armageddon(false),
-  armageddon_count(0),  
+  game_time(0),  
   pingus(new PinguHolder(plf)),
   colmap(),
   gravitational_acceleration(0.2f)

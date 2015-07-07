@@ -98,6 +98,13 @@ do
     var _Container&? objs = _PTR2REF(_new_Container());
     finalize with _delete_obj(objs); end
 
+    var bool do_armageddon = false;
+    var int armageddon_count = 0;
+
+    function (void) => bool check_armageddon do
+        return do_armageddon;
+    end
+
     function @rec (IWorldObj* o) => void add_object do
         objs.add((void*)o, o:get_z_pos());
         objs.sort();
@@ -260,7 +267,7 @@ do
         every e_UPDATE do
             me.game_time = me.game_time + 1;
 
-            if me.do_armageddon and me.game_time%4 == 0 then
+            if do_armageddon and me.game_time%4 == 0 then
                 loop pingu in holder.all_pingus do
                     if pingu:get_current_action() == _A_BOMBER or pingu:get_current_action() == _A_DROWN or
                        pingu:get_current_action() == _A_SPLASHED or pingu:get_current_action() == _A_LASERKILL or
@@ -282,8 +289,8 @@ do
     with
         every e_ARMAGEDDON do
             _Sound_PingusSound_play_sound("goodidea");
-            me.do_armageddon = true;
-            me.armageddon_count = 0;
+            do_armageddon = true;
+            armageddon_count = 0;
         end
     with
         every p4ckage in PREFAB_POS do

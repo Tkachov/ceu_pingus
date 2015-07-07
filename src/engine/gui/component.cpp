@@ -16,7 +16,15 @@
 
 #include "engine/gui/group_component.hpp"
 
+#include "ceuvars.h"
+
 namespace GUI {
+
+void Component::draw(DrawingContext& gc) {
+  ComponentDrawPackage package(this, gc);
+  ComponentDrawPackage* pp = &package;
+  ceu_out_go(&CEUapp, CEU_IN_COMPONENT_DRAW, &pp);
+}
 
 GroupComponent*
 Component::get_parent() const

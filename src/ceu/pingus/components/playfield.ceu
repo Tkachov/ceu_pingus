@@ -26,7 +26,7 @@ input _Vector2i* PLAYFIELD_CLICK;
 native @pure _send_pingu_action_event(), _get_uint(), _read_coords();
 
 class Playfield with
-    interface IGUI_Component;    
+    interface IGUI_Component;
 do
     var _Playfield&? playfield = _PTR2REF((_Playfield*)&me);
     var PointerProxy pp with
@@ -88,13 +88,13 @@ do
                 if _get_uint(keystate, _SDL_SCANCODE_DELETE) then
                     var _CollisionMask* mask = _new_CollisionMask("other/bash_radius_gfx");
                     call/rec global:world:remove(mask, px - mask:get_width()/2, py - mask:get_height()/2);
-                    _delete_obj(mask);                  
+                    _delete_obj(mask);
                 else/if _get_uint(keystate, _SDL_SCANCODE_INSERT) then
-                    var _CollisionMask* mask = _new_CollisionMask("other/bash_radius_gfx");                    
+                    var _CollisionMask* mask = _new_CollisionMask("other/bash_radius_gfx");
                     call/rec global:world:put(mask, px - mask:get_width()/2, py - mask:get_height()/2, _GT_GROUND);
-                    _delete_obj(mask);              
+                    _delete_obj(mask);
                 else/if _get_uint(keystate, _SDL_SCANCODE_HOME) then
-                    var _CollisionMask* mask = _new_CollisionMask("other/bash_radius_gfx");                    
+                    var _CollisionMask* mask = _new_CollisionMask("other/bash_radius_gfx");
                     call/rec global:world:put(mask, px - mask:get_width()/2, py - mask:get_height()/2, _GT_BRIDGE);
                     _delete_obj(mask);
                 end

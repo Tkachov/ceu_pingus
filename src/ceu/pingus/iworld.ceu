@@ -27,6 +27,8 @@ interface IWorld with
     function (_const_char_string id) => ITeleporterTarget* get_teleporter_target;
     function (_const_char_string id) => ISwitchDoorDoor* get_switch_door_door;
 
+    function (void) => bool check_armageddon;
+
     function @rec (_CollisionMask* mask, int x, int y, int t) => void put;
     function @rec (_CollisionMask* mask, int x, int y) => void remove;
     function @rec (_const_char_string mask, int x, int y, int t) => void put_str;

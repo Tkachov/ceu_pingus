@@ -51,7 +51,7 @@ public:
 
   virtual bool is_visible() const { return visible; }
 
-  virtual void draw (DrawingContext& gc) =0;
+  virtual void draw (DrawingContext& gc);
   virtual void update (float delta) { }
 
   virtual bool is_at (int x, int y) { return false; }
@@ -102,6 +102,13 @@ private:
 };
 
 } // namespace GUI
+
+struct ComponentDrawPackage {
+  GUI::Component* component;
+  DrawingContext* gc;
+
+  ComponentDrawPackage(GUI::Component* c, DrawingContext& g): component(c), gc(&g) {};
+};
 
 struct PointerMovePackage {
   GUI::Component* component;

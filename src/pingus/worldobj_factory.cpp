@@ -157,7 +157,7 @@ public:
         {
           PrefabPackage package(*obj, pos);
           PrefabPackage* pp = &package;
-          ceu_out_go(&CEUapp, CEU_IN_PREFAB_POS, &pp); //(*obj)->set_pos((*obj)->get_pos() + pos);
+          ceu_out_go(&CEUapp, CEU_IN_PREFAB_POS, &pp);
           group.push_back(*obj);
         }
       }

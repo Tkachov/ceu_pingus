@@ -25,7 +25,6 @@
 class Pingu;
 class World;
 class DemoRecorder;
-class GoalManager;
 
 /** A abstract server-like class */
 class Server
@@ -36,8 +35,7 @@ protected:
 
   /** Manager class for the number of available actions */
   ActionHolder action_holder;
-
-  std::unique_ptr<GoalManager>  goal_manager;
+  
   std::unique_ptr<std::ostream> demostream;
 
   void* ceu_server;
@@ -72,6 +70,13 @@ private:
 
   Server (const Server&);
   Server& operator= (const Server&);
+};
+
+struct IsFinishedPackage {
+  Server* server;
+  bool is_finished;
+
+  IsFinishedPackage(Server* s): server(s), is_finished(false) {};
 };
 
 #endif

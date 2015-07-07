@@ -5,20 +5,23 @@
 #include "../sdl.ceu"
 #include "iworld.ceu"
 #include "ipingu_holder.ceu"
+#include "goal_manager.ceu"
 #include "pingu_holder_listener.ceu"
 
 native/pre do
     ##include "pingus/server.hpp"
     ##include "pingus/server_event.hpp"
     ##include "pingus/action_name.hpp"
-    ##include "pingus/goal_manager.hpp"
     ##define ServerEvent__make_pingu_action_event ServerEvent::make_pingu_action_event
     ##define ServerEvent__make_armageddon_event ServerEvent::make_armageddon_event
+    ##define ServerEvent__make_finish_event ServerEvent::make_finish_event
     ##define to_AN(x) (ActionName::Enum)x
 end
 
 input _Server* NEW_SERVER;
 input _Server* SERVER_ARMAGEDDON;
+input _Server* SERVER_FINISH_EVENT;
+input _IsFinishedPackage* SERVER_IS_FINISHED;
 input _Server* SERVER_UPDATE;
 input _Server* DELETE_SERVER;
 
@@ -27,6 +30,9 @@ class Server with
     function @rec (IPingu* pingu, int action) => void send_pingu_action_event;
     event void e_ARMAGEDDON;
 do
+    var GoalManager goal_manager with
+        this.server = me;
+    end;
     var _Server&? server = _PTR2REF((_Server*)me);
     var Server* self = &this;
     server.ceu_server = (void*)self;
@@ -69,13 +75,34 @@ do
             emit global:world:e_ARMAGEDDON;
         end
     with
+        every s in SERVER_FINISH_EVENT do
+            if s != &server then
+                continue;
+            end
+
+            server.record(
+                _ServerEvent__make_finish_event(
+                    server.get_time()
+                )
+            );
+            goal_manager.set_abort_goal();
+        end
+    with
+        every package in SERVER_IS_FINISHED do
+            if package:server != &server then
+                continue;
+            end
+
+            package:is_finished = goal_manager.is_finished();
+        end
+    with
         every s in SERVER_UPDATE do
             if s != &server then
                 continue;
             end
 
             emit global:world:e_UPDATE;
-            server.goal_manager:update();
+            emit goal_manager.e_UPDATE;
         end
     with
         var _Server* e = await DELETE_SERVER until (e == &server);

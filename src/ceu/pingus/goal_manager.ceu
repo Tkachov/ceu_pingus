@@ -1,0 +1,72 @@
+#ifndef GOAL_MANAGER_CEU
+#define GOAL_MANAGER_CEU
+
+#include "../c.ceu"
+#include "../sdl.ceu"
+#include "iworld.ceu"
+#include "ipingu_holder.ceu"
+#include "pingu_holder_listener.ceu"
+
+native/pre do
+    ##include "pingus/server.hpp"
+    ##include "pingus/pingus_level.hpp"
+    ##include "pingus/pingu_holder.hpp"
+end
+
+#define GMT_NONE 0                  // No goal is reached
+#define GMT_OUT_OF_TIME 1           // if the timelimit has passed
+#define GMT_NO_PINGUS_IN_WORLD 2    // if all pingus are released and exited/killed
+#define GMT_ARMAGEDDON 3            // if armageddon as destroyed all pingus
+#define GMT_GAME_ABORTED 4          // if the user pressed Escape to exit the level
+
+class GoalManager with
+    var _Server* server;
+    event void e_UPDATE;
+
+    function (void) => void set_abort_goal;
+    function (void) => bool is_finished;
+do
+    var int goal = GMT_NONE;
+    var int exit_time = 0;
+
+    function (void) => void set_abort_goal do
+        goal = GMT_GAME_ABORTED;
+    end
+
+    function (void) => bool is_finished do
+        if goal == GMT_NONE then
+            return false;
+        else/if goal == GMT_GAME_ABORTED then
+            return true;
+        else/if goal == GMT_OUT_OF_TIME or goal == GMT_NO_PINGUS_IN_WORLD or goal == GMT_ARMAGEDDON then
+            if exit_time == 0 then
+                // we are finished, now wait a few second so that everybody can
+                // see the particles, etc.
+                exit_time = server:get_time() + 125;
+                return false;
+            else
+                return (exit_time < server:get_time());
+            end
+        else
+            _assert(not "GoalManager: unknown goal state");
+            return false;
+        end
+    end
+
+    every e_UPDATE do
+        if exit_time == 0 then
+            var _PinguHolder&? pingus;
+            finalize pingus = global:world:world:get_pingus(); with end
+
+            if pingus.get_number_of_allowed() == pingus.get_number_of_released() and pingus.get_number_of_alive() == 0 then
+                goal = GMT_NO_PINGUS_IN_WORLD;
+            else/if pingus.get_number_of_alive() == 0 and global:world:check_armageddon() then
+                goal = GMT_ARMAGEDDON;
+            else/if server:get_plf().get_time() != -1 and server:get_plf().get_time() <= server:get_time() then
+                goal = GMT_OUT_OF_TIME;
+            end
+        end
+    end
+end
+
+#endif

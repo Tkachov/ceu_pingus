@@ -40,8 +40,7 @@ private:
 public:
   ArmageddonButton(Server*, int x, int y);
   virtual ~ArmageddonButton();
-
-  void draw(DrawingContext& gc);
+  
   void update(float);
 
 private:

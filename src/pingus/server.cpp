@@ -19,8 +19,6 @@
 #include <fstream>
 #include <time.h>
 
-#include "pingus/goal_manager.hpp"
-
 #include "pingus/world.hpp"
 #include "util/log.hpp"
 #include "util/sexpr_file_writer.hpp"
@@ -76,8 +74,7 @@ static std::unique_ptr<std::ostream> get_demostream(const PingusLevel& plf)
 Server::Server(const PingusLevel& arg_plf, bool record_demo) :
   plf(arg_plf),
   world(new World (plf)),
-  action_holder (plf),
-  goal_manager(new GoalManager(this)),
+  action_holder (plf),  
   demostream()
 {
   if (record_demo)
@@ -120,10 +117,11 @@ Server::record(const ServerEvent& event)
     event.write(*demostream);
 }
 
-bool
-Server::is_finished ()
-{
-  return goal_manager->is_finished();
+bool Server::is_finished() {
+  IsFinishedPackage package(this);
+  IsFinishedPackage* pp = &package;
+  ceu_out_go(&CEUapp, CEU_IN_SERVER_IS_FINISHED, &pp);
+  return package.is_finished;
 }
 
 ActionHolder*
@@ -138,11 +136,9 @@ Server::get_time ()
   return get_world()->get_time();
 }
 
-void
-Server::send_finish_event()
-{
-  record(ServerEvent::make_finish_event(get_time()));
-  goal_manager->set_abort_goal();
+void Server::send_finish_event() {
+  Server* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_SERVER_FINISH_EVENT, &self);
 }
 
 /* EOF */

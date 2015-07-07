@@ -44,25 +44,6 @@ ArmageddonButton::~ArmageddonButton() {
 }
 
 void
-ArmageddonButton::draw (DrawingContext& gc)
-{
-  Vector2i pos(rect.left, rect.top);
-
-  if (server->get_world()->check_armageddon ())
-  {
-    gc.draw(backgroundhl, pos);
-    gc.draw(sprite, pos);
-  }
-  else
-  {
-    gc.draw(background, pos);
-
-    sprite.set_frame(7);
-    gc.draw(sprite, pos);
-  }
-}
-
-void
 ArmageddonButton::update (float delta)
 {
   sprite.update(delta);

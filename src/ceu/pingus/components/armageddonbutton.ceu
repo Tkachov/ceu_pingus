@@ -11,8 +11,12 @@ native/pre do
     ##include "pingus/components/action_button.hpp"
     ##include "pingus/server.hpp"
     ##include "pingus/world.hpp"
+    ##define gc_draw(gc, s, rect) gc->draw(s, Vector2i(rect.left, rect.top))
 end
 
+native @pure _gc_draw();
+
+input _ComponentDrawPackage* COMPONENT_DRAW;
 input _ArmageddonButton* DELETE_ARMAGEDDONBUTTON;
 
 class ArmageddonButton with
@@ -24,11 +28,24 @@ do
     end;
 
     par/or do
-        loop do
-            await mouse_double_click;
-
+        every mouse_double_click do
             var Server*? server = _PTR2REF((Server*)me_.server:ceu());
             emit server:e_ARMAGEDDON;
+        end
+    with
+        every package in COMPONENT_DRAW do
+            if package:component != &me_ then
+                continue;
+            end
+
+            if global:world:check_armageddon() then
+                _gc_draw(package:gc, me_.backgroundhl, me_.rect);
+                _gc_draw(package:gc, me_.sprite, me_.rect);
+            else
+                _gc_draw(package:gc, me_.background, me_.rect);
+                me_.sprite.set_frame(7);
+                _gc_draw(package:gc, me_.sprite, me_.rect);
+            end
         end
     with
         var _ArmageddonButton* b = await DELETE_ARMAGEDDONBUTTON until (b == &me_);
