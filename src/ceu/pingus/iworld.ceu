@@ -31,6 +31,7 @@ interface IWorld with
     function (IWorldObj* o) => void remove_object;
 
     event _SceneContext* e_DRAW;
+    event _SmallMap* e_DRAW_SMALLMAP;
     event void e_UPDATE;
     event void e_ARMAGEDDON;
 end

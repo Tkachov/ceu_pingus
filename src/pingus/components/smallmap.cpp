@@ -85,9 +85,7 @@ SmallMap::draw(DrawingContext& gc)
   }
   
   gc.draw(image->get_surface(), Vector2i(rect.left, rect.top));
-  gc.draw_rect(view_rect, Color(0, 255, 0));
-
-  server->get_world()->draw_smallmap(this);
+  gc.draw_rect(view_rect, Color(0, 255, 0));  
 
   SmallMap* self = this;
   ceu_out_go(&CEUapp, CEU_IN_SMALLMAP_DRAW, &self);

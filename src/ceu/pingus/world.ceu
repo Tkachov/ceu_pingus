@@ -80,7 +80,6 @@ native @pure _reader_read_Groundtype(), _Resource__load_surface(), _opeq(), _new
              _read_position(), _read_position2();
 
 input _World* WORLD_STARTUP;
-input _WorldDrawSmallmapPackage* WORLD_DRAW_SMALLMAP;
 input _World* WORLD_DELETE;
 
 input IWorldObj* WORLD_STARTUP_OBJECT;
@@ -222,13 +221,9 @@ do
             end
         end
     with
-        every package in WORLD_DRAW_SMALLMAP do
-            if package:world != &me then
-                continue;
-            end
-
+        every sm in e_DRAW_SMALLMAP do
             draw_smallmap_iterating = true;
-            smallmap = _PTR2REF(package:smallmap);
+            smallmap = _PTR2REF(sm);
             objs.iterate(_CEU_IN_WORLD_DRAW_SMALLMAP_OBJECT);
             draw_smallmap_iterating = false;
             smallmap = null;

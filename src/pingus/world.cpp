@@ -61,12 +61,6 @@ World::~World() {
   ceu_out_go(&CEUapp, CEU_IN_WORLD_DELETE, &self);
 }
 
-void World::draw_smallmap(SmallMap* smallmap) {
-  WorldDrawSmallmapPackage package(this, smallmap);
-  WorldDrawSmallmapPackage* pp = &package;
-  ceu_out_go(&CEUapp, CEU_IN_WORLD_DRAW_SMALLMAP, &pp);
-}
-
 PinguHolder*
 World::get_pingus()
 {

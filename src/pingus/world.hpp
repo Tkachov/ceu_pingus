@@ -30,17 +30,9 @@ class PinguHolder;
 class PingusLevel;
 class CollisionMap;
 class Pingu;
-class SmallMap;
 class SceneContext;
 
 class World;
-
-struct WorldDrawSmallmapPackage {
-  World* world;
-  SmallMap* smallmap;
-
-  WorldDrawSmallmapPackage(World* w, SmallMap* s): world(w), smallmap(s) {};
-};
 
 /** The World holds all objects of the pingu enviroment.
 
@@ -80,9 +72,6 @@ private:
 public:
   World(const PingusLevel& level);
   virtual ~World();
-
-  /** Draw the world onte the given SmallMap*/
-  void    draw_smallmap(SmallMap* smallmap);
 
   /** @return The absolute height of the world. */
   int     get_height ();
