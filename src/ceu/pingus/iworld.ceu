@@ -44,10 +44,10 @@ interface IWorld with
     */
     function (_const_char_string name, Vector3f pos, float volume) => void play_sound;
 
-    function @rec (_CollisionMask* mask, int x, int y, int t) => void put;
-    function @rec (_CollisionMask* mask, int x, int y) => void remove;
-    function @rec (_const_char_string mask, int x, int y, int t) => void put_str;
-    function @rec (_const_char_string mask, int x, int y) => void remove_str;
+    function (_CollisionMask* mask, int x, int y, int t) => void put;
+    function (_CollisionMask* mask, int x, int y) => void remove;
+    function (_const_char_string mask, int x, int y, int t) => void put_str;
+    function (_const_char_string mask, int x, int y) => void remove_str;
 
     function @rec (IWorldObj* o) => void add_object;
     function (IWorldObj* o) => void remove_object;

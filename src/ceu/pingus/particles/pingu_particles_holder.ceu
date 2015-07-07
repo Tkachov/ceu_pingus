@@ -10,19 +10,19 @@
 
 native/pre do
     ##include "pingus/particles/pingu_particles_holder.hpp"
+    ##include "engine/display/scene_context.hpp"
+    ##include "pingus/collision_map.hpp"
+    ##include "pingus/world.hpp"
 
     ##define Vector_PinguParticle std::vector<PinguParticle>
     ##define new_Vector_PinguParticle() new std::vector<PinguParticle>()
-
-    ##define PPH_add_particle(a, b, c) Particles::PinguParticleHolder_add_particle(a, b, c)
-    ##define PPH_update(a, b) Particles::PinguParticleHolder_update(a, b)
-    ##define PPH_draw(a, b, c) Particles::PinguParticleHolder_draw(a, b, c)
+    ##define get_particle(p, i) &((*p)[i])
+    ##define makePinguParticle(x, y) PinguParticle(x, y)
 end
 
 native @pure _new_Vector_PinguParticle(),
-             _PPH_add_particle(),
-             _PPH_update(),
-             _PPH_draw();
+             _get_particle(),
+             _makePinguParticle();
 
 class PinguParticlesHolder with
     interface IPinguParticlesHolder;
@@ -43,17 +43,153 @@ do
         _delete_obj(particles);
     end
 
-    function (int x, int y) => void add_particle do
-        _PPH_add_particle(particles, x, y);
+    function @rec (int x, int y) => void add_particle do
+        var int i = 0;
+
+        // fill gaps from dead entries
+        loop j in particles.size() do
+            var _PinguParticle&? it = _get_particle(particles, j);
+
+            if not it.livetime then                
+                it = _makePinguParticle(x, y);
+                i = i + 1;
+            end
+        end
+
+        // allocate space for all remaining particles at once
+        particles.reserve(particles.size()+50-i);
+
+        // create remaining entries
+        loop/51 do
+            if i >= 50 then
+                break;
+            end
+
+            particles.push_back(_makePinguParticle(x, y));
+            i = i + 1;
+        end
     end
 
     par/or do
         every gc in e_DRAW do
-           _PPH_draw(particles, gc, sprite);
+           loop i in particles.size() do
+                var _PinguParticle&? it = _get_particle(particles, i);
+
+                // skip dead particles
+                if not it.livetime then
+                    continue;
+                end
+
+                gc:color().draw(_deref(sprite), it.pos) finalize with end;
+            end
         end
     with
         every e_UPDATE do
-            _PPH_update(particles, global:world:world);
+            var float x_collision_decrease = 0.3;
+            var float y_collision_decrease = 0.6;
+
+            // update all contained particles            
+            loop i in particles.size() do
+                var _PinguParticle&? it = _get_particle(particles, i);
+
+                // skip dead particles
+                if not it.livetime then
+                    continue;
+                end
+
+                var float tmp_x_add = 0.0;
+                var float tmp_y_add = 0.0;
+
+                // Simulated gravity
+                it.velocity.y = it.velocity.y + global:world:world:get_gravity();
+
+                if it.velocity.y > 0 then                
+                    tmp_y_add = it.velocity.y;
+
+                    loop/1000 do
+                        if tmp_y_add < 1.0 then
+                            break;
+                        end
+
+                        if global:world:world:get_colmap():getpixel(it.pos.x, it.pos.y) finalize with end then
+                            it.velocity.y = it.velocity.y * (-y_collision_decrease);
+                            tmp_y_add = -tmp_y_add;
+                            it.pos.y = it.pos.y - 1;
+                            break;
+                        end
+
+                        it.pos.y = it.pos.y + 1;
+                        tmp_y_add = tmp_y_add - 1;
+                    end
+
+                    it.pos.y = it.pos.y + tmp_y_add;                    
+                else
+                    tmp_y_add = it.velocity.y;
+
+                    loop/1000 do
+                        if tmp_y_add > -1.0 then
+                            break;
+                        end
+
+                        if global:world:world:get_colmap():getpixel(it.pos.x, it.pos.y) finalize with end then
+                            it.velocity.y = it.velocity.y * (-y_collision_decrease);
+                            tmp_y_add = -tmp_y_add;
+                            it.pos.y = it.pos.y + 1;
+                            break;
+                        end
+
+                        it.pos.y = it.pos.y - 1;
+                        tmp_y_add = tmp_y_add + 1;
+                    end
+
+                    it.pos.y = it.pos.y + tmp_y_add; 
+                end
+                
+                if it.velocity.x > 0 then
+                    tmp_x_add = it.velocity.x;
+
+                    loop/1000 do
+                        if tmp_x_add < 1.0 then
+                            break;
+                        end
+
+                        if global:world:world:get_colmap():getpixel(it.pos.x, it.pos.y) finalize with end then
+                            it.velocity.x = it.velocity.x * (-x_collision_decrease);
+                            tmp_x_add = -tmp_x_add;
+                            it.pos.x = it.pos.x - 1;
+                            break;
+                        end
+
+                        it.pos.x = it.pos.x + 1;
+                        tmp_x_add = tmp_x_add - 1;
+                    end
+
+                    it.pos.x = it.pos.x + tmp_x_add;
+                else
+                    tmp_x_add = it.velocity.x;
+
+                    loop/1000 do
+                        if tmp_x_add > -1.0 then
+                            break;
+                        end
+
+                        if global:world:world:get_colmap():getpixel(it.pos.x, it.pos.y) finalize with end then
+                            it.velocity.x = it.velocity.x * (-x_collision_decrease);
+                            tmp_x_add = -tmp_x_add;
+                            it.pos.x = it.pos.x + 1;
+                            break;
+                        end
+
+                        it.pos.x = it.pos.x - 1;
+                        tmp_x_add = tmp_x_add + 1;
+                    end
+
+                    it.pos.x = it.pos.x + tmp_x_add;
+                end
+                
+
+                it.livetime = it.livetime - 1;
+            end
         end
     with
         await e_DELETE;

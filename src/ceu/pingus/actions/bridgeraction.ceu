@@ -99,13 +99,13 @@ do
         end
 
         if pingu.direction.is_right() then
-            call/rec global:world:put(
+            global:world:put(
                        &brick_r,
                        (int)(pingu.get_x() + 10.0 - (float)brick_r.get_width()),
                        (int)pingu.get_y(),
                        _GT_BRIDGE);
         else
-            call/rec global:world:put(
+            global:world:put(
                        &brick_l,
                        (int)(pingu.get_x() - 10.0),
                        (int)pingu.get_y(),

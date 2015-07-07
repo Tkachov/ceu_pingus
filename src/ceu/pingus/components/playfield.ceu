@@ -99,15 +99,15 @@ do
 
                 if _get_uint(keystate, _SDL_SCANCODE_DELETE) then
                     var _CollisionMask* mask = _new_CollisionMask("other/bash_radius_gfx");
-                    call/rec global:world:remove(mask, px - mask:get_width()/2, py - mask:get_height()/2);
+                    global:world:remove(mask, px - mask:get_width()/2, py - mask:get_height()/2);
                     _delete_obj(mask);
                 else/if _get_uint(keystate, _SDL_SCANCODE_INSERT) then
                     var _CollisionMask* mask = _new_CollisionMask("other/bash_radius_gfx");
-                    call/rec global:world:put(mask, px - mask:get_width()/2, py - mask:get_height()/2, _GT_GROUND);
+                    global:world:put(mask, px - mask:get_width()/2, py - mask:get_height()/2, _GT_GROUND);
                     _delete_obj(mask);
                 else/if _get_uint(keystate, _SDL_SCANCODE_HOME) then
                     var _CollisionMask* mask = _new_CollisionMask("other/bash_radius_gfx");
-                    call/rec global:world:put(mask, px - mask:get_width()/2, py - mask:get_height()/2, _GT_BRIDGE);
+                    global:world:put(mask, px - mask:get_width()/2, py - mask:get_height()/2, _GT_BRIDGE);
                     _delete_obj(mask);
                 end
             end

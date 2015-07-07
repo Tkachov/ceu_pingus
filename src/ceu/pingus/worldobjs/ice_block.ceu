@@ -43,7 +43,7 @@ do
 
     par/or do
         every e_STARTUP do
-            call/rec global:world:put(&block_sur_cmap, pos.x, pos.y, _GT_GROUND);
+            global:world:put(&block_sur_cmap, pos.x, pos.y, _GT_GROUND);
         end
     with
         every gc in e_DRAW do
@@ -70,7 +70,7 @@ do
                 if thickness<0 then
                     is_finished = true;
                     thickness = 0;
-                    call/rec global:world:remove(&block_sur_cmap, pos.x, pos.y);
+                    global:world:remove(&block_sur_cmap, pos.x, pos.y);
                 end
             end
         end

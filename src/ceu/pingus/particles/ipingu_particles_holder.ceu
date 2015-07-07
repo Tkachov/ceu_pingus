@@ -7,7 +7,7 @@
 
 interface IPinguParticlesHolder with
 	interface IWorldObj;
-    function (int x, int y) => void add_particle;
+    function @rec (int x, int y) => void add_particle;
 end
 
 #endif

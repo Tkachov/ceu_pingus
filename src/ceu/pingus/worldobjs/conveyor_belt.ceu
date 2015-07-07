@@ -71,7 +71,7 @@ do
             var _CollisionMask* mask = _new_CollisionMask("worldobjs/conveyorbelt_cmap");
 
             loop/100 i in width+2 do
-                call/rec global:world:put(mask, (int)pos.x + 15*i, (int)pos.y, _GT_SOLID);
+                global:world:put(mask, (int)pos.x + 15*i, (int)pos.y, _GT_SOLID);
             end
 
             _delete_obj(mask);

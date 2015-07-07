@@ -61,13 +61,13 @@ do
 
     function @rec (bool final) => void dig do
         if not final then
-            call/rec global:world:remove(&digger_radius,
-                                       (int)pingu.get_x() - digger_radius.get_width() / 2,
-                                       (int)pingu.get_y() - digger_radius.get_height() + 2);
+            global:world:remove(&digger_radius,
+                              (int)pingu.get_x() - digger_radius.get_width() / 2,
+                              (int)pingu.get_y() - digger_radius.get_height() + 2);
         else
-            call/rec global:world:remove(&digger_radius_final,
-                                       (int)pingu.get_x() - digger_radius.get_width() / 2,
-                                       (int)pingu.get_y() - digger_radius.get_height() + 2);
+            global:world:remove(&digger_radius_final,
+                              (int)pingu.get_x() - digger_radius.get_width() / 2,
+                              (int)pingu.get_y() - digger_radius.get_height() + 2);
         end
 
         pingu.set_posf((int)pingu.get_x(), (int)pingu.get_y()+1);

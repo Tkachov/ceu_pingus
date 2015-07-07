@@ -6,9 +6,6 @@
 #include "engine/display/sprite.hpp"
 #include "math/vector3f.hpp"
 
-class SceneContext;
-class World;
-
 struct PinguParticle {
     int  livetime;
     bool use_frame2;
@@ -25,11 +22,5 @@ struct PinguParticle {
         velocity(Vector3f(Math::frand() * 7 - 3.5f, Math::frand() * -9))
     {}
 };
-
-namespace Particles {
-    void PinguParticleHolder_add_particle(std::vector<PinguParticle>* particles, int x, int y);
-    void PinguParticleHolder_update(std::vector<PinguParticle>* particles, World* world);
-    void PinguParticleHolder_draw(std::vector<PinguParticle>* particles, SceneContext* gc, Sprite* surface);
-}
 
 #endif

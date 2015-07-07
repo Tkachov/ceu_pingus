@@ -47,7 +47,7 @@ do
         _delete_obj(particles);
     end
 
-    function (int x, int y) => void add_particle do
+    function @rec (int x, int y) => void add_particle do
         _RPH_add_particle(particles, x, y);
     end
 

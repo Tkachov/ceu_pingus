@@ -106,14 +106,14 @@ do
         await global:e_PINGU_UPDATE_ALL until (sprite.get(pingu.direction):get_current_frame() > 12);
 
         // Throwing particles
-        global:world:get_pingu_particles_holder():add_particle(
+        call/rec global:world:get_pingu_particles_holder():add_particle(
             pingu.get_x(), pingu.get_y() - 5
         );
 
         //Wait for 13th frame again?..
         PRE_CONDITION_AWAIT(global:e_PINGU_UPDATE_ALL, sprite.get(pingu.direction):get_current_frame() >= 13);
 
-        call/rec global:world:remove(
+        global:world:remove(
             &bomber_radius,
             (int)((int)pingu.get_x() - (bomber_radius.get_width()/2)),
             (int)((int)pingu.get_y() - 16 - (bomber_radius.get_width()/2))

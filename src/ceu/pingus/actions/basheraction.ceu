@@ -57,9 +57,9 @@ do
     var int max_bash_height = 33;
 
     function @rec (void) => void bash do
-        call/rec global:world:remove(&bash_radius,
-                                    (int)pingu.get_x() - bash_radius.get_width()/2,
-                                    (int)pingu.get_y() - bash_radius.get_height()+1);
+        global:world:remove(&bash_radius,
+                            (int)pingu.get_x() - bash_radius.get_width()/2,
+                            (int)pingu.get_y() - bash_radius.get_height()+1);
     end
 
     function @rec (void) => bool have_something_to_dig do
