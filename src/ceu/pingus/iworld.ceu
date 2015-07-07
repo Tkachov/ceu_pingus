@@ -4,6 +4,7 @@
 #include "../c.ceu"
 #include "../sdl.ceu"
 #include "../string.ceu"
+#include "../math/vector2i.ceu"
 #include "ipingu_holder.ceu"
 #include "particles/ipingu_particles_holder.ceu"
 #include "particles/irain_particles_holder.ceu"
@@ -13,7 +14,7 @@
 #include "worldobjs/iswitch_door_door.ceu"
 
 native/pre do
-    ##include "pingus/world.hpp"
+    ##include "pingus/world.hpp"    
 end
 
 interface IWorld with
@@ -28,6 +29,9 @@ interface IWorld with
     function (_const_char_string id) => ISwitchDoorDoor* get_switch_door_door;
 
     function (void) => bool check_armageddon;
+    function (int player_id) => _Vector2i get_start_pos;
+    function (void) => int get_width;
+    function (void) => int get_height;
 
     /*
         Play a sound as if it would have been generated at the given

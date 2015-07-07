@@ -5,6 +5,7 @@
 #include "../sdl.ceu"
 #include "../engine/display/scene_context.ceu"
 #include "../engine/display/sprite.ceu"
+#include "../math/vector2i.ceu"
 #include "ipingu.ceu"
 
 native/pre do
@@ -14,7 +15,7 @@ native/pre do
     ##define Fonts__courier_small Fonts::courier_small
 end
 
-native @pure _new_CaptureRectangle(), _AN_get_char(), _strutil_to_string();
+native @pure _new_CaptureRectangle(), _AN_get_char(), _strutil_to_string(), _do_Vector2i();
 
 class CaptureRectangle with
     var _GameSession* session;
@@ -81,7 +82,7 @@ do
                 var Vector3f pc = call/rec pingu:get_center_pos();
 
                 _gc_color_print_center(gc, _Fonts__courier_small,
-                    _Vector2i((int)pc.x, (int)pc.y - 46),
+                    _Vector2i(pc.x, pc.y - 46),
                     action_str, 1000);
             end
         end

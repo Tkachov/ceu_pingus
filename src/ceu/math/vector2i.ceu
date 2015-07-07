@@ -1,0 +1,18 @@
+#ifndef VECTOR2I_CEU
+#define VECTOR2I_CEU
+
+native/pre do
+    ##include "math/vector2i.hpp"
+    ##define toVector2i(v) Vector2i(v.x, v.y)
+    ##define makeVector2i(x, y) Vector2i(x, y)
+end
+
+native @plain _Vector2i;
+native @pure _toVector2i();
+
+data Vector2i with
+    var int x;
+    var int y;    
+end
+
+#endif

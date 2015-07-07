@@ -30,8 +30,8 @@ do
 
             // Draw Pingus
             loop pingu in global:world:get_pingus():all_pingus do
-                var int x = (float)small_map.rect.left + pingu:get_x()*(float)small_map.rect.get_width()/(float)global:world:world:get_width();
-                var int y = (float)small_map.rect.top + pingu:get_y()*(float)small_map.rect.get_height()/(float)global:world:world:get_height();
+                var int x = (float)small_map.rect.left + pingu:get_x()*(float)small_map.rect.get_width()/(float)global:world:get_width();
+                var int y = (float)small_map.rect.top + pingu:get_y()*(float)small_map.rect.get_height()/(float)global:world:get_height();
 
                 _gc_draw_line(small_map.gc_ptr, _Vector2i(x, y), _Vector2i(x, y-2), _Color(255, 255, 0));
             end

@@ -4,13 +4,14 @@
 #include "../../c.ceu"
 #include "../../sdl.ceu"
 #include "../../engine/gui/igui_component.ceu"
+#include "../../math/vector2i.ceu"
 #include "../../proxies/pointerproxy.ceu"
 #include "../capture_rectangle.ceu"
 #include "../pingu_holder_listener.ceu"
 #include "../server.ceu"
 
 native/pre do
-    ##include "pingus/components/playfield.hpp"
+    ##include "pingus/components/playfield.hpp"    
     ##define send_pingu_action_event(playfield, pingu) playfield->server->send_pingu_action_event(pingu, playfield->session->get_action_name())
     ##define globals__developer_mode globals::developer_mode
     ##define const_Uint8 const Uint8
@@ -29,6 +30,17 @@ class Playfield with
     interface IGUI_Component;
 do
     var _Playfield&? playfield = _PTR2REF((_Playfield*)&me);
+
+    playfield.state.set_limit(
+        _Rect(
+            _Vector2i(0, 0),
+            _Size(global:world:get_width(), global:world:get_height())
+        )
+    );
+
+    //original FIXME: Temporary workaround till start-pos is integrated a bit more properly
+    playfield.state.set_pos(global:world:get_start_pos(0));
+
     var PointerProxy pp with
         this.gui = outer;
     end;

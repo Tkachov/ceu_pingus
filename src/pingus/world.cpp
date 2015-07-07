@@ -102,14 +102,4 @@ float World::get_gravity()
   return gravitational_acceleration;
 }
 
-Vector2i
-World::get_start_pos(int player_id)
-{
-  // FIXME: Workaround for lack of start-pos
-  GetStartPosPackage package(this, player_id);
-  GetStartPosPackage* pp = &package;
-  ceu_out_go(&CEUapp, CEU_IN_WORLD_GET_START_POS, &pp);
-  return package.pos;
-}
-
 /* EOF */

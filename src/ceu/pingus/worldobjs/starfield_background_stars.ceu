@@ -26,8 +26,8 @@ class StarfieldBackgroundStars with
 do
     finalize with _delete_obj(sprite); end
 
-    x_pos = (float)(_rand()%global:world:world:get_width());
-    y_pos = (float)(_rand()%global:world:world:get_height());
+    x_pos = (float)(_rand()%global:world:get_width());
+    y_pos = (float)(_rand()%global:world:get_height());
 
     x_add = (float)(_rand()%5)+1.0;
     y_add = 0.0;
@@ -46,9 +46,9 @@ do
             x_pos = x_pos + x_add;
             y_pos = y_pos + y_add;
 
-            if x_pos > global:world:world:get_width() then
+            if x_pos > global:world:get_width() then
                 x_pos = (float)-_globals__tile_size;
-                y_pos = (float)(_rand()%global:world:world:get_height());
+                y_pos = (float)(_rand()%global:world:get_height());
             end
         end
     end

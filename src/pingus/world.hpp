@@ -85,19 +85,9 @@ public:
   /** Get the acceleration due to gravity in the world */
   float get_gravity();
 
-  /** Returns the start pos for the given player */
-  Vector2i get_start_pos(int player_id);
-
 private:
   World (const World&);
   World& operator= (const World&);
-};
-
-struct GetStartPosPackage {
-  World* world;
-  Vector2i pos;
-  int player_id;
-  GetStartPosPackage(World* w, int p): world(w), player_id(p) {};
 };
 
 #endif

@@ -57,7 +57,6 @@ input _WOCPackage* NEW_SWITCH_DOOR_SWITCH;
 input _WOCPackage* NEW_TELEPORTER;
 input _WOCPackage* NEW_TELEPORTER_TARGET;
 
-input _GetStartPosPackage* WORLD_GET_START_POS;
 input _PrefabPackage* PREFAB_POS;
 
 native/pre do
@@ -103,6 +102,36 @@ do
 
     function (void) => bool check_armageddon do
         return do_armageddon;
+    end
+
+    function (int player_id) => _Vector2i get_start_pos do
+        //original FIXME: Workaround for lack of start-pos
+        var int num_entrances = 0;
+        var int px = 0;
+        var int py = 0;
+
+        loop entrance in entrances do
+            if entrance:owner_id == player_id then
+                px = px + entrance:get_pos().x;
+                py = py + entrance:get_pos().y;
+                num_entrances = num_entrances + 1;
+            end
+        end
+
+        if num_entrances>0 then
+            px = px/num_entrances;
+            py = py/num_entrances + 100;
+        end
+
+        return _Vector2i(px, py);
+    end
+
+    function (void) => int get_width do
+        return me.gfx_map:get_width();
+    end
+
+    function (void) => int get_height do
+        return me.gfx_map:get_height();
     end
 
     function (_const_char_string name, Vector3f pos, float volume) => void play_sound do
@@ -316,28 +345,6 @@ do
             wobject:pos.x = wobject:pos.x + p4ckage:pos.x;
             wobject:pos.y = wobject:pos.y + p4ckage:pos.y;
             wobject:pos.z = wobject:pos.z + p4ckage:pos.z;
-        end
-    with
-        every packag3 in WORLD_GET_START_POS do
-            if packag3:world != &me then
-                continue;
-            end
-
-            var int num_entrances = 0;
-
-            loop entrance in entrances do
-                if entrance:owner_id == packag3:player_id then
-                    packag3:pos.x = packag3:pos.x + entrance:get_pos().x;
-                    packag3:pos.y = packag3:pos.y + entrance:get_pos().y;
-                    num_entrances = num_entrances + 1;
-                end
-            end
-
-            if num_entrances>0 then
-                packag3:pos.x = packag3:pos.x/num_entrances;
-                packag3:pos.y = packag3:pos.y/num_entrances;
-                packag3:pos.y = packag3:pos.y+100;
-            end
         end
     with
         every package in NEW_CONVEYOR_BELT do
@@ -637,20 +644,20 @@ do
 
                     // Scaling Code
                     if this.stretch_x and this.stretch_y then
-                        _opeq(surface, surface.scale(global:world:world:get_width(), global:world:world:get_height()));
+                        _opeq(surface, surface.scale(global:world:get_width(), global:world:get_height()));
                     else/if this.stretch_x and not this.stretch_y then
                         if this.keep_aspect then
                             var float aspect = (float)surface.get_height() / (float)surface.get_width();
-                            _opeq(surface, surface.scale(global:world:world:get_width(), (int)((float)global:world:world:get_width()*aspect)));
+                            _opeq(surface, surface.scale(global:world:get_width(), (int)((float)global:world:get_width()*aspect)));
                         else
-                            _opeq(surface, surface.scale(global:world:world:get_width(), surface.get_height()));
+                            _opeq(surface, surface.scale(global:world:get_width(), surface.get_height()));
                         end
                     else/if not this.stretch_x and this.stretch_y then
                         if this.keep_aspect then
                             var float aspect = (float)surface.get_width() / (float)surface.get_height();
-                            _opeq(surface, surface.scale((int)((float)global:world:world:get_height()*aspect), global:world:world:get_height()));
+                            _opeq(surface, surface.scale((int)((float)global:world:get_height()*aspect), global:world:get_height()));
                         else
-                            _opeq(surface, surface.scale(surface.get_width(), global:world:world:get_height()));
+                            _opeq(surface, surface.scale(surface.get_width(), global:world:get_height()));
                         end
                     end
 

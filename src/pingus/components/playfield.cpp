@@ -38,14 +38,7 @@ Playfield::Playfield(Server* server_, GameSession* session_, const Rect& rect_) 
   mouse_pos(),
   old_state_pos()
 {
-  mouse_scrolling    = false;
-
-  state.set_limit(Rect(Vector2i(0, 0),
-                       Size(server->get_world()->get_width(),
-                            server->get_world()->get_height())));
-
-  // FIXME: Temporary workaround till start-pos is integrated a bit more properly
-  state.set_pos(server->get_world()->get_start_pos(0));
+  mouse_scrolling    = false;  
 
   Playfield* self = this;
   ceu_out_go(&CEUapp, CEU_IN_NEW_PLAYFIELD, &self);
