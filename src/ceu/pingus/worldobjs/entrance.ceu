@@ -74,11 +74,7 @@ do
     with
         every e_UPDATE do
             if pingu_ready() and not global:world:check_armageddon() then
-                var _PHPackage* package = _new_PHPackage();
-                package:entrance = &this;
-                package:owner_id = owner_id;
-                package:left = go_left;
-                emit global:world:get_pingus():e_MAKE_PINGU => package;
+                emit global:world:get_pingus():e_MAKE_PINGU => (&this, owner_id, go_left);
 
                 if direction == ED_MISC then
                     go_left = not go_left;

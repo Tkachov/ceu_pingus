@@ -6,23 +6,11 @@
 #include "ipingu.ceu"
 #include "worldobj.ceu"
 
-native/pre do
-    struct PHPackage {
-        void* entrance;
-        int owner_id;
-        bool left;
-    };
-
-    ##define new_PHPackage new PHPackage
-end
-
-native @pure _new_PHPackage();
-
 interface IPinguHolder with
     interface IWorldObj;
 
     pool IPingu[] all_pingus;
-    event _PHPackage* e_MAKE_PINGU;
+    event (IWorldObj*, int, bool) e_MAKE_PINGU;
 
     function @rec (int id) => IPingu* get_pingu;
 end

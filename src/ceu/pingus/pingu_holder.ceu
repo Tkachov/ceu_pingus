@@ -59,19 +59,18 @@ do
             emit global:e_PINGU_UPDATE_ALL;
         end
     with
-        every package in e_MAKE_PINGU do
+        every (entrance, owner_id, turn_left) in e_MAKE_PINGU do
             if pingu_holder.number_of_allowed > pingus_emitted then
                 // We use all_pingus.size() as pingu_id, so that id == array index
                 spawn Pingu in all_pingus with
-                    var IWorldObj* entr = (IWorldObj*)package:entrance;
-                    this.pos_x = entr:pos.x;
-                    this.pos_y = entr:pos.y;
-                    this.owner_id = package:owner_id;
+                    this.pos_x = entrance:pos.x;
+                    this.pos_y = entrance:pos.y;
+                    this.owner_id = owner_id;
                     this.id = pingus_emitted;
 
                     this.direction = _PTR2REF(_new_Direction());
 
-                    if package:left then
+                    if turn_left then
                         this.direction.left();
                     else
                         this.direction.right();

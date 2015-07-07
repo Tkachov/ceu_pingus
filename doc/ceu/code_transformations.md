@@ -48,9 +48,7 @@ If C++ methods are getting reference arguments, even having a reference in Céu 
 
 Sometimes we need more than one parameter passed with event. For that I use special `struct`s, which contain all of these parameters.
 
-And may be that's fine in case of C++-to-Céu interaction, because I was unable to call Céu methods from C++. But when we have to use these inside Céu - that looks even more weird. There's only one place where I had to use that, but there probably could be more.
-
-`IPinguHolder` keeps `Pingu`s inside and can spawn those on demand. Unfortunately, we can't `spawn` in a function. As we have to pass more than one parameter, we have to use a `struct` for these and emit an internal event of `IPinguHolder`, passing it along.
+That's just temporary code for C++-to-Céu interaction, though. Sometimes it's used because I was unable to call Céu methods from C++. I think that after porting this will be replaced with function calls and Céu events with multiple parameters.
 
 ### Doing things in exact order
 
