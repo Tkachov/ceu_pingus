@@ -124,25 +124,6 @@ float World::get_gravity()
   return gravitational_acceleration;
 }
 
-void
-World::put(int x, int y, Groundtype::GPType p)
-{
-}
-
-void
-World::put(const CollisionMask& mask, int x, int y, Groundtype::GPType type)
-{
-  gfx_map->put(mask.get_surface(), x, y);
-  colmap->put(mask, x, y, type);
-}
-
-void
-World::remove(const CollisionMask& mask, int x, int y)
-{
-  gfx_map->remove(mask.get_surface(), x, y);
-  colmap->remove(mask, x, y);
-}
-
 Vector2i
 World::get_start_pos(int player_id)
 {

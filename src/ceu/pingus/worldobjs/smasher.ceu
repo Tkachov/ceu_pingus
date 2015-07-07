@@ -43,7 +43,7 @@ do
         every e_STARTUP do
             _log_info("Drawing colmap entry");
             var _CollisionMask* mask = _new_CollisionMask("traps/smasher_cmap");
-            _world_put(global:world:world, mask, (int)pos.x, (int)pos.y, _GT_SOLID);
+            call/rec global:world:put(mask, pos.x, pos.y, _GT_SOLID);
             _delete_obj(mask);
         end
     with

@@ -12,10 +12,10 @@ native/pre do
     ##include "pingus/components/smallmap.hpp"
     ##include "pingus/res_descriptor.hpp"
     ##define new_ResDescriptor() new ResDescriptor()
-    ##define colmap_remove(cm, desc, x, y) { CollisionMask __mask(*desc); cm->remove(__mask, x, y); }
+    ##define colmap_removeD(cm, desc, x, y) { CollisionMask __mask(*desc); cm->remove(__mask, x, y); }
 end
 
-native @pure _new_ResDescriptor(), _colmap_remove();
+native @pure _new_ResDescriptor(), _colmap_removeD();
 
 class Exit with
     interface IWorldObj;
@@ -71,7 +71,7 @@ do
         end
     with
         every e_STARTUP do
-            _colmap_remove(global:world:world:get_colmap(), desc, (int)pos.x - sprite.get_width()/2, (int)pos.y - sprite.get_height());
+            _colmap_removeD(global:world:world:get_colmap(), desc, (int)pos.x - sprite.get_width()/2, (int)pos.y - sprite.get_height());
         end
     with
         every smallmap in e_DRAW_SMALLMAP do

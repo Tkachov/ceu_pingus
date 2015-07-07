@@ -18,6 +18,7 @@
 #define HEADER_PINGUS_ENGINE_GUI_COMPONENT_HPP
 
 #include "engine/input/event.hpp"
+#include "math/vector2i.hpp"
 
 class DrawingContext;
 
@@ -101,6 +102,13 @@ private:
 };
 
 } // namespace GUI
+
+struct PointerMovePackage {
+  GUI::Component* component;
+  Vector2i mouse_pos;
+
+  PointerMovePackage(GUI::Component* c, Vector2i p): component(c), mouse_pos(p) {};
+};
 
 #endif
 

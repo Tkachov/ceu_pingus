@@ -171,48 +171,6 @@ Playfield::on_secondary_button_release (int x, int y)
   mouse_scrolling = false;
 }
 
-void
-Playfield::on_pointer_move (int x, int y)
-{
-  x -= rect.left;
-  y -= rect.top;
-
-  // FIXME: useless stuff, but currently the controller doesn't have a state
-  mouse_pos.x = x;
-  mouse_pos.y = y;
-
-  if (globals::developer_mode)
-  { // Some fun stuff that lets you draw directly on the level
-    const Uint8* keystate = SDL_GetKeyboardState(nullptr);
-    if (keystate[SDL_SCANCODE_DELETE])
-    {
-      CollisionMask mask("other/bash_radius_gfx");
-      Vector2i p = state.screen2world(mouse_pos);
-      server->get_world()->remove(mask,
-                                  p.x - mask.get_width()/2,
-                                  p.y - mask.get_height()/2);
-    }
-    else if (keystate[SDL_SCANCODE_INSERT])
-    {
-      CollisionMask mask("other/bash_radius_gfx");
-      Vector2i p = state.screen2world(mouse_pos);
-      server->get_world()->put(mask,
-                               p.x - mask.get_width()/2,
-                               p.y - mask.get_height()/2,
-                               Groundtype::GP_GROUND);
-    }
-    else if (keystate[SDL_SCANCODE_HOME])
-    {
-      CollisionMask mask("other/bash_radius_gfx");
-      Vector2i p = state.screen2world(mouse_pos);
-      server->get_world()->put(mask,
-                               p.x - mask.get_width()/2,
-                               p.y - mask.get_height()/2,
-                               Groundtype::GP_BRIDGE);
-    }
-  }
-}
-
 Vector2i
 Playfield::get_pos() const
 {

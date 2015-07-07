@@ -52,19 +52,19 @@ do
     function @rec (bool final) => void mine do
         if not final then
             // regular mine action
-            _world_remove(global:world:world, miner_radius,
+            call/rec global:world:remove(&miner_radius,
                                         (int)pingu.get_x() - (miner_radius.get_width() / 2) + pingu.direction,
                                         (int)pingu.get_y() - miner_radius.get_height() + 2);
         else
             // the last mine action before switching to another action
             if pingu.direction == _D_LEFT then
-                _world_remove(global:world:world, miner_radius_left,
-                                            (int)pingu.get_x() - (miner_radius_left.get_width() / 2) + pingu.direction,
-                                            (int)pingu.get_y() - miner_radius_left.get_height() + 2);
+                call/rec global:world:remove(&miner_radius_left,
+                                            pingu.get_x() - (miner_radius_left.get_width() / 2) + pingu.direction,
+                                            pingu.get_y() - miner_radius_left.get_height() + 2);
             else
-                _world_remove(global:world:world, miner_radius_right,
-                                            (int)pingu.get_x() - (miner_radius_right.get_width() / 2) + pingu.direction,
-                                            (int)pingu.get_y() - miner_radius_right.get_height() + 2);
+                call/rec global:world:remove(&miner_radius_right,
+                                            pingu.get_x() - (miner_radius_right.get_width() / 2) + pingu.direction,
+                                            pingu.get_y() - miner_radius_right.get_height() + 2);
             end;
         end;
     end

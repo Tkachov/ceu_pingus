@@ -235,21 +235,32 @@ void
 GroupComponent::on_pointer_move(int x, int y)
 {
   Vector2i mouse_pos = drawing_context.screen_to_world(Vector2i(x, y));
+  PointerMovePackage package(0, mouse_pos); //make sure you update the pointer!
+  PointerMovePackage* pp = &package;  
 
   if (grabbed_comp)
   {
     grabbed_comp->on_pointer_move(mouse_pos.x, mouse_pos.y);
-    //TODO: Ceu ON_POINTER_MOVE
+
+    //Ceu ON_POINTER_MOVE
+    package.component = grabbed_comp;
+    ceu_out_go(&CEUapp, CEU_IN_ON_POINTER_MOVE, &pp);
   }
   else if (primary_pressed_comp)
   {
     primary_pressed_comp->on_pointer_move(mouse_pos.x, mouse_pos.y);
-    //TODO: Ceu ON_POINTER_MOVE
+    
+    //Ceu ON_POINTER_MOVE
+    package.component = primary_pressed_comp;
+    ceu_out_go(&CEUapp, CEU_IN_ON_POINTER_MOVE, &pp);
   }
   else if (secondary_pressed_comp)
   {
     secondary_pressed_comp->on_pointer_move(mouse_pos.x, mouse_pos.y);
-    //TODO: Ceu ON_POINTER_MOVE
+    
+    //Ceu ON_POINTER_MOVE
+    package.component = secondary_pressed_comp;
+    ceu_out_go(&CEUapp, CEU_IN_ON_POINTER_MOVE, &pp);
   }
   else
   {
@@ -257,7 +268,10 @@ GroupComponent::on_pointer_move(int x, int y)
     if (comp)
     {
       comp->on_pointer_move(mouse_pos.x, mouse_pos.y); 
-      //TODO: Ceu ON_POINTER_MOVE
+      
+      //Ceu ON_POINTER_MOVE
+      package.component = comp;
+      ceu_out_go(&CEUapp, CEU_IN_ON_POINTER_MOVE, &pp);
     }
 
     if (comp != mouse_over_comp)

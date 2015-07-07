@@ -8,15 +8,15 @@ native/pre do
 
     ##define WOCPackage WorldObjCeuPackage
 
-    ##define world_put(w, m, x, y, t) {CollisionMask& __msk = *m; w->put(__msk, x, y, t);}
-    ##define world_remove(w, m, x, y) {CollisionMask& __msk = *m; w->remove(__msk, x, y);}
     ##define new_CollisionMask new CollisionMask
+    ##define colmap_put(cm, m, x, y, t) { CollisionMask& __mask=*m; cm->put(__mask, x, y, t); }
+    ##define colmap_remove(cm, m, x, y) { CollisionMask& __mask=*m; cm->remove(__mask, x, y); }
 end
+
+native @pure _new_CollisionMask(), _colmap_put(), _colmap_remove();
 
 #include "../math/vector3f.ceu"
 #include "../string.ceu"
-
-native @pure _world_put(), _world_remove(), _new_CollisionMask();
 
 interface IWorldObj with
     var Vector3f pos;

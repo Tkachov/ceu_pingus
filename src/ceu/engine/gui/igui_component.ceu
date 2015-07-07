@@ -3,6 +3,7 @@
 
 native/pre do
     ##include "engine/gui/component.hpp"
+    ##include "math/vector2i.hpp"
     ##define GUI_Component GUI::Component
 end
 
@@ -11,6 +12,7 @@ interface IGUI_Component with
 
     event void mouse_enter;
     event void mouse_leave;
+    event (int, int) mouse_move;
 
     event void mouse_press;
     event void mouse_release;

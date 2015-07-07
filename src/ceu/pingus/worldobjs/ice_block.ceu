@@ -9,8 +9,6 @@
 #include "../ipingu_holder.ceu"
 #include "../pingu_holder_listener.ceu"
 
-native @pure _world_remove();
-
 class IceBlock with
     interface IWorldObj;
     var int width;
@@ -45,7 +43,7 @@ do
 
     par/or do
         every e_STARTUP do
-            _world_put(global:world:world, block_sur_cmap, (int)pos.x, (int)pos.y, _GT_GROUND);
+            call/rec global:world:put(&block_sur_cmap, pos.x, pos.y, _GT_GROUND);
         end
     with
         every gc in e_DRAW do
@@ -72,7 +70,7 @@ do
                 if thickness<0 then
                     is_finished = true;
                     thickness = 0;
-                    _world_remove(global:world:world, block_sur_cmap, (int)pos.x, (int)pos.y);
+                    call/rec global:world:remove(&block_sur_cmap, pos.x, pos.y);
                 end
             end
         end

@@ -48,9 +48,9 @@ do
 
     //original FIXME: overdrawing of bridges and similar things aren't handled here
     if gptype == _GT_REMOVE then
-        _world_remove(global:world:world, mask, (int)pos.x, (int)pos.y);
+        call/rec global:world:remove(mask, pos.x, pos.y);
     else
-        _world_put(global:world:world, mask, (int)pos.x, (int)pos.y, _to_GT(gptype));
+        call/rec global:world:put(mask, pos.x, pos.y, gptype);
     end
 
     _delete_obj(mask);

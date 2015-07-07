@@ -87,11 +87,6 @@ public:
   /** @return A pointer to the gfx map used in this world */
   GroundMap* get_gfx_map();
 
-  void put(int x, int y, Groundtype::GPType p = Groundtype::GP_GROUND);
-  void put(const CollisionMask&, int x, int y, Groundtype::GPType);
-
-  void remove(const CollisionMask&, int x, int y);  
-
   /** @return true if the world is currently doing an armageddon */
   bool check_armageddon() { return do_armageddon; }
 

@@ -186,6 +186,28 @@ do
         return null;
     end
 
+    function @rec (_CollisionMask* mask, int x, int y, int type) => void put do
+        world:gfx_map:put(mask:get_surface(), x, y);
+        world:colmap:put(_deref(mask), x, y, _to_GT(type));
+    end
+
+    function @rec (_CollisionMask* mask, int x, int y) => void remove do
+        world:gfx_map:remove(mask:get_surface(), x, y);
+        world:colmap:remove(_deref(mask), x, y);
+    end
+
+    function @rec (_const_char_string str, int x, int y, int t) => void put_str do
+        var _CollisionMask* mask = _new_CollisionMask(str);
+        call/rec put(mask, x, y, t);
+        _delete_obj(mask);
+    end
+
+    function @rec (_const_char_string str, int x, int y) => void remove_str do
+        var _CollisionMask* mask = _new_CollisionMask(str);
+        call/rec remove(mask, x, y);
+        _delete_obj(mask);
+    end
+
     var bool draw_iterating = false;
     var _SceneContext* gc = null;
 

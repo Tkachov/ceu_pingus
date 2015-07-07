@@ -10,7 +10,7 @@
 
 input _GUI_Component* ON_POINTER_ENTER;
 input _GUI_Component* ON_POINTER_LEAVE;
-//TODO: pointer move
+input _PointerMovePackage* ON_POINTER_MOVE;
 
 input _GUI_Component* ON_PRIMARY_BUTTON_PRESS;
 input _GUI_Component* ON_PRIMARY_BUTTON_RELEASE;

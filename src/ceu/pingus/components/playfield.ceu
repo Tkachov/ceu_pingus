@@ -3,6 +3,8 @@
 
 #include "../../c.ceu"
 #include "../../sdl.ceu"
+#include "../../engine/gui/igui_component.ceu"
+#include "../../proxies/pointerproxy.ceu"
 #include "../capture_rectangle.ceu"
 #include "../pingu_holder_listener.ceu"
 #include "../server.ceu"
@@ -10,6 +12,10 @@
 native/pre do
     ##include "pingus/components/playfield.hpp"
     ##define send_pingu_action_event(playfield, pingu) playfield->server->send_pingu_action_event(pingu, playfield->session->get_action_name())
+    ##define globals__developer_mode globals::developer_mode
+    ##define const_Uint8 const Uint8
+    ##define get_uint(u, v) u[v]
+    ##define read_coords(vx, vy, fun) Vector2i __v = fun; vx = __v.x; vy = __v.y;
 end
 
 input _Playfield* PLAYFIELD_UPDATE;
@@ -17,12 +23,15 @@ input _Playfield* DELETE_PLAYFIELD;
 input _SceneContext* PLAYFIELD_DRAW;
 input _Vector2i* PLAYFIELD_CLICK;
 
-native @pure _send_pingu_action_event();
+native @pure _send_pingu_action_event(), _get_uint(), _read_coords();
 
 class Playfield with
-    var _Playfield& me;
+    interface IGUI_Component;    
 do
-    var _Playfield&? playfield = _PTR2REF((_Playfield*)&this.me);
+    var _Playfield&? playfield = _PTR2REF((_Playfield*)&me);
+    var PointerProxy pp with
+        this.gui = outer;
+    end;
     var CaptureRectangle capture_rectangle with
         this.session = playfield.session;
     end;
@@ -59,6 +68,39 @@ do
     end
 
     par/or do
+        every (x, y) in mouse_move do
+            x = x - playfield.rect.left;
+            y = y - playfield.rect.top;
+
+            //original FIXME: useless stuff, but currently the controller doesn't have a state
+            playfield.mouse_pos.x = x;
+            playfield.mouse_pos.y = y;
+
+            if _globals__developer_mode then
+                // Some fun stuff that lets you draw directly on the level
+                var _const_Uint8&? keystate;
+                finalize keystate = _SDL_GetKeyboardState(null); with end;
+
+                var int px;
+                var int py;
+                _read_coords(px, py, playfield.state.screen2world(playfield.mouse_pos) finalize with end);
+
+                if _get_uint(keystate, _SDL_SCANCODE_DELETE) then
+                    var _CollisionMask* mask = _new_CollisionMask("other/bash_radius_gfx");
+                    call/rec global:world:remove(mask, px - mask:get_width()/2, py - mask:get_height()/2);
+                    _delete_obj(mask);                  
+                else/if _get_uint(keystate, _SDL_SCANCODE_INSERT) then
+                    var _CollisionMask* mask = _new_CollisionMask("other/bash_radius_gfx");                    
+                    call/rec global:world:put(mask, px - mask:get_width()/2, py - mask:get_height()/2, _GT_GROUND);
+                    _delete_obj(mask);              
+                else/if _get_uint(keystate, _SDL_SCANCODE_HOME) then
+                    var _CollisionMask* mask = _new_CollisionMask("other/bash_radius_gfx");                    
+                    call/rec global:world:put(mask, px - mask:get_width()/2, py - mask:get_height()/2, _GT_BRIDGE);
+                    _delete_obj(mask);
+                end
+            end
+        end
+    with
         every p in PLAYFIELD_UPDATE do
             if p != &playfield then
                 continue;

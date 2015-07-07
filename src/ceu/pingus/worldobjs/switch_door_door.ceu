@@ -48,7 +48,7 @@ do
 
     par/or do
          every e_STARTUP do
-            _world_put(
+            _colmap_put(
                 global:world:world:get_colmap(),
                 door_box_cmap,
                 (int)pos.x,
@@ -57,7 +57,7 @@ do
             );
 
             loop/100 i in door_height do
-                _world_put(
+                _colmap_put(
                     global:world:world:get_colmap(),
                     door_tile_cmap,
                     (int)pos.x,
@@ -89,7 +89,7 @@ do
                 // If the door is opend enough, so that a pingus fits under
                 // it, we remove the door from the colmap
                 if current_door_height+10 < door_height then
-                    _world_put(
+                    _colmap_put(
                         global:world:world:get_colmap(),
                         door_box_cmap,
                         (int)pos.x,
@@ -98,7 +98,7 @@ do
                     );
 
                     loop/100 i in door_height do
-                        _world_put(
+                        _colmap_put(
                             global:world:world:get_colmap(),
                             door_tile_cmap,
                             (int)pos.x,
