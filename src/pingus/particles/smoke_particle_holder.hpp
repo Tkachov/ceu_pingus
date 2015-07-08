@@ -6,6 +6,8 @@
 #include "engine/display/sprite.hpp"
 #include "engine/display/scene_context.hpp"
 #include "math/vector3f.hpp"
+#include "pingus/collision_map.hpp"
+#include "pingus/globals.hpp"
 
 struct SmokeParticle {
   int    time;
@@ -25,11 +27,5 @@ struct SmokeParticle {
     use_surf2 = rand() % 2;
   }
 };
-
-namespace Particles {
-  void SmokeParticleHolder_add_particle(std::vector<SmokeParticle>* particles, float x, float y, float vel_x, float vel_y);
-  void SmokeParticleHolder_update(std::vector<SmokeParticle>* particles);
-  void SmokeParticleHolder_draw(std::vector<SmokeParticle>* particles, SceneContext* gc, Sprite* s1, Sprite* s2);
-}
 
 #endif

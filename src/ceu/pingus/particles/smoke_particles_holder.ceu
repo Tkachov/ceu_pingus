@@ -13,16 +13,13 @@ native/pre do
 
     ##define Vector_SmokeParticle std::vector<SmokeParticle>
     ##define new_Vector_SmokeParticle() new std::vector<SmokeParticle>()
-
-    ##define SPH_add_particle(a, b, c, d, e) Particles::SmokeParticleHolder_add_particle(a, b, c, d, e)
-    ##define SPH_update(a) Particles::SmokeParticleHolder_update(a)
-    ##define SPH_draw(a, b, c, d) Particles::SmokeParticleHolder_draw(a, b, c, d)
+    ##define get_particle(p, i) &((*p)[i])
+    ##define makeSmokeParticle(x, y, vx, vy) SmokeParticle(x, y, vx, vy)
 end
 
 native @pure _new_Vector_SmokeParticle(),
-             _SPH_add_particle(),
-             _SPH_update(),
-             _SPH_draw();
+             _get_particle(),
+             _makeSmokeParticle();
 
 class SmokeParticlesHolder with
     interface ISmokeParticlesHolder;
@@ -45,17 +42,54 @@ do
         _delete_obj(particles);
     end
 
-    function (int x, int y, float vx, float vy) => void add_particle do
-        _SPH_add_particle(particles, x, y, vx, vy);
+    function @rec (int x, int y, float vx, float vy) => void add_particle do
+        // search for dead entry to replace
+        loop j in particles.size() do
+            var _SmokeParticle&? it = _get_particle(particles, j);
+
+            if not it.livetime then
+                it = _makeSmokeParticle(x, y, vx, vy);
+                return;
+            end
+        end
+
+        // create new entry
+        particles.push_back(_makeSmokeParticle(x, y, vx, vy));
     end
 
     par/or do
         every gc in e_DRAW do
-           _SPH_draw(particles, gc, surf1, surf2);
+            loop j in particles.size() do
+                var _SmokeParticle&? it = _get_particle(particles, j);
+
+                if not it.livetime then
+                    continue;
+                end
+
+                if not it.use_surf2 then
+                    gc:color().draw(_deref(surf1), it.pos) finalize with end;
+                else
+                    gc:color().draw(_deref(surf2), it.pos) finalize with end;
+                end
+            end
         end
     with
         every e_UPDATE do
-            _SPH_update(particles);
+            // update all contained particles
+            loop j in particles.size() do
+                var _SmokeParticle&? it = _get_particle(particles, j);
+
+                // skip dead particles
+                if not it.livetime then
+                    continue;
+                end
+
+                it.pos.x = it.pos.x + it.velocity.x;
+                it.pos.y = it.pos.y + it.velocity.y;
+                it.pos.z = 1000; //z pos
+
+                it.livetime = it.livetime - 1;
+            end
         end
     with
         await e_DELETE;

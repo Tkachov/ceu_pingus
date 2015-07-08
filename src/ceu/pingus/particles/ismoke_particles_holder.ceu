@@ -7,7 +7,7 @@
 
 interface ISmokeParticlesHolder with
 	interface IWorldObj;
-    function (int x, int y, float vx, float vy) => void add_particle;
+    function @rec (int x, int y, float vx, float vy) => void add_particle;
 end
 
 #endif

@@ -85,7 +85,7 @@ do
                     _Sound_PingusSound_play_sound("tenton");
 
                     loop i in 20 do
-                        global:world:get_smoke_particles_holder():add_particle(
+                        call/rec global:world:get_smoke_particles_holder():add_particle(
                             pos.x + 20 + (float)(_rand()%260),
                             pos.y + 180,
                             _Math__frand()-0.5,
