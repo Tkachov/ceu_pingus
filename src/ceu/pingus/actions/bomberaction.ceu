@@ -14,7 +14,7 @@
 #include "../state_sprite.ceu"
 #include "../worldobj.ceu"
 #include "../movers/linear_mover.ceu"
-#include "../particles/ipingu_particles_holder.ceu"
+#include "../particles/particles.ceu"
 
 native/pre do
     ##include "pingus/colliders/pingu_collider.hpp"

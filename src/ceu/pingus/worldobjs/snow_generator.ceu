@@ -5,11 +5,11 @@
 #include "../../sdl.ceu"
 #include "../../math/vector3f.ceu"
 #include "../../math/math.ceu"
+#include "../particles/particles.ceu"
 #include "../iworld.ceu"
 #include "../worldobj.ceu"
 
-native/pre do
-    ##include "pingus/particles/snow_particle_holder.hpp"
+native/pre do    
     ##define globals__tile_size globals::tile_size
 end
 

@@ -22,7 +22,6 @@
 #include "engine/sound/sound.hpp"
 #include "pingus/collision_map.hpp"
 #include "pingus/ground_map.hpp"
-#include "pingus/particles/snow_particle_holder.hpp"
 
 #include "pingus/pingu_holder.hpp"
 #include "pingus/pingus_level.hpp"

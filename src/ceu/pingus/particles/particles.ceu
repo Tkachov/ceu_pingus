@@ -1,0 +1,58 @@
+#ifndef PARTICLES_CEU
+#define PARTICLES_CEU
+
+#include "../worldobj.ceu"
+
+native/pre do
+    ##include "pingus/particles.hpp"
+    ##define Vector_PinguParticle std::vector<PinguParticle>
+    ##define Vector_RainParticle std::vector<RainParticle>
+    ##define Vector_SmokeParticle std::vector<SmokeParticle>
+    ##define Vector_SnowParticle std::vector<SnowParticle>
+
+    ##define new_Vector_PinguParticle() new std::vector<PinguParticle>()
+    ##define new_Vector_RainParticle() new std::vector<RainParticle>()
+    ##define new_Vector_SmokeParticle() new std::vector<SmokeParticle>()
+    ##define new_Vector_SnowParticle() new std::vector<SnowParticle>()
+
+    ##define get_particle(p, i) &((*p)[i])
+
+    ##define makePinguParticle(x, y) PinguParticle(x, y)
+    ##define makeRainParticle(x, y) RainParticle(x, y)
+    ##define makeSmokeParticle(x, y, vx, vy) SmokeParticle(x, y, vx, vy)
+    ##define makeSnowParticle(x, y, c) SnowParticle(x, y, c)
+
+    ##define globals__game_speed globals::game_speed
+end
+
+native @pure _new_Vector_PinguParticle(),
+             _new_Vector_RainParticle(),
+             _new_Vector_SmokeParticle(),
+             _new_Vector_SnowParticle(),
+             _get_particle(),
+             _makePinguParticle(),
+             _makeRainParticle(),
+             _makeSmokeParticle(),
+             _makeSnowParticle();
+
+interface IPinguParticlesHolder with
+    interface IWorldObj;
+    function @rec (int x, int y) => void add_particle;
+end
+
+interface IRainParticlesHolder with
+    interface IWorldObj;
+    function @rec (int x, int y) => void add_particle;
+end
+
+interface ISmokeParticlesHolder with
+    interface IWorldObj;
+    function @rec (int x, int y, float vx, float vy) => void add_particle;
+end
+
+interface ISnowParticlesHolder with
+    interface IWorldObj;
+    function @rec (int x, int y, bool c) => void add_particle;
+end
+
+#endif

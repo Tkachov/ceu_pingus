@@ -9,10 +9,6 @@
 #include "../iworld.ceu"
 #include "../worldobj.ceu"
 
-native/pre do
-    ##include "pingus/particles/rain_particle_holder.hpp"
-end
-
 class RainGenerator with
     interface IWorldObj;
     var bool do_thunder;

@@ -6,10 +6,7 @@
 #include "../string.ceu"
 #include "../math/vector2i.ceu"
 #include "ipingu_holder.ceu"
-#include "particles/ipingu_particles_holder.ceu"
-#include "particles/irain_particles_holder.ceu"
-#include "particles/ismoke_particles_holder.ceu"
-#include "particles/isnow_particles_holder.ceu"
+#include "particles/particles.ceu"
 #include "worldobjs/iteleporter_target.ceu"
 #include "worldobjs/iswitch_door_door.ceu"
 

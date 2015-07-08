@@ -6,20 +6,7 @@
 #include "../iworld.ceu"
 #include "../pingu_holder_listener.ceu"
 #include "../worldobj.ceu"
-#include "ismoke_particles_holder.ceu"
-
-native/pre do
-    ##include "pingus/particles/smoke_particle_holder.hpp"
-
-    ##define Vector_SmokeParticle std::vector<SmokeParticle>
-    ##define new_Vector_SmokeParticle() new std::vector<SmokeParticle>()
-    ##define get_particle(p, i) &((*p)[i])
-    ##define makeSmokeParticle(x, y, vx, vy) SmokeParticle(x, y, vx, vy)
-end
-
-native @pure _new_Vector_SmokeParticle(),
-             _get_particle(),
-             _makeSmokeParticle();
+#include "particles.ceu"
 
 class SmokeParticlesHolder with
     interface ISmokeParticlesHolder;

@@ -6,20 +6,7 @@
 #include "../iworld.ceu"
 #include "../pingu_holder_listener.ceu"
 #include "../worldobj.ceu"
-#include "isnow_particles_holder.ceu"
-
-native/pre do
-    ##include "pingus/particles/snow_particle_holder.hpp"
-
-    ##define Vector_SnowParticle std::vector<SnowParticle>
-    ##define new_Vector_SnowParticle() new std::vector<SnowParticle>()
-    ##define get_particle(p, i) &((*p)[i])
-    ##define makeSnowParticle(x, y, c) SnowParticle(x, y, c)
-end
-
-native @pure _new_Vector_SnowParticle(),
-             _get_particle(),
-             _makeSnowParticle();
+#include "particles.ceu"
 
 class SnowParticlesHolder with
     interface ISnowParticlesHolder;

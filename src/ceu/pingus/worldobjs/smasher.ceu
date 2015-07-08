@@ -5,7 +5,7 @@
 #include "../../sdl.ceu"
 #include "../../engine/sound/sound.ceu"
 #include "../../math/math.ceu"
-#include "../particles/ismoke_particles_holder.ceu"
+#include "../particles/particles.ceu"
 #include "../iworld.ceu"
 #include "../worldobj.ceu"
 #include "../ipingu_holder.ceu"

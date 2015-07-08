@@ -6,22 +6,7 @@
 #include "../iworld.ceu"
 #include "../pingu_holder_listener.ceu"
 #include "../worldobj.ceu"
-#include "irain_particles_holder.ceu"
-
-native/pre do
-    ##include "pingus/particles/rain_particle_holder.hpp"
-
-    ##define Vector_RainParticle std::vector<RainParticle>
-    ##define new_Vector_RainParticle() new std::vector<RainParticle>()
-    ##define get_particle(p, i) &((*p)[i])
-    ##define makeRainParticle(x, y) RainParticle(x, y)
-
-    ##define globals__game_speed globals::game_speed
-end
-
-native @pure _new_Vector_RainParticle(),
-             _get_particle(),
-             _makeRainParticle();
+#include "particles.ceu"
 
 class RainParticlesHolder with
     interface IRainParticlesHolder;
