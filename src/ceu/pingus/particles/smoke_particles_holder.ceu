@@ -10,24 +10,20 @@
 
 class SmokeParticlesHolder with
     interface ISmokeParticlesHolder;
-
-    var _Sprite&? surf1;
-    var _Sprite&? surf2;
-    var _Vector_SmokeParticle&? particles;
 do
+    var _Vector_SmokeParticle&? particles = _PTR2REF(_new_Vector_SmokeParticle());
+    var Sprite surf1;
+    var Sprite surf2;
+    call/rec surf1.reload_by_name("particles/smoke");
+    call/rec surf2.reload_by_name("particles/smoke2");
+    finalize with _delete_obj(particles); end
+
     call/rec global:world:add_object(&this);
 
-    function (_FileReader* reader) => void construct do end;
-
+    function (_FileReader* reader) => void construct do end
     function (void) => float get_z_pos do return 1000; end
     function (Vector3f p) => void set_pos do end
     function (void) => Vector3f get_pos do return pos; end
-
-    finalize with
-        _delete_obj(surf1);
-        _delete_obj(surf2);
-        _delete_obj(particles);
-    end
 
     function @rec (int x, int y, float vx, float vy) => void add_particle do
         // search for dead entry to replace
@@ -54,9 +50,9 @@ do
                 end
 
                 if not it.use_surf2 then
-                    gc:color().draw(_deref(surf1), it.pos) finalize with end;
+                    gc:color().draw(_deref(surf1.get()), it.pos) finalize with end;
                 else
-                    gc:color().draw(_deref(surf2), it.pos) finalize with end;
+                    gc:color().draw(_deref(surf2.get()), it.pos) finalize with end;
                 end
             end
         end

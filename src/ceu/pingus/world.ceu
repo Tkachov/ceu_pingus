@@ -165,33 +165,10 @@ do
         this.holder = me.pingus;
     end;
 
-    var PinguParticlesHolder pingu_particles_holder with
-        this.sprite = _PTR2REF(_new_SpriteA("particles/pingu_explo"));
-        this.particles = _PTR2REF(_new_Vector_PinguParticle());
-    end;
-
-    var RainParticlesHolder rain_particles_holder with
-        this.rain1_surf = _PTR2REF(_new_SpriteA("particles/rain1"));
-        this.rain2_surf = _PTR2REF(_new_SpriteA("particles/rain2"));
-        this.rain_splash = _PTR2REF(_new_SpriteA("particles/rain_splash"));
-        this.particles = _PTR2REF(_new_Vector_RainParticle());
-    end;
-
-    var SmokeParticlesHolder smoke_particles_holder with
-        this.surf1 = _PTR2REF(_new_SpriteA("particles/smoke"));
-        this.surf2 = _PTR2REF(_new_SpriteA("particles/smoke2"));
-        this.particles = _PTR2REF(_new_Vector_SmokeParticle());
-    end;
-
-    var SnowParticlesHolder snow_particles_holder with
-        this.snow1 = _PTR2REF(_new_SpriteA("particles/snow1"));
-        this.snow2 = _PTR2REF(_new_SpriteA("particles/snow2"));
-        this.snow3 = _PTR2REF(_new_SpriteA("particles/snow3"));
-        this.snow4 = _PTR2REF(_new_SpriteA("particles/snow4"));
-        this.snow5 = _PTR2REF(_new_SpriteA("particles/snow5"));
-        this.ground = _PTR2REF(_new_CollisionMask("particles/ground_snow"));
-        this.particles = _PTR2REF(_new_Vector_SnowParticle());
-    end;
+    var PinguParticlesHolder pingu_particles_holder;
+    var RainParticlesHolder rain_particles_holder;
+    var SmokeParticlesHolder smoke_particles_holder;
+    var SnowParticlesHolder snow_particles_holder;
 
     var GroundMap gfx_map with
         this.gmap = _PTR2REF(_new_GroundMap(me.mwidth, me.mheight));

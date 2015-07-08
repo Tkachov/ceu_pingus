@@ -10,22 +10,18 @@
 
 class PinguParticlesHolder with
     interface IPinguParticlesHolder;
-
-    var _Sprite&? sprite;
-    var _Vector_PinguParticle&? particles;
 do
+    var _Vector_PinguParticle&? particles = _PTR2REF(_new_Vector_PinguParticle());
+    var Sprite sprite;
+    call/rec sprite.reload_by_name("particles/pingu_explo");
+    finalize with _delete_obj(particles); end
+
     call/rec global:world:add_object(&this);
 
-    function (_FileReader* reader) => void construct do end;
-
+    function (_FileReader* reader) => void construct do end
     function (void) => float get_z_pos do return 1000; end
     function (Vector3f p) => void set_pos do end
     function (void) => Vector3f get_pos do return pos; end
-
-    finalize with
-        _delete_obj(sprite);
-        _delete_obj(particles);
-    end
 
     function @rec (int x, int y) => void add_particle do
         var int i = 0;
@@ -64,7 +60,7 @@ do
                     continue;
                 end
 
-                gc:color().draw(_deref(sprite), it.pos) finalize with end;
+                gc:color().draw(_deref(sprite.get()), it.pos) finalize with end;
             end
         end
     with

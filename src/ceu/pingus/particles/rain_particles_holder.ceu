@@ -10,26 +10,22 @@
 
 class RainParticlesHolder with
     interface IRainParticlesHolder;
-
-    var _Sprite&? rain1_surf;
-    var _Sprite&? rain2_surf;
-    var _Sprite&? rain_splash;
-    var _Vector_RainParticle&? particles;
 do
+    var _Vector_RainParticle&? particles = _PTR2REF(_new_Vector_RainParticle());
+    var Sprite rain1_surf;
+    var Sprite rain2_surf;
+    var Sprite rain_splash;
+    call/rec rain1_surf.reload_by_name("particles/rain1");
+    call/rec rain2_surf.reload_by_name("particles/rain2");
+    call/rec rain_splash.reload_by_name("particles/rain_splash");
+    finalize with _delete_obj(particles); end
+
     call/rec global:world:add_object(&this);
 
-    function (_FileReader* reader) => void construct do end;
-
+    function (_FileReader* reader) => void construct do end
     function (void) => float get_z_pos do return 1000; end
     function (Vector3f p) => void set_pos do end
     function (void) => Vector3f get_pos do return pos; end
-
-    finalize with
-        _delete_obj(rain1_surf);
-        _delete_obj(rain2_surf);
-        _delete_obj(rain_splash);
-        _delete_obj(particles);
-    end
 
     function @rec (int x, int y) => void add_particle do
         // search for dead entry to replace
@@ -57,13 +53,13 @@ do
                 end
 
                 if it.splash then
-                    rain_splash.set_frame(it.splash_frame) finalize with end;
-                    gc:color().draw(_deref(rain_splash), it.pos) finalize with end;
+                    rain_splash.set_frame(it.splash_frame);
+                    gc:color().draw(_deref(rain_splash.get()), it.pos) finalize with end;
                 else
                     if it.use_rain2_surf then
-                        gc:color().draw(_deref(rain2_surf), _Vector2i(it.pos.x, it.pos.y - (float)rain2_surf.get_height()) finalize with end); //was using rain1's height
+                        gc:color().draw(_deref(rain2_surf.get()), _Vector2i(it.pos.x, it.pos.y - (float)rain2_surf.get_height()) finalize with end); //was using rain1's height
                     else
-                        gc:color().draw(_deref(rain1_surf), _Vector2i(it.pos.x, it.pos.y - (float)rain1_surf.get_height()) finalize with end);
+                        gc:color().draw(_deref(rain1_surf.get()), _Vector2i(it.pos.x, it.pos.y - (float)rain1_surf.get_height()) finalize with end);
                     end
                 end
             end

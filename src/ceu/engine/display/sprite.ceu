@@ -6,11 +6,72 @@ native/pre do
     ##define scc2(a, b) (a+b)
     ##define scc3(a, b, c) (a+b+c)
 
-    ##define new_Sprite() new Sprite()
+    ##define new_Sprite new Sprite
     ##define new_SpriteA(a) new Sprite(a)
 end
 
 native @pure _new_Sprite(),
              _new_SpriteA();
+
+class Sprite with
+    function @rec (_const_char_string filename) => void reload_by_name;
+    function @rec (_ResDescriptor* desc) => void reload_by_desc;
+    //Sprite(const SpriteDescription& desc, ResourceModifier::Enum mod = ResourceModifier::ROT0);
+    //Sprite(const Surface& surface);
+
+    function (void) => _Sprite* get;
+    function (_Sprite*) => void set;
+
+    function (void) => void update;
+    function (float delta) => void update_delta;
+
+    function (void) => int get_width;
+    function (void) => int get_height;
+    function (void) => int get_frame_count;
+    function (void) => int get_current_frame;
+    function (void) => bool is_finished;
+    function (void) => bool is_looping;
+
+    function (int i) => void set_frame;
+do
+    var _Sprite* sprite = _new_Sprite();
+    finalize with _delete_obj(sprite); end;
+
+    function @rec (_const_char_string filename) => void reload_by_name do
+      set(_new_Sprite(filename));
+    end
+
+    function @rec (_ResDescriptor* desc) => void reload_by_desc do
+      set(_new_Sprite(_deref(desc)));
+    end
+
+    function (void) => _Sprite* get do
+      return sprite;
+    end
+
+    function (_Sprite* s) => void set do
+      _delete_obj(sprite);
+      sprite = _PTR2REF(s);
+    end
+
+    function (void) => void update do
+      sprite:update();
+    end
+
+    function (float delta) => void update_delta do
+      sprite:update(delta);
+    end
+
+    function (void) => int get_width do return sprite:get_width(); end
+    function (void) => int get_height do return sprite:get_height(); end
+    function (void) => int get_frame_count do return sprite:get_frame_count(); end
+    function (void) => int get_current_frame do return sprite:get_current_frame(); end
+    function (void) => bool is_finished do return sprite:is_finished(); end
+    function (void) => bool is_looping do return sprite:is_looping(); end
+
+    function (int i) => void set_frame do return sprite:set_frame(i); end
+
+    await FOREVER;
+end
 
 #endif

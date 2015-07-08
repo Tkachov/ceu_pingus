@@ -10,32 +10,30 @@
 
 class SnowParticlesHolder with
     interface ISnowParticlesHolder;
-
-    var _Sprite&? snow1;
-    var _Sprite&? snow2;
-    var _Sprite&? snow3;
-    var _Sprite&? snow4;
-    var _Sprite&? snow5;
-    var _CollisionMask&? ground;
-    var _Vector_SnowParticle&? particles;
 do
+    var _Vector_SnowParticle&? particles = _PTR2REF(_new_Vector_SnowParticle());
+    var _CollisionMask&? ground = _PTR2REF(_new_CollisionMask("particles/ground_snow"));
+    var Sprite snow1;
+    var Sprite snow2;
+    var Sprite snow3;
+    var Sprite snow4;
+    var Sprite snow5;
+    call/rec snow1.reload_by_name("particles/snow1");
+    call/rec snow2.reload_by_name("particles/snow2");
+    call/rec snow3.reload_by_name("particles/snow3");
+    call/rec snow4.reload_by_name("particles/snow4");
+    call/rec snow5.reload_by_name("particles/snow5");
+    finalize with
+        _delete_obj(particles);
+        _delete_obj(ground);
+    end
+
     call/rec global:world:add_object(&this);
 
-    function (_FileReader* reader) => void construct do end;
-
+    function (_FileReader* reader) => void construct do end
     function (void) => float get_z_pos do return 1000; end
     function (Vector3f p) => void set_pos do end
     function (void) => Vector3f get_pos do return pos; end
-
-    finalize with
-        _delete_obj(snow1);
-        _delete_obj(snow2);
-        _delete_obj(snow3);
-        _delete_obj(snow4);
-        _delete_obj(snow5);
-        _delete_obj(ground);
-        _delete_obj(particles);
-    end
 
     function @rec (int x, int y, bool c) => void add_particle do
         //default c == false
@@ -62,11 +60,11 @@ do
                     continue;
                 end
 
-                if it.type == _Snow1 then gc:color().draw(_deref(snow1), it.pos) finalize with end;
-                else/if it.type == _Snow2 then gc:color().draw(_deref(snow2), it.pos) finalize with end;
-                else/if it.type == _Snow3 then gc:color().draw(_deref(snow3), it.pos) finalize with end;
-                else/if it.type == _Snow4 then gc:color().draw(_deref(snow4), it.pos) finalize with end;
-                else/if it.type == _Snow5 then gc:color().draw(_deref(snow5), it.pos) finalize with end;
+                if it.type == _Snow1 then gc:color().draw(_deref(snow1.get()), it.pos) finalize with end;
+                else/if it.type == _Snow2 then gc:color().draw(_deref(snow2.get()), it.pos) finalize with end;
+                else/if it.type == _Snow3 then gc:color().draw(_deref(snow3.get()), it.pos) finalize with end;
+                else/if it.type == _Snow4 then gc:color().draw(_deref(snow4.get()), it.pos) finalize with end;
+                else/if it.type == _Snow5 then gc:color().draw(_deref(snow5.get()), it.pos) finalize with end;
                 else _assert(not "Invalid Snow-Type"); end
             end
         end
