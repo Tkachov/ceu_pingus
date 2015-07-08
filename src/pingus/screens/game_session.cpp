@@ -34,6 +34,8 @@
 #include "pingus/world.hpp"
 #include "util/log.hpp"
 
+#include "ceuvars.h"
+
 GameSession::GameSession(const PingusLevel& arg_plf, bool arg_show_result_screen) :
   plf(arg_plf),
   show_result_screen(arg_show_result_screen),
@@ -64,14 +66,15 @@ GameSession::GameSession(const PingusLevel& arg_plf, bool arg_show_result_screen
   // These object will get deleted by the gui_manager
   button_panel = new ButtonPanel(get_server(), Vector2i(0, (size.height - 150)/2));
 
-  int world_width  = server->get_world()->get_width();
-  int world_height = server->get_world()->get_height();
+  WorldGetSizePackage package(server->get_world());
+  WorldGetSizePackage* pp = &package;
+  ceu_out_go(&CEUapp, CEU_IN_WORLD_GET_SIZE, &pp);
 
   playfield    = new Playfield(get_server(), this,
-                               Rect(Vector2i(Math::max((Display::get_width()  - world_width)/2,  0),
-                                             Math::max((Display::get_height() - world_height)/2, 0)),
-                                    Size(Math::min(Display::get_width(),  world_width),
-                                         Math::min(Display::get_height(), world_height))));
+                               Rect(Vector2i(Math::max((Display::get_width()  - package.width)/2,  0),
+                                             Math::max((Display::get_height() - package.height)/2, 0)),
+                                    Size(Math::min(Display::get_width(),  package.width),
+                                         Math::min(Display::get_height(), package.height))));
 
   pcounter     = new PingusCounter(get_server());
   small_map    = new SmallMap(get_server(), playfield, Rect(Vector2i(5, size.height - 105), Size(175, 100)));
@@ -402,13 +405,14 @@ GameSession::resize(const Size& size_)
 {
   GUIScreen::resize(size_);
 
-  int world_width  = server->get_world()->get_width();
-  int world_height = server->get_world()->get_height();
+  WorldGetSizePackage package(server->get_world());
+  WorldGetSizePackage* pp = &package;
+  ceu_out_go(&CEUapp, CEU_IN_WORLD_GET_SIZE, &pp);
 
-  playfield->set_rect(Rect(Vector2i(Math::max((size.width  - world_width)/2,  0),
-                                    Math::max((size.height - world_height)/2, 0)),
-                           Size(Math::min(size.width,  world_width),
-                                Math::min(size.height, world_height))));
+  playfield->set_rect(Rect(Vector2i(Math::max((size.width  - package.width)/2,  0),
+                                    Math::max((size.height - package.height)/2, 0)),
+                           Size(Math::min(size.width,  package.width),
+                                Math::min(size.height, package.height))));
 
   armageddon_button->set_rect(Rect(Vector2i(size.width - 40, size.height - 62),
                                    Size(38, 60)));

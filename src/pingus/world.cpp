@@ -65,20 +65,6 @@ World::get_pingus()
 }
 
 int
-World::get_width()
-{
-  assert(gfx_map);
-  return gfx_map->get_width();
-}
-
-int
-World::get_height()
-{
-  assert(gfx_map);
-  return gfx_map->get_height();
-}
-
-int
 World::get_time()
 {
   return game_time;

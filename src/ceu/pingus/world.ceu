@@ -58,6 +58,7 @@ input _WOCPackage* NEW_TELEPORTER;
 input _WOCPackage* NEW_TELEPORTER_TARGET;
 
 input _PrefabPackage* PREFAB_POS;
+input _WorldGetSizePackage* WORLD_GET_SIZE;
 
 native/pre do
     ##define reader_read_Groundtype(r, s, v) r->read_enum(s, v, &Groundtype::string_to_type);
@@ -265,6 +266,15 @@ do
     var _SceneContext* gc = null;
 
     par/or do
+        every package in WORLD_GET_SIZE do
+            if package:world != &me then
+                continue;
+            end
+
+            package:width = get_width();
+            package:height = get_height();
+        end
+    with
         every w in WORLD_STARTUP do
             if w != &me then
                 continue;

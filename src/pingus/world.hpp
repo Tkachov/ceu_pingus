@@ -66,11 +66,6 @@ public:
   World(const PingusLevel& level);
   virtual ~World();
 
-  /** @return The absolute height of the world. */
-  int     get_height ();
-  /** @return The absolute width of the world */
-  int     get_width();
-
   /** Returns the time passed since the level was started */
   int get_time();
 
@@ -88,6 +83,13 @@ public:
 private:
   World (const World&);
   World& operator= (const World&);
+};
+
+struct WorldGetSizePackage {
+  World* world;
+  int width, height;
+
+  WorldGetSizePackage(World* w): world(w) {};
 };
 
 #endif

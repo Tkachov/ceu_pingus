@@ -108,14 +108,15 @@ DemoSession::DemoSession(const Pathname& pathname_) :
   gui_manager->add(pcounter);
   gui_manager->add(new ButtonPanel(server.get(), Vector2i(0, (size.height - 100)/2)));
 
-  int world_width  = server->get_world()->get_width();
-  int world_height = server->get_world()->get_height();
+  WorldGetSizePackage package(server->get_world());
+  WorldGetSizePackage* pp = &package;
+  ceu_out_go(&CEUapp, CEU_IN_WORLD_GET_SIZE, &pp);
 
   playfield = new Playfield(server.get(), 0,
-                            Rect(Vector2i(Math::max((size.width  - world_width)/2,  0),
-                                          Math::max((size.height - world_height)/2, 0)), 
-                                 Size(Math::min(size.width,  world_width),
-                                      Math::min(size.height, world_height))));
+                            Rect(Vector2i(Math::max((size.width  - package.width)/2,  0),
+                                          Math::max((size.height - package.height)/2, 0)), 
+                                 Size(Math::min(size.width,  package.width),
+                                      Math::min(size.height, package.height))));
 
   gui_manager->add(playfield);
 
@@ -271,13 +272,14 @@ DemoSession::resize(const Size& size_)
 {
   GUIScreen::resize(size_);
 
-  int world_width  = server->get_world()->get_width();
-  int world_height = server->get_world()->get_height();
+  WorldGetSizePackage package(server->get_world());
+  WorldGetSizePackage* pp = &package;
+  ceu_out_go(&CEUapp, CEU_IN_WORLD_GET_SIZE, &pp);
 
-  playfield->set_rect(Rect(Vector2i(Math::max((size.width  - world_width)/2,  0),
-                                    Math::max((size.height - world_height)/2, 0)), 
-                           Size(Math::min(size.width,  world_width),
-                                Math::min(size.height, world_height))));
+  playfield->set_rect(Rect(Vector2i(Math::max((size.width  - package.width)/2,  0),
+                                    Math::max((size.height - package.height)/2, 0)), 
+                           Size(Math::min(size.width,  package.width),
+                                Math::min(size.height, package.height))));
 
   fastforward_button->set_pos(32+50, 32);
   pause_button->set_pos(32,  32);
