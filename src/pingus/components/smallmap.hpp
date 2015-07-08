@@ -53,10 +53,8 @@ public:
   SmallMap(Server*, Playfield*, const Rect& rect);
   virtual ~SmallMap();
 
-  /*{ @name Stuff called from the GUIManager */
-  void on_primary_button_press(int x, int y);
-  void on_primary_button_release(int x, int y);
-  void on_pointer_move(int x, int y);
+  /*{ @name Stuff called from the GUIManager */  
+  void on_primary_button_release(int x, int y);  
 
   // Events
   void on_pointer_enter ();
@@ -68,12 +66,6 @@ public:
   void draw(DrawingContext& gc);
   void update(float delta);
   /*}*/
-
-  /** draws a symbolic sprite onto the smallmap
-      @param sprite the Sprite to draw, it will keep its original size
-      @param pos the position to draw it in World COs, it will get
-      recalculated to screen CO */
-  void draw_sprite(Sprite sprite, Vector3f pos);
 
 private:
   SmallMap (const SmallMap&);

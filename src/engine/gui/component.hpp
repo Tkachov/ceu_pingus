@@ -58,7 +58,7 @@ public:
 
   // Events
   /** Gets issued once the primary button is pressed */
-  virtual void on_primary_button_press (int x, int y) { }
+  virtual void on_primary_button_press (int x, int y);
 
   /** Gets issued once the primary button is released */
   virtual void on_primary_button_release (int x, int y) { }
@@ -110,11 +110,11 @@ struct ComponentDrawPackage {
   ComponentDrawPackage(GUI::Component* c, DrawingContext& g): component(c), gc(&g) {};
 };
 
-struct PointerMovePackage {
+struct PositionPackage {
   GUI::Component* component;
   Vector2i mouse_pos;
 
-  PointerMovePackage(GUI::Component* c, Vector2i p): component(c), mouse_pos(p) {};
+  PositionPackage(GUI::Component* c, Vector2i p): component(c), mouse_pos(p) {};
 };
 
 #endif

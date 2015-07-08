@@ -26,6 +26,13 @@ void Component::draw(DrawingContext& gc) {
   ceu_out_go(&CEUapp, CEU_IN_COMPONENT_DRAW, &pp);
 }
 
+void Component::on_primary_button_press(int x, int y) {
+  //Ceu ON_PRIMARY_BUTTON_PRESS
+  PositionPackage package(this, Vector2i(x, y));
+  PositionPackage* pp = &package;
+  ceu_out_go(&CEUapp, CEU_IN_ON_PRIMARY_BUTTON_PRESS, &pp);
+}
+
 GroupComponent*
 Component::get_parent() const
 {

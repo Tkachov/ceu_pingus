@@ -6,6 +6,7 @@
 #include "../string.ceu"
 #include "../math/vector2i.ceu"
 #include "ipingu_holder.ceu"
+#include "components/ismallmap.ceu"
 #include "particles/particles.ceu"
 #include "worldobjs/iteleporter_target.ceu"
 #include "worldobjs/iswitch_door_door.ceu"
@@ -50,7 +51,7 @@ interface IWorld with
     function (IWorldObj* o) => void remove_object;
 
     event _SceneContext* e_DRAW;
-    event _SmallMap* e_DRAW_SMALLMAP;
+    event ISmallMap* e_DRAW_SMALLMAP;
     event void e_UPDATE;
     event void e_ARMAGEDDON;
 end

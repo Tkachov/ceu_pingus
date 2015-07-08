@@ -45,7 +45,7 @@ do
         end
     with
         every smallmap in e_DRAW_SMALLMAP do
-            smallmap:draw_sprite(_deref(smallmap_symbol), _toVector3f(pos) + _Vector3f(0, 115));
+            call/rec smallmap:draw_sprite(&smallmap_symbol, _toVector3f(pos) + _Vector3f(0, 115));
         end
     with
         every e_UPDATE do

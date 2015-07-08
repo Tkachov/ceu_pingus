@@ -80,8 +80,6 @@ GroupComponent::on_primary_button_press (int x, int y)
   if (grabbed_comp)
   {
     grabbed_comp->on_primary_button_press(mouse_pos.x, mouse_pos.y);
-    //Ceu ON_PRIMARY_BUTTON_PRESS
-    ceu_sys_go(&CEUapp, CEU_IN_ON_PRIMARY_BUTTON_PRESS, &grabbed_comp);
   }
   else 
   {
@@ -89,8 +87,6 @@ GroupComponent::on_primary_button_press (int x, int y)
     if (comp)
     {
       comp->on_primary_button_press(mouse_pos.x, mouse_pos.y);
-      //Ceu ON_PRIMARY_BUTTON_PRESS
-      ceu_sys_go(&CEUapp, CEU_IN_ON_PRIMARY_BUTTON_PRESS, &comp);
       
       if (focused_comp)
         focused_comp->set_focus(false);
@@ -138,8 +134,8 @@ GroupComponent::on_primary_button_release (int x, int y)
     {
       if(comp) {
         comp->on_primary_button_release(mouse_pos.x, mouse_pos.y);
-        //Ceu ON_PRIMARY_BUTTON_PRESS
-        ceu_sys_go(&CEUapp, CEU_IN_ON_PRIMARY_BUTTON_PRESS, &comp);
+        //Ceu ON_PRIMARY_BUTTON_RELEASE
+        ceu_sys_go(&CEUapp, CEU_IN_ON_PRIMARY_BUTTON_RELEASE, &comp);
       }
     }
   }
@@ -235,8 +231,8 @@ void
 GroupComponent::on_pointer_move(int x, int y)
 {
   Vector2i mouse_pos = drawing_context.screen_to_world(Vector2i(x, y));
-  PointerMovePackage package(0, mouse_pos); //make sure you update the pointer!
-  PointerMovePackage* pp = &package;  
+  PositionPackage package(0, mouse_pos); //make sure you update the pointer!
+  PositionPackage* pp = &package;  
 
   if (grabbed_comp)
   {

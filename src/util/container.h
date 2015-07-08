@@ -24,7 +24,11 @@ public:
   void add(void* ptr, int z);
   void remove(void* ptr);
   void sort();
+  void cleanup();
   void iterate(int event);
+
+  size_t size();
+  void* get(size_t);
 };
 
 #endif

@@ -1,0 +1,13 @@
+#ifndef ISMALLMAP_CEU
+#define ISMALLMAP_CEU
+
+native/pre do
+    ##include "engine/display/sprite.hpp"
+    ##include "math/vector3f.hpp"
+end
+
+interface ISmallMap with
+    function @rec (_Sprite* sprite, _Vector3f pos) => void draw_sprite;
+end
+
+#endif

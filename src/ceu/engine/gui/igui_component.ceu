@@ -14,7 +14,7 @@ interface IGUI_Component with
     event void mouse_leave;
     event (int, int) mouse_move;
 
-    event void mouse_press;
+    event (int, int) mouse_press;
     event void mouse_release;
     event void mouse_click;
     event void mouse_double_click;

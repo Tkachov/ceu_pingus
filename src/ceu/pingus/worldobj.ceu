@@ -17,13 +17,14 @@ native @pure _new_CollisionMask(), _colmap_put(), _colmap_remove();
 
 #include "../math/vector3f.ceu"
 #include "../string.ceu"
+#include "components/ismallmap.ceu"
 
 interface IWorldObj with
     var Vector3f pos;
 
     event void e_STARTUP;
     event _SceneContext* e_DRAW;
-    event _SmallMap* e_DRAW_SMALLMAP;
+    event ISmallMap* e_DRAW_SMALLMAP;
     event void e_UPDATE;
     event void e_DELETE;
 

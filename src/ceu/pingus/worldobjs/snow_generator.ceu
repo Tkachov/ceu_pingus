@@ -9,7 +9,7 @@
 #include "../iworld.ceu"
 #include "../worldobj.ceu"
 
-native/pre do    
+native/pre do
     ##define globals__tile_size globals::tile_size
 end
 
