@@ -51,8 +51,8 @@ public:
 
   virtual bool is_visible() const { return visible; }
 
-  virtual void draw (DrawingContext& gc);
-  virtual void update (float delta) { }
+  virtual void draw(DrawingContext& gc);
+  virtual void update(float delta);
 
   virtual bool is_at (int x, int y) { return false; }
 
@@ -108,6 +108,13 @@ struct ComponentDrawPackage {
   DrawingContext* gc;
 
   ComponentDrawPackage(GUI::Component* c, DrawingContext& g): component(c), gc(&g) {};
+};
+
+struct ComponentUpdatePackage {
+  GUI::Component* component;
+  float delta;
+
+  ComponentUpdatePackage(GUI::Component* c, float d): component(c), delta(d) {};
 };
 
 struct PositionPackage {

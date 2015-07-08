@@ -1,0 +1,41 @@
+#ifndef DEMO_SESSION_CEU
+#define DEMO_SESSION_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../iworld.ceu"
+#include "../pingu_holder_listener.ceu"
+#include "../components/pingus_counter.ceu"
+
+native/pre do
+    ##include "pingus/screens/demo_session.hpp"
+    ##define new_GUI_Component() new GUI::Component()
+end
+
+native @pure _new_PingusCounter(), _new_GUI_Component();
+
+input _DemoSession* DEMO_SESSION_UPDATE;
+input _DemoSession* DELETE_DEMO_SESSION;
+
+class DemoSession with
+    var _DemoSession* me;
+do
+    var _DemoSession&? demo_session = _PTR2REF((_DemoSession*)me);
+    var PingusCounter pcounter with
+        this.me = _new_GUI_Component();
+        this.server = _PTR2REF(demo_session.server.get());
+        demo_session.pcounter = &this.me;
+    end;
+
+    par/or do
+        every s in DEMO_SESSION_UPDATE do
+            if s != &demo_session then
+                continue;
+            end
+        end
+    with
+        var _DemoSession* e = await DELETE_DEMO_SESSION until (e == &demo_session);
+    end
+end
+
+#endif

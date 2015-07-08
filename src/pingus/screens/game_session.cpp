@@ -23,7 +23,6 @@
 
 #include "engine/sound/sound.hpp"
 #include "pingus/components/button_panel.hpp"
-#include "pingus/components/pingus_counter.hpp"
 #include "pingus/components/playfield.hpp"
 #include "pingus/components/smallmap.hpp"
 #include "pingus/components/time_display.hpp"
@@ -76,7 +75,9 @@ GameSession::GameSession(const PingusLevel& arg_plf, bool arg_show_result_screen
                                     Size(Math::min(Display::get_width(),  package.width),
                                          Math::min(Display::get_height(), package.height))));
 
-  pcounter     = new PingusCounter(get_server());
+  GameSession* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_NEW_GAME_SESSION, &self);
+
   small_map    = new SmallMap(get_server(), playfield, Rect(Vector2i(5, size.height - 105), Size(175, 100)));
   time_display = new TimeDisplay(this);
 
@@ -97,6 +98,8 @@ GameSession::GameSession(const PingusLevel& arg_plf, bool arg_show_result_screen
 
 GameSession::~GameSession()
 {
+  GameSession* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_DELETE_GAME_SESSION, &self);
 }
 
 void

@@ -11,6 +11,8 @@ end
 #include "pingus/components/pausebutton.ceu"
 #include "pingus/components/playfield.ceu"
 #include "pingus/components/smallmap.ceu"
+#include "pingus/screens/demo_session.ceu"
+#include "pingus/screens/game_session.ceu"
 #include "pingus/pingu_holder.ceu"
 #include "pingus/pingu_events.ceu"
 #include "pingus/pingu_holder_listener.ceu"
@@ -28,6 +30,8 @@ input _MenuButton* NEW_MENUBUTTON;
 input _ArmageddonButton* NEW_ARMAGEDDONBUTTON;
 input _ForwardButton* NEW_FORWARDBUTTON;
 input _PauseButton* NEW_PAUSEBUTTON;
+input _DemoSession* NEW_DEMO_SESSION;
+input _GameSession* NEW_GAME_SESSION;
 input _World* NEW_WORLD;
 input _Playfield* NEW_PLAYFIELD;
 
@@ -63,6 +67,18 @@ with
     every new_pausebutton in NEW_PAUSEBUTTON do
         spawn PauseButton with
             this.me = _PTR2REF(new_pausebutton);
+        end;
+    end
+with
+    every new_demo_session in NEW_DEMO_SESSION do
+        spawn DemoSession with
+            this.me = _PTR2REF(new_demo_session);
+        end;
+    end
+with
+    every new_game_session in NEW_GAME_SESSION do
+        spawn GameSession with
+            this.me = _PTR2REF(new_game_session);
         end;
     end
 with

@@ -1,0 +1,41 @@
+#ifndef GAME_SESSION_CEU
+#define GAME_SESSION_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../iworld.ceu"
+#include "../pingu_holder_listener.ceu"
+#include "../components/pingus_counter.ceu"
+
+native/pre do
+    ##include "pingus/screens/game_session.hpp"
+    ##define new_GUI_Component() new GUI::Component()
+end
+
+native @pure _new_PingusCounter(), _new_GUI_Component();
+
+input _GameSession* GAME_SESSION_UPDATE;
+input _GameSession* DELETE_GAME_SESSION;
+
+class GameSession with
+    var _GameSession* me;
+do
+    var _GameSession&? game_session = _PTR2REF((_GameSession*)me);
+    var PingusCounter pcounter with
+        this.me = _new_GUI_Component();
+        this.server = _PTR2REF(game_session.get_server());
+        game_session.pcounter = &this.me;
+    end;    
+
+    par/or do
+        every s in GAME_SESSION_UPDATE do
+            if s != &game_session then
+                continue;
+            end
+        end
+    with
+        var _GameSession* e = await DELETE_GAME_SESSION until (e == &game_session);
+    end
+end
+
+#endif

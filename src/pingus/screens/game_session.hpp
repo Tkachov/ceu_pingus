@@ -22,6 +22,7 @@
 #include "engine/screen/gui_screen.hpp"
 #include "pingus/action_name.hpp"
 #include "pingus/pingus_level.hpp"
+#include "engine/gui/component.hpp"
 
 namespace Input {
 struct ScrollEvent;
@@ -30,7 +31,6 @@ struct Event;
 }
 
 class ButtonPanel;
-class PingusCounter;
 class Playfield;
 class TimeDisplay;
 class SmallMap;
@@ -58,7 +58,7 @@ private:
   bool is_finished;
 
   ButtonPanel*   button_panel;
-  PingusCounter* pcounter;
+  GUI::Component* pcounter;
   Playfield*     playfield;
   TimeDisplay*   time_display;
   SmallMap*      small_map;

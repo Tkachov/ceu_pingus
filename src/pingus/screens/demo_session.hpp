@@ -23,6 +23,7 @@
 #include "engine/screen/gui_screen.hpp"
 #include "pingus/server_event.hpp"
 #include "util/pathname.hpp"
+#include "engine/gui/component.hpp"
 
 namespace Input {
 struct Event;
@@ -32,7 +33,6 @@ struct ScrollEvent;
 class Server;
 class XMLPDF;
 class DemoPlayer;
-class PingusCounter;
 class PingusDemo;
 class Playfield;
 class SmallMap;
@@ -51,7 +51,7 @@ private:
   std::unique_ptr<PingusDemo> demo;
   std::vector<ServerEvent>  events;
 
-  PingusCounter* pcounter;
+  GUI::Component* pcounter;
   Playfield*     playfield;
   SmallMap*      small_map;
 

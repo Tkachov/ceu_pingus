@@ -8,6 +8,9 @@
 
 //I'm going to include it in every proxy file as well, so it always remains up-to-date
 
+input _ComponentDrawPackage* COMPONENT_DRAW;
+input _ComponentUpdatePackage* COMPONENT_UPDATE;
+
 input _GUI_Component* ON_POINTER_ENTER;
 input _GUI_Component* ON_POINTER_LEAVE;
 input _PositionPackage* ON_POINTER_MOVE;

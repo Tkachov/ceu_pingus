@@ -1,0 +1,60 @@
+#ifndef PINGUS_COUNTER_CEU
+#define PINGUS_COUNTER_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../../engine/gui/igui_component.ceu"
+#include "../../proxies/eventproxy.ceu"
+#include "../iworld.ceu"
+#include "../ipingu_holder.ceu"
+#include "../pingu_holder_listener.ceu"
+#include "ismallmap.ceu"
+
+native/pre do
+    ##include "engine/display/font.hpp"
+    ##include "engine/display/sprite.hpp"
+    ##include "engine/gui/component.hpp"
+    ##include "engine/display/drawing_context.hpp"
+    ##include "pingus/fonts.hpp"
+    ##include "pingus/gettext.h"
+    ##include "pingus/pingu_holder.hpp"
+    ##include "pingus/server.hpp"
+    ##include "pingus/world.hpp"
+    ##define Fonts__pingus_small_fixnum &Fonts::pingus_small_fixnum
+
+    struct chrarr {
+        char s[128];
+    };
+end
+
+class PingusCounter with
+    interface IGUI_Component;
+    var _Server&? server;    
+do
+    var _SmallMap&? small_map = _PTR2REF((_SmallMap*)&me);
+    var Sprite background;
+    call/rec background.reload_by_name("core/buttons/info");
+
+    var EventProxy p with
+        this.gui = outer;
+    end;
+    
+    var _Font* font = _Fonts__pingus_small_fixnum;
+    
+    every gc in draw do
+        var _chrarr str;
+
+        gc:draw(_deref(background.get()), _Vector2i(gc:get_width()/2, 0));
+
+        _snprintf(str.s, 128, __("Released:%3d/%d   Out:%3d   Saved:%3d/%d").c_str(),
+                 global:world:world:get_pingus():get_number_of_released(),
+                 global:world:world:get_pingus():get_number_of_allowed(),
+                 global:world:world:get_pingus():get_number_of_alive(),
+                 global:world:world:get_pingus():get_number_of_exited(),
+                 server.get_plf().get_number_to_save()) finalize with end;
+
+        gc:print_center(_deref(font), _Vector2i(gc:get_width()/2, -2), str.s) finalize with end;
+    end
+end
+
+#endif

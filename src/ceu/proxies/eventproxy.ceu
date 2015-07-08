@@ -1,0 +1,32 @@
+#ifndef EVENTPROXY_CEU
+#define EVENTPROXY_CEU
+
+#include "proxyeventlist.ceu"
+
+#include "../c.ceu"
+#include "../engine/gui/igui_component.ceu"
+
+native/pre do
+    ##include "engine/gui/component.hpp"
+    ##define GUI_Component GUI::Component
+end
+
+class EventProxy with
+    var IGUI_Component& gui;
+do
+    par do
+        every package in COMPONENT_DRAW do
+            if package:component == &gui.me then
+                emit gui.draw => package:gc;
+            end
+        end
+    with
+        every package in COMPONENT_UPDATE do
+            if package:component == &gui.me then
+                emit gui.update => package:delta;
+            end
+        end
+    end
+end
+
+#endif

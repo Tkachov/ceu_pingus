@@ -10,6 +10,9 @@ end
 interface IGUI_Component with
     var _GUI_Component& me;
 
+    event _DrawingContext* draw;
+    event float update;
+
     event void mouse_enter;
     event void mouse_leave;
     event (int, int) mouse_move;

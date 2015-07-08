@@ -22,7 +22,6 @@
 #include "engine/gui/gui_manager.hpp"
 #include "engine/gui/surface_button.hpp"
 #include "engine/screen/screen_manager.hpp"
-#include "pingus/components/pingus_counter.hpp"
 #include "pingus/components/playfield.hpp"
 #include "pingus/components/smallmap.hpp"
 #include "pingus/components/button_panel.hpp"
@@ -104,7 +103,8 @@ DemoSession::DemoSession(const Pathname& pathname_) :
   server   = std::unique_ptr<Server>(new Server(plf, false));
 
   // Create GUI
-  pcounter = new PingusCounter(server.get());
+  DemoSession* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_NEW_DEMO_SESSION, &self);
   gui_manager->add(pcounter);
   gui_manager->add(new ButtonPanel(server.get(), Vector2i(0, (size.height - 100)/2)));
 
@@ -135,6 +135,8 @@ DemoSession::DemoSession(const Pathname& pathname_) :
 
 DemoSession::~DemoSession()
 {
+  DemoSession* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_DELETE_DEMO_SESSION, &self);
 }
 
 void
