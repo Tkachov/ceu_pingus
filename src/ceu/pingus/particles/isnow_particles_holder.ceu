@@ -7,7 +7,7 @@
 
 interface ISnowParticlesHolder with
 	interface IWorldObj;
-    function (int x, int y, bool c) => void add_particle;
+    function @rec (int x, int y, bool c) => void add_particle;
 end
 
 #endif

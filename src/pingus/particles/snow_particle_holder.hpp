@@ -6,9 +6,10 @@
 #include "engine/display/sprite.hpp"
 #include "math/vector3f.hpp"
 #include "pingus/collision_mask.hpp"
-
-class SceneContext;
-class World;
+#include "engine/display/scene_context.hpp"
+#include "pingus/collision_map.hpp"
+#include "pingus/ground_map.hpp"
+#include "pingus/world.hpp"
 
 enum ParticleType { Snow1, Snow2, Snow3, Snow4, Snow5 };
 
@@ -47,11 +48,5 @@ struct SnowParticle {
     }
   }
 };
-
-namespace Particles {
-  void SnowParticleHolder_add_particle(std::vector<SnowParticle>* particles, int x, int y, bool colliding);
-  void SnowParticleHolder_update(std::vector<SnowParticle>* particles, World* world, CollisionMask* ground);
-  void SnowParticleHolder_draw(std::vector<SnowParticle>* particles, SceneContext* gc, Sprite* snow1, Sprite* snow2, Sprite* snow3, Sprite* snow4, Sprite* snow5);
-}
 
 #endif

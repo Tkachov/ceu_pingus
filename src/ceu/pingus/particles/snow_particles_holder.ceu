@@ -13,16 +13,13 @@ native/pre do
 
     ##define Vector_SnowParticle std::vector<SnowParticle>
     ##define new_Vector_SnowParticle() new std::vector<SnowParticle>()
-
-    ##define SnPH_add_particle(a, b, c, d) Particles::SnowParticleHolder_add_particle(a, b, c, d)
-    ##define SnPH_update(a, b, c) Particles::SnowParticleHolder_update(a, b, c)
-    ##define SnPH_draw(a, b, c, d, e, f, g) Particles::SnowParticleHolder_draw(a, b, c, d, e, f, g)
+    ##define get_particle(p, i) &((*p)[i])
+    ##define makeSnowParticle(x, y, c) SnowParticle(x, y, c)
 end
 
 native @pure _new_Vector_SnowParticle(),
-             _SnPH_add_particle(),
-             _SnPH_update(),
-             _SnPH_draw();
+             _get_particle(),
+             _makeSnowParticle();
 
 class SnowParticlesHolder with
     interface ISnowParticlesHolder;
@@ -53,18 +50,69 @@ do
         _delete_obj(particles);
     end
 
-    function (int x, int y, bool c) => void add_particle do
+    function @rec (int x, int y, bool c) => void add_particle do
         //default c == false
-        _SnPH_add_particle(particles, x, y, c);
+        // search for dead entry to replace
+        loop j in particles.size() do
+            var _SnowParticle&? it = _get_particle(particles, j);
+
+            if not it.alive then
+                it = _makeSnowParticle(x, y, c);
+                return;
+            end
+        end
+
+        // create new entry
+        particles.push_back(_makeSnowParticle(x, y, c));
     end
 
     par/or do
         every gc in e_DRAW do
-           _SnPH_draw(particles, gc, snow1, snow2, snow3, snow4, snow5);
+            loop j in particles.size() do
+                var _SnowParticle&? it = _get_particle(particles, j);
+
+                if not it.alive then
+                    continue;
+                end
+
+                if it.type == _Snow1 then gc:color().draw(_deref(snow1), it.pos) finalize with end;
+                else/if it.type == _Snow2 then gc:color().draw(_deref(snow2), it.pos) finalize with end;
+                else/if it.type == _Snow3 then gc:color().draw(_deref(snow3), it.pos) finalize with end;
+                else/if it.type == _Snow4 then gc:color().draw(_deref(snow4), it.pos) finalize with end;
+                else/if it.type == _Snow5 then gc:color().draw(_deref(snow5), it.pos) finalize with end;
+                else _assert(not "Invalid Snow-Type"); end
+            end
         end
     with
         every e_UPDATE do
-            _SnPH_update(particles, global:world:world, ground);
+            // update all contained particles
+            loop j in particles.size() do
+                var _SnowParticle&? it = _get_particle(particles, j);
+
+                // skip dead particles
+                if not it.alive then
+                    continue;
+                end
+
+                it.pos.x = it.pos.x + it.velocity.x;
+                it.pos.y = it.pos.y + it.velocity.y;
+
+                if it.pos.y > global:world:get_height() then
+                    it.alive = false;
+                end
+
+                if not it.alive then continue; end
+
+                it.velocity.x = it.velocity.x + (_Math__frand() - 0.5)/10;
+
+                if it.colliding then
+                    var int pixel = global:world:world:get_colmap():getpixel(it.pos.x, it.pos.y) finalize with end;
+                    if pixel != _GT_NOTHING and pixel != _GT_WATER and pixel != _GT_OUTOFSCREEN then
+                        global:world:world:get_gfx_map():put(ground.get_surface(), it.pos.x-1, it.pos.y-1);
+                        it.alive = false;
+                    end
+                end
+            end
         end
     with
         await e_DELETE;

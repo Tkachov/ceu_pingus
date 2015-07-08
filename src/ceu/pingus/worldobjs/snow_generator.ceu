@@ -41,16 +41,16 @@ do
         every e_UPDATE do
             loop/5000 i in _Math__floor(intensity) do
                 if _rand()%3 != 0 then
-                    global:world:get_snow_particles_holder():add_particle(_rand()%global:world:get_width(), -_globals__tile_size, false);
+                    call/rec global:world:get_snow_particles_holder():add_particle(_rand()%global:world:get_width(), -_globals__tile_size, false);
                 else
-                    global:world:get_snow_particles_holder():add_particle(_rand()%global:world:get_width(), -_globals__tile_size, true);
+                    call/rec global:world:get_snow_particles_holder():add_particle(_rand()%global:world:get_width(), -_globals__tile_size, true);
                 end
 
                 if (intensity - (float)(int)intensity) > _Math__frand() then
                     if _rand()%3 != 0 then
-                        global:world:get_snow_particles_holder():add_particle(_rand()%global:world:get_width(), -_globals__tile_size, false);
+                        call/rec global:world:get_snow_particles_holder():add_particle(_rand()%global:world:get_width(), -_globals__tile_size, false);
                     else
-                        global:world:get_snow_particles_holder():add_particle(_rand()%global:world:get_width(), -_globals__tile_size, true);
+                        call/rec global:world:get_snow_particles_holder():add_particle(_rand()%global:world:get_width(), -_globals__tile_size, true);
                     end
                 end
             end
