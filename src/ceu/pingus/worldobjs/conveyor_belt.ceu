@@ -18,49 +18,38 @@ end
 
 class ConveyorBelt with
     interface IWorldObj;
-    var _Sprite&? left_sur;
-    var _Sprite&? right_sur;
-    var _Sprite&? middle_sur;
 
     var int width;
     var float speed;
     var float counter;
 do
+    var Sprite left_sur;
+    var Sprite right_sur;
+    var Sprite middle_sur;
+    call/rec left_sur.reload_by_name("worldobjs/conveyorbelt_left");
+    call/rec right_sur.reload_by_name("worldobjs/conveyorbelt_right");
+    call/rec middle_sur.reload_by_name("worldobjs/conveyorbelt_middle");
+
     call/rec global:world:add_object(&this);
 
-    function (_FileReader* reader) => void construct do end;
-
-    function (void) => float get_z_pos do
-        return pos.z;
-    end
-
-    function (Vector3f p) => void set_pos do
-        pos = p;
-    end
-
-    function (void) => Vector3f get_pos do
-        return pos;
-    end
-
-    finalize with
-        _delete_obj(left_sur);
-        _delete_obj(right_sur);
-        _delete_obj(middle_sur);
-    end;
+    function (_FileReader* reader) => void construct do end
+    function (void) => float get_z_pos do return pos.z; end
+    function (Vector3f p) => void set_pos do pos = p; end
+    function (void) => Vector3f get_pos do return pos; end
 
     par/or do
         every gc in e_DRAW do
-            _gc_color_draw2(gc, &left_sur, _toVector3f(pos));
+            _gc_color_draw2(gc, left_sur.get(), _toVector3f(pos));
 
             loop/100 i in width do
-                _gc_color_draw2(gc, &middle_sur,
+                _gc_color_draw2(gc, middle_sur.get(),
                     _Vector3f(
                         (float)(pos.x + (float)(left_sur.get_width() + i*middle_sur.get_width())),
                         (float)pos.y
                     ));
             end
 
-            _gc_color_draw2(gc, &right_sur,
+            _gc_color_draw2(gc, right_sur.get(),
                 _Vector3f(
                     (float)(pos.x + (float)(left_sur.get_width() + width*middle_sur.get_width())),
                     (float)pos.y

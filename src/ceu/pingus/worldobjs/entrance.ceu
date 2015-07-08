@@ -21,30 +21,17 @@ class Entrance with
     var int direction;
     var int release_rate;
     var int owner_id;
-
-    var _Sprite&? smallmap_symbol;
-    var _Sprite&? surface;
 do
+    var Sprite smallmap_symbol;
+    var Sprite surface;
+    call/rec smallmap_symbol.reload_by_name("core/misc/smallmap_entrance");
+
     call/rec global:world:add_object(&this);
 
-    function (_FileReader* reader) => void construct do end;
-
-    function (void) => float get_z_pos do
-        return pos.z;
-    end
-
-    function (Vector3f p) => void set_pos do
-        pos = p;
-    end
-
-    function (void) => Vector3f get_pos do
-        return pos;
-    end
-
-    finalize with
-        _delete_obj(smallmap_symbol);
-        _delete_obj(surface);
-    end;
+    function (_FileReader* reader) => void construct do end
+    function (void) => float get_z_pos do return pos.z; end
+    function (Vector3f p) => void set_pos do pos = p; end
+    function (void) => Vector3f get_pos do return pos; end
 
     var int last_release = 150 - release_rate;
     var bool go_left = true;
@@ -64,12 +51,16 @@ do
 
     par/or do
         every gc in e_DRAW do
+            if not surface then //probably is always true
+                continue;
+            end
+
             //original FIXME: Why do we still have these hardcoded offsets?!
-            _gc_color_draw2(gc, &surface, _Vector3f(pos.x - 32, pos.y - 16));
+            _gc_color_draw2(gc, surface.get(), _Vector3f(pos.x - 32, pos.y - 16));
         end
     with
         every smallmap in e_DRAW_SMALLMAP do
-            call/rec smallmap:draw_sprite(&smallmap_symbol, _toVector3f(pos));
+            call/rec smallmap:draw_sprite(smallmap_symbol.get(), _toVector3f(pos));
         end
     with
         every e_UPDATE do

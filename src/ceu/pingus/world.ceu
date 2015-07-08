@@ -327,10 +327,6 @@ do
             spawn ConveyorBelt with
                 package:result = &this;
 
-                this.left_sur = _PTR2REF(_new_SpriteA("worldobjs/conveyorbelt_left"));
-                this.right_sur = _PTR2REF(_new_SpriteA("worldobjs/conveyorbelt_right"));
-                this.middle_sur = _PTR2REF(_new_SpriteA("worldobjs/conveyorbelt_middle"));
-
                 _read_position(package:reader, this.pos);
                 if not package:reader:read_int("repeat", _PTR2REF(this.width)) then
                     _log_warn("old 'width' tag used");
@@ -347,8 +343,6 @@ do
                 this.direction = ED_MISC;
                 this.release_rate = 150;
                 this.owner_id = 0;
-                this.smallmap_symbol = _PTR2REF(_new_SpriteA("core/misc/smallmap_entrance"));
-                this.surface = _PTR2REF(_new_Sprite());
 
                 package:reader:read_int("owner-id", _PTR2REF(this.owner_id));
                 _read_position(package:reader, this.pos);
