@@ -14,7 +14,7 @@
 #include "worldobjs/iswitch_door_door.ceu"
 
 native/pre do
-    ##include "pingus/world.hpp"    
+    ##include "pingus/world.hpp"
 end
 
 interface IWorld with

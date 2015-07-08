@@ -11,7 +11,7 @@
 #include "../server.ceu"
 
 native/pre do
-    ##include "pingus/components/playfield.hpp"    
+    ##include "pingus/components/playfield.hpp"
     ##define send_pingu_action_event(playfield, pingu) playfield->server->send_pingu_action_event(pingu, playfield->session->get_action_name())
     ##define globals__developer_mode globals::developer_mode
     ##define const_Uint8 const Uint8

@@ -13,16 +13,15 @@ native/pre do
 
     ##define Vector_RainParticle std::vector<RainParticle>
     ##define new_Vector_RainParticle() new std::vector<RainParticle>()
+    ##define get_particle(p, i) &((*p)[i])
+    ##define makeRainParticle(x, y) RainParticle(x, y)
 
-    ##define RPH_add_particle(a, b, c) Particles::RainParticleHolder_add_particle(a, b, c)
-    ##define RPH_update(a, b, c) Particles::RainParticleHolder_update(a, b, c)
-    ##define RPH_draw(a, b, c, d, e, f) Particles::RainParticleHolder_draw(a, b, c, d, e, f)
+    ##define globals__game_speed globals::game_speed
 end
 
 native @pure _new_Vector_RainParticle(),
-             _RPH_add_particle(),
-             _RPH_update(),
-             _RPH_draw();
+             _get_particle(),
+             _makeRainParticle();
 
 class RainParticlesHolder with
     interface IRainParticlesHolder;
@@ -48,16 +47,83 @@ do
     end
 
     function @rec (int x, int y) => void add_particle do
-        _RPH_add_particle(particles, x, y);
+        // search for dead entry to replace
+        loop j in particles.size() do
+            var _RainParticle&? it = _get_particle(particles, j);
+
+            if not it.alive then
+                it = _makeRainParticle(x, y);
+                return;
+            end
+        end
+
+        // create new entry
+        particles.push_back(_makeRainParticle(x, y));
     end
 
     par/or do
         every gc in e_DRAW do
-           _RPH_draw(particles, global:world:world, gc, rain1_surf, rain2_surf, rain_splash);
+            loop j in particles.size() do
+                var _RainParticle&? it = _get_particle(particles, j);
+
+                // skip dead/invisible particles
+                if not it.alive or it.pos.x > global:world:get_width() then
+                    continue;
+                end
+
+                if it.splash then
+                    rain_splash.set_frame(it.splash_frame) finalize with end;
+                    gc:color().draw(_deref(rain_splash), it.pos) finalize with end;
+                else
+                    if it.use_rain2_surf then
+                        gc:color().draw(_deref(rain2_surf), _Vector2i(it.pos.x, it.pos.y - (float)rain2_surf.get_height()) finalize with end); //was using rain1's height
+                    else
+                        gc:color().draw(_deref(rain1_surf), _Vector2i(it.pos.x, it.pos.y - (float)rain1_surf.get_height()) finalize with end);
+                    end
+                end
+            end
         end
     with
         every e_UPDATE do
-            _RPH_update(particles, global:world:world, rain_splash);
+            loop j in particles.size() do
+                var _RainParticle&? it = _get_particle(particles, j);
+
+                // skip dead particles
+                if not it.alive then
+                    continue;
+                end
+
+                if it.splash then
+                    if it.splash_frame >= rain_splash.get_frame_count() then
+                        it.alive = false;
+                    end
+
+                    if it.alive then
+                        it.splash_frame = it.splash_frame + 10.0 * ((float)_globals__game_speed) / 1000.0;
+
+                        if it.splash_counter == 3 then
+                            it.alive = false;
+                        else
+                            it.splash_counter = it.splash_counter + 1;
+                        end
+                    end
+                else
+                    if global:world:world:get_colmap():getpixel(it.pos.x, it.pos.y) finalize with end != _GT_NOTHING and
+                       global:world:world:get_colmap():getpixel(it.pos.x, it.pos.y) finalize with end != _GT_OUTOFSCREEN and
+                       (_rand()%2) == 0 then
+                        it.splash = true;
+                    else
+                        if it.pos.y > global:world:get_height() then
+                            it.alive = false;
+                        end
+
+                        if it.alive then
+                            it.pos.x = it.pos.x - 5*it.pos.z;
+                            it.pos.y = it.pos.y + 16*it.pos.z;
+                        end
+                    end
+                end
+            end
         end
     with
         await e_DELETE;

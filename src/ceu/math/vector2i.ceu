@@ -12,7 +12,7 @@ native @pure _toVector2i();
 
 data Vector2i with
     var int x;
-    var int y;    
+    var int y;
 end
 
 #endif
