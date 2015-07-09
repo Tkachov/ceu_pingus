@@ -23,19 +23,18 @@
 #include "pingus/collision_map.hpp"
 #include "pingus/ground_map.hpp"
 
-#include "pingus/pingu_holder.hpp"
 #include "pingus/pingus_level.hpp"
 #include "pingus/worldobj_factory.hpp"
 #include "util/log.hpp"
 
 #include "ceuvars.h"
 
-World::World(const PingusLevel& plf) :
+World::World(const PingusLevel& plf):
+  pingus_level(plf),
   ambient_light(Color(plf.get_ambient_light())),
   mwidth(plf.get_size().width),
   mheight(plf.get_size().height),
-  game_time(0),  
-  pingus(new PinguHolder(plf)),
+  game_time(0),
   colmap(),
   gravitational_acceleration(0.2f)
 {
@@ -56,12 +55,6 @@ void World::init_worldobjs(const PingusLevel& plf) {
 World::~World() {
   World* self = this;  
   ceu_out_go(&CEUapp, CEU_IN_WORLD_DELETE, &self);
-}
-
-PinguHolder*
-World::get_pingus()
-{
-  return pingus;
 }
 
 int

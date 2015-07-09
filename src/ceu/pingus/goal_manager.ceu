@@ -10,7 +10,6 @@
 native/pre do
     ##include "pingus/server.hpp"
     ##include "pingus/pingus_level.hpp"
-    ##include "pingus/pingu_holder.hpp"
 end
 
 #define GMT_NONE 0                  // No goal is reached
@@ -55,12 +54,11 @@ do
 
     every e_UPDATE do
         if exit_time == 0 then
-            var _PinguHolder&? pingus;
-            finalize pingus = global:world:world:get_pingus(); with end
+            var IPinguHolder* pingus = _PTR2REF(global:world:get_pingus());
 
-            if pingus.get_number_of_allowed() == pingus.get_number_of_released() and pingus.get_number_of_alive() == 0 then
+            if pingus:get_number_of_allowed() == pingus:get_number_of_released() and pingus:get_number_of_alive() == 0 then
                 goal = GMT_NO_PINGUS_IN_WORLD;
-            else/if pingus.get_number_of_alive() == 0 and global:world:check_armageddon() then
+            else/if pingus:get_number_of_alive() == 0 and global:world:check_armageddon() then
                 goal = GMT_ARMAGEDDON;
             else/if server:get_plf().get_time() != -1 and server:get_plf().get_time() <= server:get_time() then
                 goal = GMT_OUT_OF_TIME;

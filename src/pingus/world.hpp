@@ -26,7 +26,6 @@
 
 class Vector3f;
 class GroundMap;
-class PinguHolder;
 class PingusLevel;
 class CollisionMap;
 class Pingu;
@@ -42,6 +41,8 @@ class World;
 class World
 {
 private:
+  const PingusLevel& pingus_level;
+
   Color ambient_light;
 
   /** groundmap for the pingus */
@@ -51,8 +52,6 @@ private:
 
   /** manager class for the time in the pingus world */
   int game_time;
-    
-  PinguHolder* pingus;
 
   // Pointers which are references to objects from other classes
   CollisionMap* colmap;
@@ -74,8 +73,6 @@ public:
 
   /** @return A pointer to the gfx map used in this world */
   GroundMap* get_gfx_map();
-
-  PinguHolder* get_pingus(void);
 
   /** Get the acceleration due to gravity in the world */
   float get_gravity();

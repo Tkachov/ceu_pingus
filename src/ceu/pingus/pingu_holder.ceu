@@ -8,17 +8,14 @@
 #include "pingu_holder_listener.ceu"
 
 native/pre do
-    ##include "pingus/pingu_holder.hpp"
     ##define new_Direction() new Direction()
 end
-
-input _PinguHolder* DELETE_PINGU_HOLDER;
 
 native @pure _new_Direction();
 
 class PinguHolder with
     interface IPinguHolder;
-    var _PinguHolder& holder;
+    var int number_of_allowed;
 do
     call/rec global:world:add_object(&this);
 
@@ -28,10 +25,16 @@ do
     function (Vector3f p) => void set_pos do end
     function (void) => Vector3f get_pos do return pos; end
 
-    var _PinguHolder&? pingu_holder = _PTR2REF((_PinguHolder*)&holder);
     var int pingus_emitted = 0;
     var int pingus_exited = 0;
     var int pingus_dead = 0;
+
+    function (void) => int get_number_of_exited do return pingus_exited; end
+    function (void) => int get_number_of_killed do return pingus_dead; end
+    function (void) => int get_number_of_alive do return pingus_emitted - pingus_dead - pingus_exited; end
+    function (void) => int get_number_of_released do return pingus_emitted; end
+    function (void) => int get_number_of_allowed do return number_of_allowed; end
+    function (void) => u32 get_end_id do return pingus_emitted; end
 
     function @rec (int id) => IPingu* get_pingu do
         var IPingu* result = null;
@@ -60,7 +63,7 @@ do
         end
     with
         every (entrance, owner_id, turn_left) in e_MAKE_PINGU do
-            if pingu_holder.number_of_allowed > pingus_emitted then
+            if number_of_allowed > pingus_emitted then
                 // We use all_pingus.size() as pingu_id, so that id == array index
                 spawn Pingu in all_pingus with
                     this.pos_x = entrance:pos.x;
@@ -81,18 +84,15 @@ do
                 //world->play_sound("oing", pos, 0.5);
 
                 pingus_emitted = pingus_emitted + 1;
-                pingu_holder.released = pingus_emitted;
             end
         end
     with
         every global:e_PINGU_DIED do
             pingus_dead = pingus_dead + 1;
-            pingu_holder.dead = pingus_dead;
         end
     with
         every global:e_PINGU_EXITED do
             pingus_exited = pingus_exited + 1;
-            pingu_holder.exited = pingus_exited;
         end
     end
 end

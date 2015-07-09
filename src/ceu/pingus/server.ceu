@@ -29,6 +29,7 @@ class Server with
     var _Server* me;
     function @rec (IPingu* pingu, int action) => void send_pingu_action_event;
     event void e_ARMAGEDDON;
+    event void e_UPDATE;
 do
     var GoalManager goal_manager with
         this.server = me;
@@ -96,7 +97,15 @@ do
             package:is_finished = goal_manager.is_finished();
         end
     with
+        every e_UPDATE do
+            //_printf("Ceu e_UPDATE\n");
+            emit global:world:e_UPDATE;
+            emit goal_manager.e_UPDATE;
+        end
+    with
+        //TODO: remove (used because `update()` is also called from C++ DemoSession which is not ported yet)
         every s in SERVER_UPDATE do
+            //_printf("C++ update()\n");
             if s != &server then
                 continue;
             end

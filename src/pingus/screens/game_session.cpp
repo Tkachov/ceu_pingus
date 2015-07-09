@@ -27,7 +27,6 @@
 #include "pingus/components/smallmap.hpp"
 #include "pingus/components/time_display.hpp"
 #include "pingus/globals.hpp"
-#include "pingus/pingu_holder.hpp"
 #include "pingus/savegame_manager.hpp"
 #include "pingus/screens/result_screen.hpp"
 #include "pingus/world.hpp"
@@ -102,76 +101,10 @@ GameSession::~GameSession()
   ceu_out_go(&CEUapp, CEU_IN_DELETE_GAME_SESSION, &self);
 }
 
-void
-GameSession::update_server(float delta)
-{
-  if (server->is_finished())
-  {
-    PinguHolder* pingu_holder = server->get_world()->get_pingus();
-    Result result;
-
-    result.plf    = server->get_plf();
-
-    result.saved  = pingu_holder->get_number_of_exited();
-    result.killed = pingu_holder->get_number_of_killed();
-    result.total  = server->get_plf().get_number_of_pingus();
-
-    result.needed = server->get_plf().get_number_to_save();
-
-    result.max_time  = server->get_plf().get_time();
-    result.used_time = server->get_time();
-
-    { // Write the savegame
-      Savegame savegame(result.plf.get_resname(),
-                        (result.saved >= result.needed) ? Savegame::FINISHED : Savegame::ACCESSIBLE,
-                        result.used_time,
-                        result.saved);
-      SavegameManager::instance()->store(savegame);
-    }
-
-    if (show_result_screen)
-      ScreenManager::instance()->replace_screen(std::make_shared<ResultScreen>(result));
-    else
-      ScreenManager::instance()->pop_screen();
-
-  }
-  else
-  {
-    // how much time we have to account for while doing world updates
-    int time_passed = int(delta * 1000) + world_delay;
-    // how much time each world update represents
-    int update_time = globals::game_speed;
-
-    // update the world (and the objects in it) in constant steps to account
-    // for the time the previous frame took
-
-    // invariant: world_updates - the number of times the world
-    // has been updated during this frame
-    int world_updates = 0;
-
-    while ((world_updates+1)*update_time <= time_passed)
-    {
-      if (!pause || single_step)
-      {
-        single_step = false;
-
-        if (fast_forward)
-        {
-          for (int i = 0; i < globals::fast_forward_time_scale; ++i)
-            server->update();
-        }
-        else
-        {
-          server->update();
-        }
-      }
-
-      world_updates++;
-    }
-    // save how far behind is the world compared to the actual time
-    // so that we can account for that while updating in the next frame
-    world_delay = time_passed - (world_updates*update_time);
-  }
+void GameSession::update_server(float delta) {
+  ComponentUpdatePackage package((GUI::Component*)this, delta);
+  ComponentUpdatePackage* pp = &package;
+  ceu_out_go(&CEUapp, CEU_IN_GAME_SESSION_UPDATE_SERVER, &pp);
 }
 
 void

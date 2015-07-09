@@ -13,6 +13,13 @@ interface IPinguHolder with
     event (IWorldObj*, int, bool) e_MAKE_PINGU;
 
     function @rec (int id) => IPingu* get_pingu;
+
+    function (void) => int get_number_of_exited;
+    function (void) => int get_number_of_killed;
+    function (void) => int get_number_of_alive;
+    function (void) => int get_number_of_released;
+    function (void) => int get_number_of_allowed;
+    function (void) => u32 get_end_id;
 end
 
 #endif

@@ -162,7 +162,7 @@ do
     end
 
     var PinguHolder holder with
-        this.holder = me.pingus;
+        this.number_of_allowed = me.pingus_level.get_number_of_pingus();
     end;
 
     var PinguParticlesHolder pingu_particles_holder;

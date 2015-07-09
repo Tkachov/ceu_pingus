@@ -8,13 +8,31 @@
 #include "../components/pingus_counter.ceu"
 
 native/pre do
+    ##include "engine/screen/screen_manager.hpp"
+
+    ##include "pingus/globals.hpp"
+    ##include "pingus/savegame_manager.hpp"
     ##include "pingus/screens/game_session.hpp"
+    ##include "pingus/screens/result_screen.hpp"
     ##define new_GUI_Component() new GUI::Component()
+    ##define new_Result() new Result()
+    ##define new_Savegame new Savegame
+    ##define SavegameManager__instance() SavegameManager::instance()
+    ##define ScreenManager__instance() ScreenManager::instance()
+    ##define std__make_shared_ResultScreen std::make_shared<ResultScreen>
+    ##define Savegame__ACCESSIBLE Savegame::ACCESSIBLE
+    ##define Savegame__FINISHED Savegame::FINISHED
+    ##define globals__game_speed globals::game_speed
+    ##define globals__fast_forward_time_scale globals::fast_forward_time_scale
+    ##define toSStatus(x) (Savegame::S_Status)x
 end
 
-native @pure _new_PingusCounter(), _new_GUI_Component();
+native @pure _new_PingusCounter(), _new_GUI_Component(),
+             _new_Result(), _new_Savegame(),
+             _SavegameManager__instance(), _ScreenManager__instance(),
+             _std__make_shared_ResultScreen(), _toSStatus();
 
-input _GameSession* GAME_SESSION_UPDATE;
+input _ComponentUpdatePackage* GAME_SESSION_UPDATE_SERVER;
 input _GameSession* DELETE_GAME_SESSION;
 
 class GameSession with
@@ -25,12 +43,88 @@ do
         this.me = _new_GUI_Component();
         this.server = _PTR2REF(game_session.get_server());
         game_session.pcounter = &this.me;
-    end;    
+    end;
 
     par/or do
-        every s in GAME_SESSION_UPDATE do
-            if s != &game_session then
+        every package in GAME_SESSION_UPDATE_SERVER do
+            if (_GameSession*)package:component != &game_session then
                 continue;
+            end
+
+            if game_session.server:is_finished() then
+                var IPinguHolder* pingu_holder = _PTR2REF(global:world:get_pingus());
+                var _Result&? result = _new_Result();
+
+                finalize result.plf    = game_session.server:get_plf(); with end
+
+                result.saved  = pingu_holder:get_number_of_exited();
+                result.killed = pingu_holder:get_number_of_killed();
+                finalize result.total  = game_session.server:get_plf().get_number_of_pingus(); with end
+
+                finalize result.needed = game_session.server:get_plf().get_number_to_save(); with end
+
+                finalize result.max_time  = game_session.server:get_plf().get_time(); with end
+                finalize result.used_time = game_session.server:get_time(); with end
+
+                var int rs = _Savegame__ACCESSIBLE;
+                if result.saved >= result.needed then
+                    rs = _Savegame__FINISHED;
+                end
+
+                // Write the savegame
+                var _Savegame&? savegame = _new_Savegame(result.plf.get_resname(),
+                                                         _toSStatus(rs),
+                                                         result.used_time,
+                                                         result.saved);
+                _SavegameManager__instance():store(_deref(savegame));
+
+                if game_session.show_result_screen then
+                    _ScreenManager__instance():replace_screen(_std__make_shared_ResultScreen(_deref(result)));
+                else
+                    _ScreenManager__instance():pop_screen();
+                end
+
+                _delete_obj(result);
+            else
+
+                // how much time we have to account for while doing world updates
+                var int time_passed = (int)(package:delta * 1000) + game_session.world_delay;
+                // how much time each world update represents
+                var int update_time = _globals__game_speed;
+
+                // update the world (and the objects in it) in constant steps to account
+                // for the time the previous frame took
+
+                // invariant: world_updates - the number of times the world
+                // has been updated during this frame
+                var int world_updates = 0;
+                loop do
+                    if (world_updates+1)*update_time > time_passed then
+                        break;
+                    end
+
+                    if not game_session.pause or game_session.single_step then
+                        game_session.single_step = false;
+
+                        if game_session.fast_forward then
+                            _printf("fast_forward: %d\n", (int)_globals__fast_forward_time_scale);
+                            loop i in _globals__fast_forward_time_scale do
+                                //TODO: figure out why it doesn't work with Ceu-style update
+                                game_session.server:update();
+                                //emit ((Server*)game_session.server:ceu()):e_UPDATE;
+                            end
+                        else
+                            //game_session.server:update();
+                            emit ((Server*)game_session.server:ceu()):e_UPDATE;
+                        end
+                    end
+
+                    world_updates = world_updates + 1;
+                end
+                // save how far behind is the world compared to the actual time
+                // so that we can account for that while updating in the next frame
+                game_session.world_delay = time_passed - (world_updates*update_time);
+
             end
         end
     with
