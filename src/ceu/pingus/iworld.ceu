@@ -30,6 +30,7 @@ interface IWorld with
     function (int player_id) => _Vector2i get_start_pos;
     function (void) => int get_width;
     function (void) => int get_height;
+    function (void) => int get_time;
 
     /*
         Play a sound as if it would have been generated at the given

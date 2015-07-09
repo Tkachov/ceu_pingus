@@ -40,9 +40,9 @@ do
         go_left = false;
     end
 
-    function (void) => bool pingu_ready do
-        if (last_release + release_rate) < global:world:world:get_time() then
-            last_release = _PTR2REF(global:world:world:get_time()); //that's not a pointer even
+    function @rec (void) => bool pingu_ready do
+        if (last_release + release_rate) < global:world:get_time() then
+            last_release = global:world:get_time();
             return true;
         end
 
@@ -64,7 +64,8 @@ do
         end
     with
         every e_UPDATE do
-            if pingu_ready() and not global:world:check_armageddon() then
+            var bool pr = call/rec pingu_ready();
+            if pr and not global:world:check_armageddon() then
                 emit global:world:get_pingus():e_MAKE_PINGU => (&this, owner_id, go_left);
 
                 if direction == ED_MISC then

@@ -130,10 +130,11 @@ Server::get_action_holder ()
   return &action_holder;
 }
 
-int
-Server::get_time ()
-{
-  return get_world()->get_time();
+int Server::get_time() {
+  GetTimePackage package(this);
+  GetTimePackage* pp = &package;
+  ceu_out_go(&CEUapp, CEU_IN_SERVER_GET_TIME, &pp);
+  return package.time;  
 }
 
 void Server::send_finish_event() {

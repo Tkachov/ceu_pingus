@@ -43,15 +43,8 @@ class World
 private:
   const PingusLevel& pingus_level;
 
-  Color ambient_light;
-
   /** groundmap for the pingus */
   GroundMap* gfx_map;
-
-  int mwidth, mheight;
-
-  /** manager class for the time in the pingus world */
-  int game_time;
 
   // Pointers which are references to objects from other classes
   CollisionMap* colmap;
@@ -64,9 +57,6 @@ private:
 public:
   World(const PingusLevel& level);
   virtual ~World();
-
-  /** Returns the time passed since the level was started */
-  int get_time();
 
   /** @return A pointer to the collision map used in this world */
   CollisionMap* get_colmap();

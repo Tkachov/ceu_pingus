@@ -31,10 +31,6 @@
 
 World::World(const PingusLevel& plf):
   pingus_level(plf),
-  ambient_light(Color(plf.get_ambient_light())),
-  mwidth(plf.get_size().width),
-  mheight(plf.get_size().height),
-  game_time(0),
   colmap(),
   gravitational_acceleration(0.2f)
 {
@@ -55,12 +51,6 @@ void World::init_worldobjs(const PingusLevel& plf) {
 World::~World() {
   World* self = this;  
   ceu_out_go(&CEUapp, CEU_IN_WORLD_DELETE, &self);
-}
-
-int
-World::get_time()
-{
-  return game_time;
 }
 
 CollisionMap*

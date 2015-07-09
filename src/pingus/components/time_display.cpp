@@ -23,7 +23,6 @@
 #include "pingus/globals.hpp"
 #include "pingus/screens/game_session.hpp"
 #include "pingus/server.hpp"
-#include "pingus/world.hpp"
 #include "util/log.hpp"
 #include "util/string_util.hpp"
 
@@ -40,7 +39,7 @@ TimeDisplay::draw (DrawingContext& gc)
 {
   if (server->get_plf().get_time() != -1 || globals::developer_mode)
   {
-    int time_value = server->get_world()->get_time();
+    int time_value = server->get_time();
     
     if (server->get_plf().get_time() != -1 && !globals::developer_mode)
     {

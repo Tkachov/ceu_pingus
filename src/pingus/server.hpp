@@ -79,6 +79,13 @@ struct IsFinishedPackage {
   IsFinishedPackage(Server* s): server(s), is_finished(false) {};
 };
 
+struct GetTimePackage {
+  Server* server;
+  int time;
+
+  GetTimePackage(Server* s): server(s) {};
+};
+
 #endif
 
 /* EOF */

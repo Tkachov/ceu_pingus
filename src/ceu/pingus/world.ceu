@@ -74,9 +74,11 @@ native/pre do
 
     ##define read_position(r, p) Vector3f __v; r->read_vector("position", __v); p.x = __v.x; p.y = __v.y; p.z = __v.z;
     ##define read_position2(r, p, res) Vector3f __v; res = r->read_vector("position", __v); p.x = __v.x; p.y = __v.y; p.z = __v.z;
+
+    ##define new_Color new Color
 end
 
-native @pure _reader_read_Groundtype(), _Resource__load_surface(), _opeq(), _new_Surface(), _new_Container(),
+native @pure _reader_read_Groundtype(), _Resource__load_surface(), _opeq(), _new_Surface(), _new_Container(), _new_Color(),
              _read_position(), _read_position2();
 
 input _World* WORLD_STARTUP;
@@ -100,6 +102,9 @@ do
 
     var bool do_armageddon = false;
     var int armageddon_count = 0;
+    var int game_time = 0;
+    var _Color&? ambient_light = _new_Color(me.pingus_level.get_ambient_light());
+    finalize with _delete_obj(ambient_light); end
 
     function (void) => bool check_armageddon do
         return do_armageddon;
@@ -133,6 +138,10 @@ do
 
     function (void) => int get_height do
         return me.gfx_map:get_height();
+    end
+
+    function (void) => int get_time do
+        return game_time;
     end
 
     function (_const_char_string name, Vector3f pos, float volume) => void play_sound do
@@ -171,7 +180,7 @@ do
     var SnowParticlesHolder snow_particles_holder;
 
     var GroundMap gfx_map with
-        this.gmap = _PTR2REF(_new_GroundMap(me.mwidth, me.mheight));
+        this.gmap = _PTR2REF(_new_GroundMap(me.pingus_level.get_size().width, me.pingus_level.get_size().height));
 
         me.gfx_map = _PTR2REF(this.gmap);
         me.colmap = _PTR2REF(this.gmap.colmap.get());
@@ -265,7 +274,7 @@ do
         end
     with
         every wgc in e_DRAW do
-            wgc:light().fill_screen(_Color(me.ambient_light) finalize with end);
+            wgc:light().fill_screen(_Color(_deref(ambient_light)));
 
             draw_iterating = true;
             gc = _PTR2REF(wgc);
@@ -287,9 +296,9 @@ do
         end
     with
         every e_UPDATE do
-            me.game_time = me.game_time + 1;
+            game_time = game_time + 1;
 
-            if do_armageddon and me.game_time%4 == 0 then
+            if do_armageddon and game_time%4 == 0 then
                 loop pingu in holder.all_pingus do
                     if pingu:get_current_action() == _A_BOMBER or pingu:get_current_action() == _A_DROWN or
                        pingu:get_current_action() == _A_SPLASHED or pingu:get_current_action() == _A_LASERKILL or
