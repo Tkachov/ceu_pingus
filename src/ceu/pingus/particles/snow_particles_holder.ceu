@@ -93,7 +93,7 @@ do
                 if it.colliding then
                     var int pixel = global:world:world:get_colmap():getpixel(it.pos.x, it.pos.y) finalize with end;
                     if pixel != _GT_NOTHING and pixel != _GT_WATER and pixel != _GT_OUTOFSCREEN then
-                        global:world:world:get_gfx_map():put(ground.get_surface(), it.pos.x-1, it.pos.y-1);
+                        global:world:get_gfx_map():put(ground.get_surface(), it.pos.x-1, it.pos.y-1);
                         it.alive = false;
                     end
                 end

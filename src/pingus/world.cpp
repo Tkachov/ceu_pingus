@@ -16,16 +16,10 @@
 
 #include "pingus/world.hpp"
 
-#include <algorithm>
-
-#include "engine/display/scene_context.hpp"
-#include "engine/sound/sound.hpp"
 #include "pingus/collision_map.hpp"
-#include "pingus/ground_map.hpp"
 
 #include "pingus/pingus_level.hpp"
 #include "pingus/worldobj_factory.hpp"
-#include "util/log.hpp"
 
 #include "ceuvars.h"
 
@@ -37,14 +31,9 @@ World::World(const PingusLevel& plf):
   World* self = this;
   ceu_out_go(&CEUapp, CEU_IN_NEW_WORLD, &self);
 
-  init_worldobjs(plf);
-}
-
-void World::init_worldobjs(const PingusLevel& plf) {
   const std::vector<FileReader>& objects = plf.get_objects();
   for(auto i: objects) WorldObjFactory::instance()->create(i);
-
-  World* self = this;
+  
   ceu_out_go(&CEUapp, CEU_IN_WORLD_STARTUP, &self);
 }
 
@@ -57,12 +46,6 @@ CollisionMap*
 World::get_colmap()
 {
   return colmap;
-}
-
-GroundMap*
-World::get_gfx_map()
-{
-  return gfx_map;
 }
 
 float World::get_gravity()

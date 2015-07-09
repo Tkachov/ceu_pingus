@@ -132,14 +132,6 @@ do
         return _Vector2i(px, py);
     end
 
-    function (void) => int get_width do
-        return me.gfx_map:get_width();
-    end
-
-    function (void) => int get_height do
-        return me.gfx_map:get_height();
-    end
-
     function (void) => int get_time do
         return game_time;
     end
@@ -181,10 +173,21 @@ do
 
     var GroundMap gfx_map with
         this.gmap = _PTR2REF(_new_GroundMap(me.pingus_level.get_size().width, me.pingus_level.get_size().height));
-
-        me.gfx_map = _PTR2REF(this.gmap);
+        
         me.colmap = _PTR2REF(this.gmap.colmap.get());
     end;
+    
+    function (void) => int get_width do
+        return gfx_map.gmap.get_width();
+    end
+
+    function (void) => int get_height do
+        return gfx_map.gmap.get_height();
+    end
+
+    function (void) => _GroundMap* get_gfx_map do
+        return &gfx_map.gmap;
+    end
 
     function (void) => IPinguHolder* get_pingus do
         return holder;
@@ -227,12 +230,12 @@ do
     end
 
     function (_CollisionMask* mask, int x, int y, int type) => void put do
-        world:gfx_map:put(mask:get_surface(), x, y);
+        gfx_map.gmap.put(mask:get_surface(), x, y);
         world:colmap:put(_deref(mask), x, y, _to_GT(type));
     end
 
     function (_CollisionMask* mask, int x, int y) => void remove do
-        world:gfx_map:remove(mask:get_surface(), x, y);
+        gfx_map.gmap.remove(mask:get_surface(), x, y);
         world:colmap:remove(_deref(mask), x, y);
     end
 

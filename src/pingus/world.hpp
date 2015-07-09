@@ -25,7 +25,6 @@
 #include "pingus/groundtype.hpp"
 
 class Vector3f;
-class GroundMap;
 class PingusLevel;
 class CollisionMap;
 class Pingu;
@@ -43,9 +42,6 @@ class World
 private:
   const PingusLevel& pingus_level;
 
-  /** groundmap for the pingus */
-  GroundMap* gfx_map;
-
   // Pointers which are references to objects from other classes
   CollisionMap* colmap;
 
@@ -60,9 +56,6 @@ public:
 
   /** @return A pointer to the collision map used in this world */
   CollisionMap* get_colmap();
-
-  /** @return A pointer to the gfx map used in this world */
-  GroundMap* get_gfx_map();
 
   /** Get the acceleration due to gravity in the world */
   float get_gravity();
