@@ -25,6 +25,8 @@ class Sprite with
     function (void) => void update;
     function (float delta) => void update_delta;
 
+    function (void) => void restart;
+
     function (void) => int get_width;
     function (void) => int get_height;
     function (void) => int get_frame_count;
@@ -33,6 +35,7 @@ class Sprite with
     function (void) => bool is_looping;
 
     function (int i) => void set_frame;
+    function (bool l) => void set_play_loop;
 do
     var _Sprite* sprite = _new_Sprite();
     finalize with _delete_obj(sprite); end;
@@ -62,6 +65,8 @@ do
       sprite:update(delta);
     end
 
+    function (void) => void restart do sprite:restart(); end
+
     function (void) => int get_width do return sprite:get_width(); end
     function (void) => int get_height do return sprite:get_height(); end
     function (void) => int get_frame_count do return sprite:get_frame_count(); end
@@ -69,7 +74,8 @@ do
     function (void) => bool is_finished do return sprite:is_finished(); end
     function (void) => bool is_looping do return sprite:is_looping(); end
 
-    function (int i) => void set_frame do return sprite:set_frame(i); end
+    function (int i) => void set_frame do sprite:set_frame(i); end
+    function (bool l) => void set_play_loop do sprite:set_play_loop(l); end
 
     await FOREVER;
 end

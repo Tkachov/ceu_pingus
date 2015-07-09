@@ -10,46 +10,41 @@
 
 class Guillotine with
     interface IWorldObj;
-    var _Sprite&? sprite_kill_right;
-    var _Sprite&? sprite_kill_left;
-    var _Sprite&? sprite_idle;
 
-    var _Direction&? direction;
-    var bool killing;
+    
+    var bool killing = false;
 do
+    var Sprite sprite_kill_right;
+    var Sprite sprite_kill_left;
+    var Sprite sprite_idle;
+    call/rec sprite_kill_right.reload_by_name("traps/guillotinekill/right");
+    call/rec sprite_kill_left.reload_by_name("traps/guillotinekill/left");
+    call/rec sprite_idle.reload_by_name("traps/guillotineidle");
+    sprite_kill_right.set_play_loop(false);
+    sprite_kill_left.set_play_loop(false);
+    sprite_idle.set_play_loop(true);
+    
+    var _Direction&? direction = _new_Direction();
+    finalize with _delete_obj(direction); end;
+
     call/rec global:world:add_object(&this);
 
     function (_FileReader* reader) => void construct do end;
 
-    function (void) => float get_z_pos do
-        return pos.z;
-    end
-
-    function (Vector3f p) => void set_pos do
-        pos = p;
-    end
-
-    function (void) => Vector3f get_pos do
-        return pos;
-    end
-
-    finalize with
-        _delete_obj(direction);
-        _delete_obj(sprite_kill_left);
-        _delete_obj(sprite_kill_right);
-        _delete_obj(sprite_idle);
-    end;
+    function (void) => float get_z_pos do return pos.z; end
+    function (Vector3f p) => void set_pos do pos = p; end
+    function (void) => Vector3f get_pos do return pos; end
 
     par/or do
         every gc in e_DRAW do
             if killing then
                 if direction.is_left() then
-                    _gc_color_draw2(gc, &sprite_kill_left, _toVector3f(pos));
+                    _gc_color_draw2(gc, sprite_kill_left.get(), _toVector3f(pos));
                 else
-                    _gc_color_draw2(gc, &sprite_kill_right, _toVector3f(pos));
+                    _gc_color_draw2(gc, sprite_kill_right.get(), _toVector3f(pos));
                 end
             else
-                _gc_color_draw2(gc, &sprite_idle, _toVector3f(pos));
+                _gc_color_draw2(gc, sprite_idle.get(), _toVector3f(pos));
             end
         end
     with

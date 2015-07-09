@@ -384,14 +384,12 @@ do
             spawn Exit with
                 package:result = &this;
 
-                this.desc = _PTR2REF(_new_ResDescriptor());
-                this.smallmap_symbol = _PTR2REF(_new_SpriteA("core/misc/smallmap_exit"));
+                this.desc = _PTR2REF(_new_ResDescriptor());                
 
                 _read_position(package:reader, this.pos);
                 this.construct(package:reader); //can't put reference initiation there =(
 
-                this.flag = _PTR2REF(_new_SpriteA(_scc2("core/misc/flag", _StringUtil__to_string(this.owner_id))));
-                this.sprite = _PTR2REF(_new_SpriteA(_deref(this.desc)));
+                this.flag = _PTR2REF(_new_SpriteA(_scc2("core/misc/flag", _StringUtil__to_string(this.owner_id))));                
             end;
         end
     with
@@ -400,8 +398,6 @@ do
                 package:result = &this;
 
                 this.sprite = _PTR2REF(_new_SpriteA("traps/fake_exit"));
-                this.smallmap_symbol = _PTR2REF(_new_SpriteA("core/misc/smallmap_exit"));
-                this.smashing = false;
 
                 _read_position(package:reader, this.pos);
                 this.pos.x = this.pos.x - (float)this.sprite.get_width()/2;
@@ -424,25 +420,13 @@ do
         every package in NEW_GUILLOTINE do
             spawn Guillotine with
                 package:result = &this;
-
-                this.sprite_kill_right = _PTR2REF(_new_SpriteA("traps/guillotinekill/right"));
-                this.sprite_kill_left = _PTR2REF(_new_SpriteA("traps/guillotinekill/left"));
-                this.sprite_idle = _PTR2REF(_new_SpriteA("traps/guillotineidle"));
-                this.direction = _new_Direction();
-                this.killing = false;
-
                 _read_position(package:reader, this.pos);
-                this.sprite_kill_right.set_play_loop(false);
-                this.sprite_kill_left.set_play_loop(false);
-                this.sprite_idle.set_play_loop(true);
             end;
         end
     with
         every package in NEW_HAMMER do
             spawn Hammer with
-                package:result = &this;
-
-                this.sprite = _PTR2REF(_new_SpriteA("traps/hammer"));
+                package:result = &this;                
                 _read_position(package:reader, this.pos);
             end;
         end
