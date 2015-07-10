@@ -263,6 +263,8 @@ do
 
     var bool draw_iterating = false;
     var _SceneContext* gc = null;
+    var bool draw_smallmaping = false;
+    var ISmallMap* smallmap = null;
 
     par/or do
         every package in WORLD_GET_SIZE do
@@ -294,9 +296,30 @@ do
             end
         end
     with
+        /*      
         every smallmap in e_DRAW_SMALLMAP do
+            _printf("drawing\n");
             loop i in objs.size() do
+                if objs.get(i) == null then
+                    continue;
+                end
+
                 emit ((IWorldObj*)objs.get(i)):e_DRAW_SMALLMAP => smallmap;
+            end
+            _printf("done drawing\n");
+        end
+        */
+        every sm in e_DRAW_SMALLMAP do
+            smallmap = sm;
+            draw_smallmaping = true;
+            objs.iterate(_CEU_IN_WORLD_DRAW_SMALLMAP_OBJECT);
+            draw_smallmaping = false;
+            smallmap = null;
+        end
+    with
+        every object in WORLD_DRAW_SMALLMAP_OBJECT do
+            if draw_smallmaping and smallmap != null then
+                emit object:e_DRAW_SMALLMAP => smallmap;
             end
         end
     with
@@ -692,11 +715,15 @@ do
     with
         await DELETE_WORLD;
         objs.iterate(_CEU_IN_WORLD_DELETE_OBJECT);
+        //loop i in objs.size() do
+        //    emit ((IWorldObj*)objs.get(i)):e_DELETE;
+        //end
     with
         every object in WORLD_DELETE_OBJECT do
             emit object:e_DELETE;
         end
     end
+    global:world = null;
 end
 
 #endif

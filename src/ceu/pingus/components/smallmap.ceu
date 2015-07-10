@@ -39,6 +39,16 @@ do
     var PrimaryButtonProxy pbp with this.gui = outer; end;
 
     function @rec (_Sprite* sprite, _Vector3f pos) => void draw_sprite do
+        if global:world == null then
+            _log_error("SmallMap.draw_sprite() is used before global:world is inited!");
+            return;
+        end
+
+        if small_map.gc_ptr == null then
+            _log_error("SmallMap.draw_sprite() is used outside its draw event! (Or <gc> ptr suddenly became 0)");
+            return;
+        end
+
         var float x = (float)(small_map.rect.left) + (pos.x * (float)(small_map.rect.get_width())  / (float)(global:world:get_width()));
         var float y = (float)(small_map.rect.top)  + (pos.y * (float)(small_map.rect.get_height()) / (float)(global:world:get_height()));
         small_map.gc_ptr:draw(_deref(sprite), _Vector3f(x, y));
@@ -46,6 +56,8 @@ do
 
     par/or do
         every gc in draw do
+            _printf("smallmap\n");
+
             // FIXME: This is potentially dangerous, since we don't know how
             // long 'gc' will be alive. Should use a DrawingContext for caching.
             small_map.gc_ptr = _PTR2REF(gc);
@@ -57,40 +69,43 @@ do
             var int view_rect_right = 0;
             var int view_rect_bottom = 0;
 
-            if global:world:get_width() > small_map.gc_ptr:get_width() then
-                var int rwidth = small_map.gc_ptr:get_width()  * small_map.rect.get_width()  / global:world:get_width();
-                view_rect_left  = small_map.rect.left + (ofx * small_map.rect.get_width()  / global:world:get_width()) - rwidth/2;
-                view_rect_right = view_rect_left + rwidth;
-            else
-                view_rect_left  = small_map.rect.left;
-                view_rect_right = small_map.rect.left + small_map.rect.get_width();
-            end
-
-            if global:world:get_height() > small_map.gc_ptr:get_height() then
-                var int rheight = small_map.gc_ptr:get_height() * small_map.rect.get_height() / global:world:get_height();
-                view_rect_top    = small_map.rect.top + (ofy * small_map.rect.get_height() / global:world:get_height()) - rheight/2;
-                view_rect_bottom = view_rect_top + rheight;
-            else
-                view_rect_top    = small_map.rect.top;
-                view_rect_bottom = small_map.rect.top + small_map.rect.get_height();
-            end
-
-            small_map.gc_ptr:draw(_deref(call/rec image.get_surface()), _Vector2i(small_map.rect.left, small_map.rect.top) finalize with end);
-            small_map.gc_ptr:draw_rect(_Rect(view_rect_left, view_rect_top, view_rect_right, view_rect_bottom), _Color(0, 255, 0));
-
             if global:world != null then
-                emit global:world:e_DRAW_SMALLMAP => &this;
-            end
+                if global:world:get_width() > small_map.gc_ptr:get_width() then
+                    var int rwidth = small_map.gc_ptr:get_width()  * small_map.rect.get_width()  / global:world:get_width();
+                    view_rect_left  = small_map.rect.left + (ofx * small_map.rect.get_width()  / global:world:get_width()) - rwidth/2;
+                    view_rect_right = view_rect_left + rwidth;
+                else
+                    view_rect_left  = small_map.rect.left;
+                    view_rect_right = small_map.rect.left + small_map.rect.get_width();
+                end
 
-            // Draw Pingus
-            loop pingu in global:world:get_pingus():all_pingus do
-                var int x = (float)small_map.rect.left + pingu:get_x()*(float)small_map.rect.get_width()/(float)global:world:get_width();
-                var int y = (float)small_map.rect.top + pingu:get_y()*(float)small_map.rect.get_height()/(float)global:world:get_height();
+                if global:world:get_height() > small_map.gc_ptr:get_height() then
+                    var int rheight = small_map.gc_ptr:get_height() * small_map.rect.get_height() / global:world:get_height();
+                    view_rect_top    = small_map.rect.top + (ofy * small_map.rect.get_height() / global:world:get_height()) - rheight/2;
+                    view_rect_bottom = view_rect_top + rheight;
+                else
+                    view_rect_top    = small_map.rect.top;
+                    view_rect_bottom = small_map.rect.top + small_map.rect.get_height();
+                end
 
-                _gc_draw_line(small_map.gc_ptr, _Vector2i(x, y), _Vector2i(x, y-2), _Color(255, 255, 0));
+                small_map.gc_ptr:draw(_deref(call/rec image.get_surface()), _Vector2i(small_map.rect.left, small_map.rect.top) finalize with end);
+                small_map.gc_ptr:draw_rect(_Rect(view_rect_left, view_rect_top, view_rect_right, view_rect_bottom), _Color(0, 255, 0));
+            
+                _printf("emit DRAW_SMALLMAP\n");
+                emit global:world:e_DRAW_SMALLMAP => &this;            
+                _printf("done\n");
+
+                // Draw Pingus
+                loop pingu in global:world:get_pingus():all_pingus do
+                    var int x = (float)small_map.rect.left + pingu:get_x()*(float)small_map.rect.get_width()/(float)global:world:get_width();
+                    var int y = (float)small_map.rect.top + pingu:get_y()*(float)small_map.rect.get_height()/(float)global:world:get_height();
+
+                    _gc_draw_line(small_map.gc_ptr, _Vector2i(x, y), _Vector2i(x, y-2), _Color(255, 255, 0));
+                end
             end
 
             small_map.gc_ptr = null;
+            _printf("smallmap end\n");
         end
     with
         every delta in update do
