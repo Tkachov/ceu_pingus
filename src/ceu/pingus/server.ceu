@@ -11,11 +11,11 @@
 native/pre do
     ##include "pingus/server.hpp"
     ##include "pingus/server_event.hpp"
-    ##include "pingus/action_name.hpp"    
+    ##include "pingus/action_name.hpp"
     ##define ServerEvent__make_pingu_action_event ServerEvent::make_pingu_action_event
     ##define ServerEvent__make_armageddon_event ServerEvent::make_armageddon_event
     ##define ServerEvent__make_finish_event ServerEvent::make_finish_event
-    ##define to_AN(x) (ActionName::Enum)x    
+    ##define to_AN(x) (ActionName::Enum)x
 end
 
 native @pure _init_WORLD();

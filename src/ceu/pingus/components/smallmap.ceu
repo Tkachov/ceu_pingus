@@ -78,7 +78,9 @@ do
             small_map.gc_ptr:draw(_deref(call/rec image.get_surface()), _Vector2i(small_map.rect.left, small_map.rect.top) finalize with end);
             small_map.gc_ptr:draw_rect(_Rect(view_rect_left, view_rect_top, view_rect_right, view_rect_bottom), _Color(0, 255, 0));
 
-            emit global:world:e_DRAW_SMALLMAP => &this;
+            if global:world != null then
+                emit global:world:e_DRAW_SMALLMAP => &this;
+            end
 
             // Draw Pingus
             loop pingu in global:world:get_pingus():all_pingus do

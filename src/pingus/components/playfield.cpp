@@ -55,7 +55,8 @@ Playfield::draw(DrawingContext& gc)
 
   state.push(*scene_context);
 
-  ceu_out_go(&CEUapp, CEU_IN_PLAYFIELD_DRAW, &scene_context);
+  SceneContext* sc = scene_context.get();  
+  ceu_out_go(&CEUapp, CEU_IN_PLAYFIELD_DRAW, &sc);
 
   state.pop(*scene_context);
 

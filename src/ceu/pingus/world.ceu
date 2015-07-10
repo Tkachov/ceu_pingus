@@ -96,7 +96,7 @@ class World with
     pool ITeleporterTarget[] teleporter_targets;
     pool ISwitchDoorDoor[] switch_door_doors;
     var _PingusLevel&? pingus_level;
-do    
+do
     var _Container&? objs = _PTR2REF(_new_Container());
     finalize with _delete_obj(objs); end
 
@@ -262,7 +262,7 @@ do
     //////////// EVENTS /////////////
 
     var bool draw_iterating = false;
-    var _SceneContext* gc = null;    
+    var _SceneContext* gc = null;
 
     par/or do
         every package in WORLD_GET_SIZE do
@@ -271,7 +271,7 @@ do
         end
     with
         every STARTUP_WORLD do
-            objs.iterate(_CEU_IN_WORLD_STARTUP_OBJECT);            
+            objs.iterate(_CEU_IN_WORLD_STARTUP_OBJECT);
         end
     with
         every object in WORLD_STARTUP_OBJECT do
