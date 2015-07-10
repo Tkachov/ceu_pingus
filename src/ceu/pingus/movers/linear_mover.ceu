@@ -4,7 +4,7 @@
 native/pre do
     ##include "pingus/movers/linear_mover.hpp"
     ##define Movers_LinearMover Movers::LinearMover
-    ##define new_LinearMover(w) new Movers::LinearMover(w, Vector3f(0, 0, 0))
+    ##define new_LinearMover() new Movers::LinearMover(0, Vector3f(0, 0, 0))
 end
 
 native @pure _new_LinearMover();

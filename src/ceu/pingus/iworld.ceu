@@ -12,13 +12,23 @@
 #include "worldobjs/iswitch_door_door.ceu"
 
 native/pre do
-    ##include "pingus/world.hpp"
+    ##include <string>
+    ##include <vector>
+
+    ##include "math/vector2i.hpp"
+    ##include "pingus/collision_mask.hpp"
+    ##include "pingus/groundtype.hpp"
+
+    ##include "pingus/collision_map.hpp"
+
+    ##include "pingus/pingus_level.hpp"
+    ##include "pingus/worldobj_factory.hpp"
     ##include "pingus/ground_map.hpp"
+
+    ##include "pingus/world.hpp"
 end
 
 interface IWorld with
-    var _World* world;
-
     function (void) => _GroundMap* get_gfx_map;
     function (void) => _CollisionMap* get_colmap;
     function (void) => IPinguHolder* get_pingus;

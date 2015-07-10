@@ -108,7 +108,7 @@ DemoSession::DemoSession(const Pathname& pathname_) :
   gui_manager->add(pcounter);
   gui_manager->add(new ButtonPanel(server.get(), Vector2i(0, (size.height - 100)/2)));
 
-  WorldGetSizePackage package(server->get_world());
+  WorldGetSizePackage package;
   WorldGetSizePackage* pp = &package;
   ceu_out_go(&CEUapp, CEU_IN_WORLD_GET_SIZE, &pp);
 
@@ -274,7 +274,7 @@ DemoSession::resize(const Size& size_)
 {
   GUIScreen::resize(size_);
 
-  WorldGetSizePackage package(server->get_world());
+  WorldGetSizePackage package;
   WorldGetSizePackage* pp = &package;
   ceu_out_go(&CEUapp, CEU_IN_WORLD_GET_SIZE, &pp);
 

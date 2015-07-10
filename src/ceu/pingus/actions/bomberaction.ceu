@@ -58,7 +58,7 @@ do
     var _CollisionMask&? bomber_radius = _new_CollisionMask("other/bomber_radius_gfx", "other/bomber_radius");
     finalize with _delete_obj(bomber_radius); end;
 
-    var _Movers_LinearMover&? mover = _new_LinearMover(global:world:world);
+    var _Movers_LinearMover&? mover = _new_LinearMover();
     finalize with _delete_obj(mover); end;
 
     global:world:play_sound("ohno", pingu.get_ceu_pos(), 0.5);

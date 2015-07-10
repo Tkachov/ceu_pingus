@@ -20,8 +20,6 @@
 #include "pingus/collider.hpp"
 #include "math/vector3f.hpp"
 
-class World;
-
 namespace Colliders {
 
 class PinguCollider : public Collider
@@ -35,7 +33,7 @@ public:
 
   /** Find out if a Pingu at the specified position is colliding with
       something */
-  bool operator() (World* const world, Vector3f current_pos,
+  bool operator() (void*, Vector3f current_pos,
                    const Vector3f& step_vector) const;
 
 private:
@@ -45,18 +43,17 @@ private:
 
   /** Get the Collision Map pixel at the specified position in the specified
       world */
-  int getpixel(World* const world, const Vector3f& pos) const;
+  int getpixel(const Vector3f& pos) const;
 };
 
 } // namespace Colliders
 
 struct ColliderGetPixelPackage {
-  const Collider* collider;
-  World* world;
+  const Collider* collider;  
   Vector3f pos;
   int result;
 
-  ColliderGetPixelPackage(const Collider* c, World* w, Vector3f v): collider(c), world(w), pos(v), result(0) {};
+  ColliderGetPixelPackage(const Collider* c, Vector3f v): collider(c), pos(v), result(0) {};
 };
 
 #endif

@@ -3,7 +3,7 @@
 
 #include "../c.ceu"
 #include "../sdl.ceu"
-#include "iworld.ceu"
+#include "world.ceu"
 #include "ipingu_holder.ceu"
 #include "goal_manager.ceu"
 #include "pingu_holder_listener.ceu"
@@ -11,12 +11,14 @@
 native/pre do
     ##include "pingus/server.hpp"
     ##include "pingus/server_event.hpp"
-    ##include "pingus/action_name.hpp"
+    ##include "pingus/action_name.hpp"    
     ##define ServerEvent__make_pingu_action_event ServerEvent::make_pingu_action_event
     ##define ServerEvent__make_armageddon_event ServerEvent::make_armageddon_event
     ##define ServerEvent__make_finish_event ServerEvent::make_finish_event
-    ##define to_AN(x) (ActionName::Enum)x
+    ##define to_AN(x) (ActionName::Enum)x    
 end
+
+native @pure _init_WORLD();
 
 input _Server* NEW_SERVER;
 input _Server* SERVER_ARMAGEDDON;
@@ -38,6 +40,11 @@ do
     var _Server&? server = _PTR2REF((_Server*)me);
     var Server* self = &this;
     server.ceu_server = (void*)self;
+
+    var World world with
+        this.pingus_level = _PTR2REF(&me:plf);
+        global:world = &this;
+    end;
 
     function @rec (IPingu* pingu, int action) => void send_pingu_action_event do
         server.record(
@@ -74,7 +81,7 @@ do
                 )
             );
 
-            emit global:world:e_ARMAGEDDON;
+            emit world.e_ARMAGEDDON;
         end
     with
         every s in SERVER_FINISH_EVENT do
@@ -107,23 +114,24 @@ do
         end
     with
         every e_UPDATE do
-            //_printf("Ceu e_UPDATE\n");
-            emit global:world:e_UPDATE;
+            _printf("Ceu e_UPDATE\n");
+            emit world.e_UPDATE;
             emit goal_manager.e_UPDATE;
         end
     with
         //TODO: remove (used because `update()` is also called from C++ DemoSession which is not ported yet)
         every s in SERVER_UPDATE do
-            //_printf("C++ update()\n");
+            _printf("C++ update()\n");
             if s != &server then
                 continue;
             end
 
-            emit global:world:e_UPDATE;
+            emit world.e_UPDATE;
             emit goal_manager.e_UPDATE;
         end
     with
         var _Server* e = await DELETE_SERVER until (e == &server);
+        //emit world.e_DELETE;
     end
 end
 

@@ -75,14 +75,14 @@ native/pre do
     ##define read_position(r, p) Vector3f __v; r->read_vector("position", __v); p.x = __v.x; p.y = __v.y; p.z = __v.z;
     ##define read_position2(r, p, res) Vector3f __v; res = r->read_vector("position", __v); p.x = __v.x; p.y = __v.y; p.z = __v.z;
 
-    ##define new_Color new Color    
+    ##define new_Color new Color
 end
 
 native @pure _reader_read_Groundtype(), _Resource__load_surface(), _opeq(), _new_Surface(), _new_Container(), _new_Color(),
-             _read_position(), _read_position2();
+             _read_position(), _read_position2(), _log_error(), _log_warn();
 
-input _World* WORLD_STARTUP;
-input _World* WORLD_DELETE;
+input void STARTUP_WORLD;
+input void DELETE_WORLD;
 
 input IWorldObj* WORLD_STARTUP_OBJECT;
 input IWorldObj* WORLD_DRAW_OBJECT;
@@ -95,16 +95,31 @@ class World with
     pool Entrance[] entrances;
     pool ITeleporterTarget[] teleporter_targets;
     pool ISwitchDoorDoor[] switch_door_doors;
-do
-    var _World&? me = _PTR2REF((_World*)world);
+    var _PingusLevel&? pingus_level;
+do    
     var _Container&? objs = _PTR2REF(_new_Container());
     finalize with _delete_obj(objs); end
 
     var bool do_armageddon = false;
     var int armageddon_count = 0;
     var int game_time = 0;
-    var _Color&? ambient_light = _new_Color(me.pingus_level.get_ambient_light());
+    var _Color&? ambient_light = _new_Color(pingus_level.get_ambient_light());
     finalize with _delete_obj(ambient_light); end
+
+    var PinguHolder holder with
+        this.number_of_allowed = pingus_level.get_number_of_pingus();
+    end;
+
+    var PinguParticlesHolder pingu_particles_holder;
+    var RainParticlesHolder rain_particles_holder;
+    var SmokeParticlesHolder smoke_particles_holder;
+    var SnowParticlesHolder snow_particles_holder;
+
+    var GroundMap gfx_map with
+        this.gmap = _PTR2REF(_new_GroundMap(pingus_level.get_size().width, pingus_level.get_size().height));
+    end;
+
+    //////////// FUNCTIONS /////////////
 
     function (void) => bool check_armageddon do
         return do_armageddon;
@@ -161,19 +176,6 @@ do
     function (IWorldObj* o) => void remove_object do
         objs.remove((void*)o);
     end
-
-    var PinguHolder holder with
-        this.number_of_allowed = me.pingus_level.get_number_of_pingus();
-    end;
-
-    var PinguParticlesHolder pingu_particles_holder;
-    var RainParticlesHolder rain_particles_holder;
-    var SmokeParticlesHolder smoke_particles_holder;
-    var SnowParticlesHolder snow_particles_holder;
-
-    var GroundMap gfx_map with
-        this.gmap = _PTR2REF(_new_GroundMap(me.pingus_level.get_size().width, me.pingus_level.get_size().height));
-    end;
 
     function (void) => int get_width do
         return gfx_map.gmap.get_width();
@@ -257,25 +259,19 @@ do
         _delete_obj(mask);
     end
 
+    //////////// EVENTS /////////////
+
     var bool draw_iterating = false;
-    var _SceneContext* gc = null;
+    var _SceneContext* gc = null;    
 
     par/or do
         every package in WORLD_GET_SIZE do
-            if package:world != &me then
-                continue;
-            end
-
             package:width = get_width();
             package:height = get_height();
         end
     with
-        every w in WORLD_STARTUP do
-            if w != &me then
-                continue;
-            end
-
-            objs.iterate(_CEU_IN_WORLD_STARTUP_OBJECT);
+        every STARTUP_WORLD do
+            objs.iterate(_CEU_IN_WORLD_STARTUP_OBJECT);            
         end
     with
         every object in WORLD_STARTUP_OBJECT do
@@ -694,12 +690,8 @@ do
             end;
         end
     with
-        every w in WORLD_DELETE do
-            if w == &me then
-                objs.iterate(_CEU_IN_WORLD_DELETE_OBJECT);
-                break;
-            end
-        end
+        await DELETE_WORLD;
+        objs.iterate(_CEU_IN_WORLD_DELETE_OBJECT);
     with
         every object in WORLD_DELETE_OBJECT do
             emit object:e_DELETE;

@@ -20,8 +20,8 @@
 
 namespace Movers {
 
-LinearMover::LinearMover(World* const world_arg, const Vector3f& pos_arg)
-  : Mover(world_arg, pos_arg)
+LinearMover::LinearMover(void*, const Vector3f& pos_arg)
+  : Mover(pos_arg)
 {
 }
 
@@ -45,7 +45,7 @@ void LinearMover::update(const Vector3f& move, const Collider& collision_check)
   // Move to the destination one unit vector at a time
   for (int i = 0; i < move_length && !collision; ++i)
   {
-    collision = collision_check(world, pos, step_vector);
+    collision = collision_check(0, pos, step_vector);
 
     pos += step_vector;
   }

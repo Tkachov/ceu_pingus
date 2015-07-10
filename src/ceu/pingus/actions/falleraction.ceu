@@ -48,7 +48,7 @@ do
     load_file_directions(sprite, "/faller/");
     load_file_directions(tumbler, "/tumbler/");
 
-    var _Movers_LinearMover&? mover = _new_LinearMover(global:world:world);
+    var _Movers_LinearMover&? mover = _new_LinearMover();
     finalize with _delete_obj(mover); end;
 
     function @rec (void) => bool is_tumbling do

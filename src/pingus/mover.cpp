@@ -16,9 +16,8 @@
 
 #include "pingus/mover.hpp"
 
-Mover::Mover(World* const world_arg, const Vector3f& pos_arg)
-  : world(world_arg),
-    pos(pos_arg),
+Mover::Mover(const Vector3f& pos_arg)
+  : pos(pos_arg),
     remaining_move(0.0f, 0.0f, 0.0f),
     collision(false)
 {

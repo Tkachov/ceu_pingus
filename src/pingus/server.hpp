@@ -23,7 +23,6 @@
 #include <memory>
 
 class Pingu;
-class World;
 class DemoRecorder;
 
 /** A abstract server-like class */
@@ -31,7 +30,6 @@ class Server
 {
 protected:
   PingusLevel plf;
-  std::unique_ptr<World> world;
 
   /** Manager class for the number of available actions */
   ActionHolder action_holder;
@@ -52,7 +50,6 @@ public:
 
   int get_time();
 
-  World* get_world();
   ActionHolder* get_action_holder();
 
   /** @return true if the server is finished and the game can be

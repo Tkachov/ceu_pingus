@@ -15,11 +15,11 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "pingus/server.hpp"
+#include "pingus/world.hpp"
 
 #include <fstream>
 #include <time.h>
 
-#include "pingus/world.hpp"
 #include "util/log.hpp"
 #include "util/sexpr_file_writer.hpp"
 #include "util/system.hpp"
@@ -72,8 +72,7 @@ static std::unique_ptr<std::ostream> get_demostream(const PingusLevel& plf)
 }
 
 Server::Server(const PingusLevel& arg_plf, bool record_demo) :
-  plf(arg_plf),
-  world(new World (plf)),
+  plf(arg_plf),  
   action_holder (plf),  
   demostream()
 {
@@ -84,20 +83,17 @@ Server::Server(const PingusLevel& arg_plf, bool record_demo) :
 
   Server* self = this;
   ceu_out_go(&CEUapp, CEU_IN_NEW_SERVER, &self);
+
+  init_WORLD(plf);
 }
 Server::~Server ()
 {
   if (demostream.get()) // FIXME: Any better place to put this? 
     (*demostream) << "(end (time " << get_time() << "))" << std::endl;
 
+  ceu_out_go(&CEUapp, CEU_IN_DELETE_WORLD, 0);
   Server* self = this;
   ceu_out_go(&CEUapp, CEU_IN_DELETE_SERVER, &self);
-}
-
-World*
-Server::get_world()
-{
-  return world.get();
 }
 
 void Server::update() {

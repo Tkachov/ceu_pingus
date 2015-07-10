@@ -18,7 +18,6 @@
 #define HEADER_PINGUS_PINGUS_COLLIDER_HPP
 
 class Vector3f;
-class World;
 
 class Collider
 {
@@ -30,8 +29,7 @@ public:
   virtual ~Collider() = 0;
 
   /** Find out if object will collide with something */
-  virtual bool operator() (World* const world, Vector3f current_pos,
-                           const Vector3f& step_vector) const = 0;
+  virtual bool operator() (void*, Vector3f current_pos, const Vector3f& step_vector) const = 0;
 };
 
 #endif

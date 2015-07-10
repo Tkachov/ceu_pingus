@@ -64,7 +64,7 @@ GameSession::GameSession(const PingusLevel& arg_plf, bool arg_show_result_screen
   // These object will get deleted by the gui_manager
   button_panel = new ButtonPanel(get_server(), Vector2i(0, (size.height - 150)/2));
 
-  WorldGetSizePackage package(server->get_world());
+  WorldGetSizePackage package;
   WorldGetSizePackage* pp = &package;
   ceu_out_go(&CEUapp, CEU_IN_WORLD_GET_SIZE, &pp);
 
@@ -341,7 +341,7 @@ GameSession::resize(const Size& size_)
 {
   GUIScreen::resize(size_);
 
-  WorldGetSizePackage package(server->get_world());
+  WorldGetSizePackage package;
   WorldGetSizePackage* pp = &package;
   ceu_out_go(&CEUapp, CEU_IN_WORLD_GET_SIZE, &pp);
 

@@ -18,7 +18,6 @@
 
 #include "math/vector3f.hpp"
 #include "pingus/collision_map.hpp"
-#include "pingus/world.hpp"
 
 Collider::Collider()
 {
@@ -26,12 +25,6 @@ Collider::Collider()
 
 Collider::~Collider()
 {
-}
-
-bool Collider::operator() (World* const world, Vector3f current_pos,
-                           const Vector3f& step_vector) const
-{
-  return false;
 }
 
 /**/

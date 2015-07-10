@@ -20,13 +20,12 @@
 #include "math/vector3f.hpp"
 
 class Collider;
-class World;
 
 class Mover
 {
 public:
   /** Constructor of abstract class */
-  Mover(World* const world_arg, const Vector3f& pos_arg);
+  Mover(const Vector3f& pos_arg);
 
   /** Destructor of abstract class */
   virtual ~Mover() = 0;
@@ -47,9 +46,6 @@ public:
   void reset(const Vector3f& new_pos);
 
 protected:
-  /** World in which the object should move */
-  World* const world;
-
   /** Position of the object to move */
   Vector3f pos;
 

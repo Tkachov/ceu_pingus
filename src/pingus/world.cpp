@@ -1,44 +1,12 @@
-//  Pingus - A free Lemmings clone
-//  Copyright (C) 1999 Ingo Ruhnke <grumbel@gmx.de>
-//
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 #include "pingus/world.hpp"
-
-#include "pingus/collision_map.hpp"
-
 #include "pingus/pingus_level.hpp"
 #include "pingus/worldobj_factory.hpp"
-
 #include "ceuvars.h"
 
-World::World(const PingusLevel& plf):
-  pingus_level(plf)  
-{
-  World* self = this;
-  ceu_out_go(&CEUapp, CEU_IN_NEW_WORLD, &self);
-
-  const std::vector<FileReader>& objects = plf.get_objects();
-  for(auto i: objects) WorldObjFactory::instance()->create(i);
-  
-  ceu_out_go(&CEUapp, CEU_IN_WORLD_STARTUP, &self);
+void init_WORLD(const PingusLevel& plf) {
+  printf("creating objects...\n");
+  const std::vector<FileReader>& o = plf.get_objects();
+  for(auto i: o) WorldObjFactory::instance()->create(i);
+  printf("sending STARTUP_WORLD\n");
+  ceu_out_go(&CEUapp, CEU_IN_STARTUP_WORLD, 0);  
 }
-
-World::~World() {
-  World* self = this;  
-  ceu_out_go(&CEUapp, CEU_IN_WORLD_DELETE, &self);
-}
-
-
-/* EOF */

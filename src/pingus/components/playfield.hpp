@@ -22,7 +22,6 @@
 #include "engine/display/graphic_context_state.hpp"
 #include "engine/gui/rect_component.hpp"
 
-class World;
 class Server;
 class GameSession;
 class ButtonPanel;

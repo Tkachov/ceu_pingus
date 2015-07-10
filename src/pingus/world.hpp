@@ -17,47 +17,14 @@
 #ifndef HEADER_PINGUS_PINGUS_WORLD_HPP
 #define HEADER_PINGUS_PINGUS_WORLD_HPP
 
-#include <string>
-#include <vector>
-
-#include "math/vector2i.hpp"
-#include "pingus/collision_mask.hpp"
-#include "pingus/groundtype.hpp"
-
-class Vector3f;
 class PingusLevel;
-class CollisionMap;
-class Pingu;
-class SceneContext;
 
-class World;
+void init_WORLD(const PingusLevel& plf);
 
-/** The World holds all objects of the pingu enviroment.
-
-    It holds the pingus, traps, exits, entrances, etc.. It keeps
-    control that all objects become time to move and can catch each
-    other. */
-class World
-{
-private:
-  const PingusLevel& pingus_level;
-
-  void init_worldobjs(const PingusLevel& plf);
-
-public:
-  World(const PingusLevel& level);
-  virtual ~World();
-
-private:
-  World (const World&);
-  World& operator= (const World&);
-};
-
-struct WorldGetSizePackage {
-  World* world;
+struct WorldGetSizePackage {  
   int width, height;
 
-  WorldGetSizePackage(World* w): world(w) {};
+  WorldGetSizePackage() {};
 };
 
 #endif
