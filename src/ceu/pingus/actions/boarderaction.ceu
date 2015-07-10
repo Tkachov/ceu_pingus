@@ -47,7 +47,7 @@ do
             sprite.get(pingu.direction):update();
 
             //not on ground
-            if not pingu.rel_getpixel(0, -1) and not pingu.rel_getpixel(0, -2) then
+            if not (call/rec pingu.rel_getpixel(0, -1)) and not (call/rec pingu.rel_getpixel(0, -2)) then
                 var Vector3f f;
                 f.x = speed*(float)(pingu.direction);
                 f.y = 0;
@@ -83,7 +83,7 @@ do
 
                 pingu.set_pos(_Vector3f(old_pos.x + offset, old_pos.y, old_pos.z));
 
-                if pingu.rel_getpixel(1, 0) then
+                if call/rec pingu.rel_getpixel(1, 0) then
                     // Hit a wall
                     pingu.set_pos(_toVector3f(old_pos));
 

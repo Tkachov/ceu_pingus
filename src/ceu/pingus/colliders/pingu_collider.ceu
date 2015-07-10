@@ -1,0 +1,37 @@
+#ifndef PINGU_COLLIDER_CEU
+#define PINGU_COLLIDER_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../iworld.ceu"
+#include "../ipingu_holder.ceu"
+#include "../pingu_holder_listener.ceu"
+
+native/pre do
+    ##include "pingus/colliders/pingu_collider.hpp"
+    ##define PCollider Colliders::PinguCollider
+end
+
+input _PCollider* NEW_PINGU_COLLIDER;
+input _ColliderGetPixelPackage* COLLIDER_GET_PIXEL;
+input _PCollider* DELETE_PINGU_COLLIDER;
+
+class PinguCollider with
+    var _PCollider* me;
+do
+    var _PCollider&? collider = _PTR2REF(me);
+
+    par/or do
+        every package in COLLIDER_GET_PIXEL do
+            if package:collider != &collider then
+                continue;
+            end
+
+            package:result = _PTR2REF(global:world:get_colmap():getpixel(package:pos.x, package:pos.y) finalize with end);
+        end
+    with
+        var _PCollider* e = await DELETE_PINGU_COLLIDER until (e == &collider);
+    end
+end
+
+#endif

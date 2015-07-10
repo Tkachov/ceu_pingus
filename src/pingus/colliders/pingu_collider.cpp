@@ -19,14 +19,20 @@
 #include "math/vector3f.hpp"
 #include "pingus/groundtype.hpp"
 
+#include "ceuvars.h"
+
 namespace Colliders {
 
 PinguCollider::PinguCollider(const int height_arg) : height(height_arg)
 {
+  PinguCollider* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_NEW_PINGU_COLLIDER, &self);
 }
 
 PinguCollider::~PinguCollider()
 {
+  PinguCollider* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_DELETE_PINGU_COLLIDER, &self);
 }
 
 bool PinguCollider::operator() (World* const world, Vector3f current_pos,
@@ -78,6 +84,14 @@ bool PinguCollider::operator() (World* const world, Vector3f current_pos,
   }
 
   return collided;
+}
+
+int PinguCollider::getpixel(World* const world, const Vector3f& pos) const
+{
+  ColliderGetPixelPackage package(this, world, pos);
+  ColliderGetPixelPackage* pp = &package;
+  ceu_out_go(&CEUapp, CEU_IN_COLLIDER_GET_PIXEL, &pp);
+  return package.result;
 }
 
 } // namespace Colliders

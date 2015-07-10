@@ -24,9 +24,7 @@
 #include "ceuvars.h"
 
 World::World(const PingusLevel& plf):
-  pingus_level(plf),
-  colmap(),
-  gravitational_acceleration(0.2f)
+  pingus_level(plf)  
 {
   World* self = this;
   ceu_out_go(&CEUapp, CEU_IN_NEW_WORLD, &self);
@@ -42,15 +40,5 @@ World::~World() {
   ceu_out_go(&CEUapp, CEU_IN_WORLD_DELETE, &self);
 }
 
-CollisionMap*
-World::get_colmap()
-{
-  return colmap;
-}
-
-float World::get_gravity()
-{
-  return gravitational_acceleration;
-}
 
 /* EOF */

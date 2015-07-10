@@ -89,8 +89,8 @@ do
                         end
                     end
                 else
-                    if global:world:world:get_colmap():getpixel(it.pos.x, it.pos.y) finalize with end != _GT_NOTHING and
-                       global:world:world:get_colmap():getpixel(it.pos.x, it.pos.y) finalize with end != _GT_OUTOFSCREEN and
+                    if global:world:get_colmap():getpixel(it.pos.x, it.pos.y) finalize with end != _GT_NOTHING and
+                       global:world:get_colmap():getpixel(it.pos.x, it.pos.y) finalize with end != _GT_OUTOFSCREEN and
                        (_rand()%2) == 0 then
                         it.splash = true;
                     else

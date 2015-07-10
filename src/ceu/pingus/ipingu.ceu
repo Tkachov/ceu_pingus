@@ -28,9 +28,9 @@ interface IPingu with
 
     event int e_CHANGE_ACTION;
 
-    function (int x, int y) => int rel_getpixel;
-    function (int x, int y) => bool head_collision_on_walk;
-    function (int x, int y) => bool collision_on_walk;
+    function @rec (int x, int y) => int rel_getpixel;
+    function @rec (int x, int y) => bool head_collision_on_walk;
+    function @rec (int x, int y) => bool collision_on_walk;
 
     function @rec (void) => Vector3f get_center_pos;
 

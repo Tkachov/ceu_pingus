@@ -85,7 +85,7 @@ do
 
             // Apply gravity
             var Vector3f vel = pingu.get_velocity();
-            vel.y = vel.y + global:world:world:get_gravity();
+            vel.y = vel.y + global:world:get_gravity();
             pingu.set_velocity(vel);
 
             // Move the Pingu as far is it can go
@@ -98,11 +98,11 @@ do
 
             // If the Pingu collided with something...
             if collided then
-                if pingu.rel_getpixel(0, -1) == _GT_NOTHING and
-                   pingu.rel_getpixel(0, -2) == _GT_NOTHING and
-                   pingu.rel_getpixel(0, -3) == _GT_NOTHING and
-                   pingu.rel_getpixel(1, 0) != _GT_NOTHING and
-                   pingu.rel_getpixel(1, 0) != _GT_BRIDGE
+                if (call/rec pingu.rel_getpixel(0, -1)) == _GT_NOTHING and
+                   (call/rec pingu.rel_getpixel(0, -2)) == _GT_NOTHING and
+                   (call/rec pingu.rel_getpixel(0, -3)) == _GT_NOTHING and
+                   (call/rec pingu.rel_getpixel(1, 0)) != _GT_NOTHING and
+                   (call/rec pingu.rel_getpixel(1, 0)) != _GT_BRIDGE
                 then
                     // Make Pingu bounce off wall
                     velocity.x = -(velocity.x/3.0);
@@ -117,8 +117,8 @@ do
                 else/if velocity.y > 0.0 // If the Pingu collided into something while moving down...
                 then
                     // Ping is on ground/water/something
-                    if pingu.rel_getpixel(0, -1) == _GT_WATER or
-                       pingu.rel_getpixel(0, -1) == _GT_LAVA
+                    if (call/rec pingu.rel_getpixel(0, -1)) == _GT_WATER or
+                       (call/rec pingu.rel_getpixel(0, -1)) == _GT_LAVA
                     then
                         escape _A_DROWN;
                     // Did we stop too fast?

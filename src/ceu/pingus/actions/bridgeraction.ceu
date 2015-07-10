@@ -73,8 +73,8 @@ do
         loop i in 4 do
             var int x_inc = i+1;
 
-            if pingu.rel_getpixel(x_inc, 2) != _GT_NOTHING
-            or pingu.head_collision_on_walk(x_inc, 2) then
+            if (call/rec pingu.rel_getpixel(x_inc, 2)) != _GT_NOTHING
+            or (call/rec pingu.head_collision_on_walk(x_inc, 2)) then
                 return false;
             end
         end
@@ -87,7 +87,7 @@ do
     // as way_is_free() it is best to keep them apart as they may need to be
     // independent of each other if there needs to be a patch.
     function @rec (void) => bool brick_placement_allowed do
-        return not pingu.head_collision_on_walk(0, 2);
+        return not (call/rec pingu.head_collision_on_walk(0, 2));
     end
 
     function @rec (void) => void place_a_brick do

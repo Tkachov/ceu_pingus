@@ -48,19 +48,19 @@ do
             sprite.get(pingu.direction):update();
 
             //there's something above
-            if pingu.rel_getpixel(0, 1) != _GT_NOTHING and pingu.rel_getpixel(0, 1) != _GT_BRIDGE then
+            if (call/rec pingu.rel_getpixel(0, 1)) != _GT_NOTHING and (call/rec pingu.rel_getpixel(0, 1)) != _GT_BRIDGE then
                 pingu.direction.change();
                 escape _A_WALKER;
             end
 
             //nothing above and there is still ground to walk on
-            if pingu.rel_getpixel(1, 1) != _GT_NOTHING then
+            if (call/rec pingu.rel_getpixel(1, 1)) != _GT_NOTHING then
                 pingu.set_posf(pingu.get_x(), pingu.get_y() - 1);
                 continue;
             end
 
             // If Pingu able to get to new position without head collision
-            if not pingu.head_collision_on_walk(pingu.direction, 1) then
+            if not (call/rec pingu.head_collision_on_walk(pingu.direction, 1)) then
                 // Get ready to walk
                 pingu.set_posf(
                     pingu.get_x() + (float)pingu.direction,

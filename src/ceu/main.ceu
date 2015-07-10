@@ -5,6 +5,7 @@ end
 
 #include "c.ceu"
 #include "sdl.ceu"
+#include "pingus/colliders/pingu_collider.ceu"
 #include "pingus/components/menubutton.ceu"
 #include "pingus/components/armageddonbutton.ceu"
 #include "pingus/components/forwardbutton.ceu"
@@ -86,6 +87,12 @@ with
         spawn World with
             this.world = _PTR2REF(new_world);
             world = &this;
+        end;
+    end
+with
+    every new_collider in NEW_PINGU_COLLIDER do
+        spawn PinguCollider with
+            this.me = _PTR2REF(new_collider);
         end;
     end
 with

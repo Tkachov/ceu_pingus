@@ -127,15 +127,15 @@ do
         set_y(arg.y);
     end
 
-    function (int x, int y) => int rel_getpixel do
-        return global:world:world:get_colmap():getpixel(
+    function @rec (int x, int y) => int rel_getpixel do
+        return global:world:get_colmap():getpixel(
             get_x() + (float)(x * direction),
             get_y() - (float)y
         );
     end
 
     function @rec (int x, int y) => bool head_collision_on_walk do
-        var int pixel = rel_getpixel(x, y + _pingu_height);
+        var int pixel = call/rec rel_getpixel(x, y + _pingu_height);
 
         if pixel != _GT_NOTHING and not (pixel & _GT_BRIDGE) then
             return true;
@@ -149,7 +149,7 @@ do
         var int pixel = _GT_NOTHING;
 
         loop/100 pingu_y in _pingu_height+1 do
-            pixel = rel_getpixel(x, y + pingu_y);
+            pixel = call/rec rel_getpixel(x, y + pingu_y);
 
             if pixel != _GT_NOTHING and pixel != _GT_BRIDGE then
                 collision = true;
@@ -293,7 +293,7 @@ do
 
             // original FIXME: Out of screen check is ugly
             // The Pingu has hit the edge of the screen, a good time to let him die.
-            if rel_getpixel(0, -1) == _GT_OUTOFSCREEN then
+            if (call/rec rel_getpixel(0, -1)) == _GT_OUTOFSCREEN then
                 //Sound::PingusSound::play_sound("die");
                 emit e_CHANGE_ACTION => _A_DEAD;
             end

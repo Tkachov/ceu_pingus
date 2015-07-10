@@ -42,23 +42,11 @@ class World
 private:
   const PingusLevel& pingus_level;
 
-  // Pointers which are references to objects from other classes
-  CollisionMap* colmap;
-
   void init_worldobjs(const PingusLevel& plf);
-
-  /** Acceleration due to gravity in the world */
-  const float gravitational_acceleration;
 
 public:
   World(const PingusLevel& level);
   virtual ~World();
-
-  /** @return A pointer to the collision map used in this world */
-  CollisionMap* get_colmap();
-
-  /** Get the acceleration due to gravity in the world */
-  float get_gravity();
 
 private:
   World (const World&);

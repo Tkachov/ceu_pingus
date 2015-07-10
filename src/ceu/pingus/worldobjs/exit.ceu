@@ -64,7 +64,7 @@ do
         end
     with
         every e_STARTUP do
-            _colmap_removeD(global:world:world:get_colmap(), desc, (int)pos.x - sprite.get_width()/2, (int)pos.y - sprite.get_height());
+            _colmap_removeD(global:world:get_colmap(), desc, (int)pos.x - sprite.get_width()/2, (int)pos.y - sprite.get_height());
         end
     with
         every smallmap in e_DRAW_SMALLMAP do

@@ -75,7 +75,7 @@ native/pre do
     ##define read_position(r, p) Vector3f __v; r->read_vector("position", __v); p.x = __v.x; p.y = __v.y; p.z = __v.z;
     ##define read_position2(r, p, res) Vector3f __v; res = r->read_vector("position", __v); p.x = __v.x; p.y = __v.y; p.z = __v.z;
 
-    ##define new_Color new Color
+    ##define new_Color new Color    
 end
 
 native @pure _reader_read_Groundtype(), _Resource__load_surface(), _opeq(), _new_Surface(), _new_Container(), _new_Color(),
@@ -173,8 +173,6 @@ do
 
     var GroundMap gfx_map with
         this.gmap = _PTR2REF(_new_GroundMap(me.pingus_level.get_size().width, me.pingus_level.get_size().height));
-
-        me.colmap = _PTR2REF(this.gmap.colmap.get());
     end;
 
     function (void) => int get_width do
@@ -213,6 +211,10 @@ do
         return snow_particles_holder;
     end
 
+    function (void) => float get_gravity do
+        return 0.2;
+    end
+
     function (_const_char_string id) => ITeleporterTarget* get_teleporter_target do
         loop target in teleporter_targets do
             if target:id == id then
@@ -235,12 +237,12 @@ do
 
     function (_CollisionMask* mask, int x, int y, int type) => void put do
         gfx_map.gmap.put(mask:get_surface(), x, y);
-        world:colmap:put(_deref(mask), x, y, _to_GT(type));
+        gfx_map.gmap.colmap:put(_deref(mask), x, y, _to_GT(type));
     end
 
     function (_CollisionMask* mask, int x, int y) => void remove do
         gfx_map.gmap.remove(mask:get_surface(), x, y);
-        world:colmap:remove(_deref(mask), x, y);
+        gfx_map.gmap.colmap:remove(_deref(mask), x, y);
     end
 
     function (_const_char_string str, int x, int y, int t) => void put_str do

@@ -81,7 +81,7 @@ do
                 var float tmp_y_add = 0.0;
 
                 // Simulated gravity
-                it.velocity.y = it.velocity.y + global:world:world:get_gravity();
+                it.velocity.y = it.velocity.y + global:world:get_gravity();
 
                 if it.velocity.y > 0 then
                     tmp_y_add = it.velocity.y;
@@ -91,7 +91,7 @@ do
                             break;
                         end
 
-                        if global:world:world:get_colmap():getpixel(it.pos.x, it.pos.y) finalize with end then
+                        if global:world:get_colmap():getpixel(it.pos.x, it.pos.y) finalize with end then
                             it.velocity.y = it.velocity.y * (-y_collision_decrease);
                             tmp_y_add = -tmp_y_add;
                             it.pos.y = it.pos.y - 1;
@@ -111,7 +111,7 @@ do
                             break;
                         end
 
-                        if global:world:world:get_colmap():getpixel(it.pos.x, it.pos.y) finalize with end then
+                        if global:world:get_colmap():getpixel(it.pos.x, it.pos.y) finalize with end then
                             it.velocity.y = it.velocity.y * (-y_collision_decrease);
                             tmp_y_add = -tmp_y_add;
                             it.pos.y = it.pos.y + 1;
@@ -133,7 +133,7 @@ do
                             break;
                         end
 
-                        if global:world:world:get_colmap():getpixel(it.pos.x, it.pos.y) finalize with end then
+                        if global:world:get_colmap():getpixel(it.pos.x, it.pos.y) finalize with end then
                             it.velocity.x = it.velocity.x * (-x_collision_decrease);
                             tmp_x_add = -tmp_x_add;
                             it.pos.x = it.pos.x - 1;
@@ -153,7 +153,7 @@ do
                             break;
                         end
 
-                        if global:world:world:get_colmap():getpixel(it.pos.x, it.pos.y) finalize with end then
+                        if global:world:get_colmap():getpixel(it.pos.x, it.pos.y) finalize with end then
                             it.velocity.x = it.velocity.x * (-x_collision_decrease);
                             tmp_x_add = -tmp_x_add;
                             it.pos.x = it.pos.x + 1;

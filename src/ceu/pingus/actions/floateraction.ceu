@@ -50,7 +50,7 @@ do
             sprite.update();
             pingu.set_velocity(v_DOWN);
 
-            if pingu.rel_getpixel(0, -1) == _GT_NOTHING then
+            if (call/rec pingu.rel_getpixel(0, -1)) == _GT_NOTHING then
                 pingu.set_y(pingu.get_y() + 1);
             else
                 escape _A_WALKER;

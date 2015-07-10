@@ -49,7 +49,7 @@ do
     par/or do
          every e_STARTUP do
             _colmap_put(
-                global:world:world:get_colmap(),
+                global:world:get_colmap(),
                 door_box_cmap,
                 (int)pos.x,
                 (int)pos.y,
@@ -58,7 +58,7 @@ do
 
             loop/100 i in door_height do
                 _colmap_put(
-                    global:world:world:get_colmap(),
+                    global:world:get_colmap(),
                     door_tile_cmap,
                     (int)pos.x,
                     (int)pos.y + i*door_tile.get_height() + door_box.get_height(),
@@ -90,7 +90,7 @@ do
                 // it, we remove the door from the colmap
                 if current_door_height+10 < door_height then
                     _colmap_put(
-                        global:world:world:get_colmap(),
+                        global:world:get_colmap(),
                         door_box_cmap,
                         (int)pos.x,
                         (int)pos.y,
@@ -99,7 +99,7 @@ do
 
                     loop/100 i in door_height do
                         _colmap_put(
-                            global:world:world:get_colmap(),
+                            global:world:get_colmap(),
                             door_tile_cmap,
                             (int)pos.x,
                             (int)pos.y + i*door_tile.get_height() + door_box.get_height(),

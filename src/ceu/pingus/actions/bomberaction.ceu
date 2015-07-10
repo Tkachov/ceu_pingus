@@ -89,12 +89,12 @@ do
             end
 
             // ...and it has hit Water or Lava
-            if pingu.rel_getpixel(0, -1) == _GT_WATER or pingu.rel_getpixel(0, -1) == _GT_LAVA then
+            if (call/rec pingu.rel_getpixel(0, -1)) == _GT_WATER or (call/rec pingu.rel_getpixel(0, -1)) == _GT_LAVA then
                 escape _A_DROWN;
             end
 
             // ...and it has hit the ground too quickly
-            if pingu.rel_getpixel(0, -1) != _GT_NOTHING and pingu.get_velocity().y > _deadly_velocity then
+            if (call/rec pingu.rel_getpixel(0, -1)) != _GT_NOTHING and pingu.get_velocity().y > _deadly_velocity then
                 escape _A_SPLASHED;
             end
         end

@@ -18,6 +18,9 @@
 #define HEADER_PINGUS_PINGUS_COLLIDERS_PINGU_COLLIDER_HPP
 
 #include "pingus/collider.hpp"
+#include "math/vector3f.hpp"
+
+class World;
 
 namespace Colliders {
 
@@ -39,9 +42,22 @@ private:
   /** Pingu could be on its belly.  Therefore, this is the current height of
       the Pingu. */
   int height;
+
+  /** Get the Collision Map pixel at the specified position in the specified
+      world */
+  int getpixel(World* const world, const Vector3f& pos) const;
 };
 
 } // namespace Colliders
+
+struct ColliderGetPixelPackage {
+  const Collider* collider;
+  World* world;
+  Vector3f pos;
+  int result;
+
+  ColliderGetPixelPackage(const Collider* c, World* w, Vector3f v): collider(c), world(w), pos(v), result(0) {};
+};
 
 #endif
 

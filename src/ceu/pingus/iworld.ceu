@@ -28,6 +28,7 @@ interface IWorld with
     function (void) => ISnowParticlesHolder* get_snow_particles_holder;
     function (_const_char_string id) => ITeleporterTarget* get_teleporter_target;
     function (_const_char_string id) => ISwitchDoorDoor* get_switch_door_door;
+    function (void) => float get_gravity;
 
     function (void) => bool check_armageddon;
     function (int player_id) => _Vector2i get_start_pos;

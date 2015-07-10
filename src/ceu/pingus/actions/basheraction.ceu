@@ -76,7 +76,7 @@ do
                     break;
                 end
 
-                if pingu.rel_getpixel(x, y) == _GT_GROUND then
+                if (call/rec pingu.rel_getpixel(x, y)) == _GT_GROUND then
                     _log_debug("Basher: Found something to dig...");
                     return true;
                 end
@@ -115,7 +115,7 @@ do
                 if y_inc < -max_steps_down then break; end
 
                 // If there is something below, get out of this loop
-                if pingu.rel_getpixel(0, y_inc-1) != _GT_NOTHING then
+                if (call/rec pingu.rel_getpixel(0, y_inc-1)) != _GT_NOTHING then
                     break;
                 end
 
@@ -136,16 +136,16 @@ do
             ////////////////////
 
             // If on walking forward the Basher has now walked on to water or lava
-            if pingu.rel_getpixel(0, -1) == _GT_WATER or pingu.rel_getpixel(0, -1) == _GT_LAVA then
+            if (call/rec pingu.rel_getpixel(0, -1)) == _GT_WATER or (call/rec pingu.rel_getpixel(0, -1)) == _GT_LAVA then
                 escape _A_DROWN;
             // If walking on to something (i.e. hasn't fallen)
-            else/if pingu.rel_getpixel(0, -1) != _GT_NOTHING then
+            else/if (call/rec pingu.rel_getpixel(0, -1)) != _GT_NOTHING then
                 //original FIXME: Game logic must be separate from Sprite
                 var float progress = (float)(sprite.get(pingu.direction):get_current_frame())/(float)(sprite.get(pingu.direction):get_frame_count());
 
                 // If the Basher has walked into something that it won't be able to
                 // bash
-                if pingu.rel_getpixel(0, 0) == _GT_SOLID or pingu.rel_getpixel(0, _pingu_height) == _GT_SOLID then
+                if (call/rec pingu.rel_getpixel(0, 0)) == _GT_SOLID or (call/rec pingu.rel_getpixel(0, _pingu_height)) == _GT_SOLID then
                     // Change direction and let walk code walk forward/up to get out.
                     _Sound_PingusSound_play_sound("chink");
                     pingu.direction.change();
