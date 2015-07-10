@@ -10,15 +10,15 @@
 #include "../iworld.ceu"
 #include "../ipingu_holder.ceu"
 #include "../pingu_holder_listener.ceu"
+#include "../smallmap_image.ceu"
 #include "ismallmap.ceu"
 
 native/pre do
     ##include "pingus/components/smallmap.hpp"
-    ##include "pingus/smallmap_image.hpp"
-    ##define new_SmallMapImage new SmallMapImage
+    ##define new_Surface2(a, b) new Surface(a, b)
 end
 
-native @pure _new_SmallMapImage();
+native @pure _new_Surface2();
 
 input _SmallMap* NEW_SMALLMAP;
 input _SmallMap* DELETE_SMALLMAP;
@@ -29,8 +29,10 @@ class SmallMap with
 do
     var _SmallMap&? small_map = _PTR2REF((_SmallMap*)&me);
 
-    var _SmallMapImage&? image = _new_SmallMapImage(small_map.server, small_map.rect.get_width(), small_map.rect.get_height());
-    finalize with _delete_obj(image); end
+    var SmallMapImage image with
+        this.server = _PTR2REF(small_map.server);
+        this.canvas = _new_Surface2(small_map.rect.get_width(), small_map.rect.get_height());
+    end;
 
     var EventProxy ep with this.gui = outer; end;
     var PointerProxy pp with this.gui = outer; end;
@@ -73,7 +75,7 @@ do
                 view_rect_bottom = small_map.rect.top + small_map.rect.get_height();
             end
 
-            small_map.gc_ptr:draw(image.get_surface(), _Vector2i(small_map.rect.left, small_map.rect.top) finalize with end);
+            small_map.gc_ptr:draw(_deref(call/rec image.get_surface()), _Vector2i(small_map.rect.left, small_map.rect.top) finalize with end);
             small_map.gc_ptr:draw_rect(_Rect(view_rect_left, view_rect_top, view_rect_right, view_rect_bottom), _Color(0, 255, 0));
 
             emit global:world:e_DRAW_SMALLMAP => &this;
@@ -90,7 +92,7 @@ do
         end
     with
         every delta in update do
-            image.update(delta);
+            emit image.e_UPDATE => delta;
         end
     with
         every (x, y) in mouse_move do

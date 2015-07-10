@@ -23,7 +23,6 @@
 class Playfield;
 class Server;
 class Vector3f;
-class SmallMapImage;
 
 /** This is the map that appears in the corner of the screen */
 class SmallMap : public GUI::RectComponent

@@ -9,7 +9,7 @@
 #include "../pingu_holder_listener.ceu"
 
 class Hammer with
-    interface IWorldObj;    
+    interface IWorldObj;
 do
     var Sprite sprite;
     call/rec sprite.reload_by_name("traps/hammer");

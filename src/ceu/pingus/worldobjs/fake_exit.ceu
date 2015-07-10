@@ -14,7 +14,7 @@ end
 
 class FakeExit with
     interface IWorldObj;
-    var _Sprite&? sprite;    
+    var _Sprite&? sprite;
     var bool smashing = false;
 do
     var Sprite smallmap_symbol;

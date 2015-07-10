@@ -1,0 +1,136 @@
+#ifndef SMALLMAP_IMAGE_CEU
+#define SMALLMAP_IMAGE_CEU
+
+#include "../c.ceu"
+#include "../sdl.ceu"
+#include "iworld.ceu"
+#include "ipingu_holder.ceu"
+#include "pingu_holder_listener.ceu"
+
+native/pre do
+    ##include "engine/display/sprite.hpp"
+    ##include "engine/display/surface.hpp"
+
+    ##include "pingus/collision_map.hpp"
+    ##include "pingus/server.hpp"
+    ##include "pingus/world.hpp"
+
+    ##define uchar_ptr unsigned char*
+    ##define uchar_set(u, x, v) u[x] = v
+    ##define cSprite(x) Sprite(x)
+end
+
+native @pure _uchar_set(), _cSprite();
+
+class SmallMapImage with
+    var _Server&? server;
+
+    /* The canvas that represents the small-colmap */
+    var _Surface&? canvas;
+
+    function @rec (void) => _Sprite* get_surface;
+
+    event float e_UPDATE;
+do
+    /* Graphic surface for the generated rectanglar background of the small map */
+    var _Sprite&? sur = _new_Sprite();
+    finalize with _delete_obj(sur); end
+
+    /* number of seconds till the smallmap will update itself */
+    var float update_count = 0;
+
+    /* The serial is used to track changes to the colmap */
+    var u32 colmap_serial = 0;
+
+    finalize with _delete_obj(canvas); end
+
+    function @rec (void) => void update_surface do
+        var _uchar_ptr cbuffer;
+        var _CollisionMap&? colmap = _PTR2REF(global:world:get_colmap());
+
+        colmap_serial = colmap.get_serial();
+
+        canvas.lock();
+
+        cbuffer = _PTR2REF((_uchar_ptr)canvas.get_data());
+
+        var int cmap_width  = colmap.get_width();
+        var int cmap_height = colmap.get_height();
+
+        var int width  = canvas.get_width();
+        var int height = canvas.get_height();
+        var int pitch  = canvas.get_pitch();
+
+        _assert(width < cmap_width and height < cmap_height);
+
+        var int red   = 0;
+        var int green = 1;
+        var int blue  = 2;
+        var int alpha = 3;
+
+        loop y in height do
+            loop x in width do
+                // Index on the smallmap canvas
+                var int i = y * pitch + 4 * x;
+                var int pixel = colmap.getpixel_fast(x*cmap_width/width, y*cmap_height/height);
+
+                if pixel == _GT_NOTHING then
+                    _uchar_set(cbuffer, i + red, 0);
+                    _uchar_set(cbuffer, i + green, 0);
+                    _uchar_set(cbuffer, i + blue, 0);
+                    _uchar_set(cbuffer, i + alpha, 255);
+                else/if pixel == _GT_BRIDGE then
+                    _uchar_set(cbuffer, i + red, 0);
+                    _uchar_set(cbuffer, i + green, 255);
+                    _uchar_set(cbuffer, i + blue, 100);
+                    _uchar_set(cbuffer, i + alpha, 255);
+                else/if pixel == _GT_SOLID then
+                    _uchar_set(cbuffer, i + red, 100);
+                    _uchar_set(cbuffer, i + green, 100);
+                    _uchar_set(cbuffer, i + blue, 125);
+                    _uchar_set(cbuffer, i + alpha, 255);
+                else/if pixel == _GT_WATER or pixel == _GT_LAVA then
+                    _uchar_set(cbuffer, i + red, 0);
+                    _uchar_set(cbuffer, i + green, 0);
+                    _uchar_set(cbuffer, i + blue, 200);
+                    _uchar_set(cbuffer, i + alpha, 255);
+                else
+                    _uchar_set(cbuffer, i + red, 200);
+                    _uchar_set(cbuffer, i + green, 200);
+                    _uchar_set(cbuffer, i + blue, 200);
+                    _uchar_set(cbuffer, i + alpha, 255);
+                end
+            end
+        end
+
+        canvas.unlock();
+
+        //original FIXME: surface -> clone -> displayFormat leaves room for
+        // optimizations, clone isn't really needed
+        sur = _cSprite(canvas.clone());
+    end
+
+    function @rec (void) => _Sprite* get_surface do
+        if not sur then
+            call/rec update_surface();
+        end
+
+        return &sur;
+    end
+
+    call/rec update_surface();
+
+    every delta in e_UPDATE do
+        var float smallmap_update_time = 1.0; //more like a const
+        update_count = update_count + delta;
+
+        if update_count > smallmap_update_time then
+            update_count = 0;
+            if colmap_serial != global:world:get_colmap():get_serial() then
+                call/rec update_surface();
+            end
+        end
+    end
+end
+
+#endif

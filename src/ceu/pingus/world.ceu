@@ -173,10 +173,10 @@ do
 
     var GroundMap gfx_map with
         this.gmap = _PTR2REF(_new_GroundMap(me.pingus_level.get_size().width, me.pingus_level.get_size().height));
-        
+
         me.colmap = _PTR2REF(this.gmap.colmap.get());
     end;
-    
+
     function (void) => int get_width do
         return gfx_map.gmap.get_width();
     end
@@ -187,6 +187,10 @@ do
 
     function (void) => _GroundMap* get_gfx_map do
         return &gfx_map.gmap;
+    end
+
+    function (void) => _CollisionMap* get_colmap do
+        return _PTR2REF(gfx_map.gmap.colmap.get());
     end
 
     function (void) => IPinguHolder* get_pingus do
@@ -387,12 +391,12 @@ do
             spawn Exit with
                 package:result = &this;
 
-                this.desc = _PTR2REF(_new_ResDescriptor());                
+                this.desc = _PTR2REF(_new_ResDescriptor());
 
                 _read_position(package:reader, this.pos);
                 this.construct(package:reader); //can't put reference initiation there =(
 
-                this.flag = _PTR2REF(_new_SpriteA(_scc2("core/misc/flag", _StringUtil__to_string(this.owner_id))));                
+                this.flag = _PTR2REF(_new_SpriteA(_scc2("core/misc/flag", _StringUtil__to_string(this.owner_id))));
             end;
         end
     with
@@ -429,7 +433,7 @@ do
     with
         every package in NEW_HAMMER do
             spawn Hammer with
-                package:result = &this;                
+                package:result = &this;
                 _read_position(package:reader, this.pos);
             end;
         end

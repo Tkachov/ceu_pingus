@@ -23,7 +23,7 @@ class Exit with
     var int owner_id;
 
     var _Sprite&? flag;
-do    
+do
     var Sprite smallmap_symbol;
     var Sprite sprite;
     call/rec smallmap_symbol.reload_by_name("core/misc/smallmap_exit");
@@ -41,7 +41,7 @@ do
         // Set default owner ID to 0
         if owner_id<0 or owner_id>3 then
             owner_id = 0;
-        end        
+        end
     end;
 
     ///////////////////////////////////////////////////
@@ -53,7 +53,7 @@ do
     call/rec global:world:add_object(&this);
 
     finalize with
-        _delete_obj(desc);        
+        _delete_obj(desc);
         _delete_obj(flag);
     end;
 

@@ -20,6 +20,7 @@ interface IWorld with
     var _World* world;
 
     function (void) => _GroundMap* get_gfx_map;
+    function (void) => _CollisionMap* get_colmap;
     function (void) => IPinguHolder* get_pingus;
     function (void) => IPinguParticlesHolder* get_pingu_particles_holder;
     function (void) => IRainParticlesHolder* get_rain_particles_holder;

@@ -18,7 +18,6 @@
 
 #include "pingus/components/playfield.hpp"
 #include "pingus/server.hpp"
-#include "pingus/smallmap_image.hpp"
 #include "pingus/world.hpp"
 
 #include "ceuvars.h"

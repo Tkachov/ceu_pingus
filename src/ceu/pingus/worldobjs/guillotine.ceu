@@ -11,7 +11,7 @@
 class Guillotine with
     interface IWorldObj;
 
-    
+
     var bool killing = false;
 do
     var Sprite sprite_kill_right;
@@ -23,7 +23,7 @@ do
     sprite_kill_right.set_play_loop(false);
     sprite_kill_left.set_play_loop(false);
     sprite_idle.set_play_loop(true);
-    
+
     var _Direction&? direction = _new_Direction();
     finalize with _delete_obj(direction); end;
 
