@@ -28,16 +28,11 @@ SmallMap::SmallMap(Server* server_, Playfield* playfield_, const Rect& rect_) :
   server(server_),
   playfield(playfield_),
   exit_sur(),
-  entrance_sur(),
-  image(),
-  scroll_mode(),
+  entrance_sur(), 
+  scroll_mode(false),
   has_focus(),
   gc_ptr(0)
-{ 
-  image = std::unique_ptr<SmallMapImage>(new SmallMapImage(server, rect.get_width(), rect.get_height()));
-
-  scroll_mode = false;
-
+{
   SmallMap* self = this;
   ceu_out_go(&CEUapp, CEU_IN_NEW_SMALLMAP, &self);
 }
@@ -45,25 +40,6 @@ SmallMap::SmallMap(Server* server_, Playfield* playfield_, const Rect& rect_) :
 SmallMap::~SmallMap() {
   SmallMap* self = this;
   ceu_out_go(&CEUapp, CEU_IN_DELETE_SMALLMAP, &self);
-}
-
-void
-SmallMap::draw(DrawingContext& gc)
-{
-  // FIXME: This is potentially dangerous, since we don't know how
-  // long 'gc' will be alive. Should use a DrawingContext for caching.
-  gc_ptr = &gc; 
-
-  SmallMap* self = this;
-  ceu_out_go(&CEUapp, CEU_IN_SMALLMAP_DRAW, &self);
-
-  gc_ptr = 0;
-}
-
-void
-SmallMap::update (float delta)
-{
-  image->update(delta);
 }
 
 bool

@@ -4,7 +4,9 @@
 #include "../../c.ceu"
 #include "../../sdl.ceu"
 #include "../../engine/gui/igui_component.ceu"
+#include "../../proxies/eventproxy.ceu"
 #include "../../proxies/pointerproxy.ceu"
+#include "../../proxies/primarybuttonproxy.ceu"
 #include "../iworld.ceu"
 #include "../ipingu_holder.ceu"
 #include "../pingu_holder_listener.ceu"
@@ -13,11 +15,13 @@
 native/pre do
     ##include "pingus/components/smallmap.hpp"
     ##include "pingus/smallmap_image.hpp"
+    ##define new_SmallMapImage new SmallMapImage
 end
+
+native @pure _new_SmallMapImage();
 
 input _SmallMap* NEW_SMALLMAP;
 input _SmallMap* DELETE_SMALLMAP;
-input _SmallMap* SMALLMAP_DRAW;
 
 class SmallMap with
     interface IGUI_Component;
@@ -25,6 +29,10 @@ class SmallMap with
 do
     var _SmallMap&? small_map = _PTR2REF((_SmallMap*)&me);
 
+    var _SmallMapImage&? image = _new_SmallMapImage(small_map.server, small_map.rect.get_width(), small_map.rect.get_height());
+    finalize with _delete_obj(image); end
+
+    var EventProxy ep with this.gui = outer; end;
     var PointerProxy pp with this.gui = outer; end;
     var PrimaryButtonProxy pbp with this.gui = outer; end;
 
@@ -35,10 +43,10 @@ do
     end
 
     par/or do
-        every sm in SMALLMAP_DRAW do
-            if sm != &small_map then
-                continue;
-            end
+        every gc in draw do
+            // FIXME: This is potentially dangerous, since we don't know how
+            // long 'gc' will be alive. Should use a DrawingContext for caching.
+            small_map.gc_ptr = _PTR2REF(gc);
 
             var int ofx = small_map.playfield:get_pos().x;
             var int ofy = small_map.playfield:get_pos().y;
@@ -65,7 +73,7 @@ do
                 view_rect_bottom = small_map.rect.top + small_map.rect.get_height();
             end
 
-            small_map.gc_ptr:draw(small_map.image:get_surface(), _Vector2i(small_map.rect.left, small_map.rect.top) finalize with end);
+            small_map.gc_ptr:draw(image.get_surface(), _Vector2i(small_map.rect.left, small_map.rect.top) finalize with end);
             small_map.gc_ptr:draw_rect(_Rect(view_rect_left, view_rect_top, view_rect_right, view_rect_bottom), _Color(0, 255, 0));
 
             emit global:world:e_DRAW_SMALLMAP => &this;
@@ -77,6 +85,12 @@ do
 
                 _gc_draw_line(small_map.gc_ptr, _Vector2i(x, y), _Vector2i(x, y-2), _Color(255, 255, 0));
             end
+
+            small_map.gc_ptr = null;
+        end
+    with
+        every delta in update do
+            image.update(delta);
         end
     with
         every (x, y) in mouse_move do

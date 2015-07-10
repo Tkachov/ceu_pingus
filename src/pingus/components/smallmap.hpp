@@ -38,8 +38,6 @@ private:
   /** Graphic surface of the entrance */
   Sprite entrance_sur;
 
-  std::unique_ptr<SmallMapImage> image;
-
   /** Indicates whether the playfield should can be scrolled around depending
       on the position of the cursor in the small map */
   bool scroll_mode;
@@ -62,9 +60,6 @@ public:
 
   bool is_at (int x, int y);
   bool mouse_over();
-
-  void draw(DrawingContext& gc);
-  void update(float delta);
   /*}*/
 
 private:
