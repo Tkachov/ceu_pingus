@@ -10,34 +10,23 @@
 
 class Spike with
     interface IWorldObj;
-    var _Sprite&? surface;
 do
+    var Sprite surface;
+    call/rec surface.reload_by_name("traps/spike");
+
     call/rec global:world:add_object(&this);
 
     function (_FileReader* reader) => void construct do end;
-
-    function (void) => float get_z_pos do
-        return pos.z;
-    end
-
-    function (Vector3f p) => void set_pos do
-        pos = p;
-    end
-
-    function (void) => Vector3f get_pos do
-        return pos;
-    end
-
-    finalize with
-        _delete_obj(surface);
-    end;
+    function (void) => float get_z_pos do return pos.z; end
+    function (Vector3f p) => void set_pos do pos = p; end
+    function (void) => Vector3f get_pos do return pos; end
 
     var bool killing = false;
 
     par/or do
         every gc in e_DRAW do
             if killing then
-                _gc_color_draw2(gc, &surface, _toVector3f(pos));
+                _gc_color_draw2(gc, surface.get(), _toVector3f(pos));
             end
         end
     with

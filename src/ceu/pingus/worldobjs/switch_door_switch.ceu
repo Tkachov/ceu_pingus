@@ -12,10 +12,12 @@
 
 class SwitchDoorSwitch with
     interface IWorldObj;
-    var _Sprite&? switch_sur;
     var _String&? m_target;
-    var bool is_triggered;
 do
+    var bool is_triggered = false;
+    var Sprite switch_sur;
+    call/rec switch_sur.reload_by_name("worldobjs/switchdoor_switch");
+
     call/rec global:world:add_object(&this);
 
     function (_FileReader* reader) => void construct do end;
@@ -24,10 +26,7 @@ do
     function (Vector3f p) => void set_pos do pos = p; end
     function (void) => Vector3f get_pos do return pos; end
 
-    finalize with
-        _delete_obj(switch_sur);
-        _delete_obj(m_target);
-    end;
+    finalize with _delete_obj(m_target); end;
 
     var ISwitchDoorDoor* m_door = null;
 
@@ -44,7 +43,7 @@ do
         end
     with
         every gc in e_DRAW do
-            _gc_color_draw2(gc, &switch_sur, _toVector3f(pos));
+            _gc_color_draw2(gc, switch_sur.get(), _toVector3f(pos));
         end
     with
         every e_UPDATE do

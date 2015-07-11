@@ -12,30 +12,19 @@
 class IceBlock with
     interface IWorldObj;
     var int width;
-
-    var _Sprite&? block_sur;
-    var _CollisionMask&? block_sur_cmap;
 do
+    var Sprite block_sur;
+    call/rec block_sur.reload_by_name("worldobjs/iceblock");
+
+    var _CollisionMask&? block_sur_cmap = _PTR2REF(_new_CollisionMask("worldobjs/iceblock_cmap"));
+    finalize with _delete_obj(block_sur_cmap); end
+
     call/rec global:world:add_object(&this);
 
     function (_FileReader* reader) => void construct do end;
-
-    function (void) => float get_z_pos do
-        return pos.z;
-    end
-
-    function (Vector3f p) => void set_pos do
-        pos = p;
-    end
-
-    function (void) => Vector3f get_pos do
-        return pos;
-    end
-
-    finalize with
-        _delete_obj(block_sur);
-        _delete_obj(block_sur_cmap);
-    end
+    function (void) => float get_z_pos do return pos.z; end
+    function (Vector3f p) => void set_pos do pos = p; end
+    function (void) => Vector3f get_pos do return pos; end
 
     var float thickness = 1.0;
     var bool is_finished = false;
@@ -48,7 +37,7 @@ do
     with
         every gc in e_DRAW do
             if not is_finished then
-                _gc_color_draw2(gc, &block_sur, _toVector3f(pos));
+                _gc_color_draw2(gc, block_sur.get(), _toVector3f(pos));
             end
         end
     with

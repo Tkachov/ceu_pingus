@@ -450,9 +450,6 @@ do
             spawn IceBlock with
                 package:result = &this;
 
-                this.block_sur = _PTR2REF(_new_SpriteA("worldobjs/iceblock"));
-                this.block_sur_cmap = _PTR2REF(_new_CollisionMask("worldobjs/iceblock_cmap"));
-
                 _read_position(package:reader, this.pos);
                 if not package:reader:read_int("repeat", _PTR2REF(this.width)) then
                     _log_warn("old 'width' tag used");
@@ -464,8 +461,6 @@ do
         every package in NEW_LASER_EXIT do
             spawn LaserExit with
                 package:result = &this;
-
-                this.surface = _PTR2REF(_new_SpriteA("traps/laser_exit"));
                 _read_position(package:reader, this.pos);
             end;
         end
@@ -483,6 +478,8 @@ do
                 package:reader:read_int   ("repeat",   _PTR2REF(this.width));
 
                 this.sprite = _PTR2REF(_new_SpriteA(_deref(desc)));
+
+                _delete_obj(desc);
             end;
         end
     with
@@ -495,10 +492,7 @@ do
         every package in NEW_SMASHER do
             spawn Smasher with
                 package:result = &this;
-
-                this.sprite = _PTR2REF(_new_SpriteA("traps/smasher"));
                 _read_position(package:reader, this.pos);
-                _assert(this.sprite.get_frame_count() == 6);
             end;
         end
     with
@@ -525,8 +519,6 @@ do
         every package in NEW_SPIKE do
             spawn Spike with
                 package:result = &this;
-
-                this.surface = _PTR2REF(_new_SpriteA("traps/spike"));
                 _read_position(package:reader, this.pos);
             end;
         end
@@ -637,12 +629,6 @@ do
                 this.id = _PTR2REF(_new_String());
                 _string_read_string(this.id, package:reader, "id");
 
-                this.door_box = _PTR2REF(_new_SpriteA("worldobjs/switchdoor_box"));
-                this.door_box_cmap = _PTR2REF(_new_CollisionMask("worldobjs/switchdoor_box"));
-                this.door_tile = _PTR2REF(_new_SpriteA("worldobjs/switchdoor_tile"));
-                this.door_tile_cmap = _PTR2REF(_new_CollisionMask("worldobjs/switchdoor_tile_cmap"));
-                this.is_opening = false;
-
                 _read_position(package:reader, this.pos);
 
                 package:reader:read_int("height", _PTR2REF(this.door_height));
@@ -654,8 +640,6 @@ do
             spawn SwitchDoorSwitch with
                 package:result = &this;
 
-                this.switch_sur = _PTR2REF(_new_SpriteA("worldobjs/switchdoor_switch"));
-                this.is_triggered = false;
                 this.m_target = _PTR2REF(_new_String());
                 _string_read_string(this.m_target, package:reader, "target-id");
                 _read_position(package:reader, this.pos);
@@ -666,7 +650,6 @@ do
             spawn Teleporter with
                 package:result = &this;
 
-                this.sprite = _PTR2REF(_new_SpriteA("worldobjs/teleporter"));
                 _read_position(package:reader, this.pos);
                 this.target_id = _PTR2REF(_new_String());
                 _string_read_string(this.target_id, package:reader, "target-id");
@@ -679,7 +662,6 @@ do
 
                 this.id = _PTR2REF(_new_String());
                 _string_read_string(this.id, package:reader, "id");
-                this.sprite = _PTR2REF(_new_SpriteA("worldobjs/teleportertarget"));
                 _read_position(package:reader, this.pos);
             end;
         end

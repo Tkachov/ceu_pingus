@@ -13,27 +13,17 @@
 
 class Smasher with
     interface IWorldObj;
-    var _Sprite&? sprite;
 do
+    var Sprite sprite;
+    call/rec sprite.reload_by_name("traps/smasher");
+    _assert(sprite.get_frame_count() == 6);
+
     call/rec global:world:add_object(&this);
 
     function (_FileReader* reader) => void construct do end;
-
-    function (void) => float get_z_pos do
-        return pos.z;
-    end
-
-    function (Vector3f p) => void set_pos do
-        pos = p;
-    end
-
-    function (void) => Vector3f get_pos do
-        return pos;
-    end
-
-    finalize with
-        _delete_obj(sprite);
-    end;
+    function (void) => float get_z_pos do return pos.z; end
+    function (Vector3f p) => void set_pos do pos = p; end
+    function (void) => Vector3f get_pos do return pos; end
 
     var bool smashing = false;
     var bool downwards = false;
@@ -48,7 +38,7 @@ do
         end
     with
         every gc in e_DRAW do
-            _gc_color_draw2(gc, &sprite, _toVector3f(pos));
+            _gc_color_draw2(gc, sprite.get(), _toVector3f(pos));
         end
     with
         every e_UPDATE do
