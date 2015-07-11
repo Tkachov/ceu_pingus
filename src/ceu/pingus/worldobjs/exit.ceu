@@ -67,7 +67,7 @@ do
             _colmap_removeD(global:world:get_colmap(), desc, (int)pos.x - sprite.get_width()/2, (int)pos.y - sprite.get_height());
         end
     with
-        every smallmap in e_DRAW_SMALLMAP do
+        every smallmap in global:world:e_DRAW_SMALLMAP do
             call/rec smallmap:draw_sprite(smallmap_symbol.get(), _toVector3f(pos));
         end
     with

@@ -24,7 +24,6 @@ interface IWorldObj with
 
     event void e_STARTUP;
     event _SceneContext* e_DRAW;
-    event ISmallMap* e_DRAW_SMALLMAP;
     event void e_UPDATE;
     event void e_DELETE;
 
