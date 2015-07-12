@@ -23,6 +23,7 @@
 #include "pingus/action_name.hpp"
 #include "pingus/pingus_level.hpp"
 #include "engine/gui/component.hpp"
+#include "engine/gui/rect_component.hpp"
 
 namespace Input {
 struct ScrollEvent;
@@ -34,9 +35,6 @@ class ButtonPanel;
 class Playfield;
 class TimeDisplay;
 class SmallMap;
-class ArmageddonButton;
-class ForwardButton;
-class PauseButton;
 class Server;
 
 /** You can use this class to start up a game session, which consist
@@ -63,9 +61,9 @@ private:
   TimeDisplay*   time_display;
   SmallMap*      small_map;
 
-  ArmageddonButton* armageddon_button;
-  ForwardButton*    forward_button;
-  PauseButton*      pause_button;
+  GUI::RectComponent* armageddon_button;
+  GUI::RectComponent* forward_button;
+  GUI::RectComponent* pause_button;
 
   bool pause;
   bool fast_forward;

@@ -22,7 +22,6 @@
 #include "engine/display/sprite.hpp"
 #include "engine/gui/rect_component.hpp"
 #include "pingus/action_name.hpp"
-#include "pingus/components/action_button.hpp"
 
 class Server;
 

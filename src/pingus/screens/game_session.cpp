@@ -85,11 +85,6 @@ GameSession::GameSession(const PingusLevel& arg_plf, bool arg_show_result_screen
   gui_manager->add(pcounter);
   gui_manager->add(small_map);
   gui_manager->add(time_display);
-
-  armageddon_button = new ArmageddonButton(get_server(), Display::get_width() - 40, Display::get_height() - 62);  
-  forward_button    = new ForwardButton(this, Display::get_width() - 40 * 2, Display::get_height() - 62);  
-  pause_button      = new PauseButton(this, Display::get_width() - 40 * 3, Display::get_height() - 62);
-
   gui_manager->add(armageddon_button);
   gui_manager->add(forward_button);
   gui_manager->add(pause_button);

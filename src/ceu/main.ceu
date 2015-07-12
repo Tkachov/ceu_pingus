@@ -7,9 +7,6 @@ end
 #include "sdl.ceu"
 #include "pingus/colliders/pingu_collider.ceu"
 #include "pingus/components/menubutton.ceu"
-#include "pingus/components/armageddonbutton.ceu"
-#include "pingus/components/forwardbutton.ceu"
-#include "pingus/components/pausebutton.ceu"
 #include "pingus/components/playfield.ceu"
 #include "pingus/components/smallmap.ceu"
 #include "pingus/screens/demo_session.ceu"
@@ -28,9 +25,6 @@ event _SceneContext* e_PINGU_DRAW_OTHERS;
 event void e_PINGU_UPDATE_ALL;
 
 input _MenuButton* NEW_MENUBUTTON;
-input _ArmageddonButton* NEW_ARMAGEDDONBUTTON;
-input _ForwardButton* NEW_FORWARDBUTTON;
-input _PauseButton* NEW_PAUSEBUTTON;
 input _DemoSession* NEW_DEMO_SESSION;
 input _GameSession* NEW_GAME_SESSION;
 input _Playfield* NEW_PLAYFIELD;
@@ -49,24 +43,6 @@ with
     every new_menubutton in NEW_MENUBUTTON do
         spawn MenuButton with
             this.me = _PTR2REF(new_menubutton);
-        end;
-    end
-with
-    every new_armageddonbutton in NEW_ARMAGEDDONBUTTON do
-        spawn ArmageddonButton with
-            this.me = _PTR2REF(new_armageddonbutton);
-        end;
-    end
-with
-    every new_forwardbutton in NEW_FORWARDBUTTON do
-        spawn ForwardButton with
-            this.me = _PTR2REF(new_forwardbutton);
-        end;
-    end
-with
-    every new_pausebutton in NEW_PAUSEBUTTON do
-        spawn PauseButton with
-            this.me = _PTR2REF(new_pausebutton);
         end;
     end
 with

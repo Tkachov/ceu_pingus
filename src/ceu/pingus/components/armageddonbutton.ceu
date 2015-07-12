@@ -3,52 +3,55 @@
 
 #include "../../c.ceu"
 #include "../../sdl.ceu"
+#include "../../engine/display/sprite.ceu"
 #include "../../engine/gui/igui_component.ceu"
+#include "../../proxies/eventproxy.ceu"
 #include "../../proxies/primarybuttonproxy.ceu"
 #include "../server.ceu"
 
 native/pre do
-    ##include "pingus/components/action_button.hpp"
-    ##include "pingus/server.hpp"
-    ##include "pingus/world.hpp"
-    ##define gc_draw(gc, s, rect) gc->draw(s, Vector2i(rect.left, rect.top))
+    ##define gc_draw(gc, s, rect) gc->draw(*s, Vector2i(rect.left, rect.top))
 end
 
 native @pure _gc_draw();
 
-input _ComponentDrawPackage* COMPONENT_DRAW;
-input _ArmageddonButton* DELETE_ARMAGEDDONBUTTON;
-
 class ArmageddonButton with
     interface IGUI_Component;
+    var Server* server;
 do
-    var _ArmageddonButton&? me_ = _PTR2REF((_ArmageddonButton*)&this.me);
-    var PrimaryButtonProxy p with
-        this.gui = outer;
-    end;
+    var Sprite sprite;
+    var Sprite background;
+    var Sprite backgroundhl;
+    call/rec background.reload_by_name("core/buttons/hbuttonbgb");
+    call/rec backgroundhl.reload_by_name("core/buttons/hbuttonbg");
+    call/rec sprite.reload_by_name("core/buttons/armageddon_anim");
 
-    par/or do
+    var _GUI_RectComponent&? me_ = _PTR2REF((_GUI_RectComponent*)&this.me);
+    var PrimaryButtonProxy p with this.gui = outer; end;
+    var EventProxy ep with this.gui = outer; end;
+
+    //freed in GroupComponent
+    //finalize with _delete_obj(me_); end
+
+    par do
         every mouse_double_click do
-            var Server*? server = _PTR2REF((Server*)me_.server:ceu());
             emit server:e_ARMAGEDDON;
         end
     with
-        every package in COMPONENT_DRAW do
-            if package:component != &me_ then
-                continue;
-            end
-
+        every gc in draw do
             if global:world:check_armageddon() then
-                _gc_draw(package:gc, me_.backgroundhl, me_.rect);
-                _gc_draw(package:gc, me_.sprite, me_.rect);
+                _gc_draw(gc, backgroundhl.get(), me_.rect);
+                _gc_draw(gc, sprite.get(), me_.rect);
             else
-                _gc_draw(package:gc, me_.background, me_.rect);
-                me_.sprite.set_frame(7);
-                _gc_draw(package:gc, me_.sprite, me_.rect);
+                _gc_draw(gc, background.get(), me_.rect);
+                sprite.set_frame(7);
+                _gc_draw(gc, sprite.get(), me_.rect);
             end
         end
     with
-        var _ArmageddonButton* b = await DELETE_ARMAGEDDONBUTTON until (b == &me_);
+        every delta in update do
+            sprite.update_delta(delta);
+        end
     end
 end
 

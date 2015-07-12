@@ -3,8 +3,10 @@
 
 native/pre do
     ##include "engine/gui/component.hpp"
+    ##include "engine/gui/rect_component.hpp"
     ##include "math/vector2i.hpp"
     ##define GUI_Component GUI::Component
+    ##define GUI_RectComponent GUI::RectComponent
 end
 
 interface IGUI_Component with

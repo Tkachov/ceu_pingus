@@ -3,34 +3,54 @@
 
 #include "../../c.ceu"
 #include "../../sdl.ceu"
+#include "../../engine/display/sprite.ceu"
 #include "../../engine/gui/igui_component.ceu"
+#include "../../proxies/eventproxy.ceu"
 #include "../../proxies/primarybuttonproxy.ceu"
 
 native/pre do
-    ##include "pingus/components/action_button.hpp"
     ##include "pingus/screens/game_session.hpp"
+    ##define gc_draw(gc, s, rect) gc->draw(*s, Vector2i(rect.left, rect.top))
 end
 
-input _ForwardButton* DELETE_FORWARDBUTTON;
+native @pure _gc_draw();
 
 class ForwardButton with
     interface IGUI_Component;
+    var _GameSession&? session;
 do
-    var _ForwardButton&? me_ = _PTR2REF((_ForwardButton*)&this.me);
-    var PrimaryButtonProxy p with
-        this.gui = outer;
-    end;
+    var Sprite surface;
+    var Sprite background;
+    var Sprite backgroundhl;
+    call/rec background.reload_by_name("core/buttons/hbuttonbgb");
+    call/rec backgroundhl.reload_by_name("core/buttons/hbuttonbg");
+    call/rec surface.reload_by_name("core/buttons/fast_forward");
 
-    par/or do
+    var _GUI_RectComponent&? me_ = _PTR2REF((_GUI_RectComponent*)&this.me);
+    var PrimaryButtonProxy p with this.gui = outer; end;
+    var EventProxy ep with this.gui = outer; end;
+
+    //freed in GroupComponent
+    //finalize with _delete_obj(me_); end
+
+    par do
         loop do
             await mouse_press;
-            me_.session:set_fast_forward(true);
+            session.set_fast_forward(true);
 
             await mouse_release;
-            me_.session:set_fast_forward(false);
+            session.set_fast_forward(false);
         end
     with
-        var _ForwardButton* b = await DELETE_FORWARDBUTTON until (b == &me_);
+        every gc in draw do
+            if session.get_fast_forward() then
+                _gc_draw(gc, backgroundhl.get(), me_.rect);
+            else
+                _gc_draw(gc, background.get(), me_.rect);
+            end
+
+            _gc_draw(gc, surface.get(), me_.rect);
+        end
     end
 end
 
