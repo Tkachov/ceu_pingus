@@ -85,52 +85,6 @@ Playfield::draw(DrawingContext& gc)
   gc.pop_modelview();
 }
 
-void
-Playfield::update(float delta)
-{
-  // FIXME: This should be delta dependant
-  if (!mouse_scrolling)
-  {
-    Playfield* self = this;
-    ceu_out_go(&CEUapp, CEU_IN_PLAYFIELD_UPDATE, &self);
-  }
-  else
-  {
-    if (globals::drag_drop_scrolling)
-    {
-      state.set_pos(old_state_pos + (scroll_center - mouse_pos));
-    }
-    else
-    {
-      state.set_pos(Vector2i(state.get_pos().x - static_cast<int>(static_cast<float>(scroll_center.x - mouse_pos.x) * 0.2f),
-                             state.get_pos().y - static_cast<int>(static_cast<float>(scroll_center.y - mouse_pos.y) * 0.2f)));
-    }
-  }
-
-  if (globals::auto_scrolling && (Display::is_fullscreen() || Display::has_grab()))
-  {
-    scroll_speed = static_cast<int>(800 * delta);
-
-    if (mouse_pos.x < 10)
-    {
-      state.set_pos(state.get_pos() - Vector2i(scroll_speed, 0));
-    }
-    else if (mouse_pos.x > Display::get_width() - 10)
-    {
-      state.set_pos(state.get_pos() + Vector2i(scroll_speed, 0));
-    }
-
-    if (mouse_pos.y < 10)
-    {
-      state.set_pos(state.get_pos() - Vector2i(0, scroll_speed));
-    }
-    else if (mouse_pos.y > Display::get_height() - 10)
-    {
-      state.set_pos(state.get_pos() + Vector2i(0, scroll_speed));
-    }
-  }
-}
-
 void Playfield::on_primary_button_press(int x, int y) {
   x -= rect.left;
   y -= rect.top;

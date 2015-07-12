@@ -61,7 +61,6 @@ public:
   void set_viewpoint(int, int);
 
   void draw(DrawingContext& gc);
-  void update(float delta);
 
   void on_primary_button_press (int x, int y);
   void on_secondary_button_press (int x, int y);

@@ -26,10 +26,6 @@ SmallMap::SmallMap(Server* server_, Playfield* playfield_, const Rect& rect_) :
   RectComponent(rect_), 
   server(server_),
   playfield(playfield_),
-  exit_sur(),
-  entrance_sur(), 
-  scroll_mode(false),
-  has_focus(),
   gc_ptr(0)
 {
   SmallMap* self = this;
@@ -46,24 +42,6 @@ SmallMap::is_at (int x, int y)
 {
   return (x > rect.left && x < rect.left + static_cast<int>(rect.get_width())
           && y > rect.top && y < rect.top + static_cast<int>(rect.get_height()));
-}
-
-void
-SmallMap::on_primary_button_release(int x, int y)
-{
-  scroll_mode = false;
-}
-
-void
-SmallMap::on_pointer_enter ()
-{
-  has_focus = true;
-}
-
-void
-SmallMap::on_pointer_leave ()
-{
-  has_focus = false;
 }
 
 /* EOF */

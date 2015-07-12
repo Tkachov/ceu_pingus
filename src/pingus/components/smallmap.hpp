@@ -31,18 +31,6 @@ private:
   Server*    server;
   Playfield* playfield;
 
-  /** Graphic surface of the exit */
-  Sprite exit_sur;
-
-  /** Graphic surface of the entrance */
-  Sprite entrance_sur;
-
-  /** Indicates whether the playfield should can be scrolled around depending
-      on the position of the cursor in the small map */
-  bool scroll_mode;
-
-  bool has_focus;
-
   /** Pointer to the current GC, only valid inside draw() */
   DrawingContext* gc_ptr;
 
@@ -50,15 +38,10 @@ public:
   SmallMap(Server*, Playfield*, const Rect& rect);
   virtual ~SmallMap();
 
-  /*{ @name Stuff called from the GUIManager */  
-  void on_primary_button_release(int x, int y);  
+  /*{ @name Stuff called from the GUIManager */    
 
   // Events
-  void on_pointer_enter ();
-  void on_pointer_leave ();
-
-  bool is_at (int x, int y);
-  bool mouse_over();
+  bool is_at (int x, int y);  
   /*}*/
 
 private:

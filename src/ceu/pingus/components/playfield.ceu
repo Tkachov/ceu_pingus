@@ -5,6 +5,7 @@
 #include "../../sdl.ceu"
 #include "../../engine/gui/igui_component.ceu"
 #include "../../math/vector2i.ceu"
+#include "../../proxies/eventproxy.ceu"
 #include "../../proxies/pointerproxy.ceu"
 #include "../capture_rectangle.ceu"
 #include "../pingu_holder_listener.ceu"
@@ -12,14 +13,22 @@
 
 native/pre do
     ##include "pingus/components/playfield.hpp"
+    ##include "engine/display/display.hpp"
+    ##include "pingus/globals.hpp"
+
     ##define send_pingu_action_event(playfield, pingu) playfield->server->send_pingu_action_event(pingu, playfield->session->get_action_name())
     ##define globals__developer_mode globals::developer_mode
     ##define const_Uint8 const Uint8
     ##define get_uint(u, v) u[v]
     ##define read_coords(vx, vy, fun) Vector2i __v = fun; vx = __v.x; vy = __v.y;
+    ##define globals__drag_drop_scrolling globals::drag_drop_scrolling
+    ##define globals__auto_scrolling globals::auto_scrolling
+    ##define Display__is_fullscreen() Display::is_fullscreen()
+    ##define Display__has_grab() Display::has_grab()
+    ##define Display__get_width() Display::get_width()
+    ##define Display__get_height() Display::get_height()
 end
 
-input _Playfield* PLAYFIELD_UPDATE;
 input _Playfield* DELETE_PLAYFIELD;
 input _SceneContext* PLAYFIELD_DRAW;
 input _Vector2i* PLAYFIELD_CLICK;
@@ -41,9 +50,9 @@ do
     //original FIXME: Temporary workaround till start-pos is integrated a bit more properly
     playfield.state.set_pos(global:world:get_start_pos(0));
 
-    var PointerProxy pp with
-        this.gui = outer;
-    end;
+    var PointerProxy pp with this.gui = outer; end;
+    var EventProxy ep with this.gui = outer; end;
+
     var CaptureRectangle capture_rectangle with
         this.session = playfield.session;
     end;
@@ -113,14 +122,36 @@ do
             end
         end
     with
-        every p in PLAYFIELD_UPDATE do
-            if p != &playfield then
-                continue;
+        every delta in update do
+            //original FIXME: This should be delta dependant
+            if not playfield.mouse_scrolling then
+                //find a current pingu & pass it to capture rectangle
+                current_pingu = _PTR2REF(call/rec current_pingu_find_mouse());
+                call/rec capture_rectangle.set_pingu(current_pingu);
+            else
+                if _globals__drag_drop_scrolling then
+                    playfield.state.set_pos(playfield.old_state_pos + (playfield.scroll_center - playfield.mouse_pos));
+                else
+                    playfield.state.set_pos(_Vector2i(playfield.state.get_pos().x - (int)((float)(playfield.scroll_center.x - playfield.mouse_pos.x)*0.2),
+                                                      playfield.state.get_pos().y - (int)((float)(playfield.scroll_center.y - playfield.mouse_pos.y)*0.2)));
+                end
             end
 
-            //find a current pingu & pass it to capture rectangle
-            current_pingu = _PTR2REF(call/rec current_pingu_find_mouse());
-            call/rec capture_rectangle.set_pingu(current_pingu);
+            if _globals__auto_scrolling and (_Display__is_fullscreen() or _Display__has_grab()) then
+                playfield.scroll_speed = (int)(800*delta);
+
+                if playfield.mouse_pos.x < 10 then
+                    playfield.state.set_pos(playfield.state.get_pos() - _Vector2i(playfield.scroll_speed, 0) finalize with end);
+                else/if playfield.mouse_pos.x > _Display__get_width() - 10 then
+                    playfield.state.set_pos(playfield.state.get_pos() + _Vector2i(playfield.scroll_speed, 0) finalize with end);
+                end
+
+                if playfield.mouse_pos.y < 10 then
+                    playfield.state.set_pos(playfield.state.get_pos() - _Vector2i(0, playfield.scroll_speed) finalize with end);
+                else/if playfield.mouse_pos.y > _Display__get_height() - 10 then
+                    playfield.state.set_pos(playfield.state.get_pos() + _Vector2i(0, playfield.scroll_speed) finalize with end);
+                end
+            end
         end
     with
         every gc in PLAYFIELD_DRAW do

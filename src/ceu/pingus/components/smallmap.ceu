@@ -54,6 +54,9 @@ do
         small_map.gc_ptr:draw(_deref(sprite), _Vector3f(x, y));
     end
 
+    var bool scroll_mode = false;
+    var bool has_focus = false; //TODO: unused, remove?
+
     par/or do
         every gc in draw do
             // FIXME: This is potentially dangerous, since we don't know how
@@ -108,7 +111,7 @@ do
         end
     with
         every (x, y) in mouse_move do
-            if small_map.scroll_mode then
+            if scroll_mode then
                 var int cx = (x - small_map.rect.left) * (int)(global:world:get_width()  / small_map.rect.get_width());
                 var int cy = (y - small_map.rect.top) * (int)(global:world:get_height() / small_map.rect.get_height());
 
@@ -117,13 +120,25 @@ do
         end
     with
         every (x, y) in mouse_press do
-            small_map.scroll_mode = true;
+            scroll_mode = true;
 
             // set view to the given COs
             var int cx = (x - small_map.rect.left) * (int)(global:world:get_width()) / small_map.rect.get_width();
             var int cy = (y - small_map.rect.top) * (int)(global:world:get_height()) / small_map.rect.get_height();
 
             small_map.playfield:set_viewpoint(cx, cy);
+        end
+    with
+        every mouse_release do
+            scroll_mode = false;
+        end
+    with
+        loop do
+            await mouse_enter;
+            has_focus = true;
+
+            await mouse_leave;
+            has_focus = false;
         end
     with
         var _SmallMap* e = await DELETE_SMALLMAP until (e == &small_map);
