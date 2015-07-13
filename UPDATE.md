@@ -1,3 +1,17 @@
+# Week 8 (13/07--19/07)
+
+## What I was supposed to do the past week?
+
+* work on `GameSession`:
+	* port what's possible to port;
+	* port `Smallmap` and `Playfield` components (are used in `GameSession`);
+	* port `Server` (is used in `GameSession` and `DemoSession`).
+* may be work more on `Sprite` wrapper and components.
+
+## What I actually did the past week?
+
+## What I'll do this week?
+
 # Week 7 (6/07--12/07)
 
 ## What I was supposed to do the past week?
@@ -8,7 +22,33 @@ Add a Céu wrapper for `Sprite`.
 
 ## What I actually did the past week?
 
+* Removed `WorldObj` completely (ported into `IWorldObj`);
+* Ported `World` completely;
+* Added a `Sprite` wrapper and replaced `_Sprite&?` with `Sprite` in world objects code and other places.
+
+What else:
+
+* Worked on bad code transformations (fixed some);
+* Worked on some `GUI_Component` stuff:
+	* added `x` and `y` in `mouse_move` event;
+	* added `EventProxy` for `draw` and `update` events;
+	* ported `Playfield`'s `mouse_move` and `update`;
+	* ported `PingusCounter`;
+	* completely ported `Armageddon`, `Forward` and `Pause` buttons;
+	* ported lots of `Smallmap` reactions to `GUI_Component` events.
+* ported `Server`'s armageddon event and related code;
+* ported `GoalManager`;
+* added `DemoSession` and `GameSession` classes;
+* removed C++ `PinguHolder`;
+* ported `SmallMapImage`.
+
 ## What I'll do this week?
+
+* work on `GameSession`:
+	* port what's possible to port;
+	* port `Smallmap` and `Playfield` components (are used in `GameSession`);
+	* port `Server` (is used in `GameSession` and `DemoSession`).
+* may be work more on `Sprite` wrapper and components.
 
 # Week 6 (29/06--5/07)
 
