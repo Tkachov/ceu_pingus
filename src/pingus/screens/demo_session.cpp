@@ -106,12 +106,6 @@ DemoSession::DemoSession(const Pathname& pathname_) :
   WorldGetSizePackage* pp = &package;
   ceu_out_go(&CEUapp, CEU_IN_WORLD_GET_SIZE, &pp);
 
-  playfield = new Playfield(server.get(), 0,
-                            Rect(Vector2i(Math::max((size.width  - package.width)/2,  0),
-                                          Math::max((size.height - package.height)/2, 0)), 
-                                 Size(Math::min(size.width,  package.width),
-                                      Math::min(size.height, package.height))));
-
   DemoSession* self = this;
   ceu_out_go(&CEUapp, CEU_IN_NEW_DEMO_SESSION, &self);  
 
@@ -254,12 +248,10 @@ DemoSession::on_escape_press()
   ScreenManager::instance()->pop_screen();
 }
 
-void
-DemoSession::on_scroller_move(float x, float y)
-{
-  // FIXME: Rounding considered evil?
-  playfield->scroll(static_cast<int>(-x),
-                    static_cast<int>(-y));
+void DemoSession::on_scroller_move(float x, float y) {
+  Vector2i package(x, y);
+  Vector2i* pp = &package;
+  ceu_out_go(&CEUapp, CEU_IN_DEMO_SESSION_ON_SCROLLER_MOVE, &pp);
 }
 
 void

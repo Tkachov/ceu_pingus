@@ -108,8 +108,7 @@ public:
 
   void resize(const Size&);
 
-private:
-  void process_scroll_event (const Input::ScrollEvent&);
+private:  
   void process_axis_event (const Input::AxisEvent&);
 
 private:

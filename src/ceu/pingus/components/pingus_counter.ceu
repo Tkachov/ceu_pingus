@@ -3,6 +3,7 @@
 
 #include "../../c.ceu"
 #include "../../sdl.ceu"
+#include "../../engine/display/sprite.ceu"
 #include "../../engine/gui/igui_component.ceu"
 #include "../../proxies/eventproxy.ceu"
 #include "../iworld.ceu"
@@ -33,9 +34,7 @@ do
     var Sprite background;
     call/rec background.reload_by_name("core/buttons/info");
 
-    var EventProxy p with
-        this.gui = outer;
-    end;
+    var EventProxy p with this.gui = outer; end;
 
     var _Font* font = _Fonts__pingus_small_fixnum;
 

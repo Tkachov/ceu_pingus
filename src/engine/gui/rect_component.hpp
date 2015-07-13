@@ -37,7 +37,7 @@ public:
   {}
   
   virtual bool is_at (int x, int y) { return rect.contains(Vector2i(x, y)); }
-  virtual void update_layout() {}
+  virtual void update_layout();
   
   void set_rect(const Rect& rect_) 
   {

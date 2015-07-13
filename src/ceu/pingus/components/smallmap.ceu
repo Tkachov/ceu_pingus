@@ -12,6 +12,7 @@
 #include "../pingu_holder_listener.ceu"
 #include "../smallmap_image.ceu"
 #include "ismallmap.ceu"
+#include "iplayfield.ceu"
 
 native/pre do
     ##include "pingus/components/playfield.hpp"
@@ -26,7 +27,7 @@ class SmallMap with
     interface ISmallMap;
     var _GUI_RectComponent&? rect;
     var _Server&?   server;
-    var _Playfield* playfield;
+    var IPlayfield& playfield;
 do
     var _DrawingContext* gc_ptr = null;
 
@@ -63,8 +64,7 @@ do
             // long 'gc' will be alive. Should use a DrawingContext for caching.
             gc_ptr = _PTR2REF(gc);
 
-            var int ofx = playfield:get_pos().x;
-            var int ofy = playfield:get_pos().y;
+            var Vector2i of = playfield.get_pos();            
             var int view_rect_left = 0;
             var int view_rect_top = 0;
             var int view_rect_right = 0;
@@ -73,7 +73,7 @@ do
             if global:world != null then
                 if global:world:get_width() > gc_ptr:get_width() then
                     var int rwidth = gc_ptr:get_width()  * rect.rect.get_width()  / global:world:get_width();
-                    view_rect_left  = rect.rect.left + (ofx * rect.rect.get_width()  / global:world:get_width()) - rwidth/2;
+                    view_rect_left  = rect.rect.left + (of.x * rect.rect.get_width()  / global:world:get_width()) - rwidth/2;
                     view_rect_right = view_rect_left + rwidth;
                 else
                     view_rect_left  = rect.rect.left;
@@ -82,7 +82,7 @@ do
 
                 if global:world:get_height() > gc_ptr:get_height() then
                     var int rheight = gc_ptr:get_height() * rect.rect.get_height() / global:world:get_height();
-                    view_rect_top    = rect.rect.top + (ofy * rect.rect.get_height() / global:world:get_height()) - rheight/2;
+                    view_rect_top    = rect.rect.top + (of.y * rect.rect.get_height() / global:world:get_height()) - rheight/2;
                     view_rect_bottom = view_rect_top + rheight;
                 else
                     view_rect_top    = rect.rect.top;
@@ -115,7 +115,7 @@ do
                 var int cx = (x - rect.rect.left) * (int)(global:world:get_width()  / rect.rect.get_width());
                 var int cy = (y - rect.rect.top) * (int)(global:world:get_height() / rect.rect.get_height());
 
-                playfield:set_viewpoint(cx, cy);
+                playfield.set_viewpoint(cx, cy);
             end
         end
     with
@@ -126,7 +126,7 @@ do
             var int cx = (x - rect.rect.left) * (int)(global:world:get_width()) / rect.rect.get_width();
             var int cy = (y - rect.rect.top) * (int)(global:world:get_height()) / rect.rect.get_height();
 
-            playfield:set_viewpoint(cx, cy);
+            playfield.set_viewpoint(cx, cy);
         end
     with
         every mouse_release do

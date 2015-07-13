@@ -289,7 +289,7 @@ do
         end
     with
         every object in WORLD_DRAW_OBJECT do
-            if draw_iterating and gc != null then
+            if draw_iterating and gc != null then                
                 emit object:e_DRAW => gc;
             end
         end

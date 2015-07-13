@@ -16,98 +16,19 @@
 
 #include "pingus/components/playfield.hpp"
 
-#include "engine/display/display.hpp"
-#include "pingus/globals.hpp"
-#include "pingus/screens/game_session.hpp"
-#include "pingus/server.hpp"
-#include "pingus/world.hpp"
-
 #include "ceuvars.h"
 
-Playfield::Playfield(Server* server_, GameSession* session_, const Rect& rect_) :
+Playfield::Playfield(const Rect& rect_) :
   RectComponent(rect_),
-  server(server_),
-  session(session_),
-  mouse_scrolling(),
-  scroll_center(),
   scene_context(new SceneContext(rect_)),
-  state(rect_.get_width(), rect_.get_height()),
-  clipping_rectangles(),
-  mouse_pos(),
-  old_state_pos()
-{
-  mouse_scrolling    = false;  
+  state(rect_.get_width(), rect_.get_height())
+{}
 
-  Playfield* self = this;
-  ceu_out_go(&CEUapp, CEU_IN_NEW_PLAYFIELD, &self);
-}
+Playfield::~Playfield() {}
 
-Playfield::~Playfield() {
-  Playfield* self = this;
-  ceu_out_go(&CEUapp, CEU_IN_DELETE_PLAYFIELD, &self);
-}
-
-void
-Playfield::draw(DrawingContext& gc)
-{
-  scene_context->clear();
-
-  state.push(*scene_context);
-
-  SceneContext* sc = scene_context.get();  
+void Playfield::draw_world() {
+  SceneContext* sc = scene_context.get();
   ceu_out_go(&CEUapp, CEU_IN_PLAYFIELD_DRAW, &sc);
-
-  state.pop(*scene_context);
-
-  gc.draw(new SceneContextDrawingRequest(scene_context.get(), Vector2i(0,0), -10000));
-
-  gc.push_modelview();
-  gc.translate(rect.left, rect.top);
-  // Draw the scrolling band
-  if (mouse_scrolling && !globals::drag_drop_scrolling)
-  {
-    gc.draw_line(mouse_pos, scroll_center - Vector2i(0, 15),
-                 Color(0, 255, 0));
-
-    gc.draw_line(mouse_pos, scroll_center + Vector2i(0, 15),
-                 Color(0, 0, 255));
-
-    gc.draw_line(mouse_pos, scroll_center + Vector2i(15, 0),
-                 Color(0, 255, 255));
-
-    gc.draw_line(mouse_pos, scroll_center - Vector2i(15, 0),
-                 Color(255, 255, 0));
-
-    gc.draw_line(mouse_pos, scroll_center,
-                 Color(255, 0, 0));
-  }
-  gc.pop_modelview();
-}
-
-Vector2i
-Playfield::get_pos() const
-{
-  return Vector2i(static_cast<int>(state.get_pos().x),
-                  static_cast<int>(state.get_pos().y));
-}
-
-void
-Playfield::set_viewpoint(int x, int y)
-{
-  state.set_pos(Vector2i(x, y));
-}
-
-void
-Playfield::scroll (int x, int y)
-{
-  state.set_pos(state.get_pos() + Vector2i(x, y));
-}
-
-void
-Playfield::update_layout()
-{
-  state.set_size(rect.get_width(), rect.get_height());
-  scene_context->set_rect(rect);
 }
 
 /* EOF */

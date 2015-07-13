@@ -7,7 +7,6 @@ end
 #include "sdl.ceu"
 #include "pingus/colliders/pingu_collider.ceu"
 #include "pingus/components/menubutton.ceu"
-#include "pingus/components/playfield.ceu"
 #include "pingus/screens/demo_session.ceu"
 #include "pingus/screens/game_session.ceu"
 #include "pingus/pingu_holder.ceu"
@@ -26,7 +25,6 @@ event void e_PINGU_UPDATE_ALL;
 input _MenuButton* NEW_MENUBUTTON;
 input _DemoSession* NEW_DEMO_SESSION;
 input _GameSession* NEW_GAME_SESSION;
-input _Playfield* NEW_PLAYFIELD;
 
 var IWorld* world = null;
 
@@ -54,12 +52,6 @@ with
     every new_collider in NEW_PINGU_COLLIDER do
         spawn PinguCollider with
             this.me = _PTR2REF(new_collider);
-        end;
-    end
-with
-    every new_playfield in NEW_PLAYFIELD do
-        spawn Playfield with
-            this.me = _PTR2REF(new_playfield);
         end;
     end
 with

@@ -1,0 +1,12 @@
+#ifndef IPLAYFIELD_CEU
+#define IPLAYFIELD_CEU
+
+#include "../../math/vector2i.ceu"
+
+interface IPlayfield with
+    function (void) => Vector2i get_pos;
+    function (int x, int y) => void set_viewpoint;
+    function (int x, int y) => void scroll;
+end
+
+#endif

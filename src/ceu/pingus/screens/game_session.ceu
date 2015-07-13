@@ -3,23 +3,36 @@
 
 #include "../../c.ceu"
 #include "../../sdl.ceu"
+#include "../../math/math.ceu"
 #include "../iworld.ceu"
 #include "../pingu_holder_listener.ceu"
 #include "../components/armageddonbutton.ceu"
 #include "../components/forwardbutton.ceu"
 #include "../components/pausebutton.ceu"
 #include "../components/pingus_counter.ceu"
+#include "../components/playfield.ceu"
 #include "../components/smallmap.ceu"
 
 native/pre do
     ##include "engine/screen/screen_manager.hpp"
     ##include "engine/display/display.hpp"
+    ##include "engine/gui/gui_manager.hpp"
     ##include "pingus/globals.hpp"
     ##include "pingus/savegame_manager.hpp"
     ##include "pingus/screens/game_session.hpp"
     ##include "pingus/screens/result_screen.hpp"
+
+    ##include "engine/screen/screen_manager.hpp"
+    ##include "pingus/server.hpp"
+    ##include "engine/sound/sound.hpp"
+    ##include "pingus/components/button_panel.hpp"
+    ##include "pingus/components/playfield.hpp"
+    ##include "pingus/components/time_display.hpp"
+
     ##define new_GUI_Component() new GUI::Component()
     ##define new_RectComponent(r) new GUI::RectComponent(r)
+    ##define new_Playfield(a) new Playfield(a)
+    ##define new_TimeDisplay(s) new TimeDisplay(s)
     ##define new_Result() new Result()
     ##define new_Savegame new Savegame
     ##define SavegameManager__instance() SavegameManager::instance()
@@ -32,15 +45,17 @@ native/pre do
     ##define toSStatus(x) (Savegame::S_Status)x
     ##define Display__get_width() Display::get_width()
     ##define Display__get_height() Display::get_height()
+    ##define Input__ScrollEvent Input::ScrollEvent
 end
 
-native @pure _new_PingusCounter(), _new_GUI_Component(), _new_RectComponent(),
+native @pure _new_PingusCounter(), _new_GUI_Component(), _new_RectComponent(), _new_Playfield(), _new_TimeDisplay(),
              _new_Result(), _new_Savegame(),
              _SavegameManager__instance(), _ScreenManager__instance(),
              _std__make_shared_ResultScreen(), _toSStatus(), _Display__get_width(), _Display__get_height();
 
 input _ComponentUpdatePackage* GAME_SESSION_UPDATE_SERVER;
 input _GameSession* DELETE_GAME_SESSION;
+input _Input__ScrollEvent* GAME_SESSION_SCROLLER_EVENT_TYPE;
 
 class GameSession with
     var _GameSession* me;
@@ -52,11 +67,29 @@ do
         game_session.pcounter = &this.me;
     end;
 
+    var Playfield playfield with
+        game_session.playfield = _new_Playfield(
+            _Rect(
+                _Vector2i(
+                    _Math__max((_Display__get_width() - global:world:get_width())/2, 0),
+                    _Math__max((_Display__get_height() - global:world:get_height())/2, 0)
+                ),
+                _Size(
+                    _Math__min(_Display__get_width(), global:world:get_width()),
+                    _Math__min(_Display__get_height(), global:world:get_height())
+                )
+            )
+        );
+        this.me = _PTR2REF(game_session.playfield);
+        this.server = _PTR2REF(game_session.get_server());
+        this.session = &game_session;
+    end;
+
     var SmallMap small_map with
         this.rect = _PTR2REF(_new_RectComponent(_Rect(_Vector2i(5, game_session.size.height - 105), _Size(175, 100))));
         this.me = _PTR2REF(this.rect);
         this.server = _PTR2REF(game_session.get_server());
-        this.playfield = game_session.playfield;
+        this.playfield = playfield;
         game_session.small_map = &this.rect;        
     end;
 
@@ -77,6 +110,17 @@ do
         this.session = _PTR2REF(&game_session);
         game_session.pause_button = (_GUI_RectComponent*)&this.me;
     end;
+
+    game_session.time_display = _new_TimeDisplay(game_session.get_server());
+
+    game_session.gui_manager:add(game_session.playfield) finalize with end;
+    game_session.gui_manager:add(game_session.button_panel) finalize with end;
+    game_session.gui_manager:add(game_session.pcounter) finalize with end;
+    game_session.gui_manager:add(game_session.small_map) finalize with end;
+    game_session.gui_manager:add(game_session.time_display) finalize with end;
+    game_session.gui_manager:add(game_session.armageddon_button) finalize with end;
+    game_session.gui_manager:add(game_session.forward_button) finalize with end;
+    game_session.gui_manager:add(game_session.pause_button) finalize with end;
 
     var int world_delay = 0;
 
@@ -161,6 +205,10 @@ do
                 world_delay = time_passed - (world_updates*update_time);
 
             end
+        end
+    with
+        every ev in GAME_SESSION_SCROLLER_EVENT_TYPE do
+            playfield.scroll(-ev:x_delta, -ev:y_delta);
         end
     with
         var _GameSession* e = await DELETE_GAME_SESSION until (e == &game_session);

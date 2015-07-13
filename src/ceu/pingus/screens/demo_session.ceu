@@ -6,18 +6,22 @@
 #include "../iworld.ceu"
 #include "../pingu_holder_listener.ceu"
 #include "../components/pingus_counter.ceu"
+#include "../components/playfield.ceu"
 #include "../components/smallmap.ceu"
 
 native/pre do
+    ##include "pingus/components/playfield.hpp"
     ##include "pingus/screens/demo_session.hpp"
     ##define new_GUI_Component() new GUI::Component()
     ##define new_RectComponent(r) new GUI::RectComponent(r)
+    ##define new_Playfield(a) new Playfield(a)
 end
 
-native @pure _new_PingusCounter(), _new_GUI_Component(), _new_RectComponent();
+native @pure _new_PingusCounter(), _new_GUI_Component(), _new_RectComponent(), _new_Playfield();
 
 input _DemoSession* DEMO_SESSION_UPDATE;
 input _DemoSession* DELETE_DEMO_SESSION;
+input _Vector2i* DEMO_SESSION_ON_SCROLLER_MOVE;
 
 class DemoSession with
     var _DemoSession* me;
@@ -27,6 +31,24 @@ do
         this.me = _new_GUI_Component();
         this.server = _PTR2REF(demo_session.server.get());
         demo_session.pcounter = &this.me;
+    end;
+
+    var Playfield playfield with
+        this.me = _PTR2REF(_new_Playfield(
+            _Rect(
+                _Vector2i(
+                    _Math__max((demo_session.size.width - global:world:get_width())/2, 0),
+                    _Math__max((demo_session.size.height - global:world:get_height())/2, 0)
+                ),
+                _Size(
+                    _Math__min(demo_session.size.width, global:world:get_width()),
+                    _Math__min(demo_session.size.height, global:world:get_height())
+                )
+            )
+        ));
+        demo_session.playfield = _PTR2REF((_Playfield*)&this.me);
+        this.server = _PTR2REF(demo_session.server.get());
+        this.session = null;
     end;
 
     var SmallMap small_map with
@@ -42,6 +64,12 @@ do
             if s != &demo_session then
                 continue;
             end
+        end
+    with
+        every pos in DEMO_SESSION_ON_SCROLLER_MOVE do
+            //original FIXME: Rounding considered evil?            
+            playfield.scroll(-pos:x, -pos:y);
+            //well, I think it isn't
         end
     with
         var _DemoSession* e = await DELETE_DEMO_SESSION until (e == &demo_session);

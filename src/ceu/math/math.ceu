@@ -6,8 +6,8 @@ native/pre do
     ##define Math__pi Math::pi
     ##define Math__pi_2 Math::pi_2
 
-    ##define Math__min(a) Math::min(a)
-    ##define Math__max(a) Math::max(a)
+    ##define Math__min Math::min
+    ##define Math__max Math::max
     ##define Math__clamp(l, v, h) Math::clamp(l, v, h)
     ##define Math__frand() Math::frand()
     ##define Math__rand_bool() Math::rand_bool()

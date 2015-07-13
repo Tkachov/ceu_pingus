@@ -22,8 +22,6 @@
 #include "engine/display/graphic_context_state.hpp"
 #include "engine/gui/rect_component.hpp"
 
-class Server;
-class GameSession;
 class ButtonPanel;
 class Controller;
 class View;
@@ -32,40 +30,14 @@ class View;
 class Playfield : public GUI::RectComponent
 {
 private:
-  Server* server;
-  GameSession* session;
-  
-  bool mouse_scrolling;  
-
-  Vector2i scroll_center;
-
   std::unique_ptr<SceneContext> scene_context;
-  GraphicContextState state;  
-
-  std::vector<Rect> clipping_rectangles;
-  
-  Vector2i mouse_pos;
-  Vector2i old_state_pos;
+  GraphicContextState state;
 
 public:
-  Playfield(Server*, GameSession*, const Rect& rect);
+  Playfield(const Rect& rect);
   virtual ~Playfield();
 
-  /** Returns the point onto which the Playfield is currently focused
-      (ie. center of the Playfield) in WorldCO */
-  Vector2i get_pos() const;
-
-  void scroll (int x, int y);
-
-  void set_viewpoint(int, int);
-
-  void draw(DrawingContext& gc);
-
-  void enable_scroll_mode();
-  void do_scrolling();
-  void disable_scroll_mode();
-
-  void update_layout();
+  void draw_world();
 
 private:
   Playfield (const Playfield&);

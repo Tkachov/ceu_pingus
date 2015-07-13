@@ -59,29 +59,8 @@ GameSession::GameSession(const PingusLevel& arg_plf, bool arg_show_result_screen
   // These object will get deleted by the gui_manager
   button_panel = new ButtonPanel(get_server(), Vector2i(0, (size.height - 150)/2));
 
-  WorldGetSizePackage package;
-  WorldGetSizePackage* pp = &package;
-  ceu_out_go(&CEUapp, CEU_IN_WORLD_GET_SIZE, &pp);
-
-  playfield    = new Playfield(get_server(), this,
-                               Rect(Vector2i(Math::max((Display::get_width()  - package.width)/2,  0),
-                                             Math::max((Display::get_height() - package.height)/2, 0)),
-                                    Size(Math::min(Display::get_width(),  package.width),
-                                         Math::min(Display::get_height(), package.height))));
-
   GameSession* self = this;
   ceu_out_go(&CEUapp, CEU_IN_NEW_GAME_SESSION, &self);
-  
-  time_display = new TimeDisplay(get_server());
-
-  gui_manager->add(playfield);
-  gui_manager->add(button_panel);
-  gui_manager->add(pcounter);
-  gui_manager->add(small_map);
-  gui_manager->add(time_display);
-  gui_manager->add(armageddon_button);
-  gui_manager->add(forward_button);
-  gui_manager->add(pause_button);
 }
 
 GameSession::~GameSession()
@@ -167,8 +146,11 @@ GameSession::update(const Input::Event& event)
       break;
 
     case Input::SCROLLER_EVENT_TYPE:
-      process_scroll_event(event.scroll);
-      break;
+    {
+      const Input::ScrollEvent* e = &event.scroll;
+      ceu_out_go(&CEUapp, CEU_IN_GAME_SESSION_SCROLLER_EVENT_TYPE, &e);
+    }
+    break;
 
     case Input::KEYBOARD_EVENT_TYPE:
       break;
@@ -181,13 +163,6 @@ GameSession::update(const Input::Event& event)
       log_info("unhandled event: %1%", event.type);
       break;
   }
-}
-
-void
-GameSession::process_scroll_event (const Input::ScrollEvent& ev)
-{
-  playfield->scroll(static_cast<int>(-ev.x_delta),
-                    static_cast<int>(-ev.y_delta));
 }
 
 void
