@@ -29,7 +29,6 @@ Playfield::Playfield(Server* server_, GameSession* session_, const Rect& rect_) 
   server(server_),
   session(session_),
   mouse_scrolling(),
-  scroll_speed(),
   scroll_center(),
   scene_context(new SceneContext(rect_)),
   state(rect_.get_width(), rect_.get_height()),
@@ -83,39 +82,6 @@ Playfield::draw(DrawingContext& gc)
                  Color(255, 0, 0));
   }
   gc.pop_modelview();
-}
-
-void Playfield::on_primary_button_press(int x, int y) {
-  x -= rect.left;
-  y -= rect.top;
-
-  if(session) {
-    Vector2i p = state.screen2world(Vector2i(x,y));
-    Vector2i* pp = &p;
-    ceu_out_go(&CEUapp, CEU_IN_PLAYFIELD_CLICK, &pp);
-  }
-}
-
-void
-Playfield::on_secondary_button_press(int x, int y)
-{
-  x -= rect.left;
-  y -= rect.top;
-
-  mouse_scrolling = true;
-  scroll_center.x = x;
-  scroll_center.y = y;
-
-  old_state_pos = state.get_pos();
-}
-
-void
-Playfield::on_secondary_button_release (int x, int y)
-{
-  x -= rect.left;
-  y -= rect.top;
-
-  mouse_scrolling = false;
 }
 
 Vector2i

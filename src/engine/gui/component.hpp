@@ -61,16 +61,16 @@ public:
   virtual void on_primary_button_press (int x, int y);
 
   /** Gets issued once the primary button is released */
-  virtual void on_primary_button_release (int x, int y) { }
+  virtual void on_primary_button_release (int x, int y);
 
-  virtual void on_secondary_button_press (int x, int y) { }
-  virtual void on_secondary_button_release (int x, int y) { }
+  virtual void on_secondary_button_press (int x, int y);
+  virtual void on_secondary_button_release (int x, int y);
 
   /** Gets emmited when a button is pressed and released over the
       same component */
-  virtual void on_primary_button_click (int x, int y) {}
+  virtual void on_primary_button_click (int x, int y);
 
-  virtual void on_secondary_button_click (int x, int y) {}
+  virtual void on_secondary_button_click (int x, int y);
 
   /** Emmitted when pointer enters the region of the component */
   virtual void on_pointer_enter () {}

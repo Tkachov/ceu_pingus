@@ -15,21 +15,21 @@ class SecondaryButtonProxy with
     var IGUI_Component& gui;
 do
     par do
-        every g in ON_SECONDARY_BUTTON_PRESS do
-            if g == &gui.me then
-                emit gui.mouse_secondary_press;
+        every package in ON_SECONDARY_BUTTON_PRESS do
+            if package:component == &gui.me then
+                emit gui.mouse_secondary_press => (package:mouse_pos.x, package:mouse_pos.y);
             end
         end
     with
-        every g in ON_SECONDARY_BUTTON_RELEASE do
-            if g == &gui.me then
-                emit gui.mouse_secondary_release;
+        every package in ON_SECONDARY_BUTTON_RELEASE do
+            if package:component == &gui.me then
+                emit gui.mouse_secondary_release => (package:mouse_pos.x, package:mouse_pos.y);
             end
         end
     with
-        every g in ON_SECONDARY_BUTTON_CLICK do
-            if g == &gui.me then
-                emit gui.mouse_secondary_click;
+        every package in ON_SECONDARY_BUTTON_CLICK do
+            if package:component == &gui.me then
+                emit gui.mouse_secondary_click => (package:mouse_pos.x, package:mouse_pos.y);
             end
         end
     with

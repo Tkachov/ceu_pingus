@@ -35,8 +35,7 @@ private:
   Server* server;
   GameSession* session;
   
-  bool mouse_scrolling;
-  int  scroll_speed;
+  bool mouse_scrolling;  
 
   Vector2i scroll_center;
 
@@ -61,10 +60,6 @@ public:
   void set_viewpoint(int, int);
 
   void draw(DrawingContext& gc);
-
-  void on_primary_button_press (int x, int y);
-  void on_secondary_button_press (int x, int y);
-  void on_secondary_button_release (int x, int y);  
 
   void enable_scroll_mode();
   void do_scrolling();

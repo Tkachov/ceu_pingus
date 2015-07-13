@@ -39,6 +39,40 @@ void Component::on_primary_button_press(int x, int y) {
   ceu_out_go(&CEUapp, CEU_IN_ON_PRIMARY_BUTTON_PRESS, &pp);
 }
 
+void Component::on_primary_button_release(int x, int y) {
+  //Ceu ON_PRIMARY_BUTTON_RELEASE
+  PositionPackage package(this, Vector2i(x, y));
+  PositionPackage* pp = &package;
+  ceu_out_go(&CEUapp, CEU_IN_ON_PRIMARY_BUTTON_RELEASE, &pp);
+}
+
+void Component::on_secondary_button_press(int x, int y) {
+  //Ceu ON_SECONDARY_BUTTON_PRESS
+  PositionPackage package(this, Vector2i(x, y));
+  PositionPackage* pp = &package;
+  ceu_out_go(&CEUapp, CEU_IN_ON_SECONDARY_BUTTON_PRESS, &pp);
+}
+void Component::on_secondary_button_release(int x, int y) {
+  //Ceu ON_SECONDARY_BUTTON_RELEASE
+  PositionPackage package(this, Vector2i(x, y));
+  PositionPackage* pp = &package;
+  ceu_out_go(&CEUapp, CEU_IN_ON_SECONDARY_BUTTON_RELEASE, &pp);
+}
+
+void Component::on_primary_button_click(int x, int y) {
+  //Ceu ON_PRIMARY_BUTTON_CLICK
+  PositionPackage package(this, Vector2i(x, y));
+  PositionPackage* pp = &package;
+  ceu_out_go(&CEUapp, CEU_IN_ON_PRIMARY_BUTTON_CLICK, &pp);
+}
+
+void Component::on_secondary_button_click(int x, int y) {
+  //Ceu ON_SECONDARY_BUTTON_CLICK
+  PositionPackage package(this, Vector2i(x, y));
+  PositionPackage* pp = &package;
+  ceu_out_go(&CEUapp, CEU_IN_ON_SECONDARY_BUTTON_CLICK, &pp);
+}
+
 GroupComponent*
 Component::get_parent() const
 {

@@ -7,6 +7,8 @@
 #include "../../math/vector2i.ceu"
 #include "../../proxies/eventproxy.ceu"
 #include "../../proxies/pointerproxy.ceu"
+#include "../../proxies/primarybuttonproxy.ceu"
+#include "../../proxies/secondarybuttonproxy.ceu"
 #include "../capture_rectangle.ceu"
 #include "../pingu_holder_listener.ceu"
 #include "../server.ceu"
@@ -38,7 +40,7 @@ native @pure _send_pingu_action_event(), _get_uint(), _read_coords();
 class Playfield with
     interface IGUI_Component;
 do
-    var _Playfield&? playfield = _PTR2REF((_Playfield*)&me);
+    var _Playfield&? playfield = _PTR2REF((_Playfield*)&me);    
 
     playfield.state.set_limit(
         _Rect(
@@ -50,8 +52,10 @@ do
     //original FIXME: Temporary workaround till start-pos is integrated a bit more properly
     playfield.state.set_pos(global:world:get_start_pos(0));
 
-    var PointerProxy pp with this.gui = outer; end;
     var EventProxy ep with this.gui = outer; end;
+    var PointerProxy pp with this.gui = outer; end;
+    var PrimaryButtonProxy pbp with this.gui = outer; end;
+    var SecondaryButtonProxy sbp with this.gui = outer; end;
 
     var CaptureRectangle capture_rectangle with
         this.session = playfield.session;
@@ -122,6 +126,40 @@ do
             end
         end
     with
+        every (x, y) in mouse_press do
+            x = x - playfield.rect.left;
+            y = y - playfield.rect.top;
+
+            if playfield.session then
+                var Vector2i pos;
+                _readVector2i(pos, playfield.state.screen2world(_Vector2i(x, y)));
+                current_pingu = _PTR2REF(call/rec current_pingu_find(pos.x, pos.y));
+
+                if current_pingu then
+                    var Server* server = (Server*)playfield.server:ceu_server;
+                    call/rec server:send_pingu_action_event(current_pingu, playfield.session:get_action_name());
+                end
+            end
+        end
+    with
+        every (x, y) in mouse_secondary_press do
+            x = x - playfield.rect.left;
+            y = y - playfield.rect.top;
+
+            playfield.mouse_scrolling = true;
+            playfield.scroll_center.x = x;
+            playfield.scroll_center.y = y;
+
+            playfield.old_state_pos = _PTR2REF(playfield.state.get_pos());
+        end
+    with
+        every (x, y) in mouse_secondary_release do
+            x = x - playfield.rect.left;
+            y = y - playfield.rect.top;
+
+            playfield.mouse_scrolling = false;
+        end
+    with
         every delta in update do
             //original FIXME: This should be delta dependant
             if not playfield.mouse_scrolling then
@@ -138,18 +176,18 @@ do
             end
 
             if _globals__auto_scrolling and (_Display__is_fullscreen() or _Display__has_grab()) then
-                playfield.scroll_speed = (int)(800*delta);
+                var int scroll_speed = 800*delta;
 
                 if playfield.mouse_pos.x < 10 then
-                    playfield.state.set_pos(playfield.state.get_pos() - _Vector2i(playfield.scroll_speed, 0) finalize with end);
+                    playfield.state.set_pos(playfield.state.get_pos() - _Vector2i(scroll_speed, 0));
                 else/if playfield.mouse_pos.x > _Display__get_width() - 10 then
-                    playfield.state.set_pos(playfield.state.get_pos() + _Vector2i(playfield.scroll_speed, 0) finalize with end);
+                    playfield.state.set_pos(playfield.state.get_pos() + _Vector2i(scroll_speed, 0));
                 end
 
                 if playfield.mouse_pos.y < 10 then
-                    playfield.state.set_pos(playfield.state.get_pos() - _Vector2i(0, playfield.scroll_speed) finalize with end);
+                    playfield.state.set_pos(playfield.state.get_pos() - _Vector2i(0, scroll_speed));
                 else/if playfield.mouse_pos.y > _Display__get_height() - 10 then
-                    playfield.state.set_pos(playfield.state.get_pos() + _Vector2i(0, playfield.scroll_speed) finalize with end);
+                    playfield.state.set_pos(playfield.state.get_pos() + _Vector2i(0, scroll_speed));
                 end
             end
         end
@@ -160,15 +198,6 @@ do
 
             if global:world != null then
                 emit global:world:e_DRAW => gc;
-            end
-        end
-    with
-        every pos in PLAYFIELD_CLICK do
-            current_pingu = _PTR2REF(call/rec current_pingu_find(pos:x, pos:y));
-
-            if current_pingu then
-                var Server* server = (Server*)playfield.server:ceu_server;
-                call/rec server:send_pingu_action_event(current_pingu, playfield.session:get_action_name());
             end
         end
     with

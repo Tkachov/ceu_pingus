@@ -109,8 +109,6 @@ GroupComponent::on_primary_button_release (int x, int y)
   if (grabbed_comp)
   {
     grabbed_comp->on_primary_button_release(mouse_pos.x, mouse_pos.y);
-    //Ceu ON_PRIMARY_BUTTON_RELEASE
-    ceu_sys_go(&CEUapp, CEU_IN_ON_PRIMARY_BUTTON_RELEASE, &grabbed_comp);
   }
   else 
   {
@@ -119,13 +117,9 @@ GroupComponent::on_primary_button_release (int x, int y)
     if (primary_pressed_comp)
     {
       primary_pressed_comp->on_primary_button_release(mouse_pos.x, mouse_pos.y);
-      //Ceu ON_PRIMARY_BUTTON_RELEASE
-      ceu_sys_go(&CEUapp, CEU_IN_ON_PRIMARY_BUTTON_RELEASE, &primary_pressed_comp);
 
       if(comp == primary_pressed_comp) {
         primary_pressed_comp->on_primary_button_click(mouse_pos.x, mouse_pos.y);
-        //Ceu ON_PRIMARY_BUTTON_CLICK
-        ceu_sys_go(&CEUapp, CEU_IN_ON_PRIMARY_BUTTON_CLICK, &primary_pressed_comp);
       }
 
       primary_pressed_comp = 0;
@@ -134,8 +128,6 @@ GroupComponent::on_primary_button_release (int x, int y)
     {
       if(comp) {
         comp->on_primary_button_release(mouse_pos.x, mouse_pos.y);
-        //Ceu ON_PRIMARY_BUTTON_RELEASE
-        ceu_sys_go(&CEUapp, CEU_IN_ON_PRIMARY_BUTTON_RELEASE, &comp);
       }
     }
   }
@@ -149,16 +141,12 @@ GroupComponent::on_secondary_button_press (int x, int y)
   if (grabbed_comp)
   {
     grabbed_comp->on_secondary_button_press(mouse_pos.x, mouse_pos.y);
-    //Ceu ON_SECONDARY_BUTTON_PRESS
-    ceu_sys_go(&CEUapp, CEU_IN_ON_SECONDARY_BUTTON_PRESS, &grabbed_comp);
   }
   else 
   {
     Component* comp = component_at(mouse_pos);
     if(comp) {
       comp->on_secondary_button_press(mouse_pos.x, mouse_pos.y);
-      //Ceu ON_SECONDARY_BUTTON_PRESS
-      ceu_sys_go(&CEUapp, CEU_IN_ON_SECONDARY_BUTTON_PRESS, &comp);
     }
 
     if (!primary_pressed_comp)
@@ -176,19 +164,13 @@ GroupComponent::on_secondary_button_release(int x, int y)
   if (grabbed_comp)
   {
     grabbed_comp->on_secondary_button_release(mouse_pos.x, mouse_pos.y);
-    //Ceu ON_SECONDARY_BUTTON_RELEASE
-    ceu_sys_go(&CEUapp, CEU_IN_ON_SECONDARY_BUTTON_RELEASE, &grabbed_comp);
   }
   else if (secondary_pressed_comp)
   {
     secondary_pressed_comp->on_secondary_button_release(mouse_pos.x, mouse_pos.y);
-    //Ceu ON_SECONDARY_BUTTON_RELEASE
-    ceu_sys_go(&CEUapp, CEU_IN_ON_SECONDARY_BUTTON_RELEASE, &secondary_pressed_comp);
       
     if(comp == secondary_pressed_comp) {
       secondary_pressed_comp->on_secondary_button_click(mouse_pos.x, mouse_pos.y);
-      //Ceu ON_SECONDARY_BUTTON_CLICK
-      ceu_sys_go(&CEUapp, CEU_IN_ON_SECONDARY_BUTTON_CLICK, &secondary_pressed_comp);
     }
       
     secondary_pressed_comp = 0;
@@ -197,8 +179,6 @@ GroupComponent::on_secondary_button_release(int x, int y)
   {
     if(comp) {
       comp->on_secondary_button_release(mouse_pos.x, mouse_pos.y);
-      //Ceu ON_SECONDARY_BUTTON_RELEASE
-      ceu_sys_go(&CEUapp, CEU_IN_ON_SECONDARY_BUTTON_RELEASE, &comp);
     }
   }
 }

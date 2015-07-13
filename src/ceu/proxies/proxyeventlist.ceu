@@ -16,11 +16,11 @@ input _GUI_Component* ON_POINTER_LEAVE;
 input _PositionPackage* ON_POINTER_MOVE;
 
 input _PositionPackage* ON_PRIMARY_BUTTON_PRESS;
-input _GUI_Component* ON_PRIMARY_BUTTON_RELEASE;
-input _GUI_Component* ON_PRIMARY_BUTTON_CLICK;
+input _PositionPackage* ON_PRIMARY_BUTTON_RELEASE;
+input _PositionPackage* ON_PRIMARY_BUTTON_CLICK;
 
-input _GUI_Component* ON_SECONDARY_BUTTON_PRESS;
-input _GUI_Component* ON_SECONDARY_BUTTON_RELEASE;
-input _GUI_Component* ON_SECONDARY_BUTTON_CLICK;
+input _PositionPackage* ON_SECONDARY_BUTTON_PRESS;
+input _PositionPackage* ON_SECONDARY_BUTTON_RELEASE;
+input _PositionPackage* ON_SECONDARY_BUTTON_CLICK;
 
 #endif
