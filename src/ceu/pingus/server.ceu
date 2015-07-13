@@ -59,7 +59,7 @@ do
     function @rec (IPingu* pingu, int action) => void send_pingu_action_event do
         server.record(
             _ServerEvent__make_pingu_action_event(
-                get_time(),
+                call/rec get_time(),
                 pingu:get_id(),
                 pingu:get_pos(),
                 _to_AN(action)
