@@ -50,8 +50,6 @@ private:
   std::unique_ptr<Server> server;
 
   // -- Client stuff
-  bool is_finished;
-
   ButtonPanel*   button_panel;
   GUI::Component* pcounter;
   Playfield*     playfield;
@@ -75,10 +73,6 @@ public:
 
   Server*    get_server() { return server.get(); }
   Playfield* get_playfield() { return playfield; }
-
-  void do_restart();
-  bool finished();
-  void set_finished();
 
   /** Update all parts of the world */
   void update (float delta);
@@ -107,9 +101,6 @@ public:
   bool get_pause() const;
 
   void resize(const Size&);
-
-private:  
-  void process_axis_event (const Input::AxisEvent&);
 
 private:
   GameSession (const GameSession&);

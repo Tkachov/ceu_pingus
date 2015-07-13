@@ -113,13 +113,6 @@ Server::record(const ServerEvent& event)
     event.write(*demostream);
 }
 
-bool Server::is_finished() {
-  IsFinishedPackage package(this);
-  IsFinishedPackage* pp = &package;
-  ceu_out_go(&CEUapp, CEU_IN_SERVER_IS_FINISHED, &pp);
-  return package.is_finished;
-}
-
 ActionHolder*
 Server::get_action_holder ()
 {

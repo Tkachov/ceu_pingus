@@ -161,82 +161,16 @@ DemoSession::update(float delta)
 {
   GUIScreen::update(delta);
 
-  if (server->is_finished())
-  {
-    ScreenManager::instance()->pop_screen();
-  }
-  else
-  {
-    // FIXME: Duplicate all timing code here?!
-
-    if (!pause)
-    {
-      if (fast_forward)
-      {
-        for (int i = 0; i < 4; ++i)
-        {
-          server->update();
-          update_demo();
-        }
-      }
-      else
-      {
-        server->update();
-        update_demo();
-      }
-    }
-  }
+  ComponentUpdatePackage package((GUI::Component*)this, delta);
+  ComponentUpdatePackage* pp = &package;
+  ceu_out_go(&CEUapp, CEU_IN_DEMO_SESSION_UPDATE_SERVER, &pp);
 }
 
-void
-DemoSession::update_demo()
-{
-  while(!events.empty() && events.back().time_stamp == server->get_time())
-  {
-    ServerEvent& event = events.back();
-
-    if (0)
-    {
-      std::cout << "Sending: ";
-      event.write(std::cout);
-    }
-    
-    EventSendPackage package(&event, server->ceu());
-    EventSendPackage* pp = &package;
-    ceu_out_go(&CEUapp, CEU_IN_EVENT_SEND, &pp);
-
-    events.pop_back();
-  }
-  
-  // Check for unexpected things (might happen if the demo file is broken)
-  if (!events.empty() && events.back().time_stamp < server->get_time())
-  {
-    log_info("DemoPlayer Bug: We missed a timestamp: %1%", events.back().time_stamp);
-  }
-}
-
-void
-DemoSession::on_pause_press()
-{
-  if (0)
-  {
-    for(std::vector<ServerEvent>::iterator i = events.begin(); i != events.end(); ++i)
-    {
-      std::cout << "Event: ";
-      i->write(std::cout);      
-    }
-  }
-
+void DemoSession::on_pause_press() {
   pause = !pause;
-
 }
 
-void
-DemoSession::on_fast_forward_press()
-{
-  if (0)
-    log_info("Fast Forward Pressed: %1% %2%", events.size(), server->get_time());
-
+void DemoSession::on_fast_forward_press() {
   fast_forward = !fast_forward;
 }
 

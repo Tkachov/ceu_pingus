@@ -36,8 +36,7 @@
 GameSession::GameSession(const PingusLevel& arg_plf, bool arg_show_result_screen) :
   plf(arg_plf),
   show_result_screen(arg_show_result_screen),
-  server(),
-  is_finished  (false),
+  server(),  
   button_panel (0),
   pcounter     (0),
   playfield    (0),
@@ -142,8 +141,8 @@ GameSession::update(const Input::Event& event)
 
     case Input::AXIS_EVENT_TYPE:
       // ???
-      process_axis_event (event.axis);
-      break;
+      //process_axis_event (event.axis);
+    break;
 
     case Input::SCROLLER_EVENT_TYPE:
     {
@@ -163,31 +162,6 @@ GameSession::update(const Input::Event& event)
       log_info("unhandled event: %1%", event.type);
       break;
   }
-}
-
-void
-GameSession::process_axis_event (const Input::AxisEvent& event)
-{
-  // log_info("GameSession::process_axis_event ()");
-}
-
-void
-GameSession::do_restart()
-{
-  server->send_finish_event();
-}
-
-bool
-GameSession::finished()
-{
-  return is_finished;
-}
-
-void
-GameSession::set_finished()
-{
-  is_finished = true;
-  server->send_finish_event();
 }
 
 void
@@ -246,8 +220,6 @@ GameSession::on_action_axis_move (float move)
 void
 GameSession::on_startup ()
 {
-  is_finished = false;
-
   if (globals::developer_mode)
     log_info("Starting Music: %1%", server->get_plf().get_music());
 

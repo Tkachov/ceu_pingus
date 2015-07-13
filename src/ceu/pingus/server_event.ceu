@@ -10,20 +10,12 @@
 
 native/pre do
     ##include "pingus/server_event.hpp"
-    ##include "pingus/screens/demo_session.hpp"
-    ##define ESPackage DemoSession::EventSendPackage
-
-    ##define SE_ARMAGEDDON_EVENT ServerEvent::ARMAGEDDON_EVENT
-    ##define SE_FINISH_EVENT ServerEvent::FINISH_EVENT
-    ##define SE_END_EVENT ServerEvent::END_EVENT
-    ##define SE_PINGU_ACTION_EVENT ServerEvent::PINGU_ACTION_EVENT
 end
 
 native @pure _log_error();
 
 input _ServerEvent* NEW_SERVER_EVENT;
 input _ServerEvent* DELETE_SERVER_EVENT;
-input _ESPackage* EVENT_SEND;
 
 class ServerEvent with
     var _ServerEvent* me;
@@ -43,25 +35,7 @@ do
     end
 
     par/or do
-        every package in EVENT_SEND do
-            var Server* server = (Server*)package:server;
-
-            if package:event != &server_event then
-                continue;
-            end
-
-            if server_event.type == _SE_ARMAGEDDON_EVENT then
-                emit server:e_ARMAGEDDON;
-            else/if server_event.type == _SE_FINISH_EVENT then
-                server:me:send_finish_event();
-            else/if server_event.type == _SE_END_EVENT then
-                // do nothing
-            else/if server_event.type == _SE_PINGU_ACTION_EVENT then
-                call/rec do_pingu_action_event(server, call/rec global:world:get_pingus():get_pingu(server_event.pingu_id));
-            else
-                _assert(not "Unknown type");
-            end
-        end
+        await FOREVER;
     with
         var _ServerEvent* e = await DELETE_SERVER_EVENT until (e == &server_event);
     end

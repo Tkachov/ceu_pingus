@@ -51,11 +51,7 @@ public:
   int get_time();
 
   ActionHolder* get_action_holder();
-
-  /** @return true if the server is finished and the game can be
-      exited */
-  bool is_finished();
-
+  
   /** set the server into the finshed state, this is used when you
       press ESCAPE inside a game */
   void send_finish_event();
@@ -67,13 +63,6 @@ private:
 
   Server (const Server&);
   Server& operator= (const Server&);
-};
-
-struct IsFinishedPackage {
-  Server* server;
-  bool is_finished;
-
-  IsFinishedPackage(Server* s): server(s), is_finished(false) {};
 };
 
 struct GetTimePackage {

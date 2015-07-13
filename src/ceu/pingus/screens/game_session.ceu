@@ -130,7 +130,7 @@ do
                 continue;
             end
 
-            if game_session.server:is_finished() then
+            if ((Server*)game_session.server:ceu()):is_finished() then
                 var IPinguHolder* pingu_holder = _PTR2REF(global:world:get_pingus());
                 var _Result&? result = _new_Result();
 
@@ -143,7 +143,7 @@ do
                 finalize result.needed = game_session.server:get_plf().get_number_to_save(); with end
 
                 finalize result.max_time  = game_session.server:get_plf().get_time(); with end
-                finalize result.used_time = game_session.server:get_time(); with end
+                finalize result.used_time = ((Server*)game_session.server:ceu()):get_time(); with end
 
                 var int rs = _Savegame__ACCESSIBLE;
                 if result.saved >= result.needed then

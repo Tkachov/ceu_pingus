@@ -16,6 +16,14 @@ native/pre do
     ##define ServerEvent__make_armageddon_event ServerEvent::make_armageddon_event
     ##define ServerEvent__make_finish_event ServerEvent::make_finish_event
     ##define to_AN(x) (ActionName::Enum)x
+
+    ##include "pingus/screens/demo_session.hpp"
+    ##define ESPackage DemoSession::EventSendPackage
+
+    ##define SE_ARMAGEDDON_EVENT ServerEvent::ARMAGEDDON_EVENT
+    ##define SE_FINISH_EVENT ServerEvent::FINISH_EVENT
+    ##define SE_END_EVENT ServerEvent::END_EVENT
+    ##define SE_PINGU_ACTION_EVENT ServerEvent::PINGU_ACTION_EVENT
 end
 
 native @pure _init_WORLD();
@@ -23,7 +31,6 @@ native @pure _init_WORLD();
 input _Server* NEW_SERVER;
 input _Server* SERVER_ARMAGEDDON;
 input _Server* SERVER_FINISH_EVENT;
-input _IsFinishedPackage* SERVER_IS_FINISHED;
 input _GetTimePackage* SERVER_GET_TIME;
 input _Server* SERVER_UPDATE;
 input _Server* DELETE_SERVER;
@@ -31,6 +38,9 @@ input _Server* DELETE_SERVER;
 class Server with
     var _Server* me;
     function @rec (IPingu* pingu, int action) => void send_pingu_action_event;
+    function (void) => bool is_finished;
+    function @rec (void) => int get_time;
+    event _ServerEvent* e_EVENT_SEND;
     event void e_ARMAGEDDON;
     event void e_UPDATE;
 do
@@ -49,7 +59,7 @@ do
     function @rec (IPingu* pingu, int action) => void send_pingu_action_event do
         server.record(
             _ServerEvent__make_pingu_action_event(
-                server.get_time(),
+                get_time(),
                 pingu:get_id(),
                 pingu:get_pos(),
                 _to_AN(action)
@@ -63,7 +73,41 @@ do
         end
     end
 
+    function (void) => bool is_finished do
+        return goal_manager.is_finished();
+    end
+
+    function @rec (void) => int get_time do
+        return global:world:get_time();
+    end
+
+    function @rec (_ServerEvent* server_event, IPingu* p) => void do_pingu_action_event do
+        if p then
+            if server_event:pos.x != p:get_pos().x or server_event:pos.y != p:get_pos().y then
+                _log_error("DemoFile inconsistent with world, pingu %1% is at the wrong position", server_event:pingu_id);
+            end
+
+            call/rec send_pingu_action_event(p, server_event:pingu_action);
+        else
+            _log_error("DemoFile inconsistent with world, pingu %1% missing", server_event:pingu_id);
+        end
+    end
+
     par/or do
+        every server_event in e_EVENT_SEND do
+            if server_event:type == _SE_ARMAGEDDON_EVENT then
+                emit e_ARMAGEDDON;
+            else/if server_event:type == _SE_FINISH_EVENT then
+                server.send_finish_event();
+            else/if server_event:type == _SE_END_EVENT then
+                // do nothing
+            else/if server_event:type == _SE_PINGU_ACTION_EVENT then
+                call/rec do_pingu_action_event(server_event, call/rec global:world:get_pingus():get_pingu(server_event:pingu_id));
+            else
+                _assert(not "Unknown type");
+            end
+        end
+    with
         every s in SERVER_ARMAGEDDON do
             if s != &server then
                 continue;
@@ -95,14 +139,6 @@ do
                 )
             );
             goal_manager.set_abort_goal();
-        end
-    with
-        every package in SERVER_IS_FINISHED do
-            if package:server != &server then
-                continue;
-            end
-
-            package:is_finished = goal_manager.is_finished();
         end
     with
         every package in SERVER_GET_TIME do

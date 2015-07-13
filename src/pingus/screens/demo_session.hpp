@@ -71,14 +71,6 @@ public:
 
   /** Pass a delta to the screen */
   void update(float delta);
-  void update_demo();
-
-  struct EventSendPackage {
-    ServerEvent* event;
-    void* server;
-
-    EventSendPackage(ServerEvent* e, void* s): event(e), server(s) {};
-  };
 
   void on_pause_press ();
   void on_fast_forward_press ();
