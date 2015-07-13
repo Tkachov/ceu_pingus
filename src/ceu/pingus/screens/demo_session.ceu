@@ -16,27 +16,36 @@ native/pre do
     ##define new_GUI_Component() new GUI::Component()
     ##define new_RectComponent(r) new GUI::RectComponent(r)
     ##define new_Playfield(a) new Playfield(a)
+    ##define new_Server(a, b) new Server(a, b)
     ##define ScreenManager__instance() ScreenManager::instance()
     ##define addr(x) &x
 end
 
-native @pure _new_PingusCounter(), _new_GUI_Component(), _new_RectComponent(), _new_Playfield(), _ScreenManager__instance(), _addr();
+native @pure _new_PingusCounter(), _new_GUI_Component(), _new_RectComponent(), _new_Playfield(), _ScreenManager__instance(), _addr(), _new_Server();
 
 input _ComponentUpdatePackage* DEMO_SESSION_UPDATE_SERVER;
 input _DemoSession* DEMO_SESSION_UPDATE;
 input _DemoSession* DELETE_DEMO_SESSION;
 input _Vector2i* DEMO_SESSION_ON_SCROLLER_MOVE;
 
-#define GET_SERVER ((Server*)demo_session.server.get():ceu())
+#define GET_SERVER ((Server*)demo_session.server:ceu())
 
 class DemoSession with
     var _DemoSession* me;
     event void update_demo;
 do
     var _DemoSession&? demo_session = _PTR2REF((_DemoSession*)me);
+
+    var Server server with
+        demo_session.server = _new_Server(demo_session.plf, false);
+        this.me = _PTR2REF(demo_session.server);
+    end;
+
+    _init_WORLD(demo_session.server:plf);
+
     var PingusCounter pcounter with
         this.me = _new_GUI_Component();
-        this.server = _PTR2REF(demo_session.server.get());
+        this.server = _PTR2REF(demo_session.server);
         demo_session.pcounter = &this.me;
     end;
 
@@ -54,14 +63,14 @@ do
             )
         ));
         demo_session.playfield = _PTR2REF((_Playfield*)&this.me);
-        this.server = _PTR2REF(demo_session.server.get());
+        this.server = _PTR2REF(demo_session.server);
         this.session = null;
     end;
 
     var SmallMap small_map with
         this.rect = _PTR2REF(_new_RectComponent(_Rect(_Vector2i(5, demo_session.size.height - 105), _Size(175, 100))));
         this.me = _PTR2REF(this.rect);
-        this.server = _PTR2REF(demo_session.server.get());
+        this.server = _PTR2REF(demo_session.server);
         this.playfield = demo_session.playfield;
         demo_session.small_map = &this.rect;
     end;
@@ -79,7 +88,7 @@ do
                 if not demo_session.pause then                
                     if demo_session.fast_forward then
                         loop i in 4 do
-                            demo_session.server.get():update();
+                            demo_session.server:update();
                             emit update_demo;
                         end
                     else

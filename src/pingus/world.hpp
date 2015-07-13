@@ -20,6 +20,8 @@
 class PingusLevel;
 
 void init_WORLD(const PingusLevel& plf);
+void WORLD_create_objects(const PingusLevel& plf);
+void WORLD_send_event();
 
 struct WorldGetSizePackage {  
   int width, height;

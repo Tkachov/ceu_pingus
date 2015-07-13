@@ -55,12 +55,6 @@ with
         end;
     end
 with
-    every new_server in NEW_SERVER do
-        spawn Server with
-            this.me = _PTR2REF(new_server);
-        end;
-    end
-with
     every new_se in NEW_SERVER_EVENT do
         spawn ServerEvent with
             this.me = _PTR2REF(new_se);

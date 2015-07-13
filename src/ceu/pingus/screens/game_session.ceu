@@ -12,6 +12,7 @@
 #include "../components/pingus_counter.ceu"
 #include "../components/playfield.ceu"
 #include "../components/smallmap.ceu"
+#include "../server.ceu"
 
 native/pre do
     ##include "engine/screen/screen_manager.hpp"
@@ -31,6 +32,8 @@ native/pre do
 
     ##define new_GUI_Component() new GUI::Component()
     ##define new_RectComponent(r) new GUI::RectComponent(r)
+    ##define new_Server(a, b) new Server(a, b)
+    ##define new_ButtonPanel(a, b) new ButtonPanel(a, b)
     ##define new_Playfield(a) new Playfield(a)
     ##define new_TimeDisplay(s) new TimeDisplay(s)
     ##define new_Result() new Result()
@@ -48,7 +51,7 @@ native/pre do
     ##define Input__ScrollEvent Input::ScrollEvent
 end
 
-native @pure _new_PingusCounter(), _new_GUI_Component(), _new_RectComponent(), _new_Playfield(), _new_TimeDisplay(),
+native @pure _new_PingusCounter(), _new_GUI_Component(), _new_RectComponent(), _new_Server(), _new_ButtonPanel(), _new_Playfield(), _new_TimeDisplay(),
              _new_Result(), _new_Savegame(),
              _SavegameManager__instance(), _ScreenManager__instance(),
              _std__make_shared_ResultScreen(), _toSStatus(), _Display__get_width(), _Display__get_height();
@@ -61,11 +64,22 @@ class GameSession with
     var _GameSession* me;
 do
     var _GameSession&? game_session = _PTR2REF((_GameSession*)me);
+
+    var Server server with
+        game_session.server = _new_Server(game_session.plf, true);
+        this.me = _PTR2REF(game_session.server);
+    end;
+
+    //init_WORLD(server->plf);
+    _WORLD_create_objects(game_session.server:plf) finalize with end;
+
+    game_session.button_panel = _new_ButtonPanel(game_session.get_server(), _Vector2i(0, (game_session.size.height - 150)/2));
+
     var PingusCounter pcounter with
         this.me = _new_GUI_Component();
         this.server = _PTR2REF(game_session.get_server());
         game_session.pcounter = &this.me;
-    end;
+    end;    
 
     var Playfield playfield with
         game_session.playfield = _new_Playfield(
@@ -143,7 +157,7 @@ do
                 finalize result.needed = game_session.server:get_plf().get_number_to_save(); with end
 
                 finalize result.max_time  = game_session.server:get_plf().get_time(); with end
-                finalize result.used_time = ((Server*)game_session.server:ceu()):get_time(); with end
+                result.used_time = call/rec ((Server*)game_session.server:ceu()):get_time();
 
                 var int rs = _Savegame__ACCESSIBLE;
                 if result.saved >= result.needed then

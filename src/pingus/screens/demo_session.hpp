@@ -25,6 +25,7 @@
 #include "util/pathname.hpp"
 #include "engine/gui/component.hpp"
 #include "engine/gui/rect_component.hpp"
+#include "pingus/pingus_level.hpp"
 
 namespace Input {
 struct Event;
@@ -47,7 +48,7 @@ class DemoSession : public GUIScreen
 private:
   Pathname pathname;
 
-  std::unique_ptr<Server>     server;
+  Server* server;
   std::unique_ptr<PingusDemo> demo;
   std::vector<ServerEvent>  events;
 
@@ -58,6 +59,8 @@ private:
   BButton* fastforward_button;
   BButton* pause_button;
   BButton* restart_button;
+
+  PingusLevel plf;
 
   bool pause;
   bool fast_forward;

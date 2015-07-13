@@ -49,17 +49,13 @@ GameSession::GameSession(const PingusLevel& arg_plf, bool arg_show_result_screen
   fast_forward(false),
   single_step(false)
 {
-  server = std::unique_ptr<Server>(new Server(plf, true));
-
   log_debug("GameSession");
-
-  // -- Client stuff
-
-  // These object will get deleted by the gui_manager
-  button_panel = new ButtonPanel(get_server(), Vector2i(0, (size.height - 150)/2));
 
   GameSession* self = this;
   ceu_out_go(&CEUapp, CEU_IN_NEW_GAME_SESSION, &self);
+
+  //init_WORLD(server->plf);
+  WORLD_send_event();
 }
 
 GameSession::~GameSession()
