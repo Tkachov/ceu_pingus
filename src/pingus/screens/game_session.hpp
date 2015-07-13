@@ -47,7 +47,7 @@ private:
   bool show_result_screen;
 
   /// The server
-  Server* server;
+  std::unique_ptr<Server> server;
 
   // -- Client stuff
   ButtonPanel*   button_panel;
@@ -71,7 +71,7 @@ public:
   /** Pass a delta to the screen */
   void update_server(float delta);
 
-  Server*    get_server() { return server; }
+  Server*    get_server() { return server.get(); }
   Playfield* get_playfield() { return playfield; }
 
   /** Update all parts of the world */

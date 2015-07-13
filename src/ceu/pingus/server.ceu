@@ -28,10 +28,12 @@ end
 
 native @pure _init_WORLD();
 
+input _Server* NEW_SERVER;
 input _Server* SERVER_ARMAGEDDON;
 input _Server* SERVER_FINISH_EVENT;
 input _GetTimePackage* SERVER_GET_TIME;
 input _Server* SERVER_UPDATE;
+input _Server* DELETE_SERVER;
 
 class Server with
     var _Server* me;
@@ -42,7 +44,6 @@ class Server with
     event void e_ARMAGEDDON;
     event void e_UPDATE;
 do
-    finalize with _delete_obj(me); end
     var GoalManager goal_manager with
         this.server = me;
     end;
@@ -58,7 +59,7 @@ do
     function @rec (IPingu* pingu, int action) => void send_pingu_action_event do
         server.record(
             _ServerEvent__make_pingu_action_event(
-                call/rec get_time(),
+                get_time(),
                 pingu:get_id(),
                 pingu:get_pos(),
                 _to_AN(action)
@@ -92,7 +93,7 @@ do
         end
     end
 
-    par do
+    par/or do
         every server_event in e_EVENT_SEND do
             if server_event:type == _SE_ARMAGEDDON_EVENT then
                 emit e_ARMAGEDDON;
@@ -164,6 +165,9 @@ do
             emit world.e_UPDATE;
             emit goal_manager.e_UPDATE;
         end
+    with
+        var _Server* e = await DELETE_SERVER until (e == &server);
+        //emit world.e_DELETE;
     end
 end
 

@@ -28,7 +28,7 @@ class DemoRecorder;
 /** A abstract server-like class */
 class Server
 {
-public:
+protected:
   PingusLevel plf;
 
   /** Manager class for the number of available actions */
@@ -51,7 +51,7 @@ public:
   int get_time();
 
   ActionHolder* get_action_holder();
-
+  
   /** set the server into the finshed state, this is used when you
       press ESCAPE inside a game */
   void send_finish_event();
