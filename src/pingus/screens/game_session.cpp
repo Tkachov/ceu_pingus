@@ -24,7 +24,6 @@
 #include "engine/sound/sound.hpp"
 #include "pingus/components/button_panel.hpp"
 #include "pingus/components/playfield.hpp"
-#include "pingus/components/smallmap.hpp"
 #include "pingus/components/time_display.hpp"
 #include "pingus/globals.hpp"
 #include "pingus/savegame_manager.hpp"
@@ -38,7 +37,6 @@ GameSession::GameSession(const PingusLevel& arg_plf, bool arg_show_result_screen
   plf(arg_plf),
   show_result_screen(arg_show_result_screen),
   server(),
-  world_delay(),
   is_finished  (false),
   button_panel (0),
   pcounter     (0),
@@ -53,9 +51,6 @@ GameSession::GameSession(const PingusLevel& arg_plf, bool arg_show_result_screen
   single_step(false)
 {
   server = std::unique_ptr<Server>(new Server(plf, true));
-
-  // the world is initially on time
-  world_delay = 0;
 
   log_debug("GameSession");
 
@@ -76,9 +71,8 @@ GameSession::GameSession(const PingusLevel& arg_plf, bool arg_show_result_screen
 
   GameSession* self = this;
   ceu_out_go(&CEUapp, CEU_IN_NEW_GAME_SESSION, &self);
-
-  small_map    = new SmallMap(get_server(), playfield, Rect(Vector2i(5, size.height - 105), Size(175, 100)));
-  time_display = new TimeDisplay(this);
+  
+  time_display = new TimeDisplay(get_server());
 
   gui_manager->add(playfield);
   gui_manager->add(button_panel);

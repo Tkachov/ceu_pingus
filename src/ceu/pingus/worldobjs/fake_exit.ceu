@@ -8,10 +8,6 @@
 #include "../ipingu_holder.ceu"
 #include "../pingu_holder_listener.ceu"
 
-native/pre do
-    ##include "pingus/components/smallmap.hpp"
-end
-
 class FakeExit with
     interface IWorldObj;
     var _Sprite&? sprite;

@@ -6,13 +6,15 @@
 #include "../iworld.ceu"
 #include "../pingu_holder_listener.ceu"
 #include "../components/pingus_counter.ceu"
+#include "../components/smallmap.ceu"
 
 native/pre do
     ##include "pingus/screens/demo_session.hpp"
     ##define new_GUI_Component() new GUI::Component()
+    ##define new_RectComponent(r) new GUI::RectComponent(r)
 end
 
-native @pure _new_PingusCounter(), _new_GUI_Component();
+native @pure _new_PingusCounter(), _new_GUI_Component(), _new_RectComponent();
 
 input _DemoSession* DEMO_SESSION_UPDATE;
 input _DemoSession* DELETE_DEMO_SESSION;
@@ -25,6 +27,14 @@ do
         this.me = _new_GUI_Component();
         this.server = _PTR2REF(demo_session.server.get());
         demo_session.pcounter = &this.me;
+    end;
+
+    var SmallMap small_map with
+        this.rect = _PTR2REF(_new_RectComponent(_Rect(_Vector2i(5, demo_session.size.height - 105), _Size(175, 100))));
+        this.me = _PTR2REF(this.rect);
+        this.server = _PTR2REF(demo_session.server.get());
+        this.playfield = demo_session.playfield;
+        demo_session.small_map = &this.rect;
     end;
 
     par/or do

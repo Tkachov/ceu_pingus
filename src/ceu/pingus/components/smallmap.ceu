@@ -14,24 +14,25 @@
 #include "ismallmap.ceu"
 
 native/pre do
-    ##include "pingus/components/smallmap.hpp"
+    ##include "pingus/components/playfield.hpp"
+    ##include "pingus/server.hpp"
     ##define new_Surface2(a, b) new Surface(a, b)
 end
 
 native @pure _new_Surface2();
 
-input _SmallMap* NEW_SMALLMAP;
-input _SmallMap* DELETE_SMALLMAP;
-
 class SmallMap with
     interface IGUI_Component;
     interface ISmallMap;
+    var _GUI_RectComponent&? rect;
+    var _Server&?   server;
+    var _Playfield* playfield;
 do
-    var _SmallMap&? small_map = _PTR2REF((_SmallMap*)&me);
+    var _DrawingContext* gc_ptr = null;
 
     var SmallMapImage image with
-        this.server = _PTR2REF(small_map.server);
-        this.canvas = _new_Surface2(small_map.rect.get_width(), small_map.rect.get_height());
+        this.server = _PTR2REF(server);
+        this.canvas = _new_Surface2(rect.rect.get_width(), rect.rect.get_height());
     end;
 
     var EventProxy ep with this.gui = outer; end;
@@ -44,66 +45,65 @@ do
             return;
         end
 
-        if small_map.gc_ptr == null then
+        if gc_ptr == null then
             _log_error("SmallMap.draw_sprite() is used outside its draw event! (Or <gc> ptr suddenly became 0)");
             return;
         end
 
-        var float x = (float)(small_map.rect.left) + (pos.x * (float)(small_map.rect.get_width())  / (float)(global:world:get_width()));
-        var float y = (float)(small_map.rect.top)  + (pos.y * (float)(small_map.rect.get_height()) / (float)(global:world:get_height()));
-        small_map.gc_ptr:draw(_deref(sprite), _Vector3f(x, y));
+        var float x = (float)(rect.rect.left) + (pos.x * (float)(rect.rect.get_width())  / (float)(global:world:get_width()));
+        var float y = (float)(rect.rect.top)  + (pos.y * (float)(rect.rect.get_height()) / (float)(global:world:get_height()));
+        gc_ptr:draw(_deref(sprite), _Vector3f(x, y));
     end
 
     var bool scroll_mode = false;
-    var bool has_focus = false; //TODO: unused, remove?
 
-    par/or do
+    par do
         every gc in draw do
             // FIXME: This is potentially dangerous, since we don't know how
             // long 'gc' will be alive. Should use a DrawingContext for caching.
-            small_map.gc_ptr = _PTR2REF(gc);
+            gc_ptr = _PTR2REF(gc);
 
-            var int ofx = small_map.playfield:get_pos().x;
-            var int ofy = small_map.playfield:get_pos().y;
+            var int ofx = playfield:get_pos().x;
+            var int ofy = playfield:get_pos().y;
             var int view_rect_left = 0;
             var int view_rect_top = 0;
             var int view_rect_right = 0;
             var int view_rect_bottom = 0;
 
             if global:world != null then
-                if global:world:get_width() > small_map.gc_ptr:get_width() then
-                    var int rwidth = small_map.gc_ptr:get_width()  * small_map.rect.get_width()  / global:world:get_width();
-                    view_rect_left  = small_map.rect.left + (ofx * small_map.rect.get_width()  / global:world:get_width()) - rwidth/2;
+                if global:world:get_width() > gc_ptr:get_width() then
+                    var int rwidth = gc_ptr:get_width()  * rect.rect.get_width()  / global:world:get_width();
+                    view_rect_left  = rect.rect.left + (ofx * rect.rect.get_width()  / global:world:get_width()) - rwidth/2;
                     view_rect_right = view_rect_left + rwidth;
                 else
-                    view_rect_left  = small_map.rect.left;
-                    view_rect_right = small_map.rect.left + small_map.rect.get_width();
+                    view_rect_left  = rect.rect.left;
+                    view_rect_right = rect.rect.left + rect.rect.get_width();
                 end
 
-                if global:world:get_height() > small_map.gc_ptr:get_height() then
-                    var int rheight = small_map.gc_ptr:get_height() * small_map.rect.get_height() / global:world:get_height();
-                    view_rect_top    = small_map.rect.top + (ofy * small_map.rect.get_height() / global:world:get_height()) - rheight/2;
+                if global:world:get_height() > gc_ptr:get_height() then
+                    var int rheight = gc_ptr:get_height() * rect.rect.get_height() / global:world:get_height();
+                    view_rect_top    = rect.rect.top + (ofy * rect.rect.get_height() / global:world:get_height()) - rheight/2;
                     view_rect_bottom = view_rect_top + rheight;
                 else
-                    view_rect_top    = small_map.rect.top;
-                    view_rect_bottom = small_map.rect.top + small_map.rect.get_height();
+                    view_rect_top    = rect.rect.top;
+                    view_rect_bottom = rect.rect.top + rect.rect.get_height();
                 end
 
-                small_map.gc_ptr:draw(_deref(call/rec image.get_surface()), _Vector2i(small_map.rect.left, small_map.rect.top) finalize with end);
-                small_map.gc_ptr:draw_rect(_Rect(view_rect_left, view_rect_top, view_rect_right, view_rect_bottom), _Color(0, 255, 0));
+                gc_ptr:draw(_deref(call/rec image.get_surface()), _Vector2i(rect.rect.left, rect.rect.top) finalize with end);
+                gc_ptr:draw_rect(_Rect(view_rect_left, view_rect_top, view_rect_right, view_rect_bottom), _Color(0, 255, 0));
 
                 emit global:world:e_DRAW_SMALLMAP => &this;
 
                 // Draw Pingus
                 loop pingu in global:world:get_pingus():all_pingus do
-                    var int x = (float)small_map.rect.left + pingu:get_x()*(float)small_map.rect.get_width()/(float)global:world:get_width();
-                    var int y = (float)small_map.rect.top + pingu:get_y()*(float)small_map.rect.get_height()/(float)global:world:get_height();
+                    var int x = (float)rect.rect.left + pingu:get_x()*(float)rect.rect.get_width()/(float)global:world:get_width();
+                    var int y = (float)rect.rect.top + pingu:get_y()*(float)rect.rect.get_height()/(float)global:world:get_height();
 
-                    _gc_draw_line(small_map.gc_ptr, _Vector2i(x, y), _Vector2i(x, y-2), _Color(255, 255, 0));
+                    _gc_draw_line(gc_ptr, _Vector2i(x, y), _Vector2i(x, y-2), _Color(255, 255, 0));
                 end
             end
 
-            small_map.gc_ptr = null;
+            gc_ptr = null;
         end
     with
         every delta in update do
@@ -112,10 +112,10 @@ do
     with
         every (x, y) in mouse_move do
             if scroll_mode then
-                var int cx = (x - small_map.rect.left) * (int)(global:world:get_width()  / small_map.rect.get_width());
-                var int cy = (y - small_map.rect.top) * (int)(global:world:get_height() / small_map.rect.get_height());
+                var int cx = (x - rect.rect.left) * (int)(global:world:get_width()  / rect.rect.get_width());
+                var int cy = (y - rect.rect.top) * (int)(global:world:get_height() / rect.rect.get_height());
 
-                small_map.playfield:set_viewpoint(cx, cy);
+                playfield:set_viewpoint(cx, cy);
             end
         end
     with
@@ -123,25 +123,15 @@ do
             scroll_mode = true;
 
             // set view to the given COs
-            var int cx = (x - small_map.rect.left) * (int)(global:world:get_width()) / small_map.rect.get_width();
-            var int cy = (y - small_map.rect.top) * (int)(global:world:get_height()) / small_map.rect.get_height();
+            var int cx = (x - rect.rect.left) * (int)(global:world:get_width()) / rect.rect.get_width();
+            var int cy = (y - rect.rect.top) * (int)(global:world:get_height()) / rect.rect.get_height();
 
-            small_map.playfield:set_viewpoint(cx, cy);
+            playfield:set_viewpoint(cx, cy);
         end
     with
         every mouse_release do
             scroll_mode = false;
         end
-    with
-        loop do
-            await mouse_enter;
-            has_focus = true;
-
-            await mouse_leave;
-            has_focus = false;
-        end
-    with
-        var _SmallMap* e = await DELETE_SMALLMAP until (e == &small_map);
     end
 end
 

@@ -30,7 +30,6 @@ class PingusCounter with
     interface IGUI_Component;
     var _Server&? server;
 do
-    var _SmallMap&? small_map = _PTR2REF((_SmallMap*)&me);
     var Sprite background;
     call/rec background.reload_by_name("core/buttons/info");
 

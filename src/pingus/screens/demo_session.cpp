@@ -23,7 +23,6 @@
 #include "engine/gui/surface_button.hpp"
 #include "engine/screen/screen_manager.hpp"
 #include "pingus/components/playfield.hpp"
-#include "pingus/components/smallmap.hpp"
 #include "pingus/components/button_panel.hpp"
 #include "pingus/pingus_demo.hpp"
 #include "pingus/server.hpp"
@@ -103,11 +102,6 @@ DemoSession::DemoSession(const Pathname& pathname_) :
   server   = std::unique_ptr<Server>(new Server(plf, false));
 
   // Create GUI
-  DemoSession* self = this;
-  ceu_out_go(&CEUapp, CEU_IN_NEW_DEMO_SESSION, &self);
-  gui_manager->add(pcounter);
-  gui_manager->add(new ButtonPanel(server.get(), Vector2i(0, (size.height - 100)/2)));
-
   WorldGetSizePackage package;
   WorldGetSizePackage* pp = &package;
   ceu_out_go(&CEUapp, CEU_IN_WORLD_GET_SIZE, &pp);
@@ -118,9 +112,14 @@ DemoSession::DemoSession(const Pathname& pathname_) :
                                  Size(Math::min(size.width,  package.width),
                                       Math::min(size.height, package.height))));
 
-  gui_manager->add(playfield);
+  DemoSession* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_NEW_DEMO_SESSION, &self);  
 
-  small_map    = new SmallMap(server.get(), playfield, Rect(Vector2i(5, size.height - 105), Size(175, 100)));
+  gui_manager->add(pcounter);
+  gui_manager->add(new ButtonPanel(server.get(), Vector2i(0, (size.height - 100)/2)));
+
+  gui_manager->add(playfield);
+  
   gui_manager->add(small_map);
 
   gui_manager->add(fastforward_button= new BButton(32+50, 32, "core/demo/fastforward",

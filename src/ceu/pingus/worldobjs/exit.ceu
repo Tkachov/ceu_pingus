@@ -9,7 +9,6 @@
 #include "../pingu_holder_listener.ceu"
 
 native/pre do
-    ##include "pingus/components/smallmap.hpp"
     ##include "pingus/res_descriptor.hpp"
     ##define new_ResDescriptor() new ResDescriptor()
     ##define colmap_removeD(cm, desc, x, y) { CollisionMask __mask(*desc); cm->remove(__mask, x, y); }

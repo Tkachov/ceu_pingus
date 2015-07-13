@@ -8,10 +8,6 @@
 #include "../ipingu_holder.ceu"
 #include "../pingu_holder_listener.ceu"
 
-native/pre do
-    ##include "pingus/components/smallmap.hpp"
-end
-
 #define ED_LEFT 1
 #define ED_RIGHT 2
 #define ED_MISC 3

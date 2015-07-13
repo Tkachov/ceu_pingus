@@ -24,6 +24,7 @@
 #include "pingus/server_event.hpp"
 #include "util/pathname.hpp"
 #include "engine/gui/component.hpp"
+#include "engine/gui/rect_component.hpp"
 
 namespace Input {
 struct Event;
@@ -35,7 +36,6 @@ class XMLPDF;
 class DemoPlayer;
 class PingusDemo;
 class Playfield;
-class SmallMap;
 class BButton;
 class ButtonPanel;
 
@@ -53,7 +53,7 @@ private:
 
   GUI::Component* pcounter;
   Playfield*     playfield;
-  SmallMap*      small_map;
+  GUI::RectComponent* small_map;
 
   BButton* fastforward_button;
   BButton* pause_button;

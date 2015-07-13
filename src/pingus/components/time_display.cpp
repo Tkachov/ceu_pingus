@@ -21,13 +21,12 @@
 #include "pingus/fonts.hpp"
 #include "pingus/game_time.hpp"
 #include "pingus/globals.hpp"
-#include "pingus/screens/game_session.hpp"
 #include "pingus/server.hpp"
 #include "util/log.hpp"
 #include "util/string_util.hpp"
 
-TimeDisplay::TimeDisplay (GameSession* c) :
-  server(c->get_server()),
+TimeDisplay::TimeDisplay(Server* s):
+  server(s),
   font(),
   infinity_symbol("core/misc/infinity")
 {

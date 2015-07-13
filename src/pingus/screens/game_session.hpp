@@ -34,7 +34,6 @@ struct Event;
 class ButtonPanel;
 class Playfield;
 class TimeDisplay;
-class SmallMap;
 class Server;
 
 /** You can use this class to start up a game session, which consist
@@ -50,8 +49,6 @@ private:
   /// The server
   std::unique_ptr<Server> server;
 
-  int world_delay; ///< how many milliseconds is the world behind the actual time
-
   // -- Client stuff
   bool is_finished;
 
@@ -59,7 +56,7 @@ private:
   GUI::Component* pcounter;
   Playfield*     playfield;
   TimeDisplay*   time_display;
-  SmallMap*      small_map;
+  GUI::RectComponent* small_map;
 
   GUI::RectComponent* armageddon_button;
   GUI::RectComponent* forward_button;
