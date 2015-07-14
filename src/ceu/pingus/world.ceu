@@ -361,7 +361,7 @@ do
                     this.owner_id = 0;
                 end
 
-                var _String&? direction_str = _PTR2REF(_new_String());
+                var _std__string&? direction_str = _PTR2REF(_new_String());
                 _string_read_string(direction_str, package:reader, "direction");
 
                 if direction_str == "left" then

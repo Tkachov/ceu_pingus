@@ -11,8 +11,8 @@
 class Hammer with
     interface IWorldObj;
 do
-    var Sprite sprite;
-    call/rec sprite.reload_by_name("traps/hammer");
+    var Sprite2 sprite;
+    sprite.reload_by_name("traps/hammer");
 
     call/rec global:world:add_object(&this);
     var int current_frame = 0;
@@ -25,7 +25,7 @@ do
 
     par/or do
         every gc in e_DRAW do
-            _gc_color_draw2(gc, sprite.get(), _toVector3f(pos));
+            sprite.draw2(gc, pos);
         end
     with
         loop do

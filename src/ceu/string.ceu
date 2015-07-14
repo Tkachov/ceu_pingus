@@ -6,7 +6,7 @@ native/pre do
     ##define const_char_string const char*
 
     ##define new_String() new std::string()
-    ##define String std::string
+    ##define std__string std::string
 
     ##define string_set(s, v) *s = v
     ##define string_add(s, v) *s += v
@@ -26,7 +26,7 @@ class String with
     function (void) => bool empty;
     function (void) => _const_char_string get;
 do
-    var _String&? ss = _PTR2REF(_new_String());
+    var _std__string&? ss = _PTR2REF(_new_String());
     finalize with _delete_obj(ss); end;
 
     function (_const_char_string v) => void set do

@@ -24,9 +24,9 @@ class Exit with
     var _Sprite&? flag;
 do
     var Sprite smallmap_symbol;
-    var Sprite sprite;
+    var Sprite2 sprite;
     call/rec smallmap_symbol.reload_by_name("core/misc/smallmap_exit");
-    call/rec sprite.reload_by_desc(&desc);
+    sprite.reload_by_desc(&desc);
 
     function (_FileReader* reader) => void construct do
         //Unfortunately, we can't make `desc`/`sprite`/etc "private"
@@ -58,7 +58,7 @@ do
 
     par/or do
         every gc in e_DRAW do
-            _gc_color_draw2(gc, sprite.get(), _toVector3f(pos));
+            sprite.draw2(gc, pos);
             _gc_color_draw2(gc, &flag, _toVector3f(pos) + _Vector3f(40, 0));
         end
     with
@@ -71,7 +71,7 @@ do
         end
     with
         every e_UPDATE do
-            sprite.update();
+            emit sprite.default_update;
 
             loop pingu in global:world:get_pingus():all_pingus do
                 // Make sure this particular exit is allowed for this pingu

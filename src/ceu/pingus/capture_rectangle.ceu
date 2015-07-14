@@ -23,7 +23,7 @@ class CaptureRectangle with
     event _SceneContext* draw;
 do
     var IPingu* pingu = null;
-    var _String&? action_str = _new_String();
+    var _std__string&? action_str = _new_String();
     finalize with _delete_obj(action_str); end;
 
     var _Sprite&? good = _PTR2REF(_new_SpriteA("game/cursors/capgood"));

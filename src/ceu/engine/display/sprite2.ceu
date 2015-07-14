@@ -1,0 +1,179 @@
+#ifndef SPRITE2_CEU
+#define SPRITE2_CEU
+
+#include "../../math/vector2i.ceu"
+#include "../../math/vector3f.ceu"
+
+native/pre do
+    ##include "engine/display/scene_context.hpp"
+    ##include "engine/display/sprite_description.hpp"
+    ##include "engine/display/sprite_impl.hpp"
+    ##include "pingus/resource.hpp"
+    
+    ##define new_SpriteImpl new SpriteImpl
+    ##define new_SpriteDescription() new SpriteDescription()
+    ##define Resource__load_sprite_desc Resource::load_sprite_desc
+    ##define Pathname__DATA_PATH Pathname::DATA_PATH
+end
+
+native @pure _new_SpriteImpl(), _new_SpriteDescription(), _Resource__load_sprite_desc();
+
+class Sprite2 with
+    function (_const_char_string filename) => void reload_by_name;
+    function (_ResDescriptor* desc) => void reload_by_desc;
+
+  /*
+  Sprite();
+  Sprite(const SpriteDescription& desc, ResourceModifier::Enum mod = ResourceModifier::ROT0);
+  Sprite(const Surface& surface);
+  ~Sprite();
+
+  void render(int x, int y, Framebuffer& target);
+
+  void set_hotspot(Origin origin, int x, int y);
+  Vector2i get_offset() const;
+  void finish();
+  operator bool() const;
+  */
+    
+    function (_SceneContext* gc, Vector2i pos, float z) => void draw;
+    function (_SceneContext* gc, Vector3f pos) => void draw2;
+
+    event float update;
+    event void default_update;
+
+    function (void) => void restart;
+
+    function (void) => int get_width;
+    function (void) => int get_height;
+    function (void) => int get_frame_count;    
+    function (void) => int get_current_frame;    
+    function (void) => bool is_finished;
+    function (void) => bool is_looping;
+
+    function (int i) => void set_frame;
+    function (bool l) => void set_play_loop;  
+do
+    var _SpriteImpl* impl = null;
+    finalize with _delete_obj(impl); end;
+
+    function (_const_char_string filename) => void reload_by_name do
+        _delete_obj(impl);
+
+        var _SpriteDescription* desc = _Resource__load_sprite_desc(filename);
+        if desc then
+            impl = _new_SpriteImpl(_deref(desc));
+        else  
+            desc = _new_SpriteDescription();
+            desc:filename = _PTR2REF(_Pathname("images/core/misc/404.png", _Pathname__DATA_PATH));
+            impl = _new_SpriteImpl(_deref(desc));
+            _delete_obj(desc);
+        end
+    end
+
+    function (_ResDescriptor* res_desc) => void reload_by_desc do
+        _delete_obj(impl);
+
+        var _SpriteDescription* desc = _Resource__load_sprite_desc(res_desc:res_name);
+        if desc then            
+            impl = _new_SpriteImpl(_deref(desc), res_desc:modifier);
+        else  
+            desc = _new_SpriteDescription();
+            desc:filename = _PTR2REF(_Pathname("images/core/misc/404.png", _Pathname__DATA_PATH));
+            impl = _new_SpriteImpl(_deref(desc));
+            _delete_obj(desc);
+        end
+    end
+
+    function (_SceneContext* gc, Vector2i pos, float z) => void draw do
+        if impl then
+            impl:draw(gc:color(), _toVector2i(pos), z);
+        end
+    end
+
+    function (_SceneContext* gc, Vector3f pos) => void draw2 do
+        if impl then
+            impl:draw(gc:color(), _toVector3f(pos));
+        end
+    end
+
+    function (void) => void restart do
+        if impl then
+            impl:restart();
+        end
+    end
+
+    function (void) => int get_width do
+        if impl then
+            return impl:frame_size.width;
+        else
+            return 0;
+        end
+    end
+
+    function (void) => int get_height do
+        if impl then
+            return impl:frame_size.height;
+        else
+            return 0;
+        end
+    end
+    
+    function (void) => int get_frame_count do 
+        if impl then
+            return impl:array.width * impl:array.height;
+        else
+            return 0;
+        end
+    end
+    
+    function (void) => int get_current_frame do
+        if impl then
+            return impl:frame;
+        else
+            return 0;
+        end
+    end
+    
+    function (void) => bool is_finished do
+        if impl then
+            return impl:finished;
+        else
+            return true;
+        end
+    end
+
+    function (void) => bool is_looping do
+        if impl then
+            return impl:loop_last_cycle;
+        else
+            return false;
+        end
+    end
+
+    function (int i) => void set_frame do
+        if impl then
+            impl:frame = i;
+        end
+    end
+
+    function (bool l) => void set_play_loop do 
+        if impl then
+            impl:loop = l;
+        end
+    end
+
+    par do
+        every delta in update do
+            if impl then
+                impl:update(delta);
+            end
+        end
+    with
+        every default_update do
+            emit update => 0.033;
+        end
+    end
+end
+
+#endif

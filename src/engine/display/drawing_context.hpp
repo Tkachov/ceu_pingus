@@ -21,9 +21,11 @@
 
 #include "engine/display/drawing_request.hpp"
 #include "math/color.hpp"
+#include "math/vector2i.hpp"
 #include "math/vector3f.hpp"
 
 class Framebuffer;
+class FramebufferSurface;
 class Font;
 class Sprite;
 
@@ -68,6 +70,8 @@ public:
 
   void draw(const Sprite& sprite, const Vector2i& pos, float z = 0);
   void draw(const Sprite& sprite, const Vector3f& pos);
+
+  void draw(FramebufferSurface& fsurf, Rect srect, const Vector2i& pos, float z);
   
   /** Fills the screen with a given color, this is different from
       clear() in that it doesn't remove other DrawingRequest from the

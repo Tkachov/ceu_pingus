@@ -15,6 +15,7 @@ end
 
 native @pure _new_CollisionMask(), _colmap_put(), _colmap_remove();
 
+#include "../engine/display/sprite2.ceu"
 #include "../math/vector3f.ceu"
 #include "../string.ceu"
 #include "components/ismallmap.ceu"

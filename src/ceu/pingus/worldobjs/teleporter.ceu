@@ -12,7 +12,7 @@
 
 class Teleporter with
     interface IWorldObj;
-    var _String&? target_id;
+    var _std__string&? target_id;
 do
     var Sprite sprite;
     call/rec sprite.reload_by_name("worldobjs/teleporter");

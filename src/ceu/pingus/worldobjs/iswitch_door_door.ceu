@@ -7,7 +7,7 @@
 
 interface ISwitchDoorDoor with
     interface IWorldObj;
-    var _String&? id;
+    var _std__string&? id;
 
     function (void) => void open_door;
 end

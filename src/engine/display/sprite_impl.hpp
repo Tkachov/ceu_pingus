@@ -19,9 +19,11 @@
 
 #include "engine/display/framebuffer_surface.hpp"
 #include "math/vector2i.hpp"
+#include "math/vector3f.hpp"
 
 class SpriteDescription;
 class Framebuffer;
+class DrawingContext;
 
 class SpriteImpl
 {
@@ -54,6 +56,9 @@ public:
   ~SpriteImpl();
 
   void update(float delta);
+
+  void draw(DrawingContext& gc, Vector3f pos);
+  void draw(DrawingContext& gc, Vector2i pos, float z);
 
   void render(int x, int y, Framebuffer& fb);
 

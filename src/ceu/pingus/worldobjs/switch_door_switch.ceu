@@ -12,7 +12,7 @@
 
 class SwitchDoorSwitch with
     interface IWorldObj;
-    var _String&? m_target;
+    var _std__string&? m_target;
 do
     var bool is_triggered = false;
     var Sprite switch_sur;

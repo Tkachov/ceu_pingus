@@ -64,7 +64,7 @@ interface IPingu with
     function @rec (int req_action) => bool request_set_action;
 
     function (void) => int get_owner;
-    function (void) => _String get_owner_str;
+    function (void) => _std__string get_owner_str;
     function (void) => uint get_id;
 end
 

@@ -81,7 +81,7 @@ do
         return owner_id;
     end
 
-    function (void) => _String get_owner_str do
+    function (void) => _std__string get_owner_str do
         return _StringUtil__to_string(owner_id);
     end
 

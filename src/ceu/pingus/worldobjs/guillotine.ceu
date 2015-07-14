@@ -11,15 +11,14 @@
 class Guillotine with
     interface IWorldObj;
 
-
     var bool killing = false;
 do
-    var Sprite sprite_kill_right;
-    var Sprite sprite_kill_left;
-    var Sprite sprite_idle;
-    call/rec sprite_kill_right.reload_by_name("traps/guillotinekill/right");
-    call/rec sprite_kill_left.reload_by_name("traps/guillotinekill/left");
-    call/rec sprite_idle.reload_by_name("traps/guillotineidle");
+    var Sprite2 sprite_kill_right;
+    var Sprite2 sprite_kill_left;
+    var Sprite2 sprite_idle;
+    sprite_kill_right.reload_by_name("traps/guillotinekill/right");
+    sprite_kill_left.reload_by_name("traps/guillotinekill/left");
+    sprite_idle.reload_by_name("traps/guillotineidle");
     sprite_kill_right.set_play_loop(false);
     sprite_kill_left.set_play_loop(false);
     sprite_idle.set_play_loop(true);
@@ -39,12 +38,12 @@ do
         every gc in e_DRAW do
             if killing then
                 if direction.is_left() then
-                    _gc_color_draw2(gc, sprite_kill_left.get(), _toVector3f(pos));
+                    sprite_kill_left.draw2(gc, pos);
                 else
-                    _gc_color_draw2(gc, sprite_kill_right.get(), _toVector3f(pos));
+                    sprite_kill_right.draw2(gc, pos);
                 end
             else
-                _gc_color_draw2(gc, sprite_idle.get(), _toVector3f(pos));
+                sprite_idle.draw2(gc, pos);
             end
         end
     with
@@ -69,15 +68,15 @@ do
 
             if killing then
                 // Update both sprites so they finish at the same time.
-                sprite_kill_left.update();
-                sprite_kill_right.update();
+                emit sprite_kill_left.default_update;
+                emit sprite_kill_right.default_update;
 
                 // original FIXME: Should be a different sound
                 if sprite_kill_left.get_current_frame() == 7 then
                     global:world:play_sound("splash", pos, 0.5);
                 end
             else
-                sprite_idle.update();
+                emit sprite_idle.default_update;
             end
         end
     with

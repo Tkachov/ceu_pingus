@@ -73,6 +73,27 @@ public:
   }
 };
 
+class SpriteImplDrawingRequest: public DrawingRequest {
+private:  
+  FramebufferSurface& framebuffer_surface;
+  Rect surface_rect;
+
+public:
+  SpriteImplDrawingRequest(FramebufferSurface& fsurf, Rect& srect, const Vector2i& pos_, float z_):
+    DrawingRequest(pos_, z_),
+    framebuffer_surface(fsurf),
+    surface_rect(srect)
+  {}
+
+  virtual ~SpriteImplDrawingRequest() {}
+
+  void render(Framebuffer& fb, const Rect& rect) {
+    int x = pos.x + rect.left;
+    int y = pos.y + rect.top;
+    fb.draw_surface(framebuffer_surface, surface_rect, Vector2i(x, y));
+  }
+};
+
 class FillScreenDrawingRequest : public DrawingRequest
 {
 private:
@@ -257,6 +278,12 @@ DrawingContext::draw(const Sprite& sprite, const Vector3f& pos)
   draw(new SpriteDrawingRequest(sprite, Vector2i(translate_stack.back().x + static_cast<int>(pos.x),
                                                  translate_stack.back().y + static_cast<int>(pos.y)),
                                 pos.z));
+}
+
+void
+DrawingContext::draw(FramebufferSurface& fsurf, Rect srect, const Vector2i& pos, float z)
+{
+  draw(new SpriteImplDrawingRequest(fsurf, srect, pos + translate_stack.back(), z));
 }
 
 void
