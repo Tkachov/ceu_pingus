@@ -38,12 +38,12 @@ do
         every gc in e_DRAW do
             if killing then
                 if direction.is_left() then
-                    sprite_kill_left.draw2(gc, pos);
+                    sprite_kill_left.draw(gc, pos);
                 else
-                    sprite_kill_right.draw2(gc, pos);
+                    sprite_kill_right.draw(gc, pos);
                 end
             else
-                sprite_idle.draw2(gc, pos);
+                sprite_idle.draw(gc, pos);
             end
         end
     with

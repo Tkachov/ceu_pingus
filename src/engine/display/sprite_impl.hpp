@@ -25,6 +25,8 @@ class SpriteDescription;
 class Framebuffer;
 class DrawingContext;
 
+FramebufferSurface load_framebuffer_surface(const Pathname& filename, ResourceModifier::Enum modifier);
+
 class SpriteImpl
 {
 private:
@@ -56,9 +58,6 @@ public:
   ~SpriteImpl();
 
   void update(float delta);
-
-  void draw(DrawingContext& gc, Vector3f pos);
-  void draw(DrawingContext& gc, Vector2i pos, float z);
 
   void render(int x, int y, Framebuffer& fb);
 

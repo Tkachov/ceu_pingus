@@ -58,7 +58,7 @@ do
 
     par/or do
         every gc in e_DRAW do
-            sprite.draw2(gc, pos);
+            sprite.draw(gc, pos);
             _gc_color_draw2(gc, &flag, _toVector3f(pos) + _Vector3f(40, 0));
         end
     with

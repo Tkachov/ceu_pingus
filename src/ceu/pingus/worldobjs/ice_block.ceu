@@ -37,7 +37,7 @@ do
     with
         every gc in e_DRAW do
             if not is_finished then
-                block_sur.draw2(gc, pos);
+                block_sur.draw(gc, pos);
             end
         end
     with

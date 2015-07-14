@@ -149,25 +149,6 @@ SpriteImpl::render(int x, int y, Framebuffer& fb)
                   Vector2i(x - offset.x, y - offset.y));
 }
 
-void SpriteImpl::draw(DrawingContext& gc, Vector3f pos)
-{
-  draw(gc, Vector2i(pos.x, pos.y), pos.z);
-}
-
-void SpriteImpl::draw(DrawingContext& gc, Vector2i pos, float z)
-{
-  gc.draw(
-    framebuffer_surface,
-    Rect(
-      frame_pos + Vector2i(
-                    frame_size.width  * (frame%array.width),
-                    frame_size.height * (frame/array.width)
-                  ),
-      frame_size
-    ),
-    Vector2i(pos.x - offset.x, pos.y - offset.y), z);
-}
-
 void
 SpriteImpl::restart()
 {

@@ -5,7 +5,7 @@ native/pre do
     ##include "math/vector2i.hpp"
     ##define toVector2i(v) Vector2i(v.x, v.y)
     ##define makeVector2i(x, y) Vector2i(x, y)
-    ##define readVector2i(dst, src) Vector2i __s = src; dst.x = __s.x; dst.y = __s.y;
+    ##define readVector2i(dst, src) { Vector2i __s = src; dst.x = __s.x; dst.y = __s.y; }
 end
 
 native @plain _Vector2i;

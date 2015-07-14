@@ -1,0 +1,18 @@
+#ifndef SIZE_CEU
+#define SIZE_CEU
+
+native/pre do
+    ##include "math/size.hpp"
+    ##define toSize(v) Size(v.width, v.height)
+    ##define readSize(dst, src) Size __sz = src; dst.width = __sz.width; dst.height = __sz.height;
+end
+
+native @plain _Size;
+native @pure _toSize();
+
+data Size with
+    var int width;
+    var int height;
+end
+
+#endif

@@ -25,7 +25,7 @@ do
 
     par/or do
         every gc in e_DRAW do
-            sprite.draw2(gc, pos);
+            sprite.draw(gc, pos);
         end
     with
         loop do
