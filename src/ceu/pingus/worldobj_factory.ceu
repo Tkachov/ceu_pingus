@@ -1,0 +1,82 @@
+native/pre do
+    ##include <vector>
+    ##define std__vector_void std::vector<void*>
+
+    struct CreationPackage {
+        FileReader* reader;
+        std::vector<void*> result;
+    };
+
+    ##define vecget(v, i) v[i]
+end
+
+native @pure _vecget();
+
+event _CreationPackage* create_group;
+event _CreationPackage* create_prefab;
+event _CreationPackage* create_object;
+event _CreationPackage* create;
+
+every package in create_group do    
+    FileReader objects = reader.read_section("objects");
+    std::vector<FileReader> sections = objects.get_sections();    
+    loop i in sections.size() do
+        var _CreationPackage* new_package = NEW_PACKAGE(_vecget(sections, i));        
+        emit create => new_package;       
+
+        loop j in new_package:result.size() do 
+            if _vecget(new_package:result, j) then
+                package:result.push_back(_vecget(new_package:result, j));
+            end
+        end        
+    end
+end
+
+every package in create_prefab do
+    std::string name;
+    package:reader:read_string("name", name);
+
+    Vector3f pos;
+    package:reader:read_vector("position", pos);
+
+    PrefabFile prefab = PrefabFile::from_resource(name);
+    FileReader overrides;
+    package:reader:read_section("overrides", overrides);
+    
+    const std::vector<FileReader>& objects = prefab.get_objects();
+    loop i in objects.size() do
+        OverrideFileReader override_reader(_vecget(objects, i), overrides);
+        var _CreationPackage* new_package = NEW_PACKAGE(override_reader);        
+        emit create => new_package;
+
+        loop j in new_package:result.size() do 
+            if _vecget(new_package:result, j) then
+              //PrefabPackage package(*obj, pos);
+              //PrefabPackage* pp = &package;
+              //ceu_out_go(&CEUapp, CEU_IN_PREFAB_POS, &pp);
+              package:result.push_back(_vecget(new_package:result, j));
+            }
+        end
+    end
+end
+
+every package in create_object do
+    WorldObjCeuPackage package2(reader);
+    
+    if package:reader:get_name() == "liquid" then emit create_liquid => package2;
+    ///else/if ...
+    else/if package:reader:get_name() == "groundpiece" then emit create_groundpiece => package2;
+    else _log_error("invalid id: '%1%'", package:reader:get_name()); end
+
+    if package2.result then
+        package:result.push_back(package2.result);
+    else
+        _log_error("Ceu factory failed to create new WorldObj");
+    end
+end
+
+every package in create do    
+    if package:reader:get_name() == "group" then emit create_group => package;
+    else/if package:reader:get_name() == "prefab" then emit create_prefab => package;
+    else emit create_object => package; end
+end
