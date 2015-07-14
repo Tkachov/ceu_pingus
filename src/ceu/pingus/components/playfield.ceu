@@ -92,7 +92,7 @@ do
 
     function @rec (void) => IPingu* current_pingu_find_mouse do
         var Vector2i m;
-        _readVector2i(m, playfield.state.screen2world(_toVector2i(mouse_pos)));       
+        _readVector2i(m, playfield.state.screen2world(_toVector2i(mouse_pos)));
         return call/rec current_pingu_find(m.x, m.y);
     end
 

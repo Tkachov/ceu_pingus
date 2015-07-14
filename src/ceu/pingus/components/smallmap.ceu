@@ -64,7 +64,7 @@ do
             // long 'gc' will be alive. Should use a DrawingContext for caching.
             gc_ptr = _PTR2REF(gc);
 
-            var Vector2i of = playfield.get_pos();            
+            var Vector2i of = playfield.get_pos();
             var int view_rect_left = 0;
             var int view_rect_top = 0;
             var int view_rect_right = 0;

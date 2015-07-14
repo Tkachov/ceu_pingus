@@ -9,7 +9,7 @@ native/pre do
     ##include "engine/display/sprite_description.hpp"
     ##include "engine/display/sprite_impl.hpp"
     ##include "pingus/resource.hpp"
-    
+
     ##define new_SpriteImpl new SpriteImpl
     ##define new_SpriteDescription() new SpriteDescription()
     ##define Resource__load_sprite_desc Resource::load_sprite_desc
@@ -23,39 +23,39 @@ class Sprite2 with
     function (_ResDescriptor* desc) => void reload_by_desc;
 
   /*
-  Sprite();
   Sprite(const SpriteDescription& desc, ResourceModifier::Enum mod = ResourceModifier::ROT0);
   Sprite(const Surface& surface);
-  ~Sprite();
-
-  void render(int x, int y, Framebuffer& target);
 
   void set_hotspot(Origin origin, int x, int y);
-  Vector2i get_offset() const;
-  void finish();
-  operator bool() const;
   */
-    
+
     function (_SceneContext* gc, Vector2i pos, float z) => void draw;
     function (_SceneContext* gc, Vector3f pos) => void draw2;
 
     event float update;
     event void default_update;
+    event void finish;
 
     function (void) => void restart;
 
     function (void) => int get_width;
     function (void) => int get_height;
-    function (void) => int get_frame_count;    
-    function (void) => int get_current_frame;    
+    function (void) => int get_frame_count;
+    function (void) => int get_current_frame;
+    function (void) => Vector2i get_offset;
     function (void) => bool is_finished;
     function (void) => bool is_looping;
+    function (void) => bool to_bool;
 
     function (int i) => void set_frame;
-    function (bool l) => void set_play_loop;  
+    function (bool l) => void set_play_loop;
+
+    event void finished;
 do
     var _SpriteImpl* impl = null;
     finalize with _delete_obj(impl); end;
+
+    var bool finished_ = false;
 
     function (_const_char_string filename) => void reload_by_name do
         _delete_obj(impl);
@@ -63,7 +63,7 @@ do
         var _SpriteDescription* desc = _Resource__load_sprite_desc(filename);
         if desc then
             impl = _new_SpriteImpl(_deref(desc));
-        else  
+        else
             desc = _new_SpriteDescription();
             desc:filename = _PTR2REF(_Pathname("images/core/misc/404.png", _Pathname__DATA_PATH));
             impl = _new_SpriteImpl(_deref(desc));
@@ -75,9 +75,9 @@ do
         _delete_obj(impl);
 
         var _SpriteDescription* desc = _Resource__load_sprite_desc(res_desc:res_name);
-        if desc then            
+        if desc then
             impl = _new_SpriteImpl(_deref(desc), res_desc:modifier);
-        else  
+        else
             desc = _new_SpriteDescription();
             desc:filename = _PTR2REF(_Pathname("images/core/misc/404.png", _Pathname__DATA_PATH));
             impl = _new_SpriteImpl(_deref(desc));
@@ -98,8 +98,12 @@ do
     end
 
     function (void) => void restart do
+        finished_ = false;
+
         if impl then
-            impl:restart();
+            impl:loop_last_cycle = false;
+            impl:frame = 0;
+            impl:tick_count = 0;
         end
     end
 
@@ -118,15 +122,15 @@ do
             return 0;
         end
     end
-    
-    function (void) => int get_frame_count do 
+
+    function (void) => int get_frame_count do
         if impl then
             return impl:array.width * impl:array.height;
         else
             return 0;
         end
     end
-    
+
     function (void) => int get_current_frame do
         if impl then
             return impl:frame;
@@ -134,13 +138,23 @@ do
             return 0;
         end
     end
-    
-    function (void) => bool is_finished do
+
+    function (void) => Vector2i get_offset do
+        var Vector2i v;
+
         if impl then
-            return impl:finished;
+            v.x = impl:offset.x;
+            v.y = impl:offset.y;
         else
-            return true;
+            v.x = 0;
+            v.y = 0;
         end
+
+        return v;
+    end
+
+    function (void) => bool is_finished do
+        return finished_;
     end
 
     function (void) => bool is_looping do
@@ -151,13 +165,17 @@ do
         end
     end
 
+    function (void) => bool to_bool do
+        return impl != null;
+    end
+
     function (int i) => void set_frame do
         if impl then
             impl:frame = i;
         end
     end
 
-    function (bool l) => void set_play_loop do 
+    function (bool l) => void set_play_loop do
         if impl then
             impl:loop = l;
         end
@@ -165,13 +183,33 @@ do
 
     par do
         every delta in update do
-            if impl then
-                impl:update(delta);
+            if finished_ or not impl or impl:frame_delay == 0 then
+                continue;
+            end
+
+            var int total_time = impl:frame_delay * (impl:array.width * impl:array.height);
+            impl:tick_count = impl:tick_count + (int)(delta * 1000.0);
+            if impl:tick_count >= total_time then
+                if impl:loop then
+                    impl:loop_last_cycle = true;
+                    impl:tick_count = impl:tick_count % total_time;
+                    impl:frame = impl:tick_count / impl:frame_delay;
+                else
+                    emit finish;
+                end
+            else
+                impl:loop_last_cycle = false;
+                impl:frame = impl:tick_count / impl:frame_delay;
             end
         end
     with
         every default_update do
             emit update => 0.033;
+        end
+    with
+        every finish do
+            finished_ = true;
+            emit finished;
         end
     end
 end

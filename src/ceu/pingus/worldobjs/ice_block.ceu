@@ -13,8 +13,8 @@ class IceBlock with
     interface IWorldObj;
     var int width;
 do
-    var Sprite block_sur;
-    call/rec block_sur.reload_by_name("worldobjs/iceblock");
+    var Sprite2 block_sur;
+    block_sur.reload_by_name("worldobjs/iceblock");
 
     var _CollisionMask&? block_sur_cmap = _PTR2REF(_new_CollisionMask("worldobjs/iceblock_cmap"));
     finalize with _delete_obj(block_sur_cmap); end
@@ -37,7 +37,7 @@ do
     with
         every gc in e_DRAW do
             if not is_finished then
-                _gc_color_draw2(gc, block_sur.get(), _toVector3f(pos));
+                block_sur.draw2(gc, pos);
             end
         end
     with

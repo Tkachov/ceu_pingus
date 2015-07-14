@@ -10,55 +10,70 @@
 
 class FakeExit with
     interface IWorldObj;
-    var _Sprite&? sprite;
-    var bool smashing = false;
 do
     var Sprite smallmap_symbol;
+    var Sprite2 sprite;
     call/rec smallmap_symbol.reload_by_name("core/misc/smallmap_exit");
+    sprite.reload_by_name("traps/fake_exit");
+    pos.x = pos.x - (float)sprite.get_width()/2;
+    pos.y = pos.y - (float)sprite.get_height();
 
     call/rec global:world:add_object(&this);
 
     function (_FileReader* reader) => void construct do end;
-
     function (void) => float get_z_pos do return pos.z; end
     function (Vector3f p) => void set_pos do pos = p; end
     function (void) => Vector3f get_pos do return pos; end
 
-    finalize with _delete_obj(sprite); end;
-
     par/or do
         every gc in e_DRAW do
-            _gc_color_draw2(gc, &sprite, _toVector3f(pos));
+            sprite.draw2(gc, pos);
         end
     with
         every smallmap in global:world:e_DRAW_SMALLMAP do
             call/rec smallmap:draw_sprite(smallmap_symbol.get(), _toVector3f(pos) + _Vector3f(0, 115));
         end
     with
-        every e_UPDATE do
-            loop pingu in global:world:get_pingus():all_pingus do
-                if sprite.is_finished() then
-                    smashing = false;
-                end
-
-                if pingu:get_x() > pos.x+31 and pingu:get_x() < pos.x+31+15 and
-                   pingu:get_y() > pos.y+56 and pingu:get_y() < pos.y+56+56 then
-                    if pingu:get_current_action() != _A_SPLASHED and
-                       pingu:get_current_action() != _A_DEAD and pingu:get_current_action() != _A_EXITED then
-                        if not smashing then
+        loop do
+            //not smashing
+            var bool stop = false;
+            every e_UPDATE do
+                loop pingu in global:world:get_pingus():all_pingus do
+                    if pingu:get_x() > pos.x+31 and pingu:get_x() < pos.x+31+15 and
+                       pingu:get_y() > pos.y+56 and pingu:get_y() < pos.y+56+56 then
+                        if pingu:get_current_action() != _A_SPLASHED and
+                           pingu:get_current_action() != _A_DEAD and pingu:get_current_action() != _A_EXITED then
                             sprite.restart();
-                            smashing = true;
-                        end
-
-                        if sprite.get_current_frame() == 4 then
-                            emit pingu:e_CHANGE_ACTION => _A_SPLASHED;
+                            stop = true;
+                            break;
                         end
                     end
                 end
+
+                if stop then
+                    break;
+                end
             end
 
-            if smashing then
-                sprite.update();
+            //smashing
+            par/or do
+                every e_UPDATE do
+                    if sprite.get_current_frame() == 4 then
+                        loop pingu in global:world:get_pingus():all_pingus do
+                            if pingu:get_x() > pos.x+31 and pingu:get_x() < pos.x+31+15 and
+                               pingu:get_y() > pos.y+56 and pingu:get_y() < pos.y+56+56 then
+                                if pingu:get_current_action() != _A_SPLASHED and
+                                   pingu:get_current_action() != _A_DEAD and pingu:get_current_action() != _A_EXITED then
+                                    emit pingu:e_CHANGE_ACTION => _A_SPLASHED;
+                                end
+                            end
+                        end
+                    end
+
+                    emit sprite.default_update;
+                end
+            with
+                await sprite.finished;
             end
         end
     with

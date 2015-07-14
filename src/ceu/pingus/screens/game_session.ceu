@@ -90,7 +90,7 @@ do
         this.me = _PTR2REF(this.rect);
         this.server = _PTR2REF(game_session.get_server());
         this.playfield = playfield;
-        game_session.small_map = &this.rect;        
+        game_session.small_map = &this.rect;
     end;
 
     var ArmageddonButton armageddon_button with

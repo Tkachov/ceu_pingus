@@ -72,11 +72,11 @@ do
                 continue;
             end
 
-            if GET_SERVER:is_finished() then              
+            if GET_SERVER:is_finished() then
                 _ScreenManager__instance():pop_screen();
             else
                 //original FIXME: Duplicate all timing code here?!
-                if not demo_session.pause then                
+                if not demo_session.pause then
                     if demo_session.fast_forward then
                         loop i in 4 do
                             demo_session.server.get():update();
@@ -113,7 +113,7 @@ do
         end
     with
         every pos in DEMO_SESSION_ON_SCROLLER_MOVE do
-            //original FIXME: Rounding considered evil?            
+            //original FIXME: Rounding considered evil?
             playfield.scroll(-pos:x, -pos:y);
             //well, I think it isn't
         end

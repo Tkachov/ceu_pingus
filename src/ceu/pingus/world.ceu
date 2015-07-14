@@ -289,7 +289,7 @@ do
         end
     with
         every object in WORLD_DRAW_OBJECT do
-            if draw_iterating and gc != null then                
+            if draw_iterating and gc != null then
                 emit object:e_DRAW => gc;
             end
         end
@@ -395,12 +395,7 @@ do
         every package in NEW_FAKE_EXIT do
             spawn FakeExit with
                 package:result = &this;
-
-                this.sprite = _PTR2REF(_new_SpriteA("traps/fake_exit"));
-
                 _read_position(package:reader, this.pos);
-                this.pos.x = this.pos.x - (float)this.sprite.get_width()/2;
-                this.pos.y = this.pos.y - (float)this.sprite.get_height();
             end;
         end
     with
