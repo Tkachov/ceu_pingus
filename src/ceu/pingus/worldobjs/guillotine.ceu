@@ -10,8 +10,6 @@
 
 class Guillotine with
     interface IWorldObj;
-
-    var bool killing = false;
 do
     var Sprite2 sprite_kill_right;
     var Sprite2 sprite_kill_left;
@@ -35,49 +33,59 @@ do
     function (void) => Vector3f get_pos do return pos; end
 
     par/or do
-        every gc in e_DRAW do
-            if killing then
-                if direction.is_left() then
-                    sprite_kill_left.draw(gc, pos);
-                else
-                    sprite_kill_right.draw(gc, pos);
-                end
-            else
-                sprite_idle.draw(gc, pos);
-            end
-        end
-    with
-        every e_UPDATE do
-            // Only have to check one sprite because they update simultaneously
-            if sprite_kill_left.is_finished() then
-                killing = false;
-            end
+        loop do
+            //not killing
+            var bool stop = false;
+            par/or do               
+                every e_UPDATE do
+                    loop pingu in global:world:get_pingus():all_pingus do
+                        if pingu:is_inside((int)(pos.x + 38), (int)(pos.y + 90), (int)(pos.x + 42), (int)(pos.y + 98)) then
+                            stop = true;
+                            direction = _PTR2REF(pingu:direction);
+                            emit pingu:e_CHANGE_ACTION => _A_DEAD;
+                            sprite_kill_left.restart();
+                            sprite_kill_right.restart();
+                            break;
+                        end
+                    end
 
-            if not killing then
-                loop pingu in global:world:get_pingus():all_pingus do
-                    if pingu:is_inside((int)(pos.x + 38), (int)(pos.y + 90), (int)(pos.x + 42), (int)(pos.y + 98)) then
-                        killing = true;
-                        direction = _PTR2REF(pingu:direction);
-                        emit pingu:e_CHANGE_ACTION => _A_DEAD;
-                        sprite_kill_left.restart();
-                        sprite_kill_right.restart();
+                    if stop then
                         break;
                     end
+
+                    emit sprite_idle.default_update;
+                end
+            with
+                every gc in e_DRAW do
+                    sprite_idle.draw(gc, pos);
                 end
             end
 
-            if killing then
-                // Update both sprites so they finish at the same time.
-                emit sprite_kill_left.default_update;
-                emit sprite_kill_right.default_update;
+            //killing
+            par/or do
+                loop do
+                    // Update both sprites so they finish at the same time.
+                    emit sprite_kill_left.default_update;
+                    emit sprite_kill_right.default_update;
 
-                // original FIXME: Should be a different sound
-                if sprite_kill_left.get_current_frame() == 7 then
-                    global:world:play_sound("splash", pos, 0.5);
+                    // original FIXME: Should be a different sound
+                    if sprite_kill_left.get_current_frame() == 7 then
+                        global:world:play_sound("splash", pos, 0.5);
+                    end
+
+                    await e_UPDATE;
                 end
-            else
-                emit sprite_idle.default_update;
-            end
+            with
+                every gc in e_DRAW do
+                    if direction.is_left() then
+                        sprite_kill_left.draw(gc, pos);
+                    else
+                        sprite_kill_right.draw(gc, pos);
+                    end
+                end
+            with
+                await sprite_kill_left.finished;
+            end     
         end
     with
         await e_DELETE;

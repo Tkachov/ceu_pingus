@@ -11,8 +11,8 @@
 class LaserExit with
     interface IWorldObj;
 do
-    var Sprite surface;
-    call/rec surface.reload_by_name("traps/laser_exit");
+    var Sprite2 surface;
+    surface.reload_by_name("traps/laser_exit");
 
     call/rec global:world:add_object(&this);
 
@@ -21,15 +21,15 @@ do
     function (Vector3f p) => void set_pos do pos = p; end
     function (void) => Vector3f get_pos do return pos; end
 
-    var bool killing = false;
-
     par/or do
         every gc in e_DRAW do
-            _gc_color_draw2(gc, surface.get(), _toVector3f(pos));
+            surface.draw(gc, pos);
         end
     with
-        every e_UPDATE do
-            if not killing then
+        loop do
+            //not killing
+            var bool stop = false;
+            every e_UPDATE do
                 loop pingu in global:world:get_pingus():all_pingus do
                     if pingu:get_x() <= pos.x+34 or pingu:get_x() >= pos.x+34+10 or
                        pingu:get_y() <= pos.y+43 or pingu:get_y() >= pos.y+43+20 then
@@ -38,19 +38,24 @@ do
 
                     if pingu:get_current_action() != _A_LASERKILL and
                        pingu:get_current_action() != _A_DEAD and pingu:get_current_action() != _A_EXITED then
-                        killing = true;
+                        stop = true;
                         emit pingu:e_CHANGE_ACTION => _A_LASERKILL;
                         break;
                     end
                 end
+
+                if stop then
+                    break;
+                end
             end
 
-            if killing then
-                if surface.is_finished() then
-                    surface.restart();
-                    killing = false;
-                else
-                    surface.update();
+            //killing
+            par/or do
+                await surface.finished;
+                surface.restart();
+            with
+                every e_UPDATE do
+                    emit surface.default_update;
                 end
             end
         end
