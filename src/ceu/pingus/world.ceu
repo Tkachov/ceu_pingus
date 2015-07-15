@@ -151,8 +151,6 @@ class World with
     event _CreationPackage* create_solidcolor_background;
     event _CreationPackage* create_snow_generator;
     event _CreationPackage* create_rain_generator;
-    event _CreationPackage* create_snow_generator;
-    event _CreationPackage* create_rain_generator;
     event _CreationPackage* create_groundpiece;
 do
     var _Container&? objs = _PTR2REF(_new_Container());
@@ -328,6 +326,29 @@ do
             gspackage:height = get_height();
         end
     with
+        every e_CREATE do
+            var _const_std__vector_FileReader* ov = _addr(pingus_level.get_objects());
+            var _CreationPackage* pack = _new_CreationPackage();
+            _printf("going to do %d emits\n----\n", ov:size());
+            loop i in ov:size() do                
+                pack:reader = _PTR2REF((_FileReader*)_vecget_addr(ov, i));
+                pack:result.clear();
+                _printf("create #%d\n", i+1);
+                emit create => pack;
+
+                _printf("created %d item(s)\n", pack:result.size());
+                loop j in pack:result.size() do              
+                    if _vecget(pack:result, j) then
+                        _printf("\t pointer [%d] valid\n", j);
+                        var IWorldObj* wobject = (IWorldObj*)_vecget(pack:result, j);            
+                        emit wobject:e_STARTUP;
+                    end                    
+                end
+                _printf("\n");
+            end
+            _delete_obj(pack); 
+        end
+    with
         every STARTUP_WORLD do
             objs.iterate(_CEU_IN_WORLD_STARTUP_OBJECT);
         end
@@ -381,7 +402,8 @@ do
             armageddon_count = 0;
         end
     with
-        every package in create_group do            
+        every package in create_group do
+            _printf("\tcreate_group\n");        
             var _std__vector_FileReader&? sections = _new_std__vector_FileReader(package);                        
             var _CreationPackage* new_package = _new_CreationPackage();
             
@@ -402,6 +424,7 @@ do
         end
     with
         every package in create_prefab do          
+            _printf("\tcreate_prefab\n"); 
             var _std__string&? name = _PTR2REF(_new_String());
             _string_read_string(name, package:reader, "name");
 
@@ -437,7 +460,8 @@ do
             _delete_obj(new_package);            
         end
     with
-        every package in create_object do            
+        every package in create_object do
+            _printf("\tcreate_object (%s)\n", package:reader:get_name().c_str()); 
             if package:reader:get_name() == "liquid" then emit create_liquid => package;            
             else/if package:reader:get_name() == "hotspot" then emit create_hotspot => package;
             else/if package:reader:get_name() == "entrance" then emit create_entrance => package;
@@ -471,9 +495,9 @@ do
             else _log_error("invalid id: '%1%'", package:reader:get_name()); end
         end
     with
-        every package in create do    
-            if package:reader:get_name() == "group" then emit create_group => package;
-            else/if package:reader:get_name() == "prefab" then emit create_prefab => package;
+        every package in create do
+            if package:reader:get_name().compare("group") == 0 then emit create_group => package;
+            else/if package:reader:get_name().compare("prefab") == 0 then emit create_prefab => package;
             else emit create_object => package; end
         end
     with

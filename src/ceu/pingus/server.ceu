@@ -56,6 +56,8 @@ do
         global:world = &this;
     end;
 
+    emit world.e_CREATE;
+
     function @rec (IPingu* pingu, int action) => void send_pingu_action_event do
         server.record(
             _ServerEvent__make_pingu_action_event(

@@ -65,6 +65,7 @@ interface IWorld with
     function @rec (IWorldObj* o) => void add_object;
     function (IWorldObj* o) => void remove_object;
 
+    event void e_CREATE;
     event _SceneContext* e_DRAW;
     event ISmallMap* e_DRAW_SMALLMAP;
     event void e_UPDATE;

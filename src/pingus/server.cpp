@@ -83,9 +83,8 @@ Server::Server(const PingusLevel& arg_plf, bool record_demo) :
 
   Server* self = this;
   ceu_out_go(&CEUapp, CEU_IN_NEW_SERVER, &self);
-
-  init_WORLD(plf);
 }
+
 Server::~Server ()
 {
   if (demostream.get()) // FIXME: Any better place to put this? 
