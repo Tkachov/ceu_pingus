@@ -11,9 +11,18 @@ native/pre do
     ##define vecget(v, i) v[i]
     ##define addr(x) &x
     ##define read_position(r, p) Vector3f __v; r->read_vector("position", __v); p.x = __v.x; p.y = __v.y; p.z = __v.z;
+    ##define new_OverrideFileReader(a, b) new OverrideFileReader(a, b)
+    ##define const_std__vector_FileReader const std::vector<FileReader>
+    ##define std__vector_FileReader std::vector<FileReader>
+    ##define new_FileReader() new FileReader()
+    ##define opeq(x, y) *x = y
+    ##define new_std__vector_FileReader() new std::vector<FileReader>()
+    ##define new_PrefabFile() new PrefabFile()
+    ##define PrefabFile__from_resource(x) PrefabFile::from_resource(x)
 end
 
-native @pure _new_CreationPackage(), _vecget(), _addr();
+native @pure _new_CreationPackage(), _vecget(), _addr(), _new_OverrideFileReader(), _new_FileReader(),
+             _opeq(), _new_std__vector_FileReader(), _new_PrefabFile(), _PrefabFile__from_resource();
 
 event _CreationPackage* create_group;
 event _CreationPackage* create_prefab;
@@ -21,8 +30,10 @@ event _CreationPackage* create_object;
 event _CreationPackage* create;
 
 every package in create_group do    
-    FileReader objects = reader.read_section("objects"); //
-    std::vector<FileReader> sections = objects.get_sections(); //
+    var _FileReader&? objects = _new_FileReader();
+    _opeq(objects, reader.read_section("objects"));
+    _std__vector_FileReader sections = _new_std__vector_FileReader();
+    _opeq(sections, objects.get_sections());
     var _CreationPackage* new_package = _new_CreationPackage();
     loop i in sections.size() do
         new_package:reader = _addr(_vecget(sections, i));
@@ -35,6 +46,8 @@ every package in create_group do
             end
         end        
     end
+    _delete_obj(objects);
+    _delete_obj(sections);
     _delete_obj(new_package);
 end
 
@@ -45,15 +58,16 @@ every package in create_prefab do
     var Vector3f pos;
     _read_position(package:reader, pos);
 
-    PrefabFile prefab = PrefabFile::from_resource(name); //
-    FileReader overrides; //
-    package:reader:read_section("overrides", overrides); //
+    var _PrefabFile&? prefab = _new_PrefabFile();
+    _opeq(prefab, _PrefabFile__from_resource(_deref(name)));
+    var _FileReader&? overrides = _new_FileReader();
+    package:reader:read_section("overrides", _PTR2REF(overrides));
     
-    const std::vector<FileReader>& objects = prefab.get_objects(); //
+    var _const_std__vector_FileReader* objects = _addr(prefab.get_objects());
     var _CreationPackage* new_package = _new_CreationPackage();
-    loop i in objects.size() do
-        OverrideFileReader override_reader(_vecget(objects, i), overrides); //   
-        new_package:reader = _addr(override_reader);
+    loop i in objects:size() do
+        var _OverrideFileReader&? override_reader = _new_OverrideFileReader(_vecget(_deref(objects), i), overrides);
+        new_package:reader = _PTR2REF(override_reader);
         new_package:result.clear();     
         emit create => new_package;
 
@@ -68,12 +82,41 @@ every package in create_prefab do
         end
     end
     _delete_obj(name);
+    _delete_obj(prefab);
+    _delete_obj(overrides);
     _delete_obj(new_package);
 end
 
 every package in create_object do
     if package:reader:get_name() == "liquid" then emit create_liquid => package;
-    ///else/if ...
+    else/if package:reader:get_name() == "hotspot" then emit create_hotspot => package;
+    else/if package:reader:get_name() == "entrance" then emit create_entrance => package;
+    else/if package:reader:get_name() == "exit" then emit create_exit => package;
+    // traps
+    else/if package:reader:get_name() == "fake_exit" then emit create_fake_exit => package;
+    else/if package:reader:get_name() == "guillotine" then emit create_guillotine => package;
+    else/if package:reader:get_name() == "hammer" then emit create_hammer => package;
+    else/if package:reader:get_name() == "laser_exit" then emit create_laser_exit => package;
+    else/if package:reader:get_name() == "smasher" then emit create_smasher => package;
+    else/if package:reader:get_name() == "spike" then emit create_spike => package;
+    // Special Objects
+    else/if package:reader:get_name() == "switchdoor-switch" then emit create_switchdoor_switch => package;
+    else/if package:reader:get_name() == "switchdoor-door" then emit create_switchdoor_door => package;
+    else/if package:reader:get_name() == "iceblock" then emit create_iceblock => package;
+    else/if package:reader:get_name() == "conveyorbelt" then emit create_conveyorbelt => package;
+    else/if package:reader:get_name() == "teleporter" then emit create_teleporter => package;
+    else/if package:reader:get_name() == "teleporter-target" then emit create_teleporter_target => package;
+    // Backgrounds
+    else/if package:reader:get_name() == "surface-background" then emit create_surface_background => package;
+    else/if package:reader:get_name() == "starfield-background" then emit create_starfield_background => package;
+    else/if package:reader:get_name() == "solidcolor-background" then emit create_solidcolor_background => package;
+    // Weather
+    else/if package:reader:get_name() == "snow-generator" then emit create_snow_generator => package;
+    else/if package:reader:get_name() == "rain-generator" then emit create_rain_generator => package;
+    // Weather-Backward compability
+    else/if package:reader:get_name() == "snow" then emit create_snow_generator => package;
+    else/if package:reader:get_name() == "rain" then emit create_rain_generator => package;
+    // Groundpieces
     else/if package:reader:get_name() == "groundpiece" then emit create_groundpiece => package;
     else _log_error("invalid id: '%1%'", package:reader:get_name()); end
 end
