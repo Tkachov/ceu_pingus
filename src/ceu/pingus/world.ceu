@@ -34,30 +34,6 @@
 #include "worldobjs/teleporter.ceu"
 #include "worldobjs/teleporter_target.ceu"
 
-input _WOCPackage* NEW_CONVEYOR_BELT;
-input _WOCPackage* NEW_ENTRANCE;
-input _WOCPackage* NEW_EXIT;
-input _WOCPackage* NEW_FAKE_EXIT;
-input _WOCPackage* NEW_GROUNDPIECE;
-input _WOCPackage* NEW_GUILLOTINE;
-input _WOCPackage* NEW_HAMMER;
-input _WOCPackage* NEW_HOTSPOT;
-input _WOCPackage* NEW_ICE_BLOCK;
-input _WOCPackage* NEW_LASER_EXIT;
-input _WOCPackage* NEW_LIQUID;
-input _WOCPackage* NEW_RAIN_GENERATOR;
-input _WOCPackage* NEW_SMASHER;
-input _WOCPackage* NEW_SNOW_GENERATOR;
-input _WOCPackage* NEW_SOLID_COLOR_BACKGROUND;
-input _WOCPackage* NEW_SPIKE;
-input _WOCPackage* NEW_STARFIELD_BACKGROUND;
-input _WOCPackage* NEW_SURFACE_BACKGROUND;
-input _WOCPackage* NEW_SWITCH_DOOR_DOOR;
-input _WOCPackage* NEW_SWITCH_DOOR_SWITCH;
-input _WOCPackage* NEW_TELEPORTER;
-input _WOCPackage* NEW_TELEPORTER_TARGET;
-
-input _PrefabPackage* PREFAB_POS;
 input _WorldGetSizePackage* WORLD_GET_SIZE;
 
 native/pre do
@@ -93,14 +69,14 @@ native/pre do
     ##define vecget(v, i) v[i]
     ##define vecget_addr(v, i) &((*v)[i])
     ##define addr(x) &x
-    
+
     ##define new_OverrideFileReader(v, i, b) new OverrideFileReader((*v)[i], b)
     ##define const_std__vector_FileReader const std::vector<FileReader>
     ##define std__vector_FileReader std::vector<FileReader>
     ##define new_FileReader() new FileReader()
-    
-    ##define new_std__vector_FileReader(package) new std::vector<FileReader>(package->reader->read_section("objects").get_sections())    
-    ##define new_PrefabFile(x) new PrefabFile(PrefabFile::from_resource(x))    
+
+    ##define new_std__vector_FileReader(package) new std::vector<FileReader>(package->reader->read_section("objects").get_sections())
+    ##define new_PrefabFile(x) new PrefabFile(PrefabFile::from_resource(x))
 end
 
 native @pure _new_CreationPackage(), _vecget(), _vecget_addr(), _addr(), _new_OverrideFileReader(), _new_FileReader(),
@@ -129,7 +105,7 @@ class World with
     event _CreationPackage* create_prefab;
     event _CreationPackage* create_object;
     event _CreationPackage* create;
-    
+
     event _CreationPackage* create_liquid;
     event _CreationPackage* create_hotspot;
     event _CreationPackage* create_entrance;
@@ -330,23 +306,23 @@ do
             var _const_std__vector_FileReader* ov = _addr(pingus_level.get_objects());
             var _CreationPackage* pack = _new_CreationPackage();
             _printf("going to do %d emits\n----\n", ov:size());
-            loop i in ov:size() do                
+            loop i in ov:size() do
                 pack:reader = _PTR2REF((_FileReader*)_vecget_addr(ov, i));
                 pack:result.clear();
                 _printf("create #%d\n", i+1);
                 emit create => pack;
 
                 _printf("created %d item(s)\n", pack:result.size());
-                loop j in pack:result.size() do              
+                loop j in pack:result.size() do
                     if _vecget(pack:result, j) then
                         _printf("\t pointer [%d] valid\n", j);
-                        var IWorldObj* wobject = (IWorldObj*)_vecget(pack:result, j);            
+                        var IWorldObj* wobject = (IWorldObj*)_vecget(pack:result, j);
                         emit wobject:e_STARTUP;
-                    end                    
+                    end
                 end
                 _printf("\n");
             end
-            _delete_obj(pack); 
+            _delete_obj(pack);
         end
     with
         every STARTUP_WORLD do
@@ -403,66 +379,66 @@ do
         end
     with
         every package in create_group do
-            _printf("\tcreate_group\n");        
-            var _std__vector_FileReader&? sections = _new_std__vector_FileReader(package);                        
+            _printf("\tcreate_group\n");
+            var _std__vector_FileReader&? sections = _new_std__vector_FileReader(package);
             var _CreationPackage* new_package = _new_CreationPackage();
-            
-            loop i in sections.size() do                      
-                new_package:reader = _vecget_addr(sections, i);                
-                new_package:result.clear();                
-                emit create => new_package;       
-                
-                loop j in new_package:result.size() do                 
+
+            loop i in sections.size() do
+                new_package:reader = _vecget_addr(sections, i);
+                new_package:result.clear();
+                emit create => new_package;
+
+                loop j in new_package:result.size() do
                     if _vecget(new_package:result, j) then
                         package:result.push_back(_vecget(new_package:result, j));
                     end
-                end        
-                
+                end
+
             end
             _delete_obj(sections);
             _delete_obj(new_package);
         end
     with
-        every package in create_prefab do          
-            _printf("\tcreate_prefab\n"); 
+        every package in create_prefab do
+            _printf("\tcreate_prefab\n");
             var _std__string&? name = _PTR2REF(_new_String());
             _string_read_string(name, package:reader, "name");
 
             var Vector3f pos;
             _read_position(package:reader, pos);
 
-            var _PrefabFile&? prefab = _new_PrefabFile(_deref(name));            
+            var _PrefabFile&? prefab = _new_PrefabFile(_deref(name));
             var _FileReader&? overrides = _new_FileReader();
             package:reader:read_section("overrides", _deref(overrides));
-            
+
             var _const_std__vector_FileReader* objects = _addr(prefab.get_objects());
             var _CreationPackage* new_package = _new_CreationPackage();
-            
+
             loop i in objects:size() do
                 var _OverrideFileReader&? override_reader = _new_OverrideFileReader(objects, i, _deref(overrides));
                 new_package:reader = _PTR2REF(override_reader);
-                new_package:result.clear(); 
+                new_package:result.clear();
                 emit create => new_package;
 
-                loop j in new_package:result.size() do                     
+                loop j in new_package:result.size() do
                     if _vecget(new_package:result, j) then
-                        var IWorldObj* wobject = (IWorldObj*)_vecget(new_package:result, j);            
+                        var IWorldObj* wobject = (IWorldObj*)_vecget(new_package:result, j);
                         wobject:pos.x = wobject:pos.x + pos.x;
                         wobject:pos.y = wobject:pos.y + pos.y;
                         wobject:pos.z = wobject:pos.z + pos.z;
                         package:result.push_back(wobject) finalize with end;
-                    end                    
-                end                
-            end            
+                    end
+                end
+            end
             _delete_obj(name);
             _delete_obj(prefab);
             _delete_obj(overrides);
-            _delete_obj(new_package);            
+            _delete_obj(new_package);
         end
     with
         every package in create_object do
-            _printf("\tcreate_object (%s)\n", package:reader:get_name().c_str()); 
-            if package:reader:get_name() == "liquid" then emit create_liquid => package;            
+            _printf("\tcreate_object (%s)\n", package:reader:get_name().c_str());
+            if package:reader:get_name() == "liquid" then emit create_liquid => package;
             else/if package:reader:get_name() == "hotspot" then emit create_hotspot => package;
             else/if package:reader:get_name() == "entrance" then emit create_entrance => package;
             else/if package:reader:get_name() == "exit" then emit create_exit => package;
@@ -491,7 +467,7 @@ do
             else/if package:reader:get_name() == "snow" then emit create_snow_generator => package;
             else/if package:reader:get_name() == "rain" then emit create_rain_generator => package;
             // Groundpieces
-            else/if package:reader:get_name() == "groundpiece" then emit create_groundpiece => package;            
+            else/if package:reader:get_name() == "groundpiece" then emit create_groundpiece => package;
             else _log_error("invalid id: '%1%'", package:reader:get_name()); end
         end
     with
