@@ -19,8 +19,6 @@
 
 class PingusLevel;
 
-void init_WORLD(const PingusLevel& plf);
-
 struct WorldGetSizePackage {  
   int width, height;
 

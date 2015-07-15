@@ -22,7 +22,6 @@ native/pre do
     ##include "pingus/collision_map.hpp"
 
     ##include "pingus/pingus_level.hpp"
-    ##include "pingus/worldobj_factory.hpp"
     ##include "pingus/ground_map.hpp"
 
     ##include "pingus/world.hpp"
@@ -65,6 +64,7 @@ interface IWorld with
     function @rec (IWorldObj* o) => void add_object;
     function (IWorldObj* o) => void remove_object;
 
+    event void e_CREATE;
     event _SceneContext* e_DRAW;
     event ISmallMap* e_DRAW_SMALLMAP;
     event void e_UPDATE;

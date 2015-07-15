@@ -36,7 +36,7 @@ do
         loop do
             //not killing
             var bool stop = false;
-            par/or do               
+            par/or do
                 every e_UPDATE do
                     loop pingu in global:world:get_pingus():all_pingus do
                         if pingu:is_inside((int)(pos.x + 38), (int)(pos.y + 90), (int)(pos.x + 42), (int)(pos.y + 98)) then
@@ -85,7 +85,7 @@ do
                 end
             with
                 await sprite_kill_left.finished;
-            end     
+            end
         end
     with
         await e_DELETE;

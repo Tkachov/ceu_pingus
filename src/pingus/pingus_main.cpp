@@ -67,7 +67,6 @@ extern "C" {
 #include "pingus/screens/start_screen.hpp"
 #include "pingus/screens/story_screen.hpp"
 #include "pingus/stat_manager.hpp"
-#include "pingus/worldobj_factory.hpp"
 
 #if _MSC_VER >= 1400
 // Disable stupid deprecation warnings
@@ -698,8 +697,7 @@ PingusMain::run(int argc, char** argv)
   }
 
   Sound::PingusSound::deinit();
-  Fonts::deinit();
-  WorldObjFactory::deinit();
+  Fonts::deinit();  
   Resource::deinit();
 
   return 0;

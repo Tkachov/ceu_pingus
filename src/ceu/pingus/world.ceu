@@ -34,30 +34,6 @@
 #include "worldobjs/teleporter.ceu"
 #include "worldobjs/teleporter_target.ceu"
 
-input _WOCPackage* NEW_CONVEYOR_BELT;
-input _WOCPackage* NEW_ENTRANCE;
-input _WOCPackage* NEW_EXIT;
-input _WOCPackage* NEW_FAKE_EXIT;
-input _WOCPackage* NEW_GROUNDPIECE;
-input _WOCPackage* NEW_GUILLOTINE;
-input _WOCPackage* NEW_HAMMER;
-input _WOCPackage* NEW_HOTSPOT;
-input _WOCPackage* NEW_ICE_BLOCK;
-input _WOCPackage* NEW_LASER_EXIT;
-input _WOCPackage* NEW_LIQUID;
-input _WOCPackage* NEW_RAIN_GENERATOR;
-input _WOCPackage* NEW_SMASHER;
-input _WOCPackage* NEW_SNOW_GENERATOR;
-input _WOCPackage* NEW_SOLID_COLOR_BACKGROUND;
-input _WOCPackage* NEW_SPIKE;
-input _WOCPackage* NEW_STARFIELD_BACKGROUND;
-input _WOCPackage* NEW_SURFACE_BACKGROUND;
-input _WOCPackage* NEW_SWITCH_DOOR_DOOR;
-input _WOCPackage* NEW_SWITCH_DOOR_SWITCH;
-input _WOCPackage* NEW_TELEPORTER;
-input _WOCPackage* NEW_TELEPORTER_TARGET;
-
-input _PrefabPackage* PREFAB_POS;
 input _WorldGetSizePackage* WORLD_GET_SIZE;
 
 native/pre do
@@ -72,11 +48,39 @@ native/pre do
     ##include "util/container.h"
     ##define new_Container() new Container()
 
-    ##define read_position(r, p) Vector3f __v; r->read_vector("position", __v); p.x = __v.x; p.y = __v.y; p.z = __v.z;
+    ##define read_position(r, p) { Vector3f __v; r->read_vector("position", __v); p.x = __v.x; p.y = __v.y; p.z = __v.z; }
     ##define read_position2(r, p, res) Vector3f __v; res = r->read_vector("position", __v); p.x = __v.x; p.y = __v.y; p.z = __v.z;
 
     ##define new_Color new Color
+
+    ##include <vector>
+    ##include "pingus/prefab_file.hpp"
+    ##include "util/log.hpp"
+    ##include "util/overrride_file_reader.hpp"
+    ##include "util/file_reader.hpp"
+    ##define std__vector_void std::vector<void*>
+
+    struct CreationPackage {
+        FileReader* reader;
+        std::vector<void*> result;
+    };
+
+    ##define new_CreationPackage() new CreationPackage()
+    ##define vecget(v, i) v[i]
+    ##define vecget_addr(v, i) &((*v)[i])
+    ##define addr(x) &x
+
+    ##define new_OverrideFileReader(v, i, b) new OverrideFileReader((*v)[i], b)
+    ##define const_std__vector_FileReader const std::vector<FileReader>
+    ##define std__vector_FileReader std::vector<FileReader>
+    ##define new_FileReader() new FileReader()
+
+    ##define new_std__vector_FileReader(package) new std::vector<FileReader>(package->reader->read_section("objects").get_sections())
+    ##define new_PrefabFile(x) new PrefabFile(PrefabFile::from_resource(x))
 end
+
+native @pure _new_CreationPackage(), _vecget(), _vecget_addr(), _addr(), _new_OverrideFileReader(), _new_FileReader(),
+             _new_std__vector_FileReader(), _new_PrefabFile(), _PrefabFile__from_resource();
 
 native @pure _reader_read_Groundtype(), _Resource__load_surface(), _opeq(), _new_Surface(), _new_Container(), _new_Color(),
              _read_position(), _read_position2(), _log_error(), _log_warn();
@@ -96,6 +100,34 @@ class World with
     pool ITeleporterTarget[] teleporter_targets;
     pool ISwitchDoorDoor[] switch_door_doors;
     var _PingusLevel&? pingus_level;
+
+    event _CreationPackage* create_group;
+    event _CreationPackage* create_prefab;
+    event _CreationPackage* create_object;
+    event _CreationPackage* create;
+
+    event _CreationPackage* create_liquid;
+    event _CreationPackage* create_hotspot;
+    event _CreationPackage* create_entrance;
+    event _CreationPackage* create_exit;
+    event _CreationPackage* create_fake_exit;
+    event _CreationPackage* create_guillotine;
+    event _CreationPackage* create_hammer;
+    event _CreationPackage* create_laser_exit;
+    event _CreationPackage* create_smasher;
+    event _CreationPackage* create_spike;
+    event _CreationPackage* create_switchdoor_switch;
+    event _CreationPackage* create_switchdoor_door;
+    event _CreationPackage* create_iceblock;
+    event _CreationPackage* create_conveyorbelt;
+    event _CreationPackage* create_teleporter;
+    event _CreationPackage* create_teleporter_target;
+    event _CreationPackage* create_surface_background;
+    event _CreationPackage* create_starfield_background;
+    event _CreationPackage* create_solidcolor_background;
+    event _CreationPackage* create_snow_generator;
+    event _CreationPackage* create_rain_generator;
+    event _CreationPackage* create_groundpiece;
 do
     var _Container&? objs = _PTR2REF(_new_Container());
     finalize with _delete_obj(objs); end
@@ -265,9 +297,32 @@ do
     var _SceneContext* gc = null;
 
     par/or do
-        every package in WORLD_GET_SIZE do
-            package:width = get_width();
-            package:height = get_height();
+        every gspackage in WORLD_GET_SIZE do
+            gspackage:width = get_width();
+            gspackage:height = get_height();
+        end
+    with
+        every e_CREATE do
+            var _const_std__vector_FileReader* ov = _addr(pingus_level.get_objects());
+            var _CreationPackage* pack = _new_CreationPackage();
+            _printf("going to do %d emits\n----\n", ov:size());
+            loop i in ov:size() do
+                pack:reader = _PTR2REF((_FileReader*)_vecget_addr(ov, i));
+                pack:result.clear();
+                _printf("create #%d\n", i+1);
+                emit create => pack;
+
+                _printf("created %d item(s)\n", pack:result.size());
+                loop j in pack:result.size() do
+                    if _vecget(pack:result, j) then
+                        _printf("\t pointer [%d] valid\n", j);
+                        var IWorldObj* wobject = (IWorldObj*)_vecget(pack:result, j);
+                        emit wobject:e_STARTUP;
+                    end
+                end
+                _printf("\n");
+            end
+            _delete_obj(pack);
         end
     with
         every STARTUP_WORLD do
@@ -323,17 +378,105 @@ do
             armageddon_count = 0;
         end
     with
-        every p4ckage in PREFAB_POS do
-            var IWorldObj* wobject = (IWorldObj*)p4ckage:object;
-            //wobject:set_pos(wobject:get_pos() + p4ckage:pos);
-            wobject:pos.x = wobject:pos.x + p4ckage:pos.x;
-            wobject:pos.y = wobject:pos.y + p4ckage:pos.y;
-            wobject:pos.z = wobject:pos.z + p4ckage:pos.z;
+        every package in create_group do            
+            var _std__vector_FileReader&? sections = _new_std__vector_FileReader(package);
+            var _CreationPackage* new_package = _new_CreationPackage();
+
+            loop i in sections.size() do
+                new_package:reader = _vecget_addr(sections, i);
+                new_package:result.clear();
+                emit create_object => new_package; //TODO: fix `create` emitting
+
+                loop j in new_package:result.size() do
+                    if _vecget(new_package:result, j) then
+                        package:result.push_back(_vecget(new_package:result, j));
+                    end
+                end
+
+            end
+            _delete_obj(sections);
+            _delete_obj(new_package);
         end
     with
-        every package in NEW_CONVEYOR_BELT do
+        every package in create_prefab do            
+            var _std__string&? name = _PTR2REF(_new_String());
+            _string_read_string(name, package:reader, "name");
+
+            var Vector3f pos;
+            _read_position(package:reader, pos);
+
+            var _PrefabFile&? prefab = _new_PrefabFile(_deref(name));
+            var _FileReader&? overrides = _new_FileReader();
+            package:reader:read_section("overrides", _deref(overrides));
+
+            var _const_std__vector_FileReader* objects = _addr(prefab.get_objects());
+            var _CreationPackage* new_package = _new_CreationPackage();
+
+            loop i in objects:size() do
+                var _OverrideFileReader&? override_reader = _new_OverrideFileReader(objects, i, _deref(overrides));
+                new_package:reader = _PTR2REF(override_reader);
+                new_package:result.clear();                
+                emit create_object => new_package; //TODO: fix `create` emitting
+
+                loop j in new_package:result.size() do
+                    if _vecget(new_package:result, j) then
+                        var IWorldObj* wobject = (IWorldObj*)_vecget(new_package:result, j);
+                        wobject:pos.x = wobject:pos.x + pos.x;
+                        wobject:pos.y = wobject:pos.y + pos.y;
+                        wobject:pos.z = wobject:pos.z + pos.z;
+                        package:result.push_back(wobject) finalize with end;
+                    end
+                end
+            end
+            _delete_obj(name);
+            _delete_obj(prefab);
+            _delete_obj(overrides);
+            _delete_obj(new_package);
+        end
+    with
+        every package in create_object do            
+            if package:reader:get_name() == "liquid" then emit create_liquid => package;
+            else/if package:reader:get_name() == "hotspot" then emit create_hotspot => package;
+            else/if package:reader:get_name() == "entrance" then emit create_entrance => package;
+            else/if package:reader:get_name() == "exit" then emit create_exit => package;
+            // traps
+            else/if package:reader:get_name() == "fake_exit" then emit create_fake_exit => package;
+            else/if package:reader:get_name() == "guillotine" then emit create_guillotine => package;
+            else/if package:reader:get_name() == "hammer" then emit create_hammer => package;
+            else/if package:reader:get_name() == "laser_exit" then emit create_laser_exit => package;
+            else/if package:reader:get_name() == "smasher" then emit create_smasher => package;
+            else/if package:reader:get_name() == "spike" then emit create_spike => package;
+            // Special Objects
+            else/if package:reader:get_name() == "switchdoor-switch" then emit create_switchdoor_switch => package;
+            else/if package:reader:get_name() == "switchdoor-door" then emit create_switchdoor_door => package;
+            else/if package:reader:get_name() == "iceblock" then emit create_iceblock => package;
+            else/if package:reader:get_name() == "conveyorbelt" then emit create_conveyorbelt => package;
+            else/if package:reader:get_name() == "teleporter" then emit create_teleporter => package;
+            else/if package:reader:get_name() == "teleporter-target" then emit create_teleporter_target => package;
+            // Backgrounds
+            else/if package:reader:get_name() == "surface-background" then emit create_surface_background => package;
+            else/if package:reader:get_name() == "starfield-background" then emit create_starfield_background => package;
+            else/if package:reader:get_name() == "solidcolor-background" then emit create_solidcolor_background => package;
+            // Weather
+            else/if package:reader:get_name() == "snow-generator" then emit create_snow_generator => package;
+            else/if package:reader:get_name() == "rain-generator" then emit create_rain_generator => package;
+            // Weather-Backward compability
+            else/if package:reader:get_name() == "snow" then emit create_snow_generator => package;
+            else/if package:reader:get_name() == "rain" then emit create_rain_generator => package;
+            // Groundpieces
+            else/if package:reader:get_name() == "groundpiece" then emit create_groundpiece => package;
+            else _log_error("invalid id: '%1%'", package:reader:get_name()); end
+        end
+    with
+        every package in create do
+            if package:reader:get_name().compare("group") == 0 then emit create_group => package;
+            else/if package:reader:get_name().compare("prefab") == 0 then emit create_prefab => package;
+            else emit create_object => package; end
+        end
+    with
+        every package in create_conveyorbelt do
             spawn ConveyorBelt with
-                package:result = &this;
+                package:result.push_back(&this) finalize with end;
 
                 _read_position(package:reader, this.pos);
                 if not package:reader:read_int("repeat", _PTR2REF(this.width)) then
@@ -344,9 +487,9 @@ do
             end;
         end
     with
-        every package in NEW_ENTRANCE do
+        every package in create_entrance do
             spawn Entrance in entrances with
-                package:result = &this;
+                package:result.push_back(&this) finalize with end;
 
                 this.direction = ED_MISC;
                 this.release_rate = 150;
@@ -379,9 +522,9 @@ do
             end;
         end;
     with
-        every package in NEW_EXIT do
+        every package in create_exit do
             spawn Exit with
-                package:result = &this;
+                package:result.push_back(&this) finalize with end;
 
                 this.desc = _PTR2REF(_new_ResDescriptor());
 
@@ -392,16 +535,16 @@ do
             end;
         end
     with
-        every package in NEW_FAKE_EXIT do
+        every package in create_fake_exit do
             spawn FakeExit with
-                package:result = &this;
+                package:result.push_back(&this) finalize with end;
                 _read_position(package:reader, this.pos);
             end;
         end
     with
-        every package in NEW_GROUNDPIECE do
+        every package in create_groundpiece do
             spawn Groundpiece with
-                package:result = &this;
+                package:result.push_back(&this) finalize with end;
 
                 _read_position(package:reader, this.pos);
                 this.desc = _PTR2REF(_new_ResDescriptor());
@@ -411,23 +554,23 @@ do
             end;
         end
     with
-        every package in NEW_GUILLOTINE do
+        every package in create_guillotine do
             spawn Guillotine with
-                package:result = &this;
+                package:result.push_back(&this) finalize with end;
                 _read_position(package:reader, this.pos);
             end;
         end
     with
-        every package in NEW_HAMMER do
+        every package in create_hammer do
             spawn Hammer with
-                package:result = &this;
+                package:result.push_back(&this) finalize with end;
                 _read_position(package:reader, this.pos);
             end;
         end
     with
-        every package in NEW_HOTSPOT do
+        every package in create_hotspot do
             spawn Hotspot with
-                package:result = &this;
+                package:result.push_back(&this) finalize with end;
 
                 var _ResDescriptor&? desc = _PTR2REF(_new_ResDescriptor());
 
@@ -441,9 +584,9 @@ do
             end;
         end
     with
-        every package in NEW_ICE_BLOCK do
+        every package in create_iceblock do
             spawn IceBlock with
-                package:result = &this;
+                package:result.push_back(&this) finalize with end;
 
                 _read_position(package:reader, this.pos);
                 if not package:reader:read_int("repeat", _PTR2REF(this.width)) then
@@ -453,16 +596,16 @@ do
             end;
         end
     with
-        every package in NEW_LASER_EXIT do
+        every package in create_laser_exit do
             spawn LaserExit with
-                package:result = &this;
+                package:result.push_back(&this) finalize with end;
                 _read_position(package:reader, this.pos);
             end;
         end
     with
-        every package in NEW_LIQUID do
+        every package in create_liquid do
             spawn Liquid with
-                package:result = &this;
+                package:result.push_back(&this) finalize with end;
 
                 this.width = 0;
 
@@ -478,31 +621,31 @@ do
             end;
         end
     with
-        every package in NEW_RAIN_GENERATOR do
+        every package in create_rain_generator do
             spawn RainGenerator with
-                package:result = &this;
+                package:result.push_back(&this) finalize with end;
             end;
         end
     with
-        every package in NEW_SMASHER do
+        every package in create_smasher do
             spawn Smasher with
-                package:result = &this;
+                package:result.push_back(&this) finalize with end;
                 _read_position(package:reader, this.pos);
             end;
         end
     with
-        every package in NEW_SNOW_GENERATOR do
+        every package in create_snow_generator do
             spawn SnowGenerator with
-                package:result = &this;
+                package:result.push_back(&this) finalize with end;
 
                 this.intensity = 1;
                 package:reader:read_float("intensity", _PTR2REF(this.intensity));
             end;
         end
     with
-        every package in NEW_SOLID_COLOR_BACKGROUND do
+        every package in create_solidcolor_background do
             spawn SolidColorBackground with
-                package:result = &this;
+                package:result.push_back(&this) finalize with end;
 
                 this.color = _PTR2REF(_new_Color());
                 if not package:reader:read_colori("colori", _deref(this.color)) then
@@ -511,16 +654,16 @@ do
             end;
         end
     with
-        every package in NEW_SPIKE do
+        every package in create_spike do
             spawn Spike with
-                package:result = &this;
+                package:result.push_back(&this) finalize with end;
                 _read_position(package:reader, this.pos);
             end;
         end
     with
-        every package in NEW_STARFIELD_BACKGROUND do
+        every package in create_starfield_background do
             spawn StarfieldBackground with
-                package:result = &this;
+                package:result.push_back(&this) finalize with end;
 
                 this.small_stars_count = 100;
                 this.middle_stars_count = 50;
@@ -532,9 +675,9 @@ do
             end;
         end
     with
-        every package in NEW_SURFACE_BACKGROUND do
+        every package in create_surface_background do
             spawn SurfaceBackground with
-                package:result = &this;
+                package:result.push_back(&this) finalize with end;
 
                 this.para_x = 0.5;
                 this.para_y = 0.5;
@@ -617,9 +760,9 @@ do
             end;
         end
     with
-        every package in NEW_SWITCH_DOOR_DOOR do
+        every package in create_switchdoor_door do
             spawn SwitchDoorDoor in switch_door_doors with
-                package:result = &this;
+                package:result.push_back(&this) finalize with end;
 
                 this.id = _PTR2REF(_new_String());
                 _string_read_string(this.id, package:reader, "id");
@@ -631,29 +774,29 @@ do
             end;
         end
     with
-        every package in NEW_SWITCH_DOOR_SWITCH do
+        every pack4ge in create_switchdoor_switch do
             spawn SwitchDoorSwitch with
-                package:result = &this;
+                pack4ge:result.push_back(&this) finalize with end;
 
                 this.m_target = _PTR2REF(_new_String());
-                _string_read_string(this.m_target, package:reader, "target-id");
-                _read_position(package:reader, this.pos);
+                _string_read_string(this.m_target, pack4ge:reader, "target-id");
+                _read_position(pack4ge:reader, this.pos);
             end;
         end
     with
-        every package in NEW_TELEPORTER do
+        every packag3 in create_teleporter do
             spawn Teleporter with
-                package:result = &this;
+                packag3:result.push_back(&this) finalize with end;
 
-                _read_position(package:reader, this.pos);
+                _read_position(packag3:reader, this.pos);
                 this.target_id = _PTR2REF(_new_String());
-                _string_read_string(this.target_id, package:reader, "target-id");
+                _string_read_string(this.target_id, packag3:reader, "target-id");
             end;
         end
     with
-        every package in NEW_TELEPORTER_TARGET do
+        every package in create_teleporter_target do
             spawn TeleporterTarget in teleporter_targets with
-                package:result = &this;
+                package:result.push_back(&this) finalize with end;
 
                 this.id = _PTR2REF(_new_String());
                 _string_read_string(this.id, package:reader, "id");
