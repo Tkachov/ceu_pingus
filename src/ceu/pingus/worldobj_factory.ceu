@@ -7,10 +7,13 @@ native/pre do
         std::vector<void*> result;
     };
 
+    ##define new_CreationPackage() new CreationPackage()
     ##define vecget(v, i) v[i]
+    ##define addr(x) &x
+    ##define read_position(r, p) Vector3f __v; r->read_vector("position", __v); p.x = __v.x; p.y = __v.y; p.z = __v.z;
 end
 
-native @pure _vecget();
+native @pure _new_CreationPackage(), _vecget(), _addr();
 
 event _CreationPackage* create_group;
 event _CreationPackage* create_prefab;
@@ -18,10 +21,12 @@ event _CreationPackage* create_object;
 event _CreationPackage* create;
 
 every package in create_group do    
-    FileReader objects = reader.read_section("objects");
-    std::vector<FileReader> sections = objects.get_sections();    
+    FileReader objects = reader.read_section("objects"); //
+    std::vector<FileReader> sections = objects.get_sections(); //
+    var _CreationPackage* new_package = _new_CreationPackage();
     loop i in sections.size() do
-        var _CreationPackage* new_package = NEW_PACKAGE(_vecget(sections, i));        
+        new_package:reader = _addr(_vecget(sections, i));
+        new_package:result.clear();
         emit create => new_package;       
 
         loop j in new_package:result.size() do 
@@ -30,49 +35,47 @@ every package in create_group do
             end
         end        
     end
+    _delete_obj(new_package);
 end
 
 every package in create_prefab do
-    std::string name;
-    package:reader:read_string("name", name);
+    _std__string name = _PTR2REF(_new_String());
+    _string_read_string(name, package:reader, "name");
 
-    Vector3f pos;
-    package:reader:read_vector("position", pos);
+    var Vector3f pos;
+    _read_position(package:reader, pos);
 
-    PrefabFile prefab = PrefabFile::from_resource(name);
-    FileReader overrides;
-    package:reader:read_section("overrides", overrides);
+    PrefabFile prefab = PrefabFile::from_resource(name); //
+    FileReader overrides; //
+    package:reader:read_section("overrides", overrides); //
     
-    const std::vector<FileReader>& objects = prefab.get_objects();
+    const std::vector<FileReader>& objects = prefab.get_objects(); //
+    var _CreationPackage* new_package = _new_CreationPackage();
     loop i in objects.size() do
-        OverrideFileReader override_reader(_vecget(objects, i), overrides);
-        var _CreationPackage* new_package = NEW_PACKAGE(override_reader);        
+        OverrideFileReader override_reader(_vecget(objects, i), overrides); //   
+        new_package:reader = _addr(override_reader);
+        new_package:result.clear();     
         emit create => new_package;
 
         loop j in new_package:result.size() do 
             if _vecget(new_package:result, j) then
-              //PrefabPackage package(*obj, pos);
-              //PrefabPackage* pp = &package;
-              //ceu_out_go(&CEUapp, CEU_IN_PREFAB_POS, &pp);
-              package:result.push_back(_vecget(new_package:result, j));
-            }
+                var IWorldObj* wobject = (IWorldObj*)_vecget(new_package:result, j);            
+                wobject:pos.x = wobject:pos.x + pos.x;
+                wobject:pos.y = wobject:pos.y + pos.y;
+                wobject:pos.z = wobject:pos.z + pos.z;
+                package:result.push_back(wobject);
+            end
         end
     end
+    _delete_obj(name);
+    _delete_obj(new_package);
 end
 
 every package in create_object do
-    WorldObjCeuPackage package2(reader);
-    
-    if package:reader:get_name() == "liquid" then emit create_liquid => package2;
+    if package:reader:get_name() == "liquid" then emit create_liquid => package;
     ///else/if ...
-    else/if package:reader:get_name() == "groundpiece" then emit create_groundpiece => package2;
+    else/if package:reader:get_name() == "groundpiece" then emit create_groundpiece => package;
     else _log_error("invalid id: '%1%'", package:reader:get_name()); end
-
-    if package2.result then
-        package:result.push_back(package2.result);
-    else
-        _log_error("Ceu factory failed to create new WorldObj");
-    end
 end
 
 every package in create do    
