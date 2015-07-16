@@ -152,14 +152,14 @@ do
         end
     with
         every e_UPDATE do
-            _printf("Ceu e_UPDATE\n");
+            ////_printf("Ceu e_UPDATE\n");
             emit world.e_UPDATE;
             emit goal_manager.e_UPDATE;
         end
     with
         //TODO: remove (used because `update()` is also called from C++ DemoSession which is not ported yet)
         every s in SERVER_UPDATE do
-            _printf("C++ update()\n");
+            ////_printf("C++ update()\n");
             if s != &server then
                 continue;
             end

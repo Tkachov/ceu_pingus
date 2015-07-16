@@ -29,7 +29,7 @@ do
     waiter_count = 0;
 
     par/or do
-        every gc in e_DRAW do
+        every gc in global:draw do
             if do_thunder then
                 if thunder_count < 0 then
                     do_thunder = false;

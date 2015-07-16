@@ -32,7 +32,7 @@ do
     end
 
     par/or do
-        every gc in e_DRAW do
+        every gc in global:draw do
             _gc_color_fill_screen(gc, _deref(color));
         end
     with

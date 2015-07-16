@@ -20,9 +20,6 @@ class StarfieldBackgroundStars with
 
     var float x_add;
     var float y_add;
-
-    event _SceneContext* e_DRAW;
-    event void e_UPDATE;
 do
     finalize with _delete_obj(sprite); end
 
@@ -33,19 +30,11 @@ do
     y_add = 0.0;
 
     par do
-        every gc in e_DRAW do
+        every gc in global:draw do
             _gc_color_draw2(gc, &sprite, _Vector3f(x_pos, y_pos));
-            //if there are a lot of stars, it takes more than a second to render
-            //and then there is a frameskip mechanism which probably resets
-            //the drawing context as it suddenly becomes zero
-            //it means you get a segfault during the DRAW events (there or somewhere else)
-            //I don't know how to fix that, so I just recommend to create less stars
-
-            //UPDATE: no, it looks like that's not about any frameskip mechanism
-            //guess that's something about Ceu loop construct
         end
     with
-        every e_UPDATE do
+        every global:update do
             x_pos = x_pos + x_add;
             y_pos = y_pos + y_add;
 

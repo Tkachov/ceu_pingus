@@ -12,14 +12,11 @@ class Guillotine with
     interface IWorldObj;
 do
     var Sprite2 sprite_kill_right;
-    var Sprite2 sprite_kill_left;
-    var Sprite2 sprite_idle;
+    var Sprite2 sprite_kill_left;    
     sprite_kill_right.reload_by_name("traps/guillotinekill/right");
-    sprite_kill_left.reload_by_name("traps/guillotinekill/left");
-    sprite_idle.reload_by_name("traps/guillotineidle");
+    sprite_kill_left.reload_by_name("traps/guillotinekill/left");    
     sprite_kill_right.set_play_loop(false);
-    sprite_kill_left.set_play_loop(false);
-    sprite_idle.set_play_loop(true);
+    sprite_kill_left.set_play_loop(false);    
 
     var _Direction&? direction = _new_Direction();
     finalize with _delete_obj(direction); end;
@@ -35,9 +32,16 @@ do
     par/or do
         loop do
             //not killing
-            var bool stop = false;
-            par/or do
+            do                
+                var Sprite3 sprite_idle with
+                    this.pos_giver = outer;
+                end;
+                sprite_idle.reload_by_name("traps/guillotineidle");
+                sprite_idle.set_play_loop(true);
+                
                 every e_UPDATE do
+                    var bool stop = false;
+
                     loop pingu in global:world:get_pingus():all_pingus do
                         if pingu:is_inside((int)(pos.x + 38), (int)(pos.y + 90), (int)(pos.x + 42), (int)(pos.y + 98)) then
                             stop = true;
@@ -52,12 +56,6 @@ do
                     if stop then
                         break;
                     end
-
-                    emit sprite_idle.default_update;
-                end
-            with
-                every gc in e_DRAW do
-                    sprite_idle.draw(gc, pos);
                 end
             end
 
@@ -76,7 +74,7 @@ do
                     await e_UPDATE;
                 end
             with
-                every gc in e_DRAW do
+                every gc in global:draw do
                     if direction.is_left() then
                         sprite_kill_left.draw(gc, pos);
                     else

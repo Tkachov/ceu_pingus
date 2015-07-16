@@ -83,7 +83,9 @@ do
         end
     with
         // If the Bomber hasn't 'exploded' yet...
-        every global:e_PINGU_UPDATE_ALL do
+        loop do
+            await global:e_PINGU_UPDATE_ALL;
+            
             if sprite.get(pingu.direction):get_current_frame() > 9 then
                 break;
             end

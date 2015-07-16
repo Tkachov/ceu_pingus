@@ -53,7 +53,7 @@ do
     par/or do
         await e_DELETE;
     with
-        every gc in e_DRAW do
+        every gc in global:draw do
             emit global:e_PINGU_DRAW_WALKER => gc;
             emit global:e_PINGU_DRAW_OTHERS => gc;
         end

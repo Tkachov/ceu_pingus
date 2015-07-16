@@ -3,6 +3,7 @@
 
 #include "../../c.ceu"
 #include "../../sdl.ceu"
+#include "../../engine/display/sprite3.ceu"
 #include "../iworld.ceu"
 #include "../worldobj.ceu"
 #include "../ipingu_holder.ceu"
@@ -11,7 +12,10 @@
 class LaserExit with
     interface IWorldObj;
 do
-    var Sprite2 surface;
+    var Sprite3 surface with
+        this.pos_giver = outer;
+        this.active = false;
+    end;
     surface.reload_by_name("traps/laser_exit");
 
     call/rec global:world:add_object(&this);
@@ -21,14 +25,10 @@ do
     function (Vector3f p) => void set_pos do pos = p; end
     function (void) => Vector3f get_pos do return pos; end
 
-    par/or do
-        every gc in e_DRAW do
-            surface.draw(gc, pos);
-        end
-    with
+    par/or do        
         loop do
             //not killing
-            var bool stop = false;
+            surface.active = false;
             every e_UPDATE do
                 loop pingu in global:world:get_pingus():all_pingus do
                     if pingu:get_x() <= pos.x+34 or pingu:get_x() >= pos.x+34+10 or
@@ -38,26 +38,20 @@ do
 
                     if pingu:get_current_action() != _A_LASERKILL and
                        pingu:get_current_action() != _A_DEAD and pingu:get_current_action() != _A_EXITED then
-                        stop = true;
+                        surface.active = true;
                         emit pingu:e_CHANGE_ACTION => _A_LASERKILL;
                         break;
                     end
                 end
 
-                if stop then
+                if surface.active then
                     break;
                 end
             end
 
             //killing
-            par/or do
-                await surface.finished;
-                surface.restart();
-            with
-                every e_UPDATE do
-                    emit surface.default_update;
-                end
-            end
+            await surface.finished;
+            surface.restart();
         end
     with
         await e_DELETE;

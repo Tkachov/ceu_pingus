@@ -3,6 +3,7 @@
 
 #include "../../c.ceu"
 #include "../../sdl.ceu"
+#include "../../engine/display/sprite3.ceu"
 #include "../iworld.ceu"
 #include "../worldobj.ceu"
 #include "../ipingu_holder.ceu"
@@ -11,7 +12,10 @@
 class Hammer with
     interface IWorldObj;
 do
-    var Sprite2 sprite;
+    var Sprite3 sprite with
+        this.pos_giver = outer;
+        this.active = false;
+    end;
     sprite.reload_by_name("traps/hammer");
 
     call/rec global:world:add_object(&this);
@@ -24,13 +28,9 @@ do
     function (void) => Vector3f get_pos do return pos; end
 
     par/or do
-        every gc in e_DRAW do
-            sprite.draw(gc, pos);
-        end
-    with
         loop do
             loop do
-                await e_UPDATE;
+                await e_UPDATE; //loops pingus, thus should be in order
 
                 current_frame = current_frame + 1;
                 sprite.set_frame(current_frame);
@@ -56,7 +56,7 @@ do
 
             //roll back
             loop do
-                await e_UPDATE;
+                await global:update;
 
                 current_frame = current_frame - 1;
                 sprite.set_frame(current_frame);

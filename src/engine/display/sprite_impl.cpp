@@ -22,24 +22,31 @@
 #include "engine/display/sprite_description.hpp"
 #include "util/log.hpp"
 
-FramebufferSurface load_framebuffer_surface(const Pathname& filename, ResourceModifier::Enum modifier)
+#include <map>
+
+FramebufferSurface& load_framebuffer_surface(const Pathname& filename, ResourceModifier::Enum modifier)
 {
-  // FIXME: Implement proper cache 
+  //a little bit awkward to have map in map, but that's easier than writing special Key type
+  static std::map<std::string, std::map<ResourceModifier::Enum, FramebufferSurface> > cache;
+  static FramebufferSurface image404 = Display::get_framebuffer()->create_surface(Surface(Pathname("images/core/misc/404.png", Pathname::DATA_PATH)));
+
+  std::string pathname = filename.get_sys_path();
+  if(cache.count(pathname) && cache[pathname].count(modifier))
+    return cache[pathname][modifier];
+
   try
   {
     Surface surface(filename);
-    if (modifier != ResourceModifier::ROT0)
-    {
-      surface = surface.mod(modifier);
-    }
-    return Display::get_framebuffer()->create_surface(surface);
+    if(modifier != ResourceModifier::ROT0)
+      surface = surface.mod(modifier);    
+    cache[pathname][modifier] = Display::get_framebuffer()->create_surface(surface);
+    return cache[pathname][modifier];
   }
   catch(const std::exception& err)
   {
     // return a dummy surface for cases where the image file can't be found
     log_error("%1%", err.what());
-    Surface surface(Pathname("images/core/misc/404.png", Pathname::DATA_PATH));
-    return Display::get_framebuffer()->create_surface(surface);
+    return image404;
   }
 }
 

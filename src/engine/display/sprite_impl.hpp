@@ -25,7 +25,7 @@ class SpriteDescription;
 class Framebuffer;
 class DrawingContext;
 
-FramebufferSurface load_framebuffer_surface(const Pathname& filename, ResourceModifier::Enum modifier);
+FramebufferSurface& load_framebuffer_surface(const Pathname& filename, ResourceModifier::Enum modifier);
 
 class SpriteImpl
 {

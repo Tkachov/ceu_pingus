@@ -3,6 +3,7 @@
 
 #include "../../c.ceu"
 #include "../../sdl.ceu"
+#include "../../engine/display/sprite3.ceu"
 #include "../iworld.ceu"
 #include "../worldobj.ceu"
 #include "../ipingu_holder.ceu"
@@ -12,7 +13,10 @@ class FakeExit with
     interface IWorldObj;
 do
     var Sprite smallmap_symbol;
-    var Sprite2 sprite;
+    var Sprite3 sprite with
+        this.pos_giver = outer;
+        this.active = false;
+    end;
     call/rec smallmap_symbol.reload_by_name("core/misc/smallmap_exit");
     sprite.reload_by_name("traps/fake_exit");
     pos.x = pos.x - (float)sprite.get_width()/2;
@@ -26,17 +30,13 @@ do
     function (void) => Vector3f get_pos do return pos; end
 
     par/or do
-        every gc in e_DRAW do
-            sprite.draw(gc, pos);
-        end
-    with
         every smallmap in global:world:e_DRAW_SMALLMAP do
             call/rec smallmap:draw_sprite(smallmap_symbol.get(), _toVector3f(pos) + _Vector3f(0, 115));
         end
     with
         loop do
             //not smashing
-            var bool stop = false;
+            sprite.active = false;            
             every e_UPDATE do
                 loop pingu in global:world:get_pingus():all_pingus do
                     if pingu:get_x() > pos.x+31 and pingu:get_x() < pos.x+31+15 and
@@ -44,18 +44,18 @@ do
                         if pingu:get_current_action() != _A_SPLASHED and
                            pingu:get_current_action() != _A_DEAD and pingu:get_current_action() != _A_EXITED then
                             sprite.restart();
-                            stop = true;
+                            sprite.active = true;
                             break;
                         end
                     end
                 end
 
-                if stop then
+                if sprite.active then
                     break;
                 end
             end
 
-            //smashing
+            //smashing            
             par/or do
                 every e_UPDATE do
                     if sprite.get_current_frame() == 4 then
@@ -69,8 +69,6 @@ do
                             end
                         end
                     end
-
-                    emit sprite.default_update;
                 end
             with
                 await sprite.finished;

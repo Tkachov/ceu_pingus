@@ -34,7 +34,7 @@ do
     end
 
     par/or do
-        every gc in e_DRAW do
+        every gc in global:draw do
             //original FIXME: para support doesnn't work correctly
             _gc_color_draw2(gc, &sprite, _toVector3f(pos));
         end

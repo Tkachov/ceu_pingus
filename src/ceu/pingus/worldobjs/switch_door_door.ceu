@@ -67,7 +67,7 @@ do
             end
         end
     with
-        every gc in e_DRAW do
+        every gc in global:draw do
             _gc_color_draw2(gc, door_box.get(), _toVector3f(pos));
             loop/500 i in current_door_height do
                 _gc_color_draw2(

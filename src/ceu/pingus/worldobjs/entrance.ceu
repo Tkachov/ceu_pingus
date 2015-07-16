@@ -46,7 +46,7 @@ do
     end
 
     par/or do
-        every gc in e_DRAW do
+        every gc in global:draw do
             if not surface then //probably is always true
                 continue;
             end

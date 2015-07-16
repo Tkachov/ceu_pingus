@@ -3,6 +3,7 @@
 
 #include "../../c.ceu"
 #include "../../sdl.ceu"
+#include "../../engine/display/sprite3.ceu"
 #include "../../math/vector3f.ceu"
 #include "../iworld.ceu"
 #include "../worldobj.ceu"
@@ -13,9 +14,6 @@ class IceBlock with
     interface IWorldObj;
     var int width;
 do
-    var Sprite2 block_sur;
-    block_sur.reload_by_name("worldobjs/iceblock");
-
     var _CollisionMask&? block_sur_cmap = _PTR2REF(_new_CollisionMask("worldobjs/iceblock_cmap"));
     finalize with _delete_obj(block_sur_cmap); end
 
@@ -27,7 +25,6 @@ do
     function (void) => Vector3f get_pos do return pos; end
 
     var float thickness = 1.0;
-    var bool is_finished = false;
     var int last_contact = 0;
 
     par/or do
@@ -35,34 +32,36 @@ do
             global:world:put(&block_sur_cmap, pos.x, pos.y, _GT_GROUND);
         end
     with
-        every gc in e_DRAW do
-            if not is_finished then
-                block_sur.draw(gc, pos);
-            end
-        end
-    with
-        every e_UPDATE do
-            if is_finished then
-                continue;
-            end
+        //not finished
+        do
+            var Sprite3 block_sur with
+                this.pos_giver = outer;
+            end;
+            block_sur.reload_by_name("worldobjs/iceblock");
 
-            loop pingu in global:world:get_pingus():all_pingus do
-                if pingu:get_x() > pos.x and pingu:get_x() < pos.x+(float)block_sur.get_width() and
-                   pingu:get_y() > pos.y-4 and pingu:get_y() < pos.y+(float)block_sur.get_height() then
-                    last_contact = global:world:get_time();
+            loop do
+                await e_UPDATE;
+                
+                loop pingu in global:world:get_pingus():all_pingus do
+                    if pingu:get_x() > pos.x and pingu:get_x() < pos.x+(float)block_sur.get_width() and
+                       pingu:get_y() > pos.y-4 and pingu:get_y() < pos.y+(float)block_sur.get_height() then
+                        last_contact = global:world:get_time();
+                    end
                 end
-            end
 
-            if last_contact and last_contact+1000 > global:world:get_time() then
-                thickness = thickness - 0.01;
+                if last_contact and last_contact+1000 > global:world:get_time() then
+                    thickness = thickness - 0.01;
 
-                if thickness<0 then
-                    is_finished = true;
-                    thickness = 0;
-                    global:world:remove(&block_sur_cmap, pos.x, pos.y);
+                    if thickness<0 then
+                        break;                        
+                    end
                 end
             end
         end
+
+        //finished
+        global:world:remove(&block_sur_cmap, pos.x, pos.y);
+        await FOREVER;
     with
         await e_DELETE;
     end

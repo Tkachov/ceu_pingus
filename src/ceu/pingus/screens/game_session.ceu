@@ -189,6 +189,7 @@ do
                             _printf("fast_forward: %d\n", (int)_globals__fast_forward_time_scale);
                             loop i in _globals__fast_forward_time_scale do
                                 //TODO: figure out why it doesn't work with Ceu-style update
+                                //UPD: it works now, but slows down EXTREMELY fast
                                 game_session.server:update();
                                 //emit ((Server*)game_session.server:ceu()):e_UPDATE;
                             end

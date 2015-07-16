@@ -43,7 +43,7 @@ do
     end
 
     par/or do
-        every gc in e_DRAW do
+        every gc in global:draw do
             loop j in particles.size() do
                 var _RainParticle&? it = _get_particle(particles, j);
 

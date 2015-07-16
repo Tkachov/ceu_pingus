@@ -37,7 +37,7 @@ do
             _delete_obj(mask);
         end
     with
-        every gc in e_DRAW do
+        every gc in global:draw do
             _gc_color_draw2(gc, sprite.get(), _toVector3f(pos));
         end
     with

@@ -44,22 +44,8 @@ do
             this.sprite = _PTR2REF(_new_SpriteA("game/stars/large_star"));
         end;
     end
-
-    par/or do
-        every gc in e_DRAW do
-            loop star in stars do
-                emit star:e_DRAW => gc;
-            end
-        end
-    with
-        every e_UPDATE do
-            loop star in stars do
-                emit star:e_UPDATE;
-            end
-        end
-    with
-        await e_DELETE;
-    end
+    
+    await e_DELETE;
 end
 
 #endif

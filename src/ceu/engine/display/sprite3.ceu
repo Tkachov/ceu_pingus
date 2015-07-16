@@ -1,0 +1,215 @@
+#ifndef SPRITE3_CEU
+#define SPRITE3_CEU
+
+#include "../../math/size.ceu"
+#include "../../math/vector2i.ceu"
+#include "../../math/vector3f.ceu"
+#include "../../pingus/worldobj.ceu"
+#include "sprite2.ceu"
+
+class Sprite3 with
+    var IWorldObj& pos_giver;
+    var bool active = true;
+
+    function (_const_char_string filename) => void reload_by_name;
+    function (_ResDescriptor* desc) => void reload_by_desc;
+
+  /*
+  Sprite(const Surface& surface);
+
+  void set_hotspot(Origin origin, int x, int y);
+  */
+
+    function (_SceneContext* gc, Vector3f pos) => void draw;
+
+    event float update;
+    event void default_update;
+    event void finish;
+
+    function (void) => void restart;
+
+    function (void) => int get_width;
+    function (void) => int get_height;
+    function (void) => int get_frame_count;
+    function (void) => int get_current_frame;
+    function (void) => Vector2i get_offset;
+    function (void) => bool is_finished;
+    function (void) => bool is_looping;
+    function (void) => bool to_bool;
+
+    function (int i) => void set_frame;
+    function (bool l) => void set_play_loop;
+
+    event void finished;
+do
+    var bool finished_ = false;
+    var int frame = 0;
+    var int tick_count = 0;
+    var Size array;
+    var bool play_loop;
+    var bool loop_last_cycle;
+    var Vector2i offset;
+    var Vector2i frame_pos;
+    var Size     frame_size;
+    var int      frame_delay;
+    var _CeuSpriteImpl&? core = _new_CeuSpriteImpl();
+    finalize with _delete_obj(core); end
+
+    function (_SpriteDescription* desc, int mod) => void load_desc do
+        core.filename = _PTR2REF(desc:filename);
+        core.framebuffer_surface = _load_framebuffer_surface(desc:filename, _to_RM(mod));        
+
+        finished_ = false;
+        frame = 0;
+        tick_count = 0;
+        _readSize(array, desc:array);
+        play_loop = desc:loop;
+        loop_last_cycle = false;
+
+        if desc:frame_size.width == -1 then
+            frame_size.width  = core.framebuffer_surface.get_width()/array.width;
+        else
+            frame_size.width  = desc:frame_size.width;
+        end
+
+        if desc:frame_size.height == -1 then
+            frame_size.height = core.framebuffer_surface.get_height()/array.height;
+        else
+            frame_size.height = desc:frame_size.height;
+        end
+
+        _readVector2i(offset, _calc_origin(desc:origin, _toSize(frame_size)) - desc:offset);
+        _readVector2i(frame_pos, desc:frame_pos);
+
+        frame_delay  = desc:speed;
+    end
+
+    function (_SpriteDescription* desc, int mod) => void try_desc do
+        if desc then
+            load_desc(desc, mod);
+        else
+            desc = _new_SpriteDescription();
+            desc:filename = _PTR2REF(_Pathname("images/core/misc/404.png", _Pathname__DATA_PATH));
+            load_desc(desc, _RM_ROT0);
+            _delete_obj(desc);
+        end
+    end
+
+    function (_const_char_string filename) => void reload_by_name do
+        var _SpriteDescription* desc = _Resource__load_sprite_desc(filename);
+        try_desc(desc, _RM_ROT0);
+    end
+
+    function (_ResDescriptor* res_desc) => void reload_by_desc do
+        var _SpriteDescription* desc = _Resource__load_sprite_desc(res_desc:res_name);
+        try_desc(desc, res_desc:modifier);
+    end
+
+    function (_SceneContext* gc, Vector3f pos) => void draw do
+        var Vector2i draw_pos;
+        draw_pos.x = pos.x - offset.x;
+        draw_pos.y = pos.y - offset.y;
+
+        var Vector2i rect_pos;
+        rect_pos.x = frame_pos.x + frame_size.width  * (frame%array.width);
+        rect_pos.y = frame_pos.y + frame_size.height * (frame/array.width);
+
+        gc:color().draw(
+            core.framebuffer_surface,
+            _Rect(_toVector2i(rect_pos), _toSize(frame_size)),
+            _toVector2i(draw_pos),
+            pos.z
+        );
+    end
+
+    function (void) => void restart do
+        finished_ = false;
+        frame = 0;
+        loop_last_cycle = false;
+        tick_count = 0;
+    end
+
+    function (void) => int get_width do
+        return frame_size.width;
+    end
+
+    function (void) => int get_height do
+        return frame_size.height;
+    end
+
+    function (void) => int get_frame_count do
+        return array.width * array.height;
+    end
+
+    function (void) => int get_current_frame do
+        return frame;
+    end
+
+    function (void) => Vector2i get_offset do
+        return offset;
+    end
+
+    function (void) => bool is_finished do
+        return finished_;
+    end
+
+    function (void) => bool is_looping do
+        return loop_last_cycle;
+    end
+
+    function (void) => bool to_bool do
+        return true;
+    end
+
+    function (int i) => void set_frame do
+        frame = i;
+    end
+
+    function (bool l) => void set_play_loop do
+        play_loop = l;
+    end
+
+    par do
+        every delta in update do
+            if finished_ or frame_delay == 0 then
+                continue;
+            end
+
+            var int total_time = frame_delay * (array.width * array.height);
+            tick_count = tick_count + (int)(delta * 1000.0);
+            if tick_count >= total_time then
+                if play_loop then
+                    loop_last_cycle = true;
+                    tick_count = tick_count % total_time;
+                    frame = tick_count / frame_delay;
+                else
+                    emit finish;
+                end
+            else
+                loop_last_cycle = false;
+                frame = tick_count / frame_delay;
+            end
+        end
+    with
+        every global:update do
+            if active then
+                emit default_update;
+            end
+        end
+    with
+        every default_update do            
+            emit update => 0.033;
+        end
+    with
+        every gc in global:draw do
+            draw(gc, pos_giver.pos);
+        end
+    with
+        every finish do
+            finished_ = true;
+            emit finished;
+        end
+    end
+end
+
+#endif

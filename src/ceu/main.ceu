@@ -22,6 +22,10 @@ event _SceneContext* e_PINGU_DRAW_WALKER;
 event _SceneContext* e_PINGU_DRAW_OTHERS;
 event void e_PINGU_UPDATE_ALL;
 
+//global events
+event _SceneContext* draw;
+event void update;
+
 input _MenuButton* NEW_MENUBUTTON;
 input _DemoSession* NEW_DEMO_SESSION;
 input _GameSession* NEW_GAME_SESSION;

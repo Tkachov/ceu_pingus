@@ -37,7 +37,7 @@ do
     function (void) => Vector3f get_pos do return pos; end
 
     par/or do
-        every gc in e_DRAW do
+        every gc in global:draw do
             _gc_color_draw2(gc, left_sur.get(), _toVector3f(pos));
 
             loop/100 i in width do

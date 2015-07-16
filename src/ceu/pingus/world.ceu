@@ -322,10 +322,7 @@ do
             wgc:light().fill_screen(_Color(_deref(ambient_light)));
 
             if wgc != null then
-                objs.cleanup();
-                loop i in objs.size() do
-                    emit ((IWorldObj*)objs.get(i)):e_DRAW => wgc;
-                end
+                emit global:draw => wgc;
             end
         end
     with
@@ -350,6 +347,8 @@ do
                 ///_printf("update object = %d\n", objs.get(i));
                 emit ((IWorldObj*)objs.get(i)):e_UPDATE;
             end
+
+            emit global:update;
         end
     with
         every e_ARMAGEDDON do

@@ -69,7 +69,7 @@ do
     end;
 
     par/or do
-        every gc in e_DRAW do
+        every gc in global:draw do
             if not sprite then
                 continue;
             end
