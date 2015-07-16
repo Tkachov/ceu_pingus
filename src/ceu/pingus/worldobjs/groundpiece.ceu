@@ -21,41 +21,28 @@ class Groundpiece with
     var _ResDescriptor&? desc;
     var int gptype;
 do
-    call/rec global:world:add_object(&this);
-
     function (_FileReader* reader) => void construct do end;
+    function (void) => float get_z_pos do return pos.z; end
+    function (Vector3f p) => void set_pos do pos = p; end
+    function (void) => Vector3f get_pos do return pos; end
 
-    function (void) => float get_z_pos do
-        return pos.z;
+    finalize with _delete_obj(desc); end
+
+    every e_STARTUP do
+        //original FIXME: using a CollisionMask is kind of unneeded here
+        var _CollisionMask* mask = _new_CollisionMask(_deref(desc));
+
+        //original FIXME: overdrawing of bridges and similar things aren't handled here
+        if gptype == _GT_REMOVE then
+            global:world:remove(mask, pos.x, pos.y);
+        else
+            global:world:put(mask, pos.x, pos.y, gptype);
+        end
+
+        _delete_obj(mask);
+
+        break;
     end
-
-    function (Vector3f p) => void set_pos do
-        pos = p;
-    end
-
-    function (void) => Vector3f get_pos do
-        return pos;
-    end
-
-    finalize with
-        _delete_obj(desc);
-    end
-
-    await e_STARTUP;
-
-    //original FIXME: using a CollisionMask is kind of unneeded here
-    var _CollisionMask* mask = _new_CollisionMask(_deref(desc));
-
-    //original FIXME: overdrawing of bridges and similar things aren't handled here
-    if gptype == _GT_REMOVE then
-        global:world:remove(mask, pos.x, pos.y);
-    else
-        global:world:put(mask, pos.x, pos.y, gptype);
-    end
-
-    _delete_obj(mask);
-
-    global:world:remove_object(&this);
 end
 
 #endif

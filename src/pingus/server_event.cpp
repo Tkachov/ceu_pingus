@@ -37,8 +37,9 @@ ServerEvent::ServerEvent() :
 }
 
 ServerEvent::~ServerEvent() {
-  ServerEvent* self = this;
-  ceu_out_go(&CEUapp, CEU_IN_DELETE_SERVER_EVENT, &self);
+  //TODO: port completely or somehow solve that
+  //ServerEvent* self = this;
+  //ceu_out_go(&CEUapp, CEU_IN_DELETE_SERVER_EVENT, &self);
 }
 
 ServerEvent::ServerEvent(const FileReader& reader) :

@@ -66,7 +66,9 @@ do
             end
         end
     with
-        every global:e_PINGU_UPDATE_ALL do
+        loop do
+            await global:e_PINGU_UPDATE_ALL;
+        
             if call/rec is_tumbling() then
                 tumbler.get(pingu.direction):update();
             else

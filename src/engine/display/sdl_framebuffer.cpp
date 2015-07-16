@@ -176,7 +176,7 @@ void
 SDLFramebuffer::flip()
 {
   //send Ceu SDL_REDRAW
-  ceu_sys_go(&CEUapp, CEU_IN_SDL_REDRAW, (tceu_evtp)(nullptr));
+  ceu_sys_go(&CEUapp, CEU_IN_SDL_REDRAW, 0);
   SDL_RenderPresent(m_renderer);
 }
 

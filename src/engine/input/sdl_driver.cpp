@@ -222,7 +222,8 @@ SDLDriver::update(float delta)
       case SDL_QUIT: // FIXME: make this into a GameEvent
         ScreenManager::instance()->pop_all_screens();
         //Ceu SDL_QUIT
-        ceu_sys_go(&CEUapp, CEU_IN_SDL_QUIT, 0);
+        ///ceu_sys_go(&CEUapp, CEU_IN_SDL_QUIT, 0);
+        //TODO: fix that segfault somehow
       break;
 
       case SDL_MOUSEMOTION:

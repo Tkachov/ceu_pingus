@@ -16,7 +16,6 @@
 
 #include <SDL.h>
 
-#include "ceu_sys_log.h"
 #include "pingus/pingus_main.hpp"
 #include "pingus/components/menu_button.hpp"
 #include "engine/gui/component.hpp"
@@ -30,9 +29,6 @@
 
 #include "engine/display/display.hpp"
 #include "engine/display/framebuffer.hpp"
-
-void      ceu_sys_log       (int mode, long int) {};
-
 
 tceu_app CEUapp; //exported in "ceuvars.h", which is used everywhere to send Ceu events
 

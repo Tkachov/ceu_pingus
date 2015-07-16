@@ -85,14 +85,10 @@ native @pure _new_CreationPackage(), _vecget(), _vecget_addr(), _addr(), _new_Ov
 native @pure _reader_read_Groundtype(), _Resource__load_surface(), _opeq(), _new_Surface(), _new_Container(), _new_Color(),
              _read_position(), _read_position2(), _log_error(), _log_warn();
 
-input void STARTUP_WORLD;
 input void DELETE_WORLD;
 
-input IWorldObj* WORLD_STARTUP_OBJECT;
 input IWorldObj* WORLD_DRAW_OBJECT;
 input IWorldObj* WORLD_DRAW_SMALLMAP_OBJECT;
-input IWorldObj* WORLD_UPDATE_OBJECT;
-input IWorldObj* WORLD_DELETE_OBJECT;
 
 class World with
     interface IWorld;
@@ -293,9 +289,6 @@ do
 
     //////////// EVENTS /////////////
 
-    var bool draw_iterating = false;
-    var _SceneContext* gc = null;
-
     par/or do
         every gspackage in WORLD_GET_SIZE do
             gspackage:width = get_width();
@@ -305,47 +298,34 @@ do
         every e_CREATE do
             var _const_std__vector_FileReader* ov = _addr(pingus_level.get_objects());
             var _CreationPackage* pack = _new_CreationPackage();
-            _printf("going to do %d emits\n----\n", ov:size());
+            ///_printf("going to do %d emits\n----\n", ov:size());
             loop i in ov:size() do
                 pack:reader = _PTR2REF((_FileReader*)_vecget_addr(ov, i));
                 pack:result.clear();
-                _printf("create #%d\n", i+1);
+                ///_printf("create #%d: \t", i+1);
                 emit create => pack;
 
-                _printf("created %d item(s)\n", pack:result.size());
                 loop j in pack:result.size() do
                     if _vecget(pack:result, j) then
-                        _printf("\t pointer [%d] valid\n", j);
+                        ///_printf(" %d", _vecget(pack:result, j));
                         var IWorldObj* wobject = (IWorldObj*)_vecget(pack:result, j);
                         emit wobject:e_STARTUP;
                     end
                 end
-                _printf("\n");
+                ///_printf("\n");
             end
+            ///_printf("\n");
             _delete_obj(pack);
-        end
-    with
-        every STARTUP_WORLD do
-            objs.iterate(_CEU_IN_WORLD_STARTUP_OBJECT);
-        end
-    with
-        every object in WORLD_STARTUP_OBJECT do
-            emit object:e_STARTUP;
         end
     with
         every wgc in e_DRAW do
             wgc:light().fill_screen(_Color(_deref(ambient_light)));
 
-            draw_iterating = true;
-            gc = _PTR2REF(wgc);
-            objs.iterate(_CEU_IN_WORLD_DRAW_OBJECT);
-            draw_iterating = false;
-            gc = null;
-        end
-    with
-        every object in WORLD_DRAW_OBJECT do
-            if draw_iterating and gc != null then
-                emit object:e_DRAW => gc;
+            if wgc != null then
+                objs.cleanup();
+                loop i in objs.size() do
+                    emit ((IWorldObj*)objs.get(i)):e_DRAW => wgc;
+                end
             end
         end
     with
@@ -365,11 +345,11 @@ do
                 end
             end
 
-            objs.iterate(_CEU_IN_WORLD_UPDATE_OBJECT);
-        end
-    with
-        every object in WORLD_UPDATE_OBJECT do
-            emit object:e_UPDATE;
+            objs.cleanup();
+            loop i in objs.size() do
+                ///_printf("update object = %d\n", objs.get(i));
+                emit ((IWorldObj*)objs.get(i)):e_UPDATE;
+            end
         end
     with
         every e_ARMAGEDDON do
@@ -378,7 +358,7 @@ do
             armageddon_count = 0;
         end
     with
-        every package in create_group do            
+        every package in create_group do
             var _std__vector_FileReader&? sections = _new_std__vector_FileReader(package);
             var _CreationPackage* new_package = _new_CreationPackage();
 
@@ -398,7 +378,7 @@ do
             _delete_obj(new_package);
         end
     with
-        every package in create_prefab do            
+        every package in create_prefab do
             var _std__string&? name = _PTR2REF(_new_String());
             _string_read_string(name, package:reader, "name");
 
@@ -415,7 +395,7 @@ do
             loop i in objects:size() do
                 var _OverrideFileReader&? override_reader = _new_OverrideFileReader(objects, i, _deref(overrides));
                 new_package:reader = _PTR2REF(override_reader);
-                new_package:result.clear();                
+                new_package:result.clear();
                 emit create_object => new_package; //TODO: fix `create` emitting
 
                 loop j in new_package:result.size() do
@@ -434,7 +414,7 @@ do
             _delete_obj(new_package);
         end
     with
-        every package in create_object do            
+        every package in create_object do
             if package:reader:get_name() == "liquid" then emit create_liquid => package;
             else/if package:reader:get_name() == "hotspot" then emit create_hotspot => package;
             else/if package:reader:get_name() == "entrance" then emit create_entrance => package;
@@ -526,6 +506,8 @@ do
             spawn Exit with
                 package:result.push_back(&this) finalize with end;
 
+                _printf("<exit>");
+
                 this.desc = _PTR2REF(_new_ResDescriptor());
 
                 _read_position(package:reader, this.pos);
@@ -545,7 +527,6 @@ do
         every package in create_groundpiece do
             spawn Groundpiece with
                 package:result.push_back(&this) finalize with end;
-
                 _read_position(package:reader, this.pos);
                 this.desc = _PTR2REF(_new_ResDescriptor());
                 package:reader:read_desc("surface", _deref(this.desc));
@@ -805,13 +786,10 @@ do
         end
     with
         await DELETE_WORLD;
-        objs.iterate(_CEU_IN_WORLD_DELETE_OBJECT);
-        //loop i in objs.size() do
-        //    emit ((IWorldObj*)objs.get(i)):e_DELETE;
-        //end
-    with
-        every object in WORLD_DELETE_OBJECT do
-            emit object:e_DELETE;
+
+        objs.cleanup();
+        loop i in objs.size() do
+            emit ((IWorldObj*)objs.get(i)):e_DELETE;
         end
     end
     global:world = null;

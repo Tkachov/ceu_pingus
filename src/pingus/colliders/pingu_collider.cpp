@@ -31,8 +31,9 @@ PinguCollider::PinguCollider(const int height_arg) : height(height_arg)
 
 PinguCollider::~PinguCollider()
 {
-  PinguCollider* self = this;
-  ceu_out_go(&CEUapp, CEU_IN_DELETE_PINGU_COLLIDER, &self);
+  //TODO: port completely or somehow solve that
+  //PinguCollider* self = this;
+  //ceu_out_go(&CEUapp, CEU_IN_DELETE_PINGU_COLLIDER, &self);
 }
 
 bool PinguCollider::operator() (void*, Vector3f current_pos,
