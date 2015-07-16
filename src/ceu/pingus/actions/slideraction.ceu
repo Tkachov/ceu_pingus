@@ -22,10 +22,8 @@ do
     catchable = true;
 
     function @rec (void) => Vector3f get_center_pos do
-        var Vector3f result;
-        result.x = pingu.get_pos().x;
-        result.y = pingu.get_pos().y - 16;
-        result.z = pingu.get_pos().z;
+        var Vector3f result = pingu.get_pos();
+        result.y = result.y - 16;
         return result;
     end
 
@@ -40,7 +38,7 @@ do
 
     par do
         every gc in pingu.e_DRAW_CALLED do
-            _gc_color_draw2(gc, sprite.get(pingu.direction), pingu.get_pos() + _Vector3f(0, -2));
+            _gc_color_draw2(gc, sprite.get(pingu.direction), _toVector3f(pingu.get_pos()) + _Vector3f(0, -2));
         end
     with
         every global:e_PINGU_UPDATE_ALL do

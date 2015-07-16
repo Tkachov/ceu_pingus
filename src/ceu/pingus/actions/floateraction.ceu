@@ -5,6 +5,7 @@
 #include "../../sdl.ceu"
 #include "../../engine/display/scene_context.ceu"
 #include "../../engine/display/sprite.ceu"
+#include "../../engine/display/sprite3.ceu"
 #include "../../math/vector3f.ceu"
 #include "../iaction.ceu"
 #include "../ipingu.ceu"
@@ -22,10 +23,8 @@ do
     catchable = true;
 
     function @rec (void) => Vector3f get_center_pos do
-        var Vector3f result;
-        result.x = pingu.get_pos().x;
-        result.y = pingu.get_pos().y - 16;
-        result.z = pingu.get_pos().z;
+        var Vector3f result = pingu.get_pos();
+        result.y = result.y - 16;
         return result;
     end
 
@@ -33,28 +32,23 @@ do
         return _get_screenname(_A_FLOATER);
     end
 
-    var _Sprite&? sprite = _new_SpriteA(_scc3("pingus/player", pingu.get_owner_str(), "/floater/left"));
-    finalize with _delete_obj(sprite); end;
+    var Sprite3 sprite with
+        this.pos_giver = pingu;
+    end;
+    sprite.reload_by_name(_scc3("pingus/player", pingu.get_owner_str(), "/floater/left").c_str());    
 
     var Vector3f v_DOWN;
     v_DOWN.x=0;
     v_DOWN.y=1;
     v_DOWN.z=0;
+    
+    every global:e_PINGU_UPDATE_ALL do
+        pingu.set_velocity(v_DOWN);
 
-    par do
-        every gc in pingu.e_DRAW_CALLED do
-            _gc_color_draw2(gc, sprite, pingu.get_pos());
-        end
-    with
-        every global:e_PINGU_UPDATE_ALL do
-            sprite.update();
-            pingu.set_velocity(v_DOWN);
-
-            if (call/rec pingu.rel_getpixel(0, -1)) == _GT_NOTHING then
-                pingu.set_y(pingu.get_y() + 1);
-            else
-                escape _A_WALKER;
-            end
+        if (call/rec pingu.rel_getpixel(0, -1)) == _GT_NOTHING then
+            pingu.set_y(pingu.get_y() + 1);
+        else
+            escape _A_WALKER;
         end
     end
 end

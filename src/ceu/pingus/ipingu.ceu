@@ -17,10 +17,12 @@ native/pre do
 end
 
 #include "ipingu_action.ceu"
+#include "ipos_giver.ceu"
 #include "pingu_events.ceu"
 #include "../string.ceu"
 
 interface IPingu with
+    interface IPosGiver;
     var _Direction& direction;
     var IPinguAction* ceu_action;
 
@@ -53,8 +55,6 @@ interface IPingu with
 
     function (void) => float get_x;
     function (void) => float get_y;
-    function (void) => _Vector3f get_pos;
-    function (void) => Vector3f get_ceu_pos;
 
     function (float x, float y) => void set_posf;
     function (_Vector3f arg) => void set_pos;

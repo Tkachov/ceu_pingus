@@ -6,7 +6,7 @@
 #include "../iworld.ceu"
 #include "../worldobj.ceu"
 #include "../ipingu_holder.ceu"
-#include "../pingu_holder_listener.ceu"
+#include "../global_interface.ceu"
 
 class Hotspot with
     interface IWorldObj;
@@ -16,18 +16,9 @@ do
     call/rec global:world:add_object(&this);
 
     function (_FileReader* reader) => void construct do end;
-
-    function (void) => float get_z_pos do
-        return pos.z;
-    end
-
-    function (Vector3f p) => void set_pos do
-        pos = p;
-    end
-
-    function (void) => Vector3f get_pos do
-        return pos;
-    end
+    function (void) => float get_z_pos do return pos.z; end
+    function (Vector3f p) => void set_pos do pos = p; end
+    function (void) => Vector3f get_pos do return pos; end
 
     finalize with
         _delete_obj(sprite);

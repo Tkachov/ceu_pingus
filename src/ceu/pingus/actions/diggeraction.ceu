@@ -4,6 +4,7 @@
 #include "../../c.ceu"
 #include "../../sdl.ceu"
 #include "../../engine/display/scene_context.ceu"
+#include "../../engine/display/sprite3.ceu"
 #include "../../engine/sound/sound.ceu"
 #include "../collision_mask.ceu"
 #include "../iaction.ceu"
@@ -24,10 +25,8 @@ do
     catchable = true;
 
     function @rec (void) => Vector3f get_center_pos do
-        var Vector3f result;
-        result.x = pingu.get_pos().x;
-        result.y = pingu.get_pos().y - 16;
-        result.z = pingu.get_pos().z;
+        var Vector3f result = pingu.get_pos();
+        result.y = result.y - 16;
         return result;
     end
 
@@ -35,10 +34,7 @@ do
         return _get_screenname(_A_DIGGER);
     end
 
-    var int delay_count = 0;
-
-    var _Sprite&? sprite = _PTR2REF(_new_SpriteA(_scc3("pingus/player", pingu.get_owner_str(), "/digger/left")));
-    finalize with _delete_obj(sprite); end;
+    var int delay_count = 0;  
 
     var _CollisionMask&? digger_radius = _new_CollisionMask("pingus/common/digger_radius_gfx", "pingus/common/digger_radius");
     finalize with _delete_obj(digger_radius); end;
@@ -73,24 +69,23 @@ do
         pingu.set_posf((int)pingu.get_x(), (int)pingu.get_y()+1);
     end
 
-    par do
-        every gc in pingu.e_DRAW_CALLED do
-            _gc_color_draw2(gc, sprite, pingu.get_pos());
-        end
-    with
-        every global:e_PINGU_UPDATE_ALL do
-            sprite.update();
-            delay_count = delay_count + 1;
+    var Sprite3 sprite with
+        this.pos_giver = pingu;
+    end;
+    sprite.reload_by_name(_scc3("pingus/player", pingu.get_owner_str(), "/digger/left").c_str());
 
-            if (call/rec pingu.rel_getpixel(0, -1)) == _GT_WATER or (call/rec pingu.rel_getpixel(0, -1)) == _GT_LAVA then
-                escape _A_DROWN;
-            else
-                if not call/rec have_something_to_dig() then
-                    call/rec dig(true);
-                    escape _A_WALKER;
-                else/if delay_count % 4 == 0 then
-                    call/rec dig(false);
-                end
+    loop do
+        await global:e_PINGU_UPDATE_ALL;
+        delay_count = delay_count + 1;
+
+        if (call/rec pingu.rel_getpixel(0, -1)) == _GT_WATER or (call/rec pingu.rel_getpixel(0, -1)) == _GT_LAVA then
+            escape _A_DROWN;
+        else
+            if not call/rec have_something_to_dig() then
+                call/rec dig(true);
+                escape _A_WALKER;
+            else/if delay_count % 4 == 0 then
+                call/rec dig(false);
             end
         end
     end

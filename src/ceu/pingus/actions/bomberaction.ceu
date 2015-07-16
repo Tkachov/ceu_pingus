@@ -10,7 +10,7 @@
 #include "../collision_mask.ceu"
 #include "../iaction.ceu"
 #include "../ipingu.ceu"
-#include "../pingu_holder_listener.ceu"
+#include "../global_interface.ceu"
 #include "../state_sprite.ceu"
 #include "../worldobj.ceu"
 #include "../movers/linear_mover.ceu"
@@ -38,10 +38,8 @@ do
     catchable = true;
 
     function @rec (void) => Vector3f get_center_pos do
-        var Vector3f result;
-        result.x = pingu.get_pos().x;
+        var Vector3f result = pingu.get_pos();
         result.y = pingu.get_pos().y - 16;
-        result.z = pingu.get_pos().z;
         return result;
     end
 
@@ -61,14 +59,15 @@ do
     var _Movers_LinearMover&? mover = _new_LinearMover();
     finalize with _delete_obj(mover); end;
 
-    global:world:play_sound("ohno", pingu.get_ceu_pos(), 0.5);
+    global:world:play_sound("ohno", pingu.get_pos(), 0.5);
 
     par do
-        every global:e_PINGU_UPDATE_ALL do
+        loop do
+            await global:e_PINGU_UPDATE_ALL;
             sprite.update();
 
             // Move the Pingu
-            mover.reset(pingu.get_pos());
+            mover.reset(_toVector3f(pingu.get_pos()));
             mover.update(_toVector3f(pingu.get_velocity()), _Colliders__PinguCollider(_pingu_height));
             pingu.set_pos(mover.get_pos());
         end
@@ -78,7 +77,7 @@ do
             _gc_color_draw2(gc, explo_surf, _Vector3f(pingu.get_x()-32, pingu.get_y()-48));
         with
             every gc in pingu.e_DRAW_CALLED do
-                _gc_color_draw2(gc, sprite.get(pingu.direction), pingu.get_pos());
+                _gc_color_draw2(gc, sprite.get(pingu.direction), _toVector3f(pingu.get_pos()));
             end
         end
     with
@@ -102,7 +101,7 @@ do
         end
 
         //Play sound at 10th frame (>9)
-        global:world:play_sound("plop", pingu.get_ceu_pos(), 0.5);
+        global:world:play_sound("plop", pingu.get_pos(), 0.5);
 
         //Wait for 13th frame to throw particles
         await global:e_PINGU_UPDATE_ALL until (sprite.get(pingu.direction):get_current_frame() > 12);

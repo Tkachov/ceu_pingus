@@ -5,7 +5,7 @@
 #include "../../sdl.ceu"
 #include "../../math/math.ceu"
 #include "../iworld.ceu"
-#include "../pingu_holder_listener.ceu"
+#include "../global_interface.ceu"
 #include "../components/armageddonbutton.ceu"
 #include "../components/forwardbutton.ceu"
 #include "../components/pausebutton.ceu"

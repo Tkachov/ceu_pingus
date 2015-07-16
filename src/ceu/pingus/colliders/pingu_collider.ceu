@@ -3,9 +3,9 @@
 
 #include "../../c.ceu"
 #include "../../sdl.ceu"
-#include "../iworld.ceu"
+#include "../global_interface.ceu"
 #include "../ipingu_holder.ceu"
-#include "../pingu_holder_listener.ceu"
+#include "../iworld.ceu"
 
 native/pre do
     ##include "pingus/colliders/pingu_collider.hpp"

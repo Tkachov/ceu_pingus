@@ -1,0 +1,11 @@
+#ifndef IPOS_GIVER_CEU
+#define IPOS_GIVER_CEU
+
+#include "../math/vector3f.ceu"
+
+//the most stupid name ever
+interface IPosGiver with
+    function (void) => Vector3f get_pos;
+end
+
+#endif

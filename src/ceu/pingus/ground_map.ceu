@@ -4,7 +4,7 @@
 #include "../c.ceu"
 #include "../sdl.ceu"
 #include "iworld.ceu"
-#include "pingu_holder_listener.ceu"
+#include "global_interface.ceu"
 #include "worldobj.ceu"
 
 native/pre do

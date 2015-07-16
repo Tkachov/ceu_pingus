@@ -1,5 +1,5 @@
-#ifndef PINGU_HOLDER_LISTENER_CEU
-#define PINGU_HOLDER_LISTENER_CEU
+#ifndef GLOBAL_INTERFACE_CEU
+#define GLOBAL_INTERFACE_CEU
 
 #include "iworld.ceu"
 #include "pingu_events.ceu"

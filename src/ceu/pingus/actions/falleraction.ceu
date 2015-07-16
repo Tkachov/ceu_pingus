@@ -32,10 +32,8 @@ do
     catchable = true;
 
     function @rec (void) => Vector3f get_center_pos do
-        var Vector3f result;
-        result.x = pingu.get_pos().x;
-        result.y = pingu.get_pos().y - 16;
-        result.z = pingu.get_pos().z;
+        var Vector3f result = pingu.get_pos();
+        result.y = result.y - 16;
         return result;
     end
 
@@ -60,9 +58,9 @@ do
     par do
         every gc in pingu.e_DRAW_CALLED do
             if call/rec is_tumbling() then
-                _gc_color_draw2(gc, tumbler.get(pingu.direction), pingu.get_pos());
+                _gc_color_draw2(gc, tumbler.get(pingu.direction), _toVector3f(pingu.get_pos()));
             else
-                _gc_color_draw2(gc, sprite.get(pingu.direction), pingu.get_pos());
+                _gc_color_draw2(gc, sprite.get(pingu.direction), _toVector3f(pingu.get_pos()));
             end
         end
     with
@@ -91,9 +89,9 @@ do
             pingu.set_velocity(vel);
 
             // Move the Pingu as far is it can go
-            mover.reset(pingu.get_pos());
+            mover.reset(_toVector3f(pingu.get_pos()));
             mover.update(_toVector3f(pingu.get_velocity()), _Colliders__PinguCollider(_pingu_height));
-            pingu.set_pos(mover.get_pos());
+            pingu.set_pos(_toVector3f(mover.get_pos()));
 
             var bool collided = mover.collided();
             var Vector3f velocity = pingu.get_velocity();

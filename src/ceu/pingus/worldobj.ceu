@@ -18,8 +18,10 @@ native @pure _new_CollisionMask(), _colmap_put(), _colmap_remove();
 #include "../math/vector3f.ceu"
 #include "../string.ceu"
 #include "components/ismallmap.ceu"
+#include "ipos_giver.ceu"
 
 interface IWorldObj with
+    interface IPosGiver;
     var Vector3f pos;
 
     event void e_STARTUP;
@@ -29,8 +31,7 @@ interface IWorldObj with
 
     function (_FileReader* reader) => void construct;
     function (void) => float get_z_pos;
-    function (Vector3f p) => void set_pos;
-    function (void) => Vector3f get_pos;
+    function (Vector3f p) => void set_pos;    
 end
 
 #endif

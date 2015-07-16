@@ -7,7 +7,7 @@
 #include "../iworld.ceu"
 #include "../worldobj.ceu"
 #include "../ipingu_holder.ceu"
-#include "../pingu_holder_listener.ceu"
+#include "../global_interface.ceu"
 
 class FakeExit with
     interface IWorldObj;

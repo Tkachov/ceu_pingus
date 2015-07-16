@@ -6,7 +6,7 @@
 #include "world.ceu"
 #include "ipingu_holder.ceu"
 #include "goal_manager.ceu"
-#include "pingu_holder_listener.ceu"
+#include "global_interface.ceu"
 
 native/pre do
     ##include "pingus/server.hpp"
@@ -63,7 +63,7 @@ do
             _ServerEvent__make_pingu_action_event(
                 call/rec get_time(),
                 pingu:get_id(),
-                pingu:get_pos(),
+                _toVector3f(pingu:get_pos()),
                 _to_AN(action)
             )
         );

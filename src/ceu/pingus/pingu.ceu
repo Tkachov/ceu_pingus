@@ -26,7 +26,7 @@
 #include "actions/walkeraction.ceu"
 #include "iaction.ceu"
 #include "ipingu.ceu"
-#include "pingu_holder_listener.ceu"
+#include "global_interface.ceu"
 
 native/pre do
     ##define A_Enum(x) (ActionName::Enum)(x)
@@ -97,15 +97,11 @@ do
         return pos_y;
     end
 
-    function (void) => _Vector3f get_pos do
-        return _Vector3f(pos_x, pos_y, 0);
-    end
-
-    function (void) => Vector3f get_ceu_pos do
+    function (void) => Vector3f get_pos do
         var Vector3f p;
         p.x = pos_x;
         p.y = pos_y;
-        p.z = 0;
+        p.z = 50 + (current_action != _A_WALKER); //based on PinguHolder.z and the rule when all walkers draw under others
         return p;
     end
 

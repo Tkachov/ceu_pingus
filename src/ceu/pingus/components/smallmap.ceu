@@ -9,7 +9,7 @@
 #include "../../proxies/primarybuttonproxy.ceu"
 #include "../iworld.ceu"
 #include "../ipingu_holder.ceu"
-#include "../pingu_holder_listener.ceu"
+#include "../global_interface.ceu"
 #include "../smallmap_image.ceu"
 #include "ismallmap.ceu"
 #include "iplayfield.ceu"

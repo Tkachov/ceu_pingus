@@ -4,11 +4,12 @@
 #include "../../math/size.ceu"
 #include "../../math/vector2i.ceu"
 #include "../../math/vector3f.ceu"
-#include "../../pingus/worldobj.ceu"
+#include "../../pingus/global_interface.ceu"
+#include "../../pingus/ipos_giver.ceu"
 #include "sprite2.ceu"
 
 class Sprite3 with
-    var IWorldObj& pos_giver;
+    var IPosGiver& pos_giver;
     var bool active = true;
 
     function (_const_char_string filename) => void reload_by_name;
@@ -202,7 +203,7 @@ do
         end
     with
         every gc in global:draw do
-            draw(gc, pos_giver.pos);
+            draw(gc, pos_giver.get_pos());
         end
     with
         every finish do

@@ -10,7 +10,7 @@
 #include "../../proxies/primarybuttonproxy.ceu"
 #include "../../proxies/secondarybuttonproxy.ceu"
 #include "../capture_rectangle.ceu"
-#include "../pingu_holder_listener.ceu"
+#include "../global_interface.ceu"
 #include "../server.ceu"
 #include "iplayfield.ceu"
 

@@ -8,7 +8,7 @@
 #include "../../proxies/eventproxy.ceu"
 #include "../iworld.ceu"
 #include "../ipingu_holder.ceu"
-#include "../pingu_holder_listener.ceu"
+#include "../global_interface.ceu"
 #include "ismallmap.ceu"
 
 native/pre do

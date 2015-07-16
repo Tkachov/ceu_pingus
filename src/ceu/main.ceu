@@ -11,7 +11,7 @@ end
 #include "pingus/screens/game_session.ceu"
 #include "pingus/pingu_holder.ceu"
 #include "pingus/pingu_events.ceu"
-#include "pingus/pingu_holder_listener.ceu"
+#include "pingus/global_interface.ceu"
 #include "pingus/server_event.ceu"
 #include "pingus/iworld.ceu"
 #include "proxies/proxyeventlist.ceu"
