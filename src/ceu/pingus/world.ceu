@@ -308,14 +308,20 @@ do
                 loop j in pack:result.size() do
                     if _vecget(pack:result, j) then
                         ///_printf(" %d", _vecget(pack:result, j));
-                        var IWorldObj* wobject = (IWorldObj*)_vecget(pack:result, j);
-                        emit wobject:e_STARTUP;
                     end
                 end
                 ///_printf("\n");
             end
             ///_printf("\n");
             _delete_obj(pack);
+
+            //first: there are few world objects (like pingu_holder) which are not created by WorldObjFactory up there
+            //second: when you try to find an object by id, you want all objects to be already created (teleporters, doors)
+            //third: now objects are sorted and will receive STARTUP in necessary order
+            loop i in objs.size() do                
+                emit ((IWorldObj*)objs.get(i)):e_STARTUP;
+            end
+            objs.cleanup();
         end
     with
         every wgc in e_DRAW do
@@ -345,7 +351,9 @@ do
             objs.cleanup();
             loop i in objs.size() do
                 ///_printf("update object = %d\n", objs.get(i));
-                emit ((IWorldObj*)objs.get(i)):e_UPDATE;
+                if objs.get(i) != null then
+                    emit ((IWorldObj*)objs.get(i)):e_UPDATE;
+                end
             end
 
             emit global:update;
@@ -504,8 +512,6 @@ do
         every package in create_exit do
             spawn Exit with
                 package:result.push_back(&this) finalize with end;
-
-                _printf("<exit>");
 
                 this.desc = _PTR2REF(_new_ResDescriptor());
 

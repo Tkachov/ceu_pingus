@@ -21,6 +21,8 @@ class Groundpiece with
     var _ResDescriptor&? desc;
     var int gptype;
 do
+    call/rec global:world:add_object(&this);
+
     function (_FileReader* reader) => void construct do end;
     function (void) => float get_z_pos do return pos.z; end
     function (Vector3f p) => void set_pos do pos = p; end
@@ -43,6 +45,8 @@ do
 
         break;
     end
+
+    global:world:remove_object(&this);
 end
 
 #endif

@@ -4,9 +4,11 @@
 void Container::add(void* ptr, int z) { container.push_back(ContainedPair(ptr, z)); }
 
 void Container::remove(void* ptr) {
-	for(auto i: container)
-		if(i.ptr == ptr)
-			i.removed = true;
+	for(auto i = container.begin(); i != container.end(); ++i)
+		if(i->ptr == ptr) {
+			i->removed = true;
+			i->ptr = 0;
+		}
 }
 
 void Container::sort() { std::sort(container.begin(), container.end()); }
@@ -30,4 +32,7 @@ void Container::iterate(int event) {
 
 size_t Container::size() { return container.size(); }
 
-void* Container::get(size_t index) { return container[index].ptr; }
+void* Container::get(size_t index) {
+	if(container[index].removed) return 0;
+	return container[index].ptr;
+}

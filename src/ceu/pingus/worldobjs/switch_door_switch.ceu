@@ -3,6 +3,7 @@
 
 #include "../../c.ceu"
 #include "../../sdl.ceu"
+#include "../../engine/display/sprite3.ceu"
 #include "../../math/vector3f.ceu"
 #include "../iworld.ceu"
 #include "../worldobj.ceu"
@@ -15,8 +16,10 @@ class SwitchDoorSwitch with
     var _std__string&? m_target;
 do
     var bool is_triggered = false;
-    var Sprite switch_sur;
-    call/rec switch_sur.reload_by_name("worldobjs/switchdoor_switch");
+    var Sprite3 switch_sur with
+        this.pos_giver = outer;
+    end;
+    switch_sur.reload_by_name("worldobjs/switchdoor_switch");
 
     call/rec global:world:add_object(&this);
 
@@ -40,10 +43,6 @@ do
                     _log_error("given target-id is not a SwitchDoorDoor");
                 end
             end
-        end
-    with
-        every gc in global:draw do
-            _gc_color_draw2(gc, switch_sur.get(), _toVector3f(pos));
         end
     with
         every e_UPDATE do

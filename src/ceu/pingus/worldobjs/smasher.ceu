@@ -3,6 +3,7 @@
 
 #include "../../c.ceu"
 #include "../../sdl.ceu"
+#include "../../engine/display/sprite3.ceu"
 #include "../../engine/sound/sound.ceu"
 #include "../../math/math.ceu"
 #include "../particles/particles.ceu"
@@ -14,8 +15,11 @@
 class Smasher with
     interface IWorldObj;
 do
-    var Sprite sprite;
-    call/rec sprite.reload_by_name("traps/smasher");
+    var Sprite3 sprite with
+        this.pos_giver = outer;
+        this.active = false;
+    end;
+    sprite.reload_by_name("traps/smasher");
     _assert(sprite.get_frame_count() == 6);
 
     call/rec global:world:add_object(&this);
@@ -35,10 +39,6 @@ do
             var _CollisionMask* mask = _new_CollisionMask("traps/smasher_cmap");
             global:world:put(mask, pos.x, pos.y, _GT_SOLID);
             _delete_obj(mask);
-        end
-    with
-        every gc in global:draw do
-            _gc_color_draw2(gc, sprite.get(), _toVector3f(pos));
         end
     with
         every e_UPDATE do

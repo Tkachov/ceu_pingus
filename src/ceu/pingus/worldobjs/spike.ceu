@@ -3,6 +3,7 @@
 
 #include "../../c.ceu"
 #include "../../sdl.ceu"
+#include "../../engine/display/sprite3.ceu"
 #include "../iworld.ceu"
 #include "../worldobj.ceu"
 #include "../ipingu_holder.ceu"
@@ -11,9 +12,6 @@
 class Spike with
     interface IWorldObj;
 do
-    var Sprite surface;
-    call/rec surface.reload_by_name("traps/spike");
-
     call/rec global:world:add_object(&this);
 
     function (_FileReader* reader) => void construct do end;
@@ -21,38 +19,41 @@ do
     function (Vector3f p) => void set_pos do pos = p; end
     function (void) => Vector3f get_pos do return pos; end
 
-    var bool killing = false;
-
     par/or do
-        every gc in global:draw do
-            if killing then
-                _gc_color_draw2(gc, surface.get(), _toVector3f(pos));
-            end
-        end
-    with
-        every e_UPDATE do
-            if killing then
-                surface.update();
+        loop do
+            //not killing
+            every e_UPDATE do
+                var bool stop = false;
+                loop pingu in global:world:get_pingus():all_pingus do            
+                    if pingu:get_x() > pos.x+16-5 and pingu:get_x() < pos.x+16+5 and
+                       pingu:get_y() > pos.y and pingu:get_y() < pos.y+32 then                  
+                      stop = true;
+                      break;
+                    end            
+                end
+                if stop then break; end
             end
 
-            loop pingu in global:world:get_pingus():all_pingus do
-                if not killing then
-                    if pingu:get_x() > pos.x+16-5 and pingu:get_x() < pos.x+16+5 and
-                       pingu:get_y() > pos.y and pingu:get_y() < pos.y+32 then
-                      surface.restart();
-                      killing = true;
+            //killing
+            do
+                var Sprite3 surface with
+                    this.pos_giver = outer;
+                end;
+                surface.reload_by_name("traps/spike");
+
+                every e_UPDATE do
+                    loop pingu in global:world:get_pingus():all_pingus do            
+                        if surface.get_current_frame() == 3 and
+                           pingu:get_x() > pos.x+16-12 and pingu:get_x() < pos.x+16+12 and
+                           pingu:get_y() > pos.y and pingu:get_y() < pos.y+32 then
+                          emit pingu:e_CHANGE_ACTION => _A_DEAD;
+                        end                
                     end
-                else
-                    if surface.get_current_frame() == 3 and
-                       pingu:get_x() > pos.x+16-12 and pingu:get_x() < pos.x+16+12 and
-                       pingu:get_y() > pos.y and pingu:get_y() < pos.y+32 then
-                      emit pingu:e_CHANGE_ACTION => _A_DEAD;
+
+                    if surface.get_current_frame() == surface.get_frame_count()-1 then
+                        break;
                     end
                 end
-            end
-
-            if surface.get_current_frame() == surface.get_frame_count()-1 then
-                killing = false;
             end
         end
     with

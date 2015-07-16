@@ -75,7 +75,8 @@ do
                     door_tile.get(),
                     _Vector3f(
                         pos.x,
-                        pos.y + (float)(i*door_tile.get_height() + door_box.get_height())
+                        pos.y + (float)(i*door_tile.get_height() + door_box.get_height()),
+                        get_z_pos()
                     )
                 );
             end

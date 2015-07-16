@@ -3,6 +3,7 @@
 
 #include "../../c.ceu"
 #include "../../sdl.ceu"
+#include "../../engine/display/sprite3.ceu"
 #include "../../math/vector3f.ceu"
 #include "../iworld.ceu"
 #include "../worldobj.ceu"
@@ -13,8 +14,10 @@
 class TeleporterTarget with
     interface ITeleporterTarget;
 do
-    var Sprite sprite;
-    call/rec sprite.reload_by_name("worldobjs/teleportertarget");
+    var Sprite3 sprite with
+        this.pos_giver = outer;
+    end;
+    sprite.reload_by_name("worldobjs/teleportertarget");
 
     call/rec global:world:add_object(&this);
 
@@ -30,17 +33,7 @@ do
         sprite.restart();
     end
 
-    par/or do
-        every gc in global:draw do
-            _gc_color_draw2(gc, sprite.get(), _toVector3f(pos));
-        end
-    with
-        every e_UPDATE do
-            sprite.update();
-        end
-    with
-        await e_DELETE;
-    end
+    await e_DELETE;
 end
 
 #endif

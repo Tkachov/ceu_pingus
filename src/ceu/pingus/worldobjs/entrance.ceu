@@ -18,8 +18,7 @@ class Entrance with
     var int release_rate;
     var int owner_id;
 do
-    var Sprite smallmap_symbol;
-    var Sprite surface;
+    var Sprite smallmap_symbol;    
     call/rec smallmap_symbol.reload_by_name("core/misc/smallmap_entrance");
 
     call/rec global:world:add_object(&this);
@@ -46,15 +45,6 @@ do
     end
 
     par/or do
-        every gc in global:draw do
-            if not surface then //probably is always true
-                continue;
-            end
-
-            //original FIXME: Why do we still have these hardcoded offsets?!
-            _gc_color_draw2(gc, surface.get(), _Vector3f(pos.x - 32, pos.y - 16));
-        end
-    with
         every smallmap in global:world:e_DRAW_SMALLMAP do
             call/rec smallmap:draw_sprite(smallmap_symbol.get(), _toVector3f(pos));
         end

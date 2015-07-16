@@ -33,6 +33,8 @@ do
 
     par/or do
         every gc in global:draw do
+            //TODO: this MUST happen before everything else (z = -10)
+            //check that fill_screen() puts Request in a queue, not filling screen
             _gc_color_fill_screen(gc, _deref(color));
         end
     with

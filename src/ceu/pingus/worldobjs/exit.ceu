@@ -3,6 +3,7 @@
 
 #include "../../c.ceu"
 #include "../../sdl.ceu"
+#include "../../engine/display/sprite3.ceu"
 #include "../iworld.ceu"
 #include "../worldobj.ceu"
 #include "../ipingu_holder.ceu"
@@ -24,7 +25,9 @@ class Exit with
     var _Sprite&? flag;
 do
     var Sprite smallmap_symbol;
-    var Sprite2 sprite;
+    var Sprite3 sprite with
+        this.pos_giver = outer;
+    end;
     call/rec smallmap_symbol.reload_by_name("core/misc/smallmap_exit");
     sprite.reload_by_desc(&desc);
 
@@ -58,8 +61,7 @@ do
 
     par/or do
         every gc in global:draw do
-            sprite.draw(gc, pos);
-            _gc_color_draw2(gc, &flag, _toVector3f(pos) + _Vector3f(40, 0));
+            _gc_color_draw2(gc, &flag, _toVector3f(pos) + _Vector3f(40, 0, 0.01)); //draw a bit later (on top of `sprite`)
         end
     with
         every e_STARTUP do
@@ -71,8 +73,6 @@ do
         end
     with
         every e_UPDATE do
-            emit sprite.default_update;
-
             loop pingu in global:world:get_pingus():all_pingus do
                 // Make sure this particular exit is allowed for this pingu
                 if pingu:get_owner() != owner_id then
