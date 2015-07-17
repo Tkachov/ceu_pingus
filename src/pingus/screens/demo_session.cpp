@@ -21,7 +21,6 @@
 
 #include "engine/gui/gui_manager.hpp"
 #include "engine/screen/screen_manager.hpp"
-#include "pingus/components/button_panel.hpp"
 #include "pingus/pingus_demo.hpp"
 #include "pingus/server.hpp"
 #include "util/log.hpp"
@@ -50,10 +49,7 @@ DemoSession::DemoSession(const Pathname& pathname_) :
   pathname(pathname_),
   server(),
   demo(),
-  events(),
-  pcounter(),
-  playfield(),
-  small_map(),
+  events(),    
   fastforward_button(),
   pause_button(),
   restart_button(),
@@ -78,14 +74,7 @@ DemoSession::DemoSession(const Pathname& pathname_) :
 
   // Create GUI
   DemoSession* self = this;
-  ceu_out_go(&CEUapp, CEU_IN_NEW_DEMO_SESSION, &self);  
-
-  gui_manager->add(pcounter);
-  gui_manager->add(new ButtonPanel(server, Vector2i(0, (size.height - 100)/2)));
-
-  gui_manager->add(playfield);
-  
-  gui_manager->add(small_map);
+  ceu_out_go(&CEUapp, CEU_IN_NEW_DEMO_SESSION, &self);
 
   gui_manager->add(fastforward_button= new BButton(32+50, 32, "core/demo/fastforward",
                                                    std::bind(&DemoSession::on_fast_forward_press, this),
@@ -101,29 +90,6 @@ DemoSession::~DemoSession()
 {
   DemoSession* self = this;
   ceu_out_go(&CEUapp, CEU_IN_DELETE_DEMO_SESSION, &self);
-}
-
-void
-DemoSession::draw_background(DrawingContext& gc)
-{
-  Rect rect = playfield->get_rect();
-  
-  if (rect != Rect(Vector2i(0,0), Size(gc.get_width(), gc.get_height())))
-  { // Draw a black border around the playfield when the playfield is smaller then the screen
-    Color border_color(0, 0, 0);
-    // top
-    gc.draw_fillrect(Rect(0, 0, gc.get_width(), rect.top),
-                     border_color);
-    // bottom
-    gc.draw_fillrect(Rect(0, rect.bottom, gc.get_width(), gc.get_height()),
-                     border_color);
-    // left
-    gc.draw_fillrect(Rect(0, rect.top, rect.left, rect.bottom),
-                     border_color);
-    // right
-    gc.draw_fillrect(Rect(rect.right, rect.top, gc.get_width(), rect.bottom),
-                     border_color);
-  }  
 }
 
 /** Pass a delta to the screen */

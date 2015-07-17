@@ -37,7 +37,6 @@ class Server;
 class XMLPDF;
 class DemoPlayer;
 class PingusDemo;
-class ButtonPanel;
 
 static bool false_func() { return false; }
 
@@ -65,11 +64,7 @@ private:
   PingusLevel plf;
   Server*     server;
   std::unique_ptr<PingusDemo> demo;
-  std::vector<ServerEvent>  events;
-
-  GUI::Component* pcounter;
-  GUI::RectComponent* playfield;
-  GUI::RectComponent* small_map;
+  std::vector<ServerEvent>  events;  
 
   BButton* fastforward_button;
   BButton* pause_button;
@@ -82,8 +77,6 @@ public:
   /** @param filename the complete filename of the demo file */
   DemoSession(const Pathname& pathname);
   ~DemoSession();
-
-  void draw_background(DrawingContext& gc);
 
   /** Pass a delta to the screen */
   void update(float delta);

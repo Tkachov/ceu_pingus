@@ -23,6 +23,7 @@ native/pre do
     ##define new_GUI_Component() new GUI::Component()
     ##define new_RectComponent(r) new GUI::RectComponent(r)
     ##define new_Rect(v, s) new Rect(v, s)
+    ##define new_ButtonPanel(a, b) new ButtonPanel(a, b)    
     ##define new_SceneContext(rect) new SceneContext(rect)
     ##define new_GraphicContextState(w, h) new GraphicContextState(w, h)
     ##define new_Server(a) new Server(a)    
@@ -31,7 +32,7 @@ native/pre do
 end
 
 native @pure _new_PingusCounter(), _new_GUI_Component(), _new_RectComponent(), 
-             _new_Rect(), _new_SceneContext(), _new_GraphicContextState(),
+             _new_Rect(), _new_ButtonPanel(), _new_SceneContext(), _new_GraphicContextState(),
              _new_Server(), _ScreenManager__instance(), _addr();
 
 input _ComponentUpdatePackage* DEMO_SESSION_UPDATE_SERVER;
@@ -53,7 +54,6 @@ do
     var PingusCounter pcounter with
         this.me = _new_GUI_Component();
         this.server = server;
-        demo_session.pcounter = &this.me;
     end;
 
     var Playfield playfield with
@@ -67,9 +67,8 @@ do
                                     _Math__min(demo_session.size.height, global:world:get_height())
                                 )
                             );
-
-        demo_session.playfield = _new_RectComponent(_deref(rect));
-        this.me = _PTR2REF(demo_session.playfield);
+        
+        this.me = _new_RectComponent(_deref(rect));
         this.scene_context = _new_SceneContext(_deref(rect));
         this.state = _new_GraphicContextState(rect.get_width(), rect.get_height());
         this.server = server;
@@ -81,9 +80,13 @@ do
     var SmallMap small_map with
         this.rect = _PTR2REF(_new_RectComponent(_Rect(_Vector2i(5, demo_session.size.height - 105), _Size(175, 100))));
         this.me = _PTR2REF(this.rect);        
-        this.playfield = demo_session.playfield;
-        demo_session.small_map = &this.rect;
+        this.playfield = playfield;
     end;
+
+    demo_session.gui_manager:add(&pcounter.me) finalize with end;
+    demo_session.gui_manager:add(_new_ButtonPanel(demo_session.server, _Vector2i(0, (demo_session.size.height - 100)/2)));
+    demo_session.gui_manager:add(&playfield.me) finalize with end;
+    demo_session.gui_manager:add(&small_map.rect) finalize with end;
 
     par/or do
         every package in DEMO_SESSION_UPDATE_SERVER do
@@ -131,6 +134,26 @@ do
             end
         end
     with
+        every package in SCREEN_DRAW_BACKGROUND do
+            var _GUI_RectComponent* rect = (_GUI_RectComponent*)&playfield.me;
+
+            if package:screen != &demo_session then
+                continue;
+            end
+
+            if rect:get_rect() != _Rect(_Vector2i(0,0), _Size(package:gc.get_width(), package:gc.get_height())) then
+                // Draw a black border around the playfield when the playfield is smaller then the screen                
+                // top
+                package:gc.draw_fillrect(_Rect(0, 0, package:gc.get_width(), rect:get_rect().top), _Color(0, 0, 0));
+                // bottom
+                package:gc.draw_fillrect(_Rect(0, rect:get_rect().bottom, package:gc.get_width(), package:gc.get_height()), _Color(0, 0, 0));
+                // left
+                package:gc.draw_fillrect(_Rect(0, rect:get_rect().top, rect:get_rect().left, rect:get_rect().bottom), _Color(0, 0, 0));
+                // right
+                package:gc.draw_fillrect(_Rect(rect:get_rect().right, rect:get_rect().top, package:gc.get_width(), rect:get_rect().bottom), _Color(0, 0, 0));
+            end
+        end 
+    with
         every screen in ON_ESCAPE_PRESS do
             if screen == &demo_session then
                 _log_info("Escape Pressed");
@@ -150,7 +173,7 @@ do
                 continue;
             end
 
-            demo_session.playfield:set_rect(
+            ((_GUI_RectComponent*)&playfield.me):set_rect(
                 _Rect(
                     _Vector2i(
                         _Math__max((demo_session.size.width  - global:world:get_width())/2,  0),
@@ -167,7 +190,7 @@ do
             demo_session.pause_button:set_pos(32, 32);
             demo_session.restart_button:set_pos(demo_session.size.width - 32 - 48, 32);
 
-            demo_session.small_map:set_rect(_Rect(_Vector2i(5, demo_session.size.height - 105), _Size(175, 100)));
+            small_map.rect.set_rect(_Rect(_Vector2i(5, demo_session.size.height - 105), _Size(175, 100)));
         end
     with
         var _DemoSession* e = await DELETE_DEMO_SESSION until (e == &demo_session);
