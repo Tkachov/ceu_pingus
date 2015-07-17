@@ -26,9 +26,4 @@ Playfield::Playfield(const Rect& rect_) :
 
 Playfield::~Playfield() {}
 
-void Playfield::draw_world() {
-  SceneContext* sc = scene_context.get();
-  ceu_out_go(&CEUapp, CEU_IN_PLAYFIELD_DRAW, &sc);
-}
-
 /* EOF */

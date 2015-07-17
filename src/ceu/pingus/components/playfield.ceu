@@ -32,7 +32,6 @@ native/pre do
     ##define new_SceneContextDrawingRequest(a, b, c) new SceneContextDrawingRequest(a, b, c)
 end
 
-input _SceneContext* PLAYFIELD_DRAW;
 input _Vector2i* PLAYFIELD_CLICK;
 input _GUI_RectComponent* RECT_COMPONENT_UPDATE_LAYOUT;
 
@@ -123,7 +122,9 @@ do
             call/rec capture_rectangle.set_pingu(get_current_pingu()); //another no-"access across `await`"-hack
             emit capture_rectangle.draw => playfield.scene_context.get();
 
-            playfield.draw_world(); //recursive Ceu call
+            if global:world != null then
+                emit global:world:e_DRAW => playfield.scene_context.get();
+            end
 
             playfield.state.pop(_deref(playfield.scene_context));
 
@@ -247,12 +248,6 @@ do
                 else/if mouse_pos.y > _Display__get_height() - 10 then
                     playfield.state.set_pos(playfield.state.get_pos() + _Vector2i(0, scroll_speed));
                 end
-            end
-        end
-    with
-        every gc in PLAYFIELD_DRAW do
-            if global:world != null then
-                emit global:world:e_DRAW => gc;
             end
         end
     end

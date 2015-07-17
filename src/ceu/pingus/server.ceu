@@ -26,8 +26,6 @@ native/pre do
     ##define SE_PINGU_ACTION_EVENT ServerEvent::PINGU_ACTION_EVENT
 end
 
-native @pure _init_WORLD();
-
 input _Server* NEW_SERVER;
 input _Server* SERVER_ARMAGEDDON;
 input _Server* SERVER_FINISH_EVENT;
@@ -123,7 +121,7 @@ do
         every e_ARMAGEDDON do
             server.record(
                 _ServerEvent__make_armageddon_event(
-                    server.get_time()
+                    call/rec get_time()
                 )
             );
 
@@ -137,7 +135,7 @@ do
 
             server.record(
                 _ServerEvent__make_finish_event(
-                    server.get_time()
+                    call/rec get_time()
                 )
             );
             goal_manager.set_abort_goal();

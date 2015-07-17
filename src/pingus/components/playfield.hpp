@@ -37,8 +37,6 @@ public:
   Playfield(const Rect& rect);
   virtual ~Playfield();
 
-  void draw_world();
-
 private:
   Playfield (const Playfield&);
   Playfield& operator= (const Playfield&);
