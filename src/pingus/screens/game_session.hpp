@@ -33,7 +33,6 @@ struct Event;
 
 class ButtonPanel;
 class TimeDisplay;
-class Server;
 
 /** You can use this class to start up a game session, which consist
     of a single level. */
@@ -45,19 +44,9 @@ private:
 
   bool show_result_screen;
 
-  /// The server
-  Server* server;
-
   // -- Client stuff
-  ButtonPanel*   button_panel;
-  GUI::Component* pcounter;
-  GUI::RectComponent* playfield;
+  ButtonPanel*   button_panel;  
   TimeDisplay*   time_display;
-  GUI::RectComponent* small_map;
-
-  GUI::RectComponent* armageddon_button;
-  GUI::RectComponent* forward_button;
-  GUI::RectComponent* pause_button;
 
   bool pause;
   bool fast_forward;
@@ -67,19 +56,13 @@ public:
   GameSession(const PingusLevel& arg_plf, bool arg_show_result_screen);
   ~GameSession ();
 
-  Server*    get_server() { return server; }
-  GUI::RectComponent* get_playfield() { return playfield; }
-
   /** Update all parts of the world */
   void update (float delta);
   void update (const Input::Event& event);
-  void draw_background (DrawingContext& gc);
 
   ButtonPanel* get_button_panel () { return button_panel; }
 
   // Overloaded GUIScreen stuff
-  void on_startup ();
-
   void on_pause_press ();
   void on_single_step_press ();
   void on_fast_forward_press ();

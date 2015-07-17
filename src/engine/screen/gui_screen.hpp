@@ -40,11 +40,13 @@ public:
 
   /** Draw this screen */
   virtual void draw_foreground (DrawingContext&) {}
-  virtual void draw_background (DrawingContext&) {}
+  virtual void draw_background (DrawingContext&);
   virtual void draw(DrawingContext& gc);
 
   virtual void update (const Input::Event& event);
   virtual void update (float);
+
+  virtual void on_startup();
 
   virtual void on_pause_press () {}
   virtual void on_single_step_press () {}
@@ -85,6 +87,13 @@ struct ScreenResizePackage {
   Size size;
 
   ScreenResizePackage(GUIScreen* s, const Size& sz): screen(s), size(sz) {};
+};
+
+struct ScreenDrawPackage {
+  GUIScreen* screen;
+  DrawingContext& gc;
+
+  ScreenDrawPackage(GUIScreen* s, DrawingContext& g): screen(s), gc(g) {};
 };
 
 #endif

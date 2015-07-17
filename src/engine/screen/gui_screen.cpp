@@ -182,15 +182,24 @@ GUIScreen::process_button_event (const Input::ButtonEvent& event)
   }
 }
 
-void
-GUIScreen::resize(const Size& size_)
-{
+void GUIScreen::draw_background(DrawingContext& gc) {
+  ScreenDrawPackage package(this, gc);
+  ScreenDrawPackage* pp = &package;
+  ceu_out_go(&CEUapp, CEU_IN_SCREEN_DRAW_BACKGROUND, &pp);
+}
+
+void GUIScreen::resize(const Size& size_) {
   Screen::resize(size_);
   gui_manager->set_rect(Rect(Vector2i(0, 0), size));
 
   ScreenResizePackage package(this, size_);
   ScreenResizePackage* pp = &package;
   ceu_out_go(&CEUapp, CEU_IN_SCREEN_RESIZE, &pp);
+}
+
+void GUIScreen::on_startup() {
+  GUIScreen* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_ON_STARTUP, &self);
 }
 
 void GUIScreen::on_armageddon_press() {

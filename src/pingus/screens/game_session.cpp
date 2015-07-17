@@ -19,7 +19,6 @@
 #include "engine/display/display.hpp"
 #include "engine/gui/gui_manager.hpp"
 #include "engine/screen/screen_manager.hpp"
-#include "pingus/server.hpp"
 
 #include "engine/sound/sound.hpp"
 #include "pingus/components/button_panel.hpp"
@@ -34,16 +33,9 @@
 
 GameSession::GameSession(const PingusLevel& arg_plf, bool arg_show_result_screen) :
   plf(arg_plf),
-  show_result_screen(arg_show_result_screen),
-  server(),  
-  button_panel (0),
-  pcounter     (0),
-  playfield    (0),
+  show_result_screen(arg_show_result_screen),  
+  button_panel (0),  
   time_display (0),
-  small_map    (0),
-  armageddon_button(),
-  forward_button(),
-  pause_button(),
   pause(false),
   fast_forward(false),
   single_step(false)
@@ -58,29 +50,6 @@ GameSession::~GameSession()
 {
   GameSession* self = this;
   ceu_out_go(&CEUapp, CEU_IN_DELETE_GAME_SESSION, &self);
-}
-
-void
-GameSession::draw_background (DrawingContext& gc)
-{
-  Rect rect = playfield->get_rect();
-
-  if (rect != Rect(Vector2i(0,0), Size(Display::get_width(), Display::get_height())))
-  { // Draw a black border around the playfield when the playfield is smaller then the screen
-    Color border_color(0, 0, 0);
-    // top
-    gc.draw_fillrect(Rect(0, 0, Display::get_width(), rect.top),
-                     border_color);
-    // bottom
-    gc.draw_fillrect(Rect(0, rect.bottom, Display::get_width(), Display::get_height()),
-                     border_color);
-    // left
-    gc.draw_fillrect(Rect(0, rect.top, rect.left, rect.bottom),
-                     border_color);
-    // right
-    gc.draw_fillrect(Rect(rect.right, rect.top, Display::get_width(), rect.bottom),
-                     border_color);
-  }
 }
 
 void GameSession::update(float delta) {
@@ -188,23 +157,6 @@ GameSession::on_action_axis_move (float move)
     button_panel->next_action ();
   else if (move < 0)
     button_panel->previous_action ();
-}
-
-void
-GameSession::on_startup ()
-{
-  if (globals::developer_mode)
-    log_info("Starting Music: %1%", server->get_plf().get_music());
-
-  if (server->get_plf().get_music() == "none" ||
-      server->get_plf().get_music().empty())
-  {
-    Sound::PingusSound::stop_music();
-  }
-  else
-  {
-    Sound::PingusSound::play_music(server->get_plf().get_music());
-  }
 }
 
 ActionName::Enum

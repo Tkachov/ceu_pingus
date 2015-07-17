@@ -64,10 +64,12 @@ input _ScreenUpdatePackage* GAME_SESSION_UPDATE;
 input _GameSession* DELETE_GAME_SESSION;
 input _Input__ScrollEvent* GAME_SESSION_SCROLLER_EVENT_TYPE;
 
+input _GUIScreen* ON_STARTUP;
 input _GUIScreen* ON_ARMAGEDDON_PRESS;
 input _GUIScreen* ON_ARMAGEDDON_RELEASE;
 input _GUIScreen* ON_ESCAPE_PRESS;
 input _GUIScreen* ON_ESCAPE_RELEASE;
+input _ScreenDrawPackage* SCREEN_DRAW_BACKGROUND;
 input _ScreenResizePackage* SCREEN_RESIZE;
 
 class GameSession with
@@ -76,16 +78,14 @@ do
     var _GameSession&? game_session = _PTR2REF((_GameSession*)me);
 
     var Server server with
-        this.me = _new_Server(game_session.plf, true);
-        game_session.server = _PTR2REF(this.me);
+        this.me = _new_Server(game_session.plf, true);        
     end;
 
-    game_session.button_panel = _new_ButtonPanel(game_session.server, _Vector2i(0, (game_session.size.height - 150)/2));
+    game_session.button_panel = _new_ButtonPanel(server.me, _Vector2i(0, (game_session.size.height - 150)/2));
 
     var PingusCounter pcounter with
         this.me = _new_GUI_Component();
-        this.server = _PTR2REF(game_session.get_server());
-        game_session.pcounter = &this.me;
+        this.server = _PTR2REF(server.me);        
     end;
 
     var Playfield playfield with
@@ -99,12 +99,11 @@ do
                                     _Math__min(_Display__get_height(), global:world:get_height())
                                 )
                             );
-
-        game_session.playfield = _new_RectComponent(_deref(rect));
-        this.me = _PTR2REF(game_session.playfield);
+        
+        this.me = _PTR2REF(_new_RectComponent(_deref(rect)));
         this.scene_context = _new_SceneContext(_deref(rect));
         this.state = _new_GraphicContextState(rect.get_width(), rect.get_height());
-        this.server = _PTR2REF(game_session.get_server());
+        this.server = _PTR2REF(server.me);
         this.session = &game_session;
 
         _delete_obj(rect);
@@ -113,39 +112,35 @@ do
     var SmallMap small_map with
         this.rect = _PTR2REF(_new_RectComponent(_Rect(_Vector2i(5, game_session.size.height - 105), _Size(175, 100))));
         this.me = _PTR2REF(this.rect);
-        this.server = _PTR2REF(game_session.get_server());
+        this.server = _PTR2REF(server.me);
         this.playfield = playfield;
-        game_session.small_map = &this.rect;
     end;
 
     var ArmageddonButton armageddon_button with
         this.me = _PTR2REF(_new_RectComponent(_Rect(_Vector2i(_Display__get_width() - 40, _Display__get_height()-62), _Size(38, 60))));
-        this.server = _PTR2REF((Server*)game_session.get_server():ceu());
-        game_session.armageddon_button = (_GUI_RectComponent*)&this.me;
+        this.server = _PTR2REF((Server*)&server);
     end;
 
     var ForwardButton forward_button with
         this.me = _PTR2REF(_new_RectComponent(_Rect(_Vector2i(_Display__get_width() - 40*2, _Display__get_height()-62), _Size(38, 60))));
         this.session = _PTR2REF(&game_session);
-        game_session.forward_button = (_GUI_RectComponent*)&this.me;
     end;
 
     var PauseButton pause_button with
         this.me = _PTR2REF(_new_RectComponent(_Rect(_Vector2i(_Display__get_width() - 40*3, _Display__get_height()-62), _Size(38, 60))));
         this.session = _PTR2REF(&game_session);
-        game_session.pause_button = (_GUI_RectComponent*)&this.me;
     end;
 
-    game_session.time_display = _new_TimeDisplay(game_session.get_server());
+    game_session.time_display = _new_TimeDisplay(server.me);
 
-    game_session.gui_manager:add(game_session.playfield) finalize with end;
+    game_session.gui_manager:add(&playfield.me) finalize with end;
     game_session.gui_manager:add(game_session.button_panel) finalize with end;
-    game_session.gui_manager:add(game_session.pcounter) finalize with end;
-    game_session.gui_manager:add(game_session.small_map) finalize with end;
+    game_session.gui_manager:add(&pcounter.me) finalize with end;
+    game_session.gui_manager:add(&small_map.rect) finalize with end;
     game_session.gui_manager:add(game_session.time_display) finalize with end;
-    game_session.gui_manager:add(game_session.armageddon_button) finalize with end;
-    game_session.gui_manager:add(game_session.forward_button) finalize with end;
-    game_session.gui_manager:add(game_session.pause_button) finalize with end;
+    game_session.gui_manager:add(&armageddon_button.me) finalize with end;
+    game_session.gui_manager:add(&forward_button.me) finalize with end;
+    game_session.gui_manager:add(&pause_button.me) finalize with end;
 
     var int world_delay = 0;
 
@@ -155,20 +150,20 @@ do
                 continue;
             end
 
-            if ((Server*)game_session.server:ceu()):is_finished() then
+            if server.is_finished() then
                 var IPinguHolder* pingu_holder = _PTR2REF(global:world:get_pingus());
                 var _Result&? result = _new_Result();
 
-                finalize result.plf    = game_session.server:get_plf(); with end
+                finalize result.plf    = server.me:get_plf(); with end
 
                 result.saved  = pingu_holder:get_number_of_exited();
                 result.killed = pingu_holder:get_number_of_killed();
-                finalize result.total  = game_session.server:get_plf().get_number_of_pingus(); with end
+                finalize result.total  = server.me:get_plf().get_number_of_pingus(); with end
 
-                finalize result.needed = game_session.server:get_plf().get_number_to_save(); with end
+                finalize result.needed = server.me:get_plf().get_number_to_save(); with end
 
-                finalize result.max_time  = game_session.server:get_plf().get_time(); with end
-                result.used_time = call/rec ((Server*)game_session.server:ceu()):get_time();
+                finalize result.max_time  = server.me:get_plf().get_time(); with end
+                result.used_time = call/rec server.get_time();
 
                 var int rs = _Savegame__ACCESSIBLE;
                 if result.saved >= result.needed then
@@ -215,12 +210,12 @@ do
                             loop i in _globals__fast_forward_time_scale do
                                 //TODO: figure out why it doesn't work with Ceu-style update
                                 //UPD: it works now, but slows down EXTREMELY fast
-                                game_session.server:update();
-                                //emit ((Server*)game_session.server:ceu()):e_UPDATE;
+                                server.me:update();
+                                //emit server.e_UPDATE;
                             end
                         else
-                            //game_session.server:update();
-                            emit ((Server*)game_session.server:ceu()):e_UPDATE;
+                            //server.me:update();
+                            emit server.e_UPDATE;
                         end
                     end
 
@@ -232,6 +227,22 @@ do
             end
             
             game_session.gui_manager:update(package:delta) finalize with end;
+        end
+    with
+        every screen in ON_STARTUP do
+            if screen != &game_session then
+                continue;
+            end
+
+            if _globals__developer_mode then
+                _log_info("Starting Music: %1%", server.me:get_plf().get_music());
+            end
+
+            if server.me:get_plf().get_music() == "none" or server.me:get_plf().get_music().empty() then
+                _Sound__PingusSound__stop_music();
+            else
+                _Sound__PingusSound__play_music(server.me:get_plf().get_music());
+            end
         end
     with
         every screen in ON_ESCAPE_PRESS do
@@ -246,12 +257,32 @@ do
             end
         end
     with
+        every package in SCREEN_DRAW_BACKGROUND do
+            var _GUI_RectComponent* rect = (_GUI_RectComponent*)&playfield.me;
+
+            if package:screen != &game_session then
+                continue;
+            end
+
+            if rect:get_rect() != _Rect(_Vector2i(0,0), _Size(_Display__get_width(), _Display__get_height())) then
+                // Draw a black border around the playfield when the playfield is smaller then the screen                
+                // top
+                package:gc.draw_fillrect(_Rect(0, 0, _Display__get_width(), rect:get_rect().top), _Color(0, 0, 0));
+                // bottom
+                package:gc.draw_fillrect(_Rect(0, rect:get_rect().bottom, _Display__get_width(), _Display__get_height()), _Color(0, 0, 0));
+                // left
+                package:gc.draw_fillrect(_Rect(0, rect:get_rect().top, rect:get_rect().left, rect:get_rect().bottom), _Color(0, 0, 0));
+                // right
+                package:gc.draw_fillrect(_Rect(rect:get_rect().right, rect:get_rect().top, _Display__get_width(), rect:get_rect().bottom), _Color(0, 0, 0));
+            end
+        end
+    with
         every package in SCREEN_RESIZE do
             if package:screen != &game_session then
                 continue;
             end
 
-            game_session.playfield:set_rect(
+            ((_GUI_RectComponent*)&playfield.me):set_rect(
                 _Rect(
                     _Vector2i(
                         _Math__max((game_session.size.width - global:world:get_width())/2,  0),
@@ -264,10 +295,10 @@ do
                 )
             );
 
-            game_session.armageddon_button:set_rect(_Rect(_Vector2i(game_session.size.width - 40, game_session.size.height - 62), _Size(38, 60)));
-            game_session.forward_button:set_rect(_Rect(_Vector2i(game_session.size.width - 40*2, game_session.size.height - 62), _Size(38, 60)));
-            game_session.pause_button:set_rect(_Rect(_Vector2i(game_session.size.width - 40*3, game_session.size.height - 62), _Size(38, 60)));
-            game_session.small_map:set_rect(_Rect(_Vector2i(5, game_session.size.height - 105), _Size(175, 100)));
+            ((_GUI_RectComponent*)&armageddon_button.me):set_rect(_Rect(_Vector2i(game_session.size.width - 40, game_session.size.height - 62), _Size(38, 60)));
+            ((_GUI_RectComponent*)&forward_button.me):set_rect(_Rect(_Vector2i(game_session.size.width - 40*2, game_session.size.height - 62), _Size(38, 60)));
+            ((_GUI_RectComponent*)&pause_button.me):set_rect(_Rect(_Vector2i(game_session.size.width - 40*3, game_session.size.height - 62), _Size(38, 60)));
+            small_map.rect.set_rect(_Rect(_Vector2i(5, game_session.size.height - 105), _Size(175, 100)));
             game_session.button_panel:set_pos(_Vector2i(0, (game_session.size.height - 150)/2));
         end
     with
