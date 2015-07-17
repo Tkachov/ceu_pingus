@@ -93,11 +93,6 @@ void Server::update() {
   ceu_out_go(&CEUapp, CEU_IN_SERVER_UPDATE, &self);
 }
 
-void Server::send_armageddon_event() { //used in game_session.cpp
-  Server* self = this;
-  ceu_out_go(&CEUapp, CEU_IN_SERVER_ARMAGEDDON, &self);
-}
-
 void
 Server::record(const ServerEvent& event)
 {
@@ -116,11 +111,6 @@ int Server::get_time() {
   GetTimePackage* pp = &package;
   ceu_out_go(&CEUapp, CEU_IN_SERVER_GET_TIME, &pp);
   return package.time;  
-}
-
-void Server::send_finish_event() {
-  Server* self = this;
-  ceu_out_go(&CEUapp, CEU_IN_SERVER_FINISH_EVENT, &self);
 }
 
 /* EOF */

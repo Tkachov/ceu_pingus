@@ -31,6 +31,11 @@ input _DemoSession* DEMO_SESSION_UPDATE;
 input _DemoSession* DELETE_DEMO_SESSION;
 input _Vector2i* DEMO_SESSION_ON_SCROLLER_MOVE;
 
+input _GUIScreen* ON_ARMAGEDDON_PRESS;
+input _GUIScreen* ON_ARMAGEDDON_RELEASE;
+input _GUIScreen* ON_ESCAPE_PRESS;
+input _GUIScreen* ON_ESCAPE_RELEASE;
+
 #define GET_SERVER ((Server*)demo_session.server:ceu())
 
 class DemoSession with
@@ -123,6 +128,14 @@ do
         every s in DEMO_SESSION_UPDATE do
             if s != &demo_session then
                 continue;
+            end
+        end
+    with
+        every screen in ON_ESCAPE_PRESS do
+            if screen == &demo_session then
+                _log_info("Escape Pressed");
+                emit server.e_FINISH_EVENT;
+                _ScreenManager__instance():pop_screen();
             end
         end
     with

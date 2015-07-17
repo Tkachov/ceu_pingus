@@ -53,9 +53,7 @@ public:
   ActionHolder* get_action_holder();
   
   /** set the server into the finshed state, this is used when you
-      press ESCAPE inside a game */
-  void send_finish_event();
-  void send_armageddon_event();
+      press ESCAPE inside a game */  
   void send_pingu_action_event(Pingu* pingu, ActionName::Enum action);
 
 private:

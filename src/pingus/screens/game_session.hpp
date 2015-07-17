@@ -67,9 +67,6 @@ public:
   GameSession(const PingusLevel& arg_plf, bool arg_show_result_screen);
   ~GameSession ();
 
-  /** Pass a delta to the screen */
-  void update_server(float delta);
-
   Server*    get_server() { return server; }
   GUI::RectComponent* get_playfield() { return playfield; }
 
@@ -87,8 +84,6 @@ public:
   void on_single_step_press ();
   void on_fast_forward_press ();
   void on_fast_forward_release ();
-  void on_armageddon_press ();
-  void on_escape_press ();
   void on_action_axis_move (float);
 
   ActionName::Enum get_action_name() const;
@@ -98,8 +93,6 @@ public:
 
   void set_pause(bool value);
   bool get_pause() const;
-
-  void resize(const Size&);
 
 private:
   GameSession (const GameSession&);

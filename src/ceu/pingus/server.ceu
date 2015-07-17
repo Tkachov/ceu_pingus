@@ -26,8 +26,6 @@ native/pre do
     ##define SE_PINGU_ACTION_EVENT ServerEvent::PINGU_ACTION_EVENT
 end
 
-input _Server* SERVER_ARMAGEDDON;
-input _Server* SERVER_FINISH_EVENT;
 input _GetTimePackage* SERVER_GET_TIME;
 input _Server* SERVER_UPDATE;
 
@@ -38,6 +36,7 @@ class Server with
     function @rec (void) => int get_time;
     event _ServerEvent* e_EVENT_SEND;
     event void e_ARMAGEDDON;
+    event void e_FINISH_EVENT;
     event void e_UPDATE;
     event void e_DELETE;
 do
@@ -97,7 +96,7 @@ do
             if server_event:type == _SE_ARMAGEDDON_EVENT then
                 emit e_ARMAGEDDON;
             else/if server_event:type == _SE_FINISH_EVENT then
-                server.send_finish_event();
+                emit e_FINISH_EVENT;
             else/if server_event:type == _SE_END_EVENT then
                 // do nothing
             else/if server_event:type == _SE_PINGU_ACTION_EVENT then
@@ -105,16 +104,6 @@ do
             else
                 _assert(not "Unknown type");
             end
-        end
-    with
-        every s in SERVER_ARMAGEDDON do
-            if s != &server then
-                continue;
-            end
-
-            //TODO: remove after GameSession is ported
-
-            emit e_ARMAGEDDON;
         end
     with
         every e_ARMAGEDDON do
@@ -127,11 +116,7 @@ do
             emit world.e_ARMAGEDDON;
         end
     with
-        every s in SERVER_FINISH_EVENT do
-            if s != &server then
-                continue;
-            end
-
+        every e_FINISH_EVENT do
             server.record(
                 _ServerEvent__make_finish_event(
                     call/rec get_time()

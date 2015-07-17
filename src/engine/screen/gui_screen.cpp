@@ -21,6 +21,8 @@
 #include "pingus/globals.hpp"
 #include "util/log.hpp"
 
+#include "ceuvars.h"
+
 GUIScreen::GUIScreen() :
   Screen(Display::get_size()),
   gui_manager(new GUI::GUIManager())
@@ -185,6 +187,31 @@ GUIScreen::resize(const Size& size_)
 {
   Screen::resize(size_);
   gui_manager->set_rect(Rect(Vector2i(0, 0), size));
+
+  ScreenResizePackage package(this, size_);
+  ScreenResizePackage* pp = &package;
+  ceu_out_go(&CEUapp, CEU_IN_SCREEN_RESIZE, &pp);
 }
+
+void GUIScreen::on_armageddon_press() {
+  GUIScreen* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_ON_ARMAGEDDON_PRESS, &self);
+}
+
+void GUIScreen::on_escape_press() {
+  GUIScreen* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_ON_ESCAPE_PRESS, &self);
+}
+
+void GUIScreen::on_armageddon_release() {
+  GUIScreen* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_ON_ARMAGEDDON_RELEASE, &self);
+}
+
+void GUIScreen::on_escape_release() {
+  GUIScreen* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_ON_ESCAPE_RELEASE, &self);
+}
+
 
 /* EOF */

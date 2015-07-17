@@ -74,8 +74,7 @@ public:
   void update(float delta);
 
   void on_pause_press ();
-  void on_fast_forward_press ();
-  void on_escape_press ();
+  void on_fast_forward_press ();  
 
   void restart();
   

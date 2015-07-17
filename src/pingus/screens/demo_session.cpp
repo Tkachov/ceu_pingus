@@ -167,14 +167,6 @@ void DemoSession::on_fast_forward_press() {
   fast_forward = !fast_forward;
 }
 
-void
-DemoSession::on_escape_press()
-{
-  log_info("Escape Pressed");
-  server->send_finish_event();
-  ScreenManager::instance()->pop_screen();
-}
-
 void DemoSession::on_scroller_move(float x, float y) {
   Vector2i package(x, y);
   Vector2i* pp = &package;

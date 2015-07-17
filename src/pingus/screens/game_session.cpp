@@ -60,12 +60,6 @@ GameSession::~GameSession()
   ceu_out_go(&CEUapp, CEU_IN_DELETE_GAME_SESSION, &self);
 }
 
-void GameSession::update_server(float delta) {
-  ComponentUpdatePackage package((GUI::Component*)this, delta);
-  ComponentUpdatePackage* pp = &package;
-  ceu_out_go(&CEUapp, CEU_IN_GAME_SESSION_UPDATE_SERVER, &pp);
-}
-
 void
 GameSession::draw_background (DrawingContext& gc)
 {
@@ -89,11 +83,10 @@ GameSession::draw_background (DrawingContext& gc)
   }
 }
 
-void
-GameSession::update(float delta)
-{
-  update_server(delta);
-  GUIScreen::update(delta);
+void GameSession::update(float delta) {
+  ScreenUpdatePackage package(this, delta);
+  ScreenUpdatePackage* pp = &package;
+  ceu_out_go(&CEUapp, CEU_IN_GAME_SESSION_UPDATE, &pp);
 }
 
 void
@@ -157,12 +150,6 @@ GameSession::update(const Input::Event& event)
 }
 
 void
-GameSession:: on_escape_press ()
-{
-  server->send_finish_event();
-}
-
-void
 GameSession:: on_pause_press ()
 {
   set_pause(!get_pause());
@@ -192,12 +179,6 @@ void
 GameSession::on_fast_forward_release ()
 {
   set_fast_forward(false);
-}
-
-void
-GameSession::on_armageddon_press ()
-{
-  server->send_armageddon_event();
 }
 
 void
@@ -262,32 +243,6 @@ bool
 GameSession::get_pause() const
 {
   return pause;
-}
-
-void
-GameSession::resize(const Size& size_)
-{
-  GUIScreen::resize(size_);
-
-  WorldGetSizePackage package;
-  WorldGetSizePackage* pp = &package;
-  ceu_out_go(&CEUapp, CEU_IN_WORLD_GET_SIZE, &pp);
-
-  playfield->set_rect(Rect(Vector2i(Math::max((size.width  - package.width)/2,  0),
-                                    Math::max((size.height - package.height)/2, 0)),
-                           Size(Math::min(size.width,  package.width),
-                                Math::min(size.height, package.height))));
-
-  armageddon_button->set_rect(Rect(Vector2i(size.width - 40, size.height - 62),
-                                   Size(38, 60)));
-  forward_button->set_rect(Rect(Vector2i(size.width - 40*2, size.height - 62),
-                                Size(38, 60)));
-  pause_button->set_rect(Rect(Vector2i(size.width - 40*3, size.height - 62),
-                              Size(38, 60)));
-
-  small_map->set_rect(Rect(Vector2i(5, size.height - 105), Size(175, 100)));
-
-  button_panel->set_pos(Vector2i(0, (size.height - 150)/2));
 }
 
 /* EOF */

@@ -60,9 +60,15 @@ native @pure _new_PingusCounter(), _new_GUI_Component(), _new_RectComponent(), _
              _SavegameManager__instance(), _ScreenManager__instance(),
              _std__make_shared_ResultScreen(), _toSStatus(), _Display__get_width(), _Display__get_height();
 
-input _ComponentUpdatePackage* GAME_SESSION_UPDATE_SERVER;
+input _ScreenUpdatePackage* GAME_SESSION_UPDATE;
 input _GameSession* DELETE_GAME_SESSION;
 input _Input__ScrollEvent* GAME_SESSION_SCROLLER_EVENT_TYPE;
+
+input _GUIScreen* ON_ARMAGEDDON_PRESS;
+input _GUIScreen* ON_ARMAGEDDON_RELEASE;
+input _GUIScreen* ON_ESCAPE_PRESS;
+input _GUIScreen* ON_ESCAPE_RELEASE;
+input _ScreenResizePackage* SCREEN_RESIZE;
 
 class GameSession with
     var _GameSession* me;
@@ -144,8 +150,8 @@ do
     var int world_delay = 0;
 
     par/or do
-        every package in GAME_SESSION_UPDATE_SERVER do
-            if (_GameSession*)package:component != &game_session then
+        every package in GAME_SESSION_UPDATE do
+            if package:screen != &game_session then
                 continue;
             end
 
@@ -223,8 +229,46 @@ do
                 // save how far behind is the world compared to the actual time
                 // so that we can account for that while updating in the next frame
                 world_delay = time_passed - (world_updates*update_time);
-
             end
+            
+            game_session.gui_manager:update(package:delta) finalize with end;
+        end
+    with
+        every screen in ON_ESCAPE_PRESS do
+            if screen == &game_session then
+                emit server.e_FINISH_EVENT;
+            end
+        end
+    with
+        every screen in ON_ARMAGEDDON_PRESS do
+            if screen == &game_session then
+                emit server.e_ARMAGEDDON;
+            end
+        end
+    with
+        every package in SCREEN_RESIZE do
+            if package:screen != &game_session then
+                continue;
+            end
+
+            game_session.playfield:set_rect(
+                _Rect(
+                    _Vector2i(
+                        _Math__max((game_session.size.width - global:world:get_width())/2,  0),
+                        _Math__max((game_session.size.height - global:world:get_height())/2, 0)
+                    ),
+                    _Size(
+                        _Math__min(game_session.size.width, global:world:get_width()),
+                        _Math__min(game_session.size.height, global:world:get_height())
+                    )
+                )
+            );
+
+            game_session.armageddon_button:set_rect(_Rect(_Vector2i(game_session.size.width - 40, game_session.size.height - 62), _Size(38, 60)));
+            game_session.forward_button:set_rect(_Rect(_Vector2i(game_session.size.width - 40*2, game_session.size.height - 62), _Size(38, 60)));
+            game_session.pause_button:set_rect(_Rect(_Vector2i(game_session.size.width - 40*3, game_session.size.height - 62), _Size(38, 60)));
+            game_session.small_map:set_rect(_Rect(_Vector2i(5, game_session.size.height - 105), _Size(175, 100)));
+            game_session.button_panel:set_pos(_Vector2i(0, (game_session.size.height - 150)/2));
         end
     with
         every ev in GAME_SESSION_SCROLLER_EVENT_TYPE do
