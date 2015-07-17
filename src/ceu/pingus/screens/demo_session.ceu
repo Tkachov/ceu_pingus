@@ -11,17 +11,20 @@
 #include "../server.ceu"
 
 native/pre do
-    ##include "pingus/components/playfield.hpp"
     ##include "pingus/screens/demo_session.hpp"
     ##define new_GUI_Component() new GUI::Component()
     ##define new_RectComponent(r) new GUI::RectComponent(r)
-    ##define new_Server(a, b) new Server(a, b)
-    ##define new_Playfield(a) new Playfield(a)
+    ##define new_Rect(v, s) new Rect(v, s)
+    ##define new_SceneContext(rect) new SceneContext(rect)
+    ##define new_GraphicContextState(w, h) new GraphicContextState(w, h)
+    ##define new_Server(a, b) new Server(a, b)    
     ##define ScreenManager__instance() ScreenManager::instance()
     ##define addr(x) &x
 end
 
-native @pure _new_PingusCounter(), _new_GUI_Component(), _new_RectComponent(), _new_Server(), _new_Playfield(), _ScreenManager__instance(), _addr();
+native @pure _new_PingusCounter(), _new_GUI_Component(), _new_RectComponent(), 
+             _new_Rect(), _new_SceneContext(), _new_GraphicContextState(),
+             _new_Server(), _ScreenManager__instance(), _addr();
 
 input _ComponentUpdatePackage* DEMO_SESSION_UPDATE_SERVER;
 input _DemoSession* DEMO_SESSION_UPDATE;
@@ -48,21 +51,25 @@ do
     end;
 
     var Playfield playfield with
-        this.me = _PTR2REF(_new_Playfield(
-            _Rect(
-                _Vector2i(
-                    _Math__max((demo_session.size.width - global:world:get_width())/2, 0),
-                    _Math__max((demo_session.size.height - global:world:get_height())/2, 0)
-                ),
-                _Size(
-                    _Math__min(demo_session.size.width, global:world:get_width()),
-                    _Math__min(demo_session.size.height, global:world:get_height())
-                )
-            )
-        ));
-        demo_session.playfield = _PTR2REF((_Playfield*)&this.me);
+        var _Rect&? rect = _new_Rect(
+                                _Vector2i(
+                                    _Math__max((demo_session.size.width - global:world:get_width())/2, 0),
+                                    _Math__max((demo_session.size.height - global:world:get_height())/2, 0)
+                                ),
+                                _Size(
+                                    _Math__min(demo_session.size.width, global:world:get_width()),
+                                    _Math__min(demo_session.size.height, global:world:get_height())
+                                )
+                            );
+
+        demo_session.playfield = _new_RectComponent(_deref(rect));
+        this.me = _PTR2REF(demo_session.playfield);
+        this.scene_context = _new_SceneContext(_deref(rect));
+        this.state = _new_GraphicContextState(rect.get_width(), rect.get_height());
         this.server = _PTR2REF(demo_session.server);
         this.session = null;
+
+        _delete_obj(rect);
     end;
 
     var SmallMap small_map with

@@ -36,7 +36,6 @@ class Server;
 class XMLPDF;
 class DemoPlayer;
 class PingusDemo;
-class Playfield;
 class BButton;
 class ButtonPanel;
 
@@ -54,7 +53,7 @@ private:
   std::vector<ServerEvent>  events;
 
   GUI::Component* pcounter;
-  Playfield*     playfield;
+  GUI::RectComponent* playfield;
   GUI::RectComponent* small_map;
 
   BButton* fastforward_button;

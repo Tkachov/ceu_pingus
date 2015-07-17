@@ -32,7 +32,6 @@ struct Event;
 }
 
 class ButtonPanel;
-class Playfield;
 class TimeDisplay;
 class Server;
 
@@ -52,7 +51,7 @@ private:
   // -- Client stuff
   ButtonPanel*   button_panel;
   GUI::Component* pcounter;
-  Playfield*     playfield;
+  GUI::RectComponent* playfield;
   TimeDisplay*   time_display;
   GUI::RectComponent* small_map;
 
@@ -72,7 +71,7 @@ public:
   void update_server(float delta);
 
   Server*    get_server() { return server; }
-  Playfield* get_playfield() { return playfield; }
+  GUI::RectComponent* get_playfield() { return playfield; }
 
   /** Update all parts of the world */
   void update (float delta);

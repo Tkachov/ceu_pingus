@@ -14,8 +14,7 @@
 #include "ismallmap.ceu"
 #include "iplayfield.ceu"
 
-native/pre do
-    ##include "pingus/components/playfield.hpp"
+native/pre do    
     ##include "pingus/server.hpp"
     ##define new_Surface2(a, b) new Surface(a, b)
 end

@@ -26,15 +26,19 @@ native/pre do
     ##include "engine/screen/screen_manager.hpp"
     ##include "pingus/server.hpp"
     ##include "engine/sound/sound.hpp"
-    ##include "pingus/components/button_panel.hpp"
-    ##include "pingus/components/playfield.hpp"
+    ##include "pingus/components/button_panel.hpp"    
     ##include "pingus/components/time_display.hpp"
+
+    ##include "engine/display/graphic_context_state.hpp"
+    ##include "engine/gui/rect_component.hpp"
 
     ##define new_GUI_Component() new GUI::Component()
     ##define new_RectComponent(r) new GUI::RectComponent(r)
+    ##define new_Rect(v, s) new Rect(v, s)
+    ##define new_SceneContext(rect) new SceneContext(rect)
+    ##define new_GraphicContextState(w, h) new GraphicContextState(w, h)
     ##define new_Server(a, b) new Server(a, b)
-    ##define new_ButtonPanel(a, b) new ButtonPanel(a, b)
-    ##define new_Playfield(a) new Playfield(a)
+    ##define new_ButtonPanel(a, b) new ButtonPanel(a, b)    
     ##define new_TimeDisplay(s) new TimeDisplay(s)
     ##define new_Result() new Result()
     ##define new_Savegame new Savegame
@@ -52,7 +56,7 @@ native/pre do
 end
 
 native @pure _new_PingusCounter(), _new_GUI_Component(), _new_RectComponent(), _new_Server(), _new_ButtonPanel(),
-             _new_Playfield(), _new_TimeDisplay(), _new_Result(), _new_Savegame(),
+             _new_Rect(), _new_SceneContext(), _new_GraphicContextState(), _new_TimeDisplay(), _new_Result(), _new_Savegame(),
              _SavegameManager__instance(), _ScreenManager__instance(),
              _std__make_shared_ResultScreen(), _toSStatus(), _Display__get_width(), _Display__get_height();
 
@@ -79,21 +83,25 @@ do
     end;
 
     var Playfield playfield with
-        game_session.playfield = _new_Playfield(
-            _Rect(
-                _Vector2i(
-                    _Math__max((_Display__get_width() - global:world:get_width())/2, 0),
-                    _Math__max((_Display__get_height() - global:world:get_height())/2, 0)
-                ),
-                _Size(
-                    _Math__min(_Display__get_width(), global:world:get_width()),
-                    _Math__min(_Display__get_height(), global:world:get_height())
-                )
-            )
-        );
+        var _Rect&? rect = _new_Rect(
+                                _Vector2i(
+                                    _Math__max((_Display__get_width() - global:world:get_width())/2, 0),
+                                    _Math__max((_Display__get_height() - global:world:get_height())/2, 0)
+                                ),
+                                _Size(
+                                    _Math__min(_Display__get_width(), global:world:get_width()),
+                                    _Math__min(_Display__get_height(), global:world:get_height())
+                                )
+                            );
+
+        game_session.playfield = _new_RectComponent(_deref(rect));
         this.me = _PTR2REF(game_session.playfield);
+        this.scene_context = _new_SceneContext(_deref(rect));
+        this.state = _new_GraphicContextState(rect.get_width(), rect.get_height());
         this.server = _PTR2REF(game_session.get_server());
         this.session = &game_session;
+
+        _delete_obj(rect);
     end;
 
     var SmallMap small_map with

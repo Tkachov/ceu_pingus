@@ -22,7 +22,6 @@
 #include "engine/gui/gui_manager.hpp"
 #include "engine/gui/surface_button.hpp"
 #include "engine/screen/screen_manager.hpp"
-#include "pingus/components/playfield.hpp"
 #include "pingus/components/button_panel.hpp"
 #include "pingus/pingus_demo.hpp"
 #include "pingus/server.hpp"

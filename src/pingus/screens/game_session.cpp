@@ -23,7 +23,6 @@
 
 #include "engine/sound/sound.hpp"
 #include "pingus/components/button_panel.hpp"
-#include "pingus/components/playfield.hpp"
 #include "pingus/components/time_display.hpp"
 #include "pingus/globals.hpp"
 #include "pingus/savegame_manager.hpp"
