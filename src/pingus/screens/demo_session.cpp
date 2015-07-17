@@ -20,53 +20,31 @@
 #include <iostream>
 
 #include "engine/gui/gui_manager.hpp"
-#include "engine/gui/surface_button.hpp"
 #include "engine/screen/screen_manager.hpp"
 #include "pingus/components/button_panel.hpp"
 #include "pingus/pingus_demo.hpp"
 #include "pingus/server.hpp"
-#include "pingus/world.hpp"
 #include "util/log.hpp"
 
 #include "ceuvars.h"
 
-static bool false_func() { return false; }
-
-class BButton : public GUI::SurfaceButton
-{
-private:
-  Sprite highlight;
-  std::function<void(void)> callback;
-  std::function<bool(void)> highlight_func;
-  
-public:
-  BButton(int x, int y, const std::string& name, 
-          std::function<void (void)> callback_,
-          std::function<bool(void)> highlight_func_ = &false_func) :
+BButton::BButton(int x, int y, const std::string& name,  std::function<void (void)> callback_, std::function<bool(void)> highlight_func_):
     SurfaceButton(x, y, name, name + "-pressed", name + "-hover"),
     highlight("core/demo/highlight"),
     callback(callback_),
     highlight_func(highlight_func_)
   {}
 
-  virtual void draw (DrawingContext& gc) 
-  {
-
-    if (highlight_func())
-    {
-      gc.draw(button_pressed_surface, Vector2i(x_pos, y_pos));
-      gc.draw(highlight, Vector2i(x_pos, y_pos));
-    }
-    else
-    {
-      SurfaceButton::draw(gc);
-    }
+void BButton::draw(DrawingContext& gc) {
+  if(highlight_func()) {
+    gc.draw(button_pressed_surface, Vector2i(x_pos, y_pos));
+    gc.draw(highlight, Vector2i(x_pos, y_pos));
+  } else {
+    SurfaceButton::draw(gc);
   }
+}
 
-  void on_click() {
-    callback();
-  }
-};
+void BButton::on_click() { callback(); }
 
 DemoSession::DemoSession(const Pathname& pathname_) :
   pathname(pathname_),
@@ -177,27 +155,6 @@ void
 DemoSession::restart()
 {
   ScreenManager::instance()->replace_screen(std::make_shared<DemoSession>(pathname));
-}
-
-void
-DemoSession::resize(const Size& size_)
-{
-  GUIScreen::resize(size_);
-
-  WorldGetSizePackage package;
-  WorldGetSizePackage* pp = &package;
-  ceu_out_go(&CEUapp, CEU_IN_WORLD_GET_SIZE, &pp);
-
-  playfield->set_rect(Rect(Vector2i(Math::max((size.width  - package.width)/2,  0),
-                                    Math::max((size.height - package.height)/2, 0)), 
-                           Size(Math::min(size.width,  package.width),
-                                Math::min(size.height, package.height))));
-
-  fastforward_button->set_pos(32+50, 32);
-  pause_button->set_pos(32,  32);
-  restart_button->set_pos(size.width - 32 - 48, 32);
-
-  small_map->set_rect(Rect(Vector2i(5, size.height - 105), Size(175, 100)));
 }
 
 /* EOF */

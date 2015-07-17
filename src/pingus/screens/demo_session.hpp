@@ -26,6 +26,7 @@
 #include "util/pathname.hpp"
 #include "engine/gui/component.hpp"
 #include "engine/gui/rect_component.hpp"
+#include "engine/gui/surface_button.hpp"
 
 namespace Input {
 struct Event;
@@ -36,8 +37,22 @@ class Server;
 class XMLPDF;
 class DemoPlayer;
 class PingusDemo;
-class BButton;
 class ButtonPanel;
+
+static bool false_func() { return false; }
+
+class BButton: public GUI::SurfaceButton
+{
+private:
+  Sprite highlight;
+  std::function<void(void)> callback;
+  std::function<bool(void)> highlight_func;
+  
+public:
+  BButton(int x, int y, const std::string& name,  std::function<void (void)> callback_, std::function<bool(void)> highlight_func_ = &false_func);
+  virtual void draw(DrawingContext& gc);
+  void on_click();
+};
 
 /** A DemoSession is analog to a GameSession, but instead of loading a
     level and letting the player play a game, a demo file will be
@@ -82,8 +97,6 @@ public:
 
   bool is_pause() { return pause; }
   bool is_fast_forward() { return fast_forward; }
-
-  void resize(const Size& size);
 
 private:
   DemoSession (const DemoSession&);

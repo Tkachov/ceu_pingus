@@ -1,0 +1,25 @@
+#ifndef ISCREEN_CEU
+#define ISCREEN_CEU
+
+native/pre do
+    ##include "engine/screen/gui_screen.hpp"
+    ##include "engine/screen/screen.hpp"
+end
+
+input _GUIScreen* ON_STARTUP;
+input _GUIScreen* ON_ARMAGEDDON_PRESS;
+input _GUIScreen* ON_ARMAGEDDON_RELEASE;
+input _GUIScreen* ON_ESCAPE_PRESS;
+input _GUIScreen* ON_ESCAPE_RELEASE;
+input _GUIScreen* ON_PAUSE_PRESS;
+input _GUIScreen* ON_PAUSE_RELEASE;
+input _GUIScreen* ON_SINGLE_STEP_PRESS;
+input _GUIScreen* ON_SINGLE_STEP_RELEASE;
+input _GUIScreen* ON_FAST_FORWARD_PRESS;
+input _GUIScreen* ON_FAST_FORWARD_RELEASE;
+input _ScreenUpdateEventPackage* SCREEN_UPDATE_EVENT;
+input _ScreenDrawPackage* SCREEN_DRAW_BACKGROUND;
+input _ScreenResizePackage* SCREEN_RESIZE;
+input _ScreenAxisMovePackage* ON_ACTION_AXIS_MOVE;
+
+#endif

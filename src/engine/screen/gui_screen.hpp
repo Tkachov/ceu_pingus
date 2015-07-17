@@ -48,23 +48,23 @@ public:
 
   virtual void on_startup();
 
-  virtual void on_pause_press () {}
-  virtual void on_single_step_press () {}
-  virtual void on_fast_forward_press () {}
+  virtual void on_pause_press();
+  virtual void on_single_step_press();
+  virtual void on_fast_forward_press();
   virtual void on_armageddon_press();
   virtual void on_escape_press();
   virtual void on_action_up_press() {}
   virtual void on_action_down_press() {}
 
-  virtual void on_pause_release () {}
-  virtual void on_single_step_release () {}
-  virtual void on_fast_forward_release () {}
+  virtual void on_pause_release();
+  virtual void on_single_step_release();
+  virtual void on_fast_forward_release();
   virtual void on_armageddon_release();
   virtual void on_escape_release();
   virtual void on_action_up_release() {}
   virtual void on_action_down_release() {}
 
-  virtual void on_action_axis_move (float) {}
+  virtual void on_action_axis_move(float);
 
   virtual void resize(const Size& size);
 
@@ -80,6 +80,20 @@ struct ScreenUpdatePackage {
   float delta;
 
   ScreenUpdatePackage(GUIScreen* s, float d): screen(s), delta(d) {};
+};
+
+struct ScreenUpdateEventPackage {
+  GUIScreen* screen;
+  const Input::Event& event;
+
+  ScreenUpdateEventPackage(GUIScreen* s, const Input::Event& e): screen(s), event(e) {};
+};
+
+struct ScreenAxisMovePackage {
+  GUIScreen* screen;
+  float move;
+
+  ScreenAxisMovePackage(GUIScreen* s, float m): screen(s), move(m) {};
 };
 
 struct ScreenResizePackage {

@@ -2,7 +2,6 @@
 #define WORLDOBJ_CEU
 
 native/pre do
-    ##include "pingus/world.hpp"
     ##include "pingus/collision_mask.hpp"
 
     ##define WOCPackage WorldObjCeuPackage

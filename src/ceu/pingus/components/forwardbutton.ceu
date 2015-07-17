@@ -7,9 +7,9 @@
 #include "../../engine/gui/igui_component.ceu"
 #include "../../proxies/eventproxy.ceu"
 #include "../../proxies/primarybuttonproxy.ceu"
+#include "../screens/igame_session.ceu"
 
-native/pre do
-    ##include "pingus/screens/game_session.hpp"
+native/pre do    
     ##define gc_draw(gc, s, rect) gc->draw(*s, Vector2i(rect.left, rect.top))
 end
 
@@ -17,7 +17,7 @@ native @pure _gc_draw();
 
 class ForwardButton with
     interface IGUI_Component;
-    var _GameSession&? session;
+    var IGameSession& session;
 do
     var Sprite surface;
     var Sprite background;

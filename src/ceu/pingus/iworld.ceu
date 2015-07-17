@@ -23,8 +23,6 @@ native/pre do
 
     ##include "pingus/pingus_level.hpp"
     ##include "pingus/ground_map.hpp"
-
-    ##include "pingus/world.hpp"
 end
 
 interface IWorld with

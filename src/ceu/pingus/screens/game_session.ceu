@@ -3,6 +3,7 @@
 
 #include "../../c.ceu"
 #include "../../sdl.ceu"
+#include "../../engine/screen/screen.ceu"
 #include "../../math/math.ceu"
 #include "../iworld.ceu"
 #include "../global_interface.ceu"
@@ -13,6 +14,7 @@
 #include "../components/playfield.ceu"
 #include "../components/smallmap.ceu"
 #include "../server.ceu"
+#include "igame_session.ceu"
 
 native/pre do
     ##include "engine/screen/screen_manager.hpp"
@@ -31,6 +33,7 @@ native/pre do
 
     ##include "engine/display/graphic_context_state.hpp"
     ##include "engine/gui/rect_component.hpp"
+    ##include "util/log.hpp"
 
     ##define new_GUI_Component() new GUI::Component()
     ##define new_RectComponent(r) new GUI::RectComponent(r)
@@ -53,6 +56,18 @@ native/pre do
     ##define Display__get_width() Display::get_width()
     ##define Display__get_height() Display::get_height()
     ##define Input__ScrollEvent Input::ScrollEvent
+
+    ##define Input__BUTTON_EVENT_TYPE Input::BUTTON_EVENT_TYPE
+    ##define Input__BUTTON_PRESSED Input::BUTTON_PRESSED
+    ##define Input__ACTION_1_BUTTON Input::ACTION_1_BUTTON
+    ##define Input__ACTION_10_BUTTON Input::ACTION_10_BUTTON
+    ##define Input__ACTION_DOWN_BUTTON Input::ACTION_DOWN_BUTTON
+    ##define Input__ACTION_UP_BUTTON Input::ACTION_UP_BUTTON
+    ##define Input__SCROLLER_EVENT_TYPE Input::SCROLLER_EVENT_TYPE
+    ##define Input__POINTER_EVENT_TYPE Input::POINTER_EVENT_TYPE
+    ##define Input__AXIS_EVENT_TYPE Input::AXIS_EVENT_TYPE
+    ##define Input__KEYBOARD_EVENT_TYPE Input::KEYBOARD_EVENT_TYPE
+    ##define Input__TEXT_INPUT_EVENT_TYPE Input::TEXT_INPUT_EVENT_TYPE
 end
 
 native @pure _new_PingusCounter(), _new_GUI_Component(), _new_RectComponent(), _new_Server(), _new_ButtonPanel(),
@@ -62,17 +77,9 @@ native @pure _new_PingusCounter(), _new_GUI_Component(), _new_RectComponent(), _
 
 input _ScreenUpdatePackage* GAME_SESSION_UPDATE;
 input _GameSession* DELETE_GAME_SESSION;
-input _Input__ScrollEvent* GAME_SESSION_SCROLLER_EVENT_TYPE;
-
-input _GUIScreen* ON_STARTUP;
-input _GUIScreen* ON_ARMAGEDDON_PRESS;
-input _GUIScreen* ON_ARMAGEDDON_RELEASE;
-input _GUIScreen* ON_ESCAPE_PRESS;
-input _GUIScreen* ON_ESCAPE_RELEASE;
-input _ScreenDrawPackage* SCREEN_DRAW_BACKGROUND;
-input _ScreenResizePackage* SCREEN_RESIZE;
 
 class GameSession with
+    interface IGameSession;
     var _GameSession* me;
 do
     var _GameSession&? game_session = _PTR2REF((_GameSession*)me);
@@ -81,7 +88,7 @@ do
         this.me = _new_Server(game_session.plf, true);        
     end;
 
-    game_session.button_panel = _new_ButtonPanel(server.me, _Vector2i(0, (game_session.size.height - 150)/2));
+    var _ButtonPanel* button_panel = _new_ButtonPanel(server.me, _Vector2i(0, (game_session.size.height - 150)/2));
 
     var PingusCounter pcounter with
         this.me = _new_GUI_Component();
@@ -104,7 +111,7 @@ do
         this.scene_context = _new_SceneContext(_deref(rect));
         this.state = _new_GraphicContextState(rect.get_width(), rect.get_height());
         this.server = _PTR2REF(server.me);
-        this.session = &game_session;
+        this.session = &outer;
 
         _delete_obj(rect);
     end;
@@ -123,26 +130,56 @@ do
 
     var ForwardButton forward_button with
         this.me = _PTR2REF(_new_RectComponent(_Rect(_Vector2i(_Display__get_width() - 40*2, _Display__get_height()-62), _Size(38, 60))));
-        this.session = _PTR2REF(&game_session);
+        this.session = outer;
     end;
 
     var PauseButton pause_button with
         this.me = _PTR2REF(_new_RectComponent(_Rect(_Vector2i(_Display__get_width() - 40*3, _Display__get_height()-62), _Size(38, 60))));
-        this.session = _PTR2REF(&game_session);
+        this.session = outer;
     end;
 
-    game_session.time_display = _new_TimeDisplay(server.me);
+    var _TimeDisplay* time_display = _new_TimeDisplay(server.me);
 
     game_session.gui_manager:add(&playfield.me) finalize with end;
-    game_session.gui_manager:add(game_session.button_panel) finalize with end;
+    game_session.gui_manager:add(button_panel) finalize with end;
     game_session.gui_manager:add(&pcounter.me) finalize with end;
     game_session.gui_manager:add(&small_map.rect) finalize with end;
-    game_session.gui_manager:add(game_session.time_display) finalize with end;
+    game_session.gui_manager:add(time_display) finalize with end;
     game_session.gui_manager:add(&armageddon_button.me) finalize with end;
     game_session.gui_manager:add(&forward_button.me) finalize with end;
     game_session.gui_manager:add(&pause_button.me) finalize with end;
 
     var int world_delay = 0;
+
+    var bool pause = false;
+    var bool fast_forward = false;
+    var bool single_step = false;
+
+    function (bool value) => void set_fast_forward do    
+        fast_forward = value;
+        if fast_forward then        
+            pause = false;
+        end
+    end
+    
+    function (bool value) => void set_pause do
+        pause = value;
+        if pause then
+            fast_forward = false;
+        end
+    end
+
+    function (void) => int get_action_name do
+        return button_panel:get_action_name();
+    end
+
+    function (void) => bool get_fast_forward do    
+        return fast_forward;
+    end
+
+    function (void) => bool get_pause do
+        return pause;
+    end
 
     par/or do
         every package in GAME_SESSION_UPDATE do
@@ -202,10 +239,10 @@ do
                         break;
                     end
 
-                    if not game_session.pause or game_session.single_step then
-                        game_session.single_step = false;
+                    if not pause or single_step then
+                        single_step = false;
 
-                        if game_session.fast_forward then
+                        if fast_forward then
                             _printf("fast_forward: %d\n", (int)_globals__fast_forward_time_scale);
                             loop i in _globals__fast_forward_time_scale do
                                 //TODO: figure out why it doesn't work with Ceu-style update
@@ -228,6 +265,34 @@ do
             
             game_session.gui_manager:update(package:delta) finalize with end;
         end
+    with
+        every package in SCREEN_UPDATE_EVENT do
+            //log_info("Events: " << event.get_type ());
+
+            if package:event.type == _Input__BUTTON_EVENT_TYPE then
+                if package:event.button.state == _Input__BUTTON_PRESSED then              
+                    if  package:event.button.name >= _Input__ACTION_1_BUTTON
+                    and package:event.button.name <= _Input__ACTION_10_BUTTON then
+                        button_panel:set_button(package:event.button.name - _Input__ACTION_1_BUTTON);                    
+                    else/if package:event.button.name == _Input__ACTION_DOWN_BUTTON then                    
+                        button_panel:next_action();                    
+                    else/if package:event.button.name == _Input__ACTION_UP_BUTTON then                    
+                        button_panel:previous_action();
+                    end
+                end
+            else/if package:event.type == _Input__SCROLLER_EVENT_TYPE then
+                playfield.scroll(-package:event.scroll.x_delta, -package:event.scroll.y_delta);
+            else/if package:event.type == _Input__POINTER_EVENT_TYPE then // Ignore, is handled in GUIScreen
+            else/if package:event.type == _Input__AXIS_EVENT_TYPE then
+                // ???
+                //process_axis_event (event.axis);
+            else/if package:event.type == _Input__KEYBOARD_EVENT_TYPE then
+            else/if package:event.type == _Input__TEXT_INPUT_EVENT_TYPE then
+            else
+                // unhandled event
+                _log_info("unhandled event: %1%", package:event.type) finalize with end;
+            end
+        end        
     with
         every screen in ON_STARTUP do
             if screen != &game_session then
@@ -255,6 +320,41 @@ do
             if screen == &game_session then
                 emit server.e_ARMAGEDDON;
             end
+        end
+    with
+        every screen in ON_PAUSE_PRESS do
+            if screen == &game_session then
+                set_pause(not get_pause());
+            end
+        end
+    with
+        every screen in ON_SINGLE_STEP_PRESS do
+            if screen != &game_session then
+                continue;
+            end
+
+            set_pause(true);
+            single_step = true;
+        end    
+    with
+        every screen in ON_FAST_FORWARD_PRESS do
+            if screen != &game_session then
+                continue;
+            end
+
+            if get_pause() then
+                set_pause(false);
+            else
+                set_fast_forward(true);
+            end
+        end
+    with
+        every screen in ON_FAST_FORWARD_RELEASE do
+            if screen != &game_session then
+                continue;
+            end
+
+            set_fast_forward(false);
         end
     with
         every package in SCREEN_DRAW_BACKGROUND do
@@ -299,11 +399,19 @@ do
             ((_GUI_RectComponent*)&forward_button.me):set_rect(_Rect(_Vector2i(game_session.size.width - 40*2, game_session.size.height - 62), _Size(38, 60)));
             ((_GUI_RectComponent*)&pause_button.me):set_rect(_Rect(_Vector2i(game_session.size.width - 40*3, game_session.size.height - 62), _Size(38, 60)));
             small_map.rect.set_rect(_Rect(_Vector2i(5, game_session.size.height - 105), _Size(175, 100)));
-            game_session.button_panel:set_pos(_Vector2i(0, (game_session.size.height - 150)/2));
+            button_panel:set_pos(_Vector2i(0, (game_session.size.height - 150)/2));
         end
     with
-        every ev in GAME_SESSION_SCROLLER_EVENT_TYPE do
-            playfield.scroll(-ev:x_delta, -ev:y_delta);
+        every package in ON_ACTION_AXIS_MOVE do
+            if package:screen != &game_session then
+                continue;
+            end
+
+            if package:move > 0 then
+                button_panel:next_action();
+            else/if package:move < 0 then
+                button_panel:previous_action();
+            end
         end
     with
         var _GameSession* e = await DELETE_GAME_SESSION until (e == &game_session);

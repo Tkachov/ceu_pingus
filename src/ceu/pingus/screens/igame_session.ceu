@@ -1,0 +1,13 @@
+#ifndef IGAME_SESSION_CEU
+#define IGAME_SESSION_CEU
+
+interface IGameSession with
+    function (bool) => void set_fast_forward;
+    function (bool) => void set_pause;
+
+    function (void) => int get_action_name;
+    function (void) => bool get_fast_forward;
+  	function (void) => bool get_pause;  	
+end
+
+#endif

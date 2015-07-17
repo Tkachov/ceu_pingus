@@ -10,7 +10,6 @@
 #include "pingus/collision_mask.hpp"
 #include "pingus/globals.hpp"
 #include "pingus/ground_map.hpp"
-#include "pingus/world.hpp"
 
 ////// PINGU
 

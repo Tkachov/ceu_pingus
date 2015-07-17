@@ -17,65 +17,21 @@
 #ifndef HEADER_PINGUS_PINGUS_SCREENS_GAME_SESSION_HPP
 #define HEADER_PINGUS_PINGUS_SCREENS_GAME_SESSION_HPP
 
-#include <memory>
-
 #include "engine/screen/gui_screen.hpp"
-#include "pingus/action_name.hpp"
 #include "pingus/pingus_level.hpp"
-#include "engine/gui/component.hpp"
-#include "engine/gui/rect_component.hpp"
 
-namespace Input {
-struct ScrollEvent;
-struct AxisEvent;
-struct Event;
-}
+// You can use this class to start up a game session, which consist of a single level.
 
-class ButtonPanel;
-class TimeDisplay;
-
-/** You can use this class to start up a game session, which consist
-    of a single level. */
-class GameSession : public GUIScreen
-{
-private:
-  /// The level data
+class GameSession: public GUIScreen {
+private:  
   PingusLevel plf;
-
   bool show_result_screen;
-
-  // -- Client stuff
-  ButtonPanel*   button_panel;  
-  TimeDisplay*   time_display;
-
-  bool pause;
-  bool fast_forward;
-  bool single_step;
 
 public:
   GameSession(const PingusLevel& arg_plf, bool arg_show_result_screen);
   ~GameSession ();
-
-  /** Update all parts of the world */
+  
   void update (float delta);
-  void update (const Input::Event& event);
-
-  ButtonPanel* get_button_panel () { return button_panel; }
-
-  // Overloaded GUIScreen stuff
-  void on_pause_press ();
-  void on_single_step_press ();
-  void on_fast_forward_press ();
-  void on_fast_forward_release ();
-  void on_action_axis_move (float);
-
-  ActionName::Enum get_action_name() const;
-
-  void set_fast_forward(bool value);
-  bool get_fast_forward() const;
-
-  void set_pause(bool value);
-  bool get_pause() const;
 
 private:
   GameSession (const GameSession&);

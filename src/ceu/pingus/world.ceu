@@ -34,8 +34,6 @@
 #include "worldobjs/teleporter.ceu"
 #include "worldobjs/teleporter_target.ceu"
 
-input _WorldGetSizePackage* WORLD_GET_SIZE;
-
 native/pre do
     ##define reader_read_Groundtype(r, s, v) r->read_enum(s, v, &Groundtype::string_to_type);
 
@@ -290,11 +288,6 @@ do
     //////////// EVENTS /////////////
 
     par/or do
-        every gspackage in WORLD_GET_SIZE do
-            gspackage:width = get_width();
-            gspackage:height = get_height();
-        end
-    with
         every e_CREATE do
             var _const_std__vector_FileReader* ov = _addr(pingus_level.get_objects());
             var _CreationPackage* pack = _new_CreationPackage();

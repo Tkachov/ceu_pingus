@@ -3,6 +3,7 @@
 
 #include "../../c.ceu"
 #include "../../sdl.ceu"
+#include "../../engine/screen/screen.ceu"
 #include "../iworld.ceu"
 #include "../global_interface.ceu"
 #include "../components/pingus_counter.ceu"
@@ -12,6 +13,13 @@
 
 native/pre do
     ##include "pingus/screens/demo_session.hpp"
+    ##include "engine/gui/gui_manager.hpp"
+    ##include "engine/gui/surface_button.hpp"
+    ##include "engine/screen/screen_manager.hpp"
+    ##include "pingus/components/button_panel.hpp"
+    ##include "pingus/pingus_demo.hpp"
+    ##include "pingus/server.hpp"
+    ##include "util/log.hpp"
     ##define new_GUI_Component() new GUI::Component()
     ##define new_RectComponent(r) new GUI::RectComponent(r)
     ##define new_Rect(v, s) new Rect(v, s)
@@ -30,11 +38,6 @@ input _ComponentUpdatePackage* DEMO_SESSION_UPDATE_SERVER;
 input _DemoSession* DEMO_SESSION_UPDATE;
 input _DemoSession* DELETE_DEMO_SESSION;
 input _Vector2i* DEMO_SESSION_ON_SCROLLER_MOVE;
-
-input _GUIScreen* ON_ARMAGEDDON_PRESS;
-input _GUIScreen* ON_ARMAGEDDON_RELEASE;
-input _GUIScreen* ON_ESCAPE_PRESS;
-input _GUIScreen* ON_ESCAPE_RELEASE;
 
 #define GET_SERVER ((Server*)demo_session.server:ceu())
 
@@ -143,6 +146,31 @@ do
             //original FIXME: Rounding considered evil?
             playfield.scroll(-pos:x, -pos:y);
             //well, I think it isn't
+        end
+    with
+        every package in SCREEN_RESIZE do
+            if package:screen != &demo_session then
+                continue;
+            end
+
+            demo_session.playfield:set_rect(
+                _Rect(
+                    _Vector2i(
+                        _Math__max((demo_session.size.width  - global:world:get_width())/2,  0),
+                        _Math__max((demo_session.size.height - global:world:get_height())/2, 0)
+                    ), 
+                    _Size(
+                        _Math__min(demo_session.size.width,  global:world:get_width()),
+                        _Math__min(demo_session.size.height, global:world:get_height())
+                    )
+                )
+            );
+
+            demo_session.fastforward_button:set_pos(32+50, 32);
+            demo_session.pause_button:set_pos(32, 32);
+            demo_session.restart_button:set_pos(demo_session.size.width - 32 - 48, 32);
+
+            demo_session.small_map:set_rect(_Rect(_Vector2i(5, demo_session.size.height - 105), _Size(175, 100)));
         end
     with
         var _DemoSession* e = await DELETE_DEMO_SESSION until (e == &demo_session);

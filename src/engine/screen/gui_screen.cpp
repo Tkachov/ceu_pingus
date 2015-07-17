@@ -99,6 +99,10 @@ GUIScreen::update (const Input::Event& event)
       log_error("unhandled event type: %1%", event.type);
       break;
   }
+
+  ScreenUpdateEventPackage package(this, event);
+  ScreenUpdateEventPackage* pp = &package;
+  ceu_out_go(&CEUapp, CEU_IN_SCREEN_UPDATE_EVENT, &pp);
 }
 
 void
@@ -212,6 +216,30 @@ void GUIScreen::on_escape_press() {
   ceu_out_go(&CEUapp, CEU_IN_ON_ESCAPE_PRESS, &self);
 }
 
+void GUIScreen::on_pause_press() {
+  GUIScreen* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_ON_PAUSE_PRESS, &self);
+}
+
+void GUIScreen::on_single_step_press() {
+  GUIScreen* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_ON_SINGLE_STEP_PRESS, &self);
+}
+
+void GUIScreen::on_fast_forward_press() {
+  GUIScreen* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_ON_FAST_FORWARD_PRESS, &self);
+}
+
+void GUIScreen::on_pause_release() {
+  GUIScreen* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_ON_PAUSE_RELEASE, &self);
+}
+void GUIScreen::on_single_step_release() {
+  GUIScreen* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_ON_SINGLE_STEP_RELEASE, &self);
+}
+
 void GUIScreen::on_armageddon_release() {
   GUIScreen* self = this;
   ceu_out_go(&CEUapp, CEU_IN_ON_ARMAGEDDON_RELEASE, &self);
@@ -222,5 +250,15 @@ void GUIScreen::on_escape_release() {
   ceu_out_go(&CEUapp, CEU_IN_ON_ESCAPE_RELEASE, &self);
 }
 
+void GUIScreen::on_fast_forward_release() {
+  GUIScreen* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_ON_FAST_FORWARD_RELEASE, &self);
+}
+
+void GUIScreen::on_action_axis_move(float move) {
+  ScreenAxisMovePackage package(this, move);
+  ScreenAxisMovePackage* pp = &package;
+  ceu_out_go(&CEUapp, CEU_IN_ON_ACTION_AXIS_MOVE, &pp);
+}
 
 /* EOF */

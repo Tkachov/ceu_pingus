@@ -6,6 +6,7 @@
 #include "../engine/display/scene_context.ceu"
 #include "../engine/display/sprite.ceu"
 #include "../math/vector2i.ceu"
+#include "screens/igame_session.ceu"
 #include "ipingu.ceu"
 
 native/pre do
@@ -18,7 +19,7 @@ end
 native @pure _new_CaptureRectangle(), _AN_get_char(), _strutil_to_string(), _do_Vector2i();
 
 class CaptureRectangle with
-    var _GameSession* session;
+    var IGameSession* session;
     function @rec (IPingu*) => void set_pingu;
     event _SceneContext* draw;
 do
