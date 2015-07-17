@@ -1,0 +1,17 @@
+#ifndef ISERVER_CEU
+#define ISERVER_CEU
+
+native/pre do
+    ##include "pingus/server.hpp"
+end
+
+interface IServer with
+    var _Server* me;
+    
+    function @rec (void) => int get_time;
+    function (void) => _PingusLevel get_plf;
+
+    function @rec (IPingu* pingu, int action) => void send_pingu_action_event;
+end
+
+#endif

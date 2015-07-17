@@ -12,7 +12,7 @@
 #include "../screens/igame_session.ceu"
 #include "../capture_rectangle.ceu"
 #include "../global_interface.ceu"
-#include "../server.ceu"
+#include "../iserver.ceu"
 #include "iplayfield.ceu"
 
 native/pre do
@@ -44,7 +44,7 @@ class Playfield with
     interface IPlayfield;    
     var _SceneContext&? scene_context;
     var _GraphicContextState&? state;
-    var _Server* server;
+    var IServer& server;
     var IGameSession* session;
 do
     var _GUI_RectComponent&? playfield = _PTR2REF((_GUI_RectComponent*)&me);
@@ -194,9 +194,8 @@ do
                 _readVector2i(pos, state.screen2world(_Vector2i(x, y)));
                 current_pingu = _PTR2REF(call/rec current_pingu_find(pos.x, pos.y));
 
-                if current_pingu then
-                    var Server* cserver = (Server*)server:ceu_server;
-                    call/rec cserver:send_pingu_action_event(current_pingu, session:get_action_name());
+                if current_pingu then                    
+                    call/rec server.send_pingu_action_event(current_pingu, session:get_action_name());
                 end
             end
         end

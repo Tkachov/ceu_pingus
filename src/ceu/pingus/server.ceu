@@ -5,6 +5,7 @@
 #include "../sdl.ceu"
 #include "world.ceu"
 #include "ipingu_holder.ceu"
+#include "iserver.ceu"
 #include "goal_manager.ceu"
 #include "global_interface.ceu"
 
@@ -24,16 +25,18 @@ native/pre do
     ##define SE_FINISH_EVENT ServerEvent::FINISH_EVENT
     ##define SE_END_EVENT ServerEvent::END_EVENT
     ##define SE_PINGU_ACTION_EVENT ServerEvent::PINGU_ACTION_EVENT
+
+    ##define std__endl std::endl
+    ##define stream_print(s, v) *s << v
 end
 
-input _GetTimePackage* SERVER_GET_TIME;
+native @pure _stream_print();
+
 input _Server* SERVER_UPDATE;
 
 class Server with
-    var _Server* me;
-    function @rec (IPingu* pingu, int action) => void send_pingu_action_event;
-    function (void) => bool is_finished;
-    function @rec (void) => int get_time;
+    interface IServer;    
+    function @rec (void) => bool is_finished;    
     event _ServerEvent* e_EVENT_SEND;
     event void e_ARMAGEDDON;
     event void e_FINISH_EVENT;
@@ -41,11 +44,9 @@ class Server with
     event void e_DELETE;
 do
     var GoalManager goal_manager with
-        this.server = me;
+        this.server = outer;
     end;
-    var _Server&? server = _PTR2REF((_Server*)me);
-    var Server* self = &this;
-    server.ceu_server = (void*)self;
+    var _Server&? server = _PTR2REF((_Server*)me);    
 
     var World world with
         this.pingus_level = _PTR2REF(&me:plf);
@@ -54,8 +55,14 @@ do
 
     emit world.e_CREATE;
 
+    function (_ServerEvent e) => void record do
+        if server.demostream.get() then
+            e.write(_deref(server.demostream));
+        end
+    end
+
     function @rec (IPingu* pingu, int action) => void send_pingu_action_event do
-        server.record(
+        record(
             _ServerEvent__make_pingu_action_event(
                 call/rec get_time(),
                 pingu:get_id(),
@@ -71,12 +78,16 @@ do
         end
     end
 
-    function (void) => bool is_finished do
-        return goal_manager.is_finished();
+    function @rec (void) => bool is_finished do
+        return call/rec goal_manager.is_finished();
     end
 
     function @rec (void) => int get_time do
         return global:world:get_time();
+    end
+
+    function (void) => _PingusLevel get_plf do
+        return server.plf;
     end
 
     function @rec (_ServerEvent* server_event, IPingu* p) => void do_pingu_action_event do
@@ -107,7 +118,7 @@ do
         end
     with
         every e_ARMAGEDDON do
-            server.record(
+            record(
                 _ServerEvent__make_armageddon_event(
                     call/rec get_time()
                 )
@@ -117,20 +128,12 @@ do
         end
     with
         every e_FINISH_EVENT do
-            server.record(
+            record(
                 _ServerEvent__make_finish_event(
                     call/rec get_time()
                 )
             );
             goal_manager.set_abort_goal();
-        end
-    with
-        every package in SERVER_GET_TIME do
-            if package:server != &server then
-                continue;
-            end
-
-            package:time = global:world:get_time();
         end
     with
         every e_UPDATE do
@@ -151,6 +154,16 @@ do
         end
     with
         await e_DELETE;
+
+        //original FIXME: Any better place to put this? 
+        if server.demostream.get() then
+            //(*demostream) << "(end (time " << get_time() << "))" << std::endl;  
+            _stream_print(server.demostream, "(end (time ");
+            _stream_print(server.demostream, call/rec get_time());
+            _stream_print(server.demostream, "))");
+            _stream_print(server.demostream, _std__endl);
+        end
+
         emit world.e_DELETE;
     end
 end

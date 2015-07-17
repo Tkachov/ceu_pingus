@@ -37,7 +37,7 @@ static std::string get_date_string ()
   return std::string(buffer);
 }
 
-static std::unique_ptr<std::ostream> get_demostream(const PingusLevel& plf)
+std::unique_ptr<std::ostream> get_demostream(const PingusLevel& plf)
 {
   std::string flat_levelname = plf.get_resname();
 
@@ -70,46 +70,21 @@ static std::unique_ptr<std::ostream> get_demostream(const PingusLevel& plf)
   }
 }
 
-Server::Server(const PingusLevel& arg_plf, bool record_demo) :
+Server::Server(const PingusLevel& arg_plf) :
   plf(arg_plf),  
-  action_holder (plf),  
+  action_holder(plf),
   demostream()
-{
-  if (record_demo)
-  {
-    demostream = get_demostream(plf);
-  }
-}
-
-Server::~Server ()
-{
-  if (demostream.get()) // FIXME: Any better place to put this? 
-    (*demostream) << "(end (time " << get_time() << "))" << std::endl;  
-}
+{}
 
 void Server::update() {
   Server* self = this;
   ceu_out_go(&CEUapp, CEU_IN_SERVER_UPDATE, &self);
 }
 
-void
-Server::record(const ServerEvent& event)
-{
-  if (demostream.get())
-    event.write(*demostream);
-}
-
 ActionHolder*
 Server::get_action_holder ()
 {
   return &action_holder;
-}
-
-int Server::get_time() {
-  GetTimePackage package(this);
-  GetTimePackage* pp = &package;
-  ceu_out_go(&CEUapp, CEU_IN_SERVER_GET_TIME, &pp);
-  return package.time;  
 }
 
 /* EOF */

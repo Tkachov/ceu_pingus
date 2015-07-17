@@ -5,6 +5,7 @@
 #include "../sdl.ceu"
 #include "iworld.ceu"
 #include "ipingu_holder.ceu"
+#include "iserver.ceu"
 #include "global_interface.ceu"
 
 native/pre do
@@ -19,11 +20,11 @@ end
 #define GMT_GAME_ABORTED 4          // if the user pressed Escape to exit the level
 
 class GoalManager with
-    var _Server* server;
+    var IServer& server;
     event void e_UPDATE;
 
     function (void) => void set_abort_goal;
-    function (void) => bool is_finished;
+    function @rec (void) => bool is_finished;
 do
     var int goal = GMT_NONE;
     var int exit_time = 0;
@@ -32,7 +33,7 @@ do
         goal = GMT_GAME_ABORTED;
     end
 
-    function (void) => bool is_finished do
+    function @rec (void) => bool is_finished do
         if goal == GMT_NONE then
             return false;
         else/if goal == GMT_GAME_ABORTED then
@@ -41,10 +42,10 @@ do
             if exit_time == 0 then
                 // we are finished, now wait a few second so that everybody can
                 // see the particles, etc.
-                exit_time = server:get_time() + 125;
+                exit_time = (call/rec server.get_time()) + 125;
                 return false;
             else
-                return (exit_time < server:get_time());
+                return (exit_time < call/rec server.get_time());
             end
         else
             _assert(not "GoalManager: unknown goal state");
@@ -60,7 +61,7 @@ do
                 goal = GMT_NO_PINGUS_IN_WORLD;
             else/if pingus:get_number_of_alive() == 0 and global:world:check_armageddon() then
                 goal = GMT_ARMAGEDDON;
-            else/if server:get_plf().get_time() != -1 and server:get_plf().get_time() <= server:get_time() then
+            else/if server.get_plf().get_time() != -1 and server.get_plf().get_time() <= call/rec server.get_time() then
                 goal = GMT_OUT_OF_TIME;
             end
         end

@@ -15,7 +15,6 @@
 #include "iplayfield.ceu"
 
 native/pre do    
-    ##include "pingus/server.hpp"
     ##define new_Surface2(a, b) new Surface(a, b)
 end
 
@@ -24,14 +23,12 @@ native @pure _new_Surface2();
 class SmallMap with
     interface IGUI_Component;
     interface ISmallMap;
-    var _GUI_RectComponent&? rect;
-    var _Server&?   server;
+    var _GUI_RectComponent&? rect;    
     var IPlayfield& playfield;
 do
     var _DrawingContext* gc_ptr = null;
 
     var SmallMapImage image with
-        this.server = _PTR2REF(server);
         this.canvas = _new_Surface2(rect.rect.get_width(), rect.rect.get_height());
     end;
 

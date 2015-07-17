@@ -13,6 +13,7 @@
 #include "../components/pingus_counter.ceu"
 #include "../components/playfield.ceu"
 #include "../components/smallmap.ceu"
+#include "../components/time_display.ceu"
 #include "../server.ceu"
 #include "igame_session.ceu"
 
@@ -29,7 +30,6 @@ native/pre do
     ##include "pingus/server.hpp"
     ##include "engine/sound/sound.hpp"
     ##include "pingus/components/button_panel.hpp"    
-    ##include "pingus/components/time_display.hpp"
 
     ##include "engine/display/graphic_context_state.hpp"
     ##include "engine/gui/rect_component.hpp"
@@ -40,7 +40,7 @@ native/pre do
     ##define new_Rect(v, s) new Rect(v, s)
     ##define new_SceneContext(rect) new SceneContext(rect)
     ##define new_GraphicContextState(w, h) new GraphicContextState(w, h)
-    ##define new_Server(a, b) new Server(a, b)
+    ##define new_Server(a) new Server(a)
     ##define new_ButtonPanel(a, b) new ButtonPanel(a, b)    
     ##define new_TimeDisplay(s) new TimeDisplay(s)
     ##define new_Result() new Result()
@@ -67,12 +67,12 @@ native/pre do
     ##define Input__POINTER_EVENT_TYPE Input::POINTER_EVENT_TYPE
     ##define Input__AXIS_EVENT_TYPE Input::AXIS_EVENT_TYPE
     ##define Input__KEYBOARD_EVENT_TYPE Input::KEYBOARD_EVENT_TYPE
-    ##define Input__TEXT_INPUT_EVENT_TYPE Input::TEXT_INPUT_EVENT_TYPE
+    ##define Input__TEXT_INPUT_EVENT_TYPE Input::TEXT_INPUT_EVENT_TYPE    
 end
 
 native @pure _new_PingusCounter(), _new_GUI_Component(), _new_RectComponent(), _new_Server(), _new_ButtonPanel(),
              _new_Rect(), _new_SceneContext(), _new_GraphicContextState(), _new_TimeDisplay(), _new_Result(), _new_Savegame(),
-             _SavegameManager__instance(), _ScreenManager__instance(),
+             _SavegameManager__instance(), _ScreenManager__instance(), _get_demostream(),
              _std__make_shared_ResultScreen(), _toSStatus(), _Display__get_width(), _Display__get_height();
 
 input _ScreenUpdatePackage* GAME_SESSION_UPDATE;
@@ -85,14 +85,15 @@ do
     var _GameSession&? game_session = _PTR2REF((_GameSession*)me);
 
     var Server server with
-        this.me = _new_Server(game_session.plf, true);        
+        this.me = _new_Server(game_session.plf);
+        this.me:demostream = _get_demostream(this.me:plf);
     end;
 
     var _ButtonPanel* button_panel = _new_ButtonPanel(server.me, _Vector2i(0, (game_session.size.height - 150)/2));
 
     var PingusCounter pcounter with
         this.me = _new_GUI_Component();
-        this.server = _PTR2REF(server.me);        
+        this.server = server;
     end;
 
     var Playfield playfield with
@@ -110,7 +111,7 @@ do
         this.me = _PTR2REF(_new_RectComponent(_deref(rect)));
         this.scene_context = _new_SceneContext(_deref(rect));
         this.state = _new_GraphicContextState(rect.get_width(), rect.get_height());
-        this.server = _PTR2REF(server.me);
+        this.server = server;
         this.session = &outer;
 
         _delete_obj(rect);
@@ -118,8 +119,7 @@ do
 
     var SmallMap small_map with
         this.rect = _PTR2REF(_new_RectComponent(_Rect(_Vector2i(5, game_session.size.height - 105), _Size(175, 100))));
-        this.me = _PTR2REF(this.rect);
-        this.server = _PTR2REF(server.me);
+        this.me = _PTR2REF(this.rect);        
         this.playfield = playfield;
     end;
 
@@ -137,14 +137,17 @@ do
         this.me = _PTR2REF(_new_RectComponent(_Rect(_Vector2i(_Display__get_width() - 40*3, _Display__get_height()-62), _Size(38, 60))));
         this.session = outer;
     end;
-
-    var _TimeDisplay* time_display = _new_TimeDisplay(server.me);
+    
+    var TimeDisplay time_display with
+        this.me = _new_GUI_Component();
+        this.server = server;
+    end;
 
     game_session.gui_manager:add(&playfield.me) finalize with end;
     game_session.gui_manager:add(button_panel) finalize with end;
     game_session.gui_manager:add(&pcounter.me) finalize with end;
     game_session.gui_manager:add(&small_map.rect) finalize with end;
-    game_session.gui_manager:add(time_display) finalize with end;
+    game_session.gui_manager:add(&time_display.me) finalize with end;
     game_session.gui_manager:add(&armageddon_button.me) finalize with end;
     game_session.gui_manager:add(&forward_button.me) finalize with end;
     game_session.gui_manager:add(&pause_button.me) finalize with end;
@@ -187,19 +190,19 @@ do
                 continue;
             end
 
-            if server.is_finished() then
+            if call/rec server.is_finished() then
                 var IPinguHolder* pingu_holder = _PTR2REF(global:world:get_pingus());
                 var _Result&? result = _new_Result();
 
-                finalize result.plf    = server.me:get_plf(); with end
+                finalize result.plf    = server.get_plf(); with end
 
                 result.saved  = pingu_holder:get_number_of_exited();
                 result.killed = pingu_holder:get_number_of_killed();
-                finalize result.total  = server.me:get_plf().get_number_of_pingus(); with end
+                finalize result.total  = server.get_plf().get_number_of_pingus(); with end
 
-                finalize result.needed = server.me:get_plf().get_number_to_save(); with end
+                finalize result.needed = server.get_plf().get_number_to_save(); with end
 
-                finalize result.max_time  = server.me:get_plf().get_time(); with end
+                finalize result.max_time  = server.get_plf().get_time(); with end
                 result.used_time = call/rec server.get_time();
 
                 var int rs = _Savegame__ACCESSIBLE;
@@ -300,13 +303,13 @@ do
             end
 
             if _globals__developer_mode then
-                _log_info("Starting Music: %1%", server.me:get_plf().get_music());
+                _log_info("Starting Music: %1%", server.get_plf().get_music());
             end
 
-            if server.me:get_plf().get_music() == "none" or server.me:get_plf().get_music().empty() then
+            if server.get_plf().get_music() == "none" or server.get_plf().get_music().empty() then
                 _Sound__PingusSound__stop_music();
             else
-                _Sound__PingusSound__play_music(server.me:get_plf().get_music());
+                _Sound__PingusSound__play_music(server.get_plf().get_music());
             end
         end
     with

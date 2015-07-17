@@ -22,8 +22,7 @@
 #include "pingus/server_event.hpp"
 #include <memory>
 
-class Pingu;
-class DemoRecorder;
+std::unique_ptr<std::ostream> get_demostream(const PingusLevel& plf);
 
 /** A abstract server-like class */
 class Server
@@ -36,38 +35,17 @@ protected:
   
   std::unique_ptr<std::ostream> demostream;
 
-  void* ceu_server;
-
 public:
-  Server(const PingusLevel& arg_plf, bool record_demo);
-  ~Server();
+  Server(const PingusLevel& arg_plf);
+  ~Server() {};
 
   void update();
 
-  PingusLevel get_plf () { return plf; }
-
-  void* ceu() { return ceu_server; }
-
-  int get_time();
-
-  ActionHolder* get_action_holder();
-  
-  /** set the server into the finshed state, this is used when you
-      press ESCAPE inside a game */  
-  void send_pingu_action_event(Pingu* pingu, ActionName::Enum action);
+  ActionHolder* get_action_holder();  
 
 private:
-  void record(const ServerEvent& event);
-
   Server (const Server&);
   Server& operator= (const Server&);
-};
-
-struct GetTimePackage {
-  Server* server;
-  int time;
-
-  GetTimePackage(Server* s): server(s) {};
 };
 
 #endif

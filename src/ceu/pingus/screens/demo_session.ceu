@@ -25,7 +25,7 @@ native/pre do
     ##define new_Rect(v, s) new Rect(v, s)
     ##define new_SceneContext(rect) new SceneContext(rect)
     ##define new_GraphicContextState(w, h) new GraphicContextState(w, h)
-    ##define new_Server(a, b) new Server(a, b)    
+    ##define new_Server(a) new Server(a)    
     ##define ScreenManager__instance() ScreenManager::instance()
     ##define addr(x) &x
 end
@@ -39,8 +39,6 @@ input _DemoSession* DEMO_SESSION_UPDATE;
 input _DemoSession* DELETE_DEMO_SESSION;
 input _Vector2i* DEMO_SESSION_ON_SCROLLER_MOVE;
 
-#define GET_SERVER ((Server*)demo_session.server:ceu())
-
 class DemoSession with
     var _DemoSession* me;
     event void update_demo;
@@ -48,13 +46,13 @@ do
     var _DemoSession&? demo_session = _PTR2REF((_DemoSession*)me);
 
     var Server server with
-        this.me = _new_Server(demo_session.plf, false);
+        this.me = _new_Server(demo_session.plf);
         demo_session.server = _PTR2REF(this.me);
     end;
 
     var PingusCounter pcounter with
         this.me = _new_GUI_Component();
-        this.server = _PTR2REF(demo_session.server);
+        this.server = server;
         demo_session.pcounter = &this.me;
     end;
 
@@ -74,7 +72,7 @@ do
         this.me = _PTR2REF(demo_session.playfield);
         this.scene_context = _new_SceneContext(_deref(rect));
         this.state = _new_GraphicContextState(rect.get_width(), rect.get_height());
-        this.server = _PTR2REF(demo_session.server);
+        this.server = server;
         this.session = null;
 
         _delete_obj(rect);
@@ -82,8 +80,7 @@ do
 
     var SmallMap small_map with
         this.rect = _PTR2REF(_new_RectComponent(_Rect(_Vector2i(5, demo_session.size.height - 105), _Size(175, 100))));
-        this.me = _PTR2REF(this.rect);
-        this.server = _PTR2REF(demo_session.server);
+        this.me = _PTR2REF(this.rect);        
         this.playfield = demo_session.playfield;
         demo_session.small_map = &this.rect;
     end;
@@ -94,7 +91,7 @@ do
                 continue;
             end
 
-            if GET_SERVER:is_finished() then
+            if call/rec server.is_finished() then
                 _ScreenManager__instance():pop_screen();
             else
                 //original FIXME: Duplicate all timing code here?!
@@ -105,7 +102,7 @@ do
                             emit update_demo;
                         end
                     else
-                        emit GET_SERVER:e_UPDATE;
+                        emit server.e_UPDATE;
                         emit update_demo;
                     end
                 end
@@ -114,16 +111,16 @@ do
     with
         every update_demo do
             loop do
-                if demo_session.events.empty() or demo_session.events.back().time_stamp != call/rec GET_SERVER:get_time() then
+                if demo_session.events.empty() or demo_session.events.back().time_stamp != call/rec server.get_time() then
                     break;
                 end
 
-                emit GET_SERVER:e_EVENT_SEND => _addr(demo_session.events.back());
+                emit server.e_EVENT_SEND => _addr(demo_session.events.back());
                 demo_session.events.pop_back();
             end
 
             // Check for unexpected things (might happen if the demo file is broken)
-            if not demo_session.events.empty() and demo_session.events.back().time_stamp < call/rec GET_SERVER:get_time() then
+            if not demo_session.events.empty() and demo_session.events.back().time_stamp < call/rec server.get_time() then
                 _log_info("DemoPlayer Bug: We missed a timestamp: %1%", demo_session.events.back().time_stamp);
             end
         end
