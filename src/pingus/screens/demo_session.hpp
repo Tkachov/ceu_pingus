@@ -21,6 +21,7 @@
 #include <vector>
 
 #include "engine/screen/gui_screen.hpp"
+#include "pingus/pingus_level.hpp"
 #include "pingus/server_event.hpp"
 #include "util/pathname.hpp"
 #include "engine/gui/component.hpp"
@@ -47,7 +48,8 @@ class DemoSession : public GUIScreen
 private:
   Pathname pathname;
 
-  std::unique_ptr<Server>     server;
+  PingusLevel plf;
+  Server*     server;
   std::unique_ptr<PingusDemo> demo;
   std::vector<ServerEvent>  events;
 

@@ -80,19 +80,12 @@ Server::Server(const PingusLevel& arg_plf, bool record_demo) :
   {
     demostream = get_demostream(plf);
   }
-
-  Server* self = this;
-  ceu_out_go(&CEUapp, CEU_IN_NEW_SERVER, &self);
 }
 
 Server::~Server ()
 {
   if (demostream.get()) // FIXME: Any better place to put this? 
-    (*demostream) << "(end (time " << get_time() << "))" << std::endl;
-
-  ceu_out_go(&CEUapp, CEU_IN_DELETE_WORLD, 0);
-  Server* self = this;
-  ceu_out_go(&CEUapp, CEU_IN_DELETE_SERVER, &self);
+    (*demostream) << "(end (time " << get_time() << "))" << std::endl;  
 }
 
 void Server::update() {

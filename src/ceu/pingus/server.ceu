@@ -26,12 +26,10 @@ native/pre do
     ##define SE_PINGU_ACTION_EVENT ServerEvent::PINGU_ACTION_EVENT
 end
 
-input _Server* NEW_SERVER;
 input _Server* SERVER_ARMAGEDDON;
 input _Server* SERVER_FINISH_EVENT;
 input _GetTimePackage* SERVER_GET_TIME;
 input _Server* SERVER_UPDATE;
-input _Server* DELETE_SERVER;
 
 class Server with
     var _Server* me;
@@ -41,6 +39,7 @@ class Server with
     event _ServerEvent* e_EVENT_SEND;
     event void e_ARMAGEDDON;
     event void e_UPDATE;
+    event void e_DELETE;
 do
     var GoalManager goal_manager with
         this.server = me;
@@ -166,8 +165,8 @@ do
             emit goal_manager.e_UPDATE;
         end
     with
-        var _Server* e = await DELETE_SERVER until (e == &server);
-        //emit world.e_DELETE;
+        await e_DELETE;
+        emit world.e_DELETE;
     end
 end
 

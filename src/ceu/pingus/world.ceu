@@ -85,8 +85,6 @@ native @pure _new_CreationPackage(), _vecget(), _vecget_addr(), _addr(), _new_Ov
 native @pure _reader_read_Groundtype(), _Resource__load_surface(), _opeq(), _new_Surface(), _new_Container(), _new_Color(),
              _read_position(), _read_position2(), _log_error(), _log_warn();
 
-input void DELETE_WORLD;
-
 input IWorldObj* WORLD_DRAW_OBJECT;
 input IWorldObj* WORLD_DRAW_SMALLMAP_OBJECT;
 
@@ -146,6 +144,8 @@ do
     var GroundMap gfx_map with
         this.gmap = _PTR2REF(_new_GroundMap(pingus_level.get_size().width, pingus_level.get_size().height));
     end;
+
+    finalize with global:world = null; end
 
     //////////// FUNCTIONS /////////////
 
@@ -790,14 +790,13 @@ do
             end;
         end
     with
-        await DELETE_WORLD;
+        await e_DELETE;
 
         objs.cleanup();
         loop i in objs.size() do
             emit ((IWorldObj*)objs.get(i)):e_DELETE;
         end
-    end
-    global:world = null;
+    end    
 end
 
 #endif

@@ -12,6 +12,7 @@
 #include "../components/pingus_counter.ceu"
 #include "../components/playfield.ceu"
 #include "../components/smallmap.ceu"
+#include "../server.ceu"
 
 native/pre do
     ##include "engine/screen/screen_manager.hpp"
@@ -31,6 +32,8 @@ native/pre do
 
     ##define new_GUI_Component() new GUI::Component()
     ##define new_RectComponent(r) new GUI::RectComponent(r)
+    ##define new_Server(a, b) new Server(a, b)
+    ##define new_ButtonPanel(a, b) new ButtonPanel(a, b)
     ##define new_Playfield(a) new Playfield(a)
     ##define new_TimeDisplay(s) new TimeDisplay(s)
     ##define new_Result() new Result()
@@ -48,8 +51,8 @@ native/pre do
     ##define Input__ScrollEvent Input::ScrollEvent
 end
 
-native @pure _new_PingusCounter(), _new_GUI_Component(), _new_RectComponent(), _new_Playfield(), _new_TimeDisplay(),
-             _new_Result(), _new_Savegame(),
+native @pure _new_PingusCounter(), _new_GUI_Component(), _new_RectComponent(), _new_Server(), _new_ButtonPanel(),
+             _new_Playfield(), _new_TimeDisplay(), _new_Result(), _new_Savegame(),
              _SavegameManager__instance(), _ScreenManager__instance(),
              _std__make_shared_ResultScreen(), _toSStatus(), _Display__get_width(), _Display__get_height();
 
@@ -61,6 +64,14 @@ class GameSession with
     var _GameSession* me;
 do
     var _GameSession&? game_session = _PTR2REF((_GameSession*)me);
+
+    var Server server with
+        this.me = _new_Server(game_session.plf, true);
+        game_session.server = _PTR2REF(this.me);
+    end;
+
+    game_session.button_panel = _new_ButtonPanel(game_session.server, _Vector2i(0, (game_session.size.height - 150)/2));
+
     var PingusCounter pcounter with
         this.me = _new_GUI_Component();
         this.server = _PTR2REF(game_session.get_server());
@@ -213,6 +224,7 @@ do
         end
     with
         var _GameSession* e = await DELETE_GAME_SESSION until (e == &game_session);
+        emit server.e_DELETE;
     end
 end
 

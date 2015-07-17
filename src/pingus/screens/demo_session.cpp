@@ -91,26 +91,20 @@ DemoSession::DemoSession(const Pathname& pathname_) :
   std::reverse(events.begin(), events.end());
 
   // Create server
-  PingusLevel plf(Pathname("levels/" + demo->get_levelname()  + ".pingus", Pathname::DATA_PATH));
+  plf = PingusLevel(Pathname("levels/" + demo->get_levelname()  + ".pingus", Pathname::DATA_PATH));
 
   if (plf.get_checksum() != demo->get_checksum())
   {
     log_warn("checksum missmatch between demo (%1%) and level (%2%)",
              demo->get_checksum(), plf.get_checksum());
-  }
-
-  server   = std::unique_ptr<Server>(new Server(plf, false));
+  }  
 
   // Create GUI
-  WorldGetSizePackage package;
-  WorldGetSizePackage* pp = &package;
-  ceu_out_go(&CEUapp, CEU_IN_WORLD_GET_SIZE, &pp);
-
   DemoSession* self = this;
   ceu_out_go(&CEUapp, CEU_IN_NEW_DEMO_SESSION, &self);  
 
   gui_manager->add(pcounter);
-  gui_manager->add(new ButtonPanel(server.get(), Vector2i(0, (size.height - 100)/2)));
+  gui_manager->add(new ButtonPanel(server, Vector2i(0, (size.height - 100)/2)));
 
   gui_manager->add(playfield);
   

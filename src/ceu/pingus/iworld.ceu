@@ -69,6 +69,7 @@ interface IWorld with
     event ISmallMap* e_DRAW_SMALLMAP;
     event void e_UPDATE;
     event void e_ARMAGEDDON;
+    event void e_DELETE;
 end
 
 #endif

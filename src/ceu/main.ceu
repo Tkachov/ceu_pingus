@@ -47,7 +47,9 @@ with
         end;
     end
 with
-    every new_game_session in NEW_GAME_SESSION do
+    loop do
+        //`every` hangs the program
+        var _GameSession* new_game_session = await NEW_GAME_SESSION;        
         spawn GameSession with
             this.me = _PTR2REF(new_game_session);
         end;
@@ -56,12 +58,6 @@ with
     every new_collider in NEW_PINGU_COLLIDER do
         spawn PinguCollider with
             this.me = _PTR2REF(new_collider);
-        end;
-    end
-with
-    every new_server in NEW_SERVER do
-        spawn Server with
-            this.me = _PTR2REF(new_server);
         end;
     end
 with
