@@ -3,9 +3,10 @@
 
 native/pre do
     ##include "engine/display/sprite.hpp"
+    ##include "pingus/direction.hpp"
     ##include "pingus/state_sprite.hpp"
-    ##define D_LEFT Direction::LEFT
-    ##define D_RIGHT Direction::RIGHT
+    ##define DIR_LEFT Direction::LEFT
+    ##define DIR_RIGHT Direction::RIGHT
     ##define make_sprite(a, b, c) Sprite(a+b+c)
     ##define make_player_sprite(a, b) Sprite("pingus/player"+a+b)
     ##define concat(a, b) a "" b
@@ -20,11 +21,11 @@ native @pure _new_StateSprite(),
              _delete_StateSprite(),
              _Sprite();
 
-#define load_directions(sprite, suffix) sprite.load(_D_LEFT, _make_player_sprite(pingu.get_owner_str(), _concat(suffix, "left"))); \
-                                                sprite.load(_D_RIGHT, _make_player_sprite(pingu.get_owner_str(), _concat(suffix, "right")));
+#define load_directions(sprite, suffix) sprite.load(_DIR_LEFT, _make_player_sprite(pingu.get_owner_str(), _concat(suffix, "left"))); \
+                                                sprite.load(_DIR_RIGHT, _make_player_sprite(pingu.get_owner_str(), _concat(suffix, "right")));
 
-#define load_file_directions(sprite, suffix) sprite.load_file(_D_LEFT, _concat2(pingu.get_owner_str(), _concat(suffix, "left"))); \
-                                                     sprite.load_file(_D_RIGHT, _concat2(pingu.get_owner_str(), _concat(suffix, "right")));
+#define load_file_directions(sprite, suffix) sprite.load_file(_DIR_LEFT, _concat2(pingu.get_owner_str(), _concat(suffix, "left"))); \
+                                                     sprite.load_file(_DIR_RIGHT, _concat2(pingu.get_owner_str(), _concat(suffix, "right")));
 
 class StateSprite with
     //function (int state, _Sprite&? sprite) => void load;

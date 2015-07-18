@@ -12,8 +12,7 @@
 class Guillotine with
     interface IWorldObj;
 do    
-    var _Direction&? direction = _new_Direction();
-    finalize with _delete_obj(direction); end;
+    var Direction direction;
 
     call/rec global:world:add_object(&this);
 
@@ -39,7 +38,7 @@ do
                     loop pingu in global:world:get_pingus():all_pingus do
                         if pingu:is_inside((int)(pos.x + 38), (int)(pos.y + 90), (int)(pos.x + 42), (int)(pos.y + 98)) then
                             stop = true;
-                            direction = _PTR2REF(pingu:direction);
+                            direction.value = pingu:direction().value;
                             emit pingu:e_CHANGE_ACTION => _A_DEAD;
                             break;
                         end

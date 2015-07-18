@@ -37,8 +37,7 @@ input _Server* SERVER_UPDATE;
 class Server with
     interface IServer;    
     function @rec (void) => bool is_finished;    
-    event _ServerEvent* e_EVENT_SEND;
-    event void e_ARMAGEDDON;
+    event _ServerEvent* e_EVENT_SEND;    
     event void e_FINISH_EVENT;
     event void e_UPDATE;
     event void e_DELETE;

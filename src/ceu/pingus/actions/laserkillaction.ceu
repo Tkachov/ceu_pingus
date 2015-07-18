@@ -31,20 +31,20 @@ do
     end
 
     var StateSprite sprite;
-    sprite.load_file(_D_LEFT,  "other/laser_kill/left");
-    sprite.load_file(_D_RIGHT, "other/laser_kill/right");
+    sprite.load_file(_DIR_LEFT,  "other/laser_kill/left");
+    sprite.load_file(_DIR_RIGHT, "other/laser_kill/right");
 
     par do
         every global:e_PINGU_UPDATE_ALL do
-            if sprite.get(pingu.direction):is_finished() then
+            if sprite.get(pingu.direction().value):is_finished() then
                 escape _A_DEAD;
             else
-                sprite.get(pingu.direction):update();
+                sprite.get(pingu.direction().value):update();
             end
         end
     with
         every gc in pingu.e_DRAW_CALLED do
-            _gc_color_draw2(gc, sprite.get(pingu.direction), _toVector3f(pingu.get_pos()) + _Vector3f(0, 2));
+            _gc_color_draw2(gc, sprite.get(pingu.direction().value), _toVector3f(pingu.get_pos()) + _Vector3f(0, 2));
         end
     end
 end

@@ -35,20 +35,20 @@ do
 
     par do
         every gc in pingu.e_DRAW_CALLED do
-            _gc_color_draw2(gc, sprite.get(pingu.direction), _toVector3f(pingu.get_pos()));
+            _gc_color_draw2(gc, sprite.get(pingu.direction().value), _toVector3f(pingu.get_pos()));
         end
     with
         await global:e_PINGU_UPDATE_ALL;
 
         // if climber, do a wall-jump, else just jump forward
         if pingu.get_previous_action() == _A_CLIMBER then
-            pingu.direction.change();
+            emit pingu.direction().change;
         end
 
         var float y_velocity = -4.58;
         var float x_velocity = y_velocity; //left
 
-        if pingu.direction.is_right() then
+        if pingu.direction().is_right() then
             x_velocity = x_velocity * -1;
         end
 

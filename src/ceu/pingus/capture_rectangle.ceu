@@ -74,7 +74,7 @@ do
                 end
 
                 // Paint the direction arrow
-                if pingu:direction.is_left() then
+                if pingu:direction().is_left() then
                     _gc_color_draw2(gc, arrow_left, _toVector3f(call/rec pingu:get_center_pos()) + _Vector3f(0, 2, 1000));
                 else
                     _gc_color_draw2(gc, arrow_right, _toVector3f(call/rec pingu:get_center_pos()) + _Vector3f(0, 2, 1000));

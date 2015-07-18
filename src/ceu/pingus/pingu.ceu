@@ -60,7 +60,11 @@ class Pingu with
     var int owner_id;
     var uint id;
 do
-    finalize with _delete_obj(&direction); end;
+    var Direction dir;
+
+    function (void) => Direction& direction do
+        return dir;
+    end
 
     velocity.x = 0;
     velocity.y = 0;
@@ -125,7 +129,7 @@ do
 
     function @rec (int x, int y) => int rel_getpixel do
         return global:world:get_colmap():getpixel(
-            get_x() + (float)(x * direction),
+            get_x() + (float)(x * direction().value),
             get_y() - (float)y
         );
     end

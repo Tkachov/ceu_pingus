@@ -44,7 +44,7 @@ do
 
     par do
         every gc in pingu.e_DRAW_CALLED do
-            _gc_color_draw2(gc, sprite.get(pingu.direction), _toVector3f(pingu.get_pos()));
+            _gc_color_draw2(gc, sprite.get(pingu.direction().value), _toVector3f(pingu.get_pos()));
         end
     with
         loop do
@@ -65,9 +65,9 @@ do
                    catched:get_y() > pingu.get_y()-32 and
                    catched:get_y() < pingu.get_y()+5 then
                     if catched:get_x() > pingu.get_x() then
-                        catched:direction.right();
+                        emit catched:direction().right;
                     else
-                        catched:direction.left();
+                        emit catched:direction().left;
                     end
                 end
             end

@@ -1,0 +1,61 @@
+#ifndef DIRECTION_CEU
+#define DIRECTION_CEU
+
+#define D_LEFT -1
+#define D_NONE 0
+#define D_RIGHT 1
+
+class Direction with
+    var int value = D_NONE;
+
+    event void change;
+    event void left;
+    event void right;
+
+    event void changed;
+    event void turned_left;
+    event void turned_right;
+
+    function (void) => bool is_left;
+    function (void) => bool is_right;
+do
+    function (void) => bool is_left do
+        return (value == D_LEFT);
+    end
+
+    function (void) => bool is_right do
+        return (value == D_RIGHT);
+    end
+
+    par do
+        every change do
+            if value == D_LEFT then
+                value = D_RIGHT;
+                emit turned_right;
+                emit changed;
+            else
+                value = D_LEFT;
+                emit turned_left;
+                emit changed;
+            end
+        end
+    with
+        every left do
+            if value != D_LEFT then
+                value = D_LEFT;
+                emit turned_left;
+                emit changed;
+            end
+        end
+    with
+        every right do
+            if value != D_RIGHT then
+                value = D_RIGHT;
+                emit turned_right;
+                emit changed;
+            end
+        end
+    end
+end
+
+#endif

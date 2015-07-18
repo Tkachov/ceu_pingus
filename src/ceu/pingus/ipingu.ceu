@@ -16,19 +16,21 @@ native/pre do
     ##define GT_REMOVE Groundtype::GP_REMOVE
 end
 
+#include "direction.ceu"
 #include "ipingu_action.ceu"
 #include "ipos_giver.ceu"
 #include "pingu_events.ceu"
 #include "../string.ceu"
 
 interface IPingu with
-    interface IPosGiver;
-    var _Direction& direction;
+    interface IPosGiver;    
     var IPinguAction* ceu_action;
 
     event _SceneContext* e_DRAW_CALLED;
 
     event int e_CHANGE_ACTION;
+
+    function (void) => Direction& direction;
 
     function @rec (int x, int y) => int rel_getpixel;
     function @rec (int x, int y) => bool head_collision_on_walk;

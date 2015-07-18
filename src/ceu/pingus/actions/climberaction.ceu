@@ -22,7 +22,7 @@ do
 
     function @rec (void) => Vector3f get_center_pos do
         var Vector3f result = pingu.get_pos();
-        if pingu.direction.is_left() then
+        if pingu.direction().is_left() then
             result.x = result.x + 16;
         else
             result.x = result.x - 16;
@@ -39,17 +39,17 @@ do
 
     par do
         every gc in pingu.e_DRAW_CALLED do
-            _gc_color_draw2(gc, sprite.get(pingu.direction), _toVector3f(pingu.get_pos()));
+            _gc_color_draw2(gc, sprite.get(pingu.direction().value), _toVector3f(pingu.get_pos()));
         end
     with
         loop do
             await global:e_PINGU_UPDATE_ALL;
 
-            sprite.get(pingu.direction):update();
+            sprite.get(pingu.direction().value):update();
 
             //there's something above
             if (call/rec pingu.rel_getpixel(0, 1)) != _GT_NOTHING and (call/rec pingu.rel_getpixel(0, 1)) != _GT_BRIDGE then
-                pingu.direction.change();
+                emit pingu.direction().change;
                 escape _A_WALKER;
             end
 
@@ -60,15 +60,15 @@ do
             end
 
             // If Pingu able to get to new position without head collision
-            if not (call/rec pingu.head_collision_on_walk(pingu.direction, 1)) then
+            if not (call/rec pingu.head_collision_on_walk(pingu.direction().value, 1)) then
                 // Get ready to walk
                 pingu.set_posf(
-                    pingu.get_x() + (float)pingu.direction,
+                    pingu.get_x() + (float)pingu.direction().value,
                     pingu.get_y() - 1.0
                 );
             else
                 // Get ready to fall
-                pingu.direction.change();
+                emit pingu.direction().change;
             end
 
             // Finish climbing.

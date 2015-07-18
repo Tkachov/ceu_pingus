@@ -58,9 +58,9 @@ do
     par do
         every gc in pingu.e_DRAW_CALLED do
             if call/rec is_tumbling() then
-                _gc_color_draw2(gc, tumbler.get(pingu.direction), _toVector3f(pingu.get_pos()));
+                _gc_color_draw2(gc, tumbler.get(pingu.direction().value), _toVector3f(pingu.get_pos()));
             else
-                _gc_color_draw2(gc, sprite.get(pingu.direction), _toVector3f(pingu.get_pos()));
+                _gc_color_draw2(gc, sprite.get(pingu.direction().value), _toVector3f(pingu.get_pos()));
             end
         end
     with
@@ -68,9 +68,9 @@ do
             await global:e_PINGU_UPDATE_ALL;
         
             if call/rec is_tumbling() then
-                tumbler.get(pingu.direction):update();
+                tumbler.get(pingu.direction().value):update();
             else
-                sprite.get(pingu.direction):update();
+                sprite.get(pingu.direction().value):update();
             end
 
             /* original Pingus FIXME:
@@ -110,8 +110,11 @@ do
                     // Make the Pingu face the correct direction.  NB: Pingu may
                     // previously have been facing in the opposite direction of its
                     // velocity because of an explosion.
-                    if velocity.x > 0 then pingu.direction.right();
-                    else pingu.direction.left(); end
+                    if velocity.x > 0 then 
+                        emit pingu.direction().right;
+                    else
+                        emit pingu.direction().left;
+                    end
 
                     pingu.set_velocity(velocity);
                 else/if velocity.y > 0.0 // If the Pingu collided into something while moving down...

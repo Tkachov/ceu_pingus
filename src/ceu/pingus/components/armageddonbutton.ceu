@@ -7,7 +7,7 @@
 #include "../../engine/gui/igui_component.ceu"
 #include "../../proxies/eventproxy.ceu"
 #include "../../proxies/primarybuttonproxy.ceu"
-#include "../server.ceu"
+#include "../iserver.ceu"
 
 native/pre do
     ##define gc_draw(gc, s, rect) gc->draw(*s, Vector2i(rect.left, rect.top))
@@ -17,7 +17,7 @@ native @pure _gc_draw();
 
 class ArmageddonButton with
     interface IGUI_Component;
-    var Server* server;
+    var IServer& server;
 do
     var Sprite sprite;
     var Sprite background;
@@ -35,7 +35,7 @@ do
 
     par do
         every mouse_double_click do
-            emit server:e_ARMAGEDDON;
+            emit server.e_ARMAGEDDON;
         end
     with
         every gc in draw do

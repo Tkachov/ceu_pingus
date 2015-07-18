@@ -1,0 +1,44 @@
+#ifndef RIGHT_LEFT_SPRITE_CEU
+#define RIGHT_LEFT_SPRITE_CEU
+
+#include "../c.ceu"
+#include "../sdl.ceu"
+#include "../string.ceu"
+#include "../engine/display/sprite3.ceu"
+#include "ipingu.ceu"
+
+class RightLeftSprite with
+    var IPingu& pingu;
+    var _std_string* right_name = null;
+    var _std_string* left_name = null;
+do
+    finalize with 
+        _delete_obj(right_name);
+        _delete_obj(left_name);
+    end
+
+    if right_name == null or left_name == null then
+        _log_error("name's not given");
+    end
+
+    loop do
+        if pingu.direction().value != _D_RIGHT and pingu.direction().value != _D_LEFT then
+            _log_error("unknown direction");
+            await pingu.direction().changed;
+        end
+
+        if pingu.direction().value == _D_RIGHT then
+            var Sprite3 right;
+            right.reload_by_name(right_name:c_str());
+            await pingu.direction().changed;
+        end
+        
+        if pingu.direction().value == _D_LEFT then
+            var Sprite3 left;
+            left.reload_by_name(left_name:c_str());
+            await pingu.direction().changed;
+        end
+    end
+end
+
+#endif

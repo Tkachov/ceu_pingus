@@ -96,7 +96,7 @@ do
             _Sound_PingusSound_play_sound("ting");
         end
 
-        if pingu.direction.is_right() then
+        if pingu.direction().is_right() then
             global:world:put(
                        &brick_r,
                        (int)(pingu.get_x() + 10.0 - (float)brick_r.get_width()),
@@ -113,7 +113,7 @@ do
 
     function @rec (void) => void walk_one_step_up do
         pingu.set_posf(
-            pingu.get_x() + 4.0*(float)(pingu.direction),
+            pingu.get_x() + 4.0*(float)(pingu.direction().value),
             pingu.get_y() - 2
         );
     end
@@ -133,12 +133,12 @@ do
             y_offset = 2;
         end
 
-        x_offset = x_offset * (float)pingu.direction;
+        x_offset = x_offset * (float)pingu.direction().value;
 
         //building step
         par/or do
             every global:e_PINGU_UPDATE_ALL do
-                build_sprite.get(pingu.direction):update();
+                build_sprite.get(pingu.direction().value):update();
             end
         with
             every gc in pingu.e_DRAW_CALLED do
@@ -148,34 +148,34 @@ do
 
                 _gc_color_draw2(
                     gc,
-                    build_sprite.get(pingu.direction),
+                    build_sprite.get(pingu.direction().value),
                     _toVector3f(p)
                 );
             end
         with
-            await global:e_PINGU_UPDATE_ALL until (build_sprite.get(pingu.direction):get_current_frame () >= 7);
+            await global:e_PINGU_UPDATE_ALL until (build_sprite.get(pingu.direction().value):get_current_frame () >= 7);
 
             if bricks > 0 then
                 if call/rec brick_placement_allowed() then
                     call/rec place_a_brick();
                 else
-                    pingu.direction.change();
+                    emit pingu.direction().change;
                     escape _A_WALKER;
                 end
             else // Out of bricks
                 escape _A_WAITER;
             end
 
-            PRE_CONDITION_AWAIT(global:e_PINGU_UPDATE_ALL, build_sprite.get(pingu.direction):is_finished());
+            PRE_CONDITION_AWAIT(global:e_PINGU_UPDATE_ALL, build_sprite.get(pingu.direction().value):is_finished());
 
-            build_sprite.get(pingu.direction):restart();
+            build_sprite.get(pingu.direction().value):restart();
         end
 
         //walking step
         par/or do
             every global:e_PINGU_UPDATE_ALL do
                 //original FIXME: Dangerous! might not be fixed timing
-                if walk_sprite.get(pingu.direction):is_finished() then
+                if walk_sprite.get(pingu.direction().value):is_finished() then
                     break;
                 end
 
@@ -189,17 +189,17 @@ do
 
                 _gc_color_draw2(
                     gc,
-                    walk_sprite.get(pingu.direction),
+                    walk_sprite.get(pingu.direction().value),
                     _toVector3f(p)
                 );
             end
         end
 
         if call/rec way_is_free() then
-            walk_sprite.get(pingu.direction):restart();
+            walk_sprite.get(pingu.direction().value):restart();
             call/rec walk_one_step_up();
         else // We reached a wall...
-            pingu.direction.change();
+            emit pingu.direction().change;
             escape _A_WALKER;
         end
     end

@@ -7,6 +7,8 @@ end
 
 interface IServer with
     var _Server* me;
+
+    event void e_ARMAGEDDON;
     
     function @rec (void) => int get_time;
     function (void) => _PingusLevel get_plf;
