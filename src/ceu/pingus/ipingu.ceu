@@ -23,7 +23,7 @@ end
 #include "../string.ceu"
 
 interface IPingu with
-    interface IPosGiver;    
+    interface IPosGiver;
     var IPinguAction* ceu_action;
 
     event _SceneContext* e_DRAW_CALLED;

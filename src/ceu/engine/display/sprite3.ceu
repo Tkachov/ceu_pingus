@@ -203,7 +203,7 @@ do
         end
     with
         every gc in global:draw do
-            draw(gc, pos_giver.get_pos());
+            draw(gc, call/rec pos_giver.get_pos());
         end
     with
         every finish do

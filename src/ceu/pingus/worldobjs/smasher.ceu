@@ -27,7 +27,7 @@ do
     function (_FileReader* reader) => void construct do end;
     function (void) => float get_z_pos do return pos.z; end
     function (Vector3f p) => void set_pos do pos = p; end
-    function (void) => Vector3f get_pos do return pos; end
+    function @rec (void) => Vector3f get_pos do return pos; end
 
     var bool smashing = false;
     var bool downwards = false;

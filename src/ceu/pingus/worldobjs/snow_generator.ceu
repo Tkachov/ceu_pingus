@@ -23,7 +23,7 @@ do
 
     function (void) => float get_z_pos do return 1000; end
     function (Vector3f p) => void set_pos do end
-    function (void) => Vector3f get_pos do return pos; end
+    function @rec (void) => Vector3f get_pos do return pos; end
 
     par/or do
         every e_STARTUP do

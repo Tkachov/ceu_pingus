@@ -5,7 +5,7 @@
 
 //the most stupid name ever
 interface IPosGiver with
-    function (void) => Vector3f get_pos;
+    function @rec (void) => Vector3f get_pos;
 end
 
 #endif

@@ -159,8 +159,8 @@ do
 
         loop entrance in entrances do
             if entrance:owner_id == player_id then
-                px = px + entrance:get_pos().x;
-                py = py + entrance:get_pos().y;
+                px = px + (call/rec entrance:get_pos()).x;
+                py = py + (call/rec entrance:get_pos()).y;
                 num_entrances = num_entrances + 1;
             end
         end

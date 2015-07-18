@@ -23,7 +23,7 @@ do
     //original FIXME: Make z_pos handling editable via xml
     function (void) => float get_z_pos do return -10; end
     function (Vector3f p) => void set_pos do end
-    function (void) => Vector3f get_pos do return pos; end
+    function @rec (void) => Vector3f get_pos do return pos; end
 
     pool StarfieldBackgroundStars[] stars;
 

@@ -17,7 +17,7 @@ do
 
     function (void) => float get_z_pos do return 50; end
     function (Vector3f p) => void set_pos do end
-    function (void) => Vector3f get_pos do return pos; end
+    function @rec (void) => Vector3f get_pos do return pos; end
 
     var int pingus_emitted = 0;
     var int pingus_exited = 0;

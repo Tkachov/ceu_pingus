@@ -59,7 +59,7 @@ do
         pos = p;
     end
 
-    function (void) => Vector3f get_pos do
+    function @rec (void) => Vector3f get_pos do
         return pos;
     end
 

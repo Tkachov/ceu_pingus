@@ -3,14 +3,16 @@
 
 #include "../../c.ceu"
 #include "../../sdl.ceu"
+#include "../../string.ceu"
 #include "../../engine/display/scene_context.ceu"
 #include "../iaction.ceu"
 #include "../ipingu.ceu"
-#include "../state_sprite.ceu"
+#include "../right_left_sprite.ceu"
 
 class LaserKillAction with
     interface IAction;
     interface IPinguAction;
+    interface IPosGiver;
 do
     pingu.ceu_action = &this;
 
@@ -21,7 +23,7 @@ do
     catchable = false;
 
     function @rec (void) => Vector3f get_center_pos do
-        var Vector3f result = pingu.get_pos();
+        var Vector3f result = (call/rec pingu.get_pos());
         result.y = result.y - 16;
         return result;
     end
@@ -30,23 +32,21 @@ do
         return _get_screenname(_A_LASERKILL);
     end
 
-    var StateSprite sprite;
-    sprite.load_file(_DIR_LEFT,  "other/laser_kill/left");
-    sprite.load_file(_DIR_RIGHT, "other/laser_kill/right");
-
-    par do
-        every global:e_PINGU_UPDATE_ALL do
-            if sprite.get(pingu.direction().value):is_finished() then
-                escape _A_DEAD;
-            else
-                sprite.get(pingu.direction().value):update();
-            end
-        end
-    with
-        every gc in pingu.e_DRAW_CALLED do
-            _gc_color_draw2(gc, sprite.get(pingu.direction().value), _toVector3f(pingu.get_pos()) + _Vector3f(0, 2));
-        end
+    function @rec (void) => Vector3f get_pos do
+        var Vector3f result = call/rec (call/rec pingu.get_pos());
+        result.y = result.y + 2;
+        return result;
     end
+
+    var RightLeftSprite sprite with
+        this.pingu = pingu;
+        this.pos_giver = outer;
+        this.left_name = _new_String("other/laser_kill/left");
+        this.right_name = _new_String("other/laser_kill/right");
+    end;
+
+    await sprite.finished;
+    escape _A_DEAD;
 end
 
 #endif

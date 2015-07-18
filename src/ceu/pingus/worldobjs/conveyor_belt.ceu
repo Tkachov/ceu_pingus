@@ -33,7 +33,7 @@ do
     function (_FileReader* reader) => void construct do end
     function (void) => float get_z_pos do return pos.z; end
     function (Vector3f p) => void set_pos do pos = p; end
-    function (void) => Vector3f get_pos do return pos; end
+    function @rec (void) => Vector3f get_pos do return pos; end
 
     par/or do
         every gc in global:draw do
@@ -72,10 +72,8 @@ do
             loop pingu in global:world:get_pingus():all_pingus do
                 if pingu:get_x() > pos.x and pingu:get_x() < pos.x + 15*(float)(width+2) and
                    pingu:get_y() > pos.y-2 and pingu:get_y() < pos.y+10 then
-                    var Vector3f ppos;
-                    ppos.x = pingu:get_pos().x - speed*0.025;
-                    ppos.y = pingu:get_pos().y;
-                    ppos.z = pingu:get_pos().z;
+                    var Vector3f ppos = call/rec pingu:get_pos();
+                    ppos.x = ppos.x - speed*0.025;
                     pingu:set_pos(_toVector3f(ppos));
                 end
             end

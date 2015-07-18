@@ -101,7 +101,7 @@ do
         return pos_y;
     end
 
-    function (void) => Vector3f get_pos do
+    function @rec (void) => Vector3f get_pos do
         var Vector3f p;
         p.x = pos_x;
         p.y = pos_y;

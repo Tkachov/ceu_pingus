@@ -5,7 +5,7 @@ native/pre do
     ##include <string>
     ##define const_char_string const char*
 
-    ##define new_String() new std::string()
+    ##define new_String new std::string
     ##define std__string std::string
 
     ##define string_set(s, v) *s = v

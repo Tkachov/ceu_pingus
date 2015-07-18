@@ -9,10 +9,13 @@
 
 class RightLeftSprite with
     var IPingu& pingu;
-    var _std_string* right_name = null;
-    var _std_string* left_name = null;
+    var IPosGiver& pos_giver;
+    var _std__string* right_name = null;
+    var _std__string* left_name = null;
+
+    event void finished;
 do
-    finalize with 
+    finalize with
         _delete_obj(right_name);
         _delete_obj(left_name);
     end
@@ -22,21 +25,39 @@ do
     end
 
     loop do
-        if pingu.direction().value != _D_RIGHT and pingu.direction().value != _D_LEFT then
+        if pingu.direction().value != D_RIGHT and pingu.direction().value != D_LEFT then
             _log_error("unknown direction");
             await pingu.direction().changed;
         end
 
-        if pingu.direction().value == _D_RIGHT then
-            var Sprite3 right;
+        if pingu.direction().value == D_RIGHT then
+            var Sprite3 right with
+                this.pos_giver = pos_giver;
+            end;
             right.reload_by_name(right_name:c_str());
-            await pingu.direction().changed;
+
+            par/or do
+                await pingu.direction().changed;
+            with
+                every right.finished do
+                    emit finished;
+                end
+            end
         end
-        
-        if pingu.direction().value == _D_LEFT then
-            var Sprite3 left;
+
+        if pingu.direction().value == D_LEFT then
+            var Sprite3 left with
+                this.pos_giver = pos_giver;
+            end;
             left.reload_by_name(left_name:c_str());
-            await pingu.direction().changed;
+
+            par/or do
+                await pingu.direction().changed;
+            with
+                every left.finished do
+                    emit finished;
+                end
+            end
         end
     end
 end
