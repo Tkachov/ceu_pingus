@@ -8,7 +8,7 @@
 #include "../collision_mask.ceu"
 #include "../iaction.ceu"
 #include "../ipingu.ceu"
-#include "../state_sprite.ceu"
+#include "../right_left_sprite.ceu"
 #include "../worldobj.ceu"
 
 class MinerAction with
@@ -34,9 +34,6 @@ do
     end
 
     var int delay_count = 0;
-
-    var StateSprite sprite;
-    load_file_directions(sprite, "/miner/");
 
     var _CollisionMask&? miner_radius = _new_CollisionMask("pingus/common/miner_radius_gfx", "pingus/common/miner_radius");
     finalize with _delete_obj(miner_radius); end;
@@ -67,47 +64,44 @@ do
         end;
     end
 
-    par do
-        every gc in pingu.e_DRAW_CALLED do
-            _gc_color_draw2(gc, sprite.get(pingu.direction().value), _toVector3f((call/rec pingu.get_pos())));
+    var RightLeftSprite sprite with
+        this.pingu = pingu;
+        this.pos_giver = pingu;
+        this.left_name = _new_String(_concat2(pingu.get_owner_str(), "/miner/left"));
+        this.right_name = _new_String(_concat2(pingu.get_owner_str(), "/miner/right"));
+    end;
+    
+    loop do
+        await global:e_PINGU_UPDATE_ALL;
+
+        if (call/rec pingu.rel_getpixel(0, -1)) == _GT_NOTHING then
+            // stop mining when in the air
+            call/rec mine(true);
+            escape _A_WALKER;
+        else/if (call/rec pingu.rel_getpixel(0, -1)) == _GT_SOLID or (call/rec pingu.rel_getpixel(0, _pingu_height)) == _GT_SOLID then
+            // stop mining when hitting solid ground
+            if (call/rec pingu.rel_getpixel(0, -1)) == _GT_SOLID then
+                _Sound_PingusSound_play_sound("chink");
+            end
+
+            call/rec mine(true);
+
+            // stop pingu from walking further into the solid.
+            emit pingu.direction().change;
+
+            escape _A_WALKER;
+        else
+            // mine and walk forward
+            call/rec mine(false);
+            pingu.set_posf(
+                (int)pingu.get_x() + pingu.direction().value,
+                (int)pingu.get_y() + 1
+            );
         end
-    with
-        every global:e_PINGU_UPDATE_ALL do
-            sprite.get(pingu.direction().value):update();
-        end
-    with
-        loop do
+
+        //await 3 more frames
+        loop i in 3 do
             await global:e_PINGU_UPDATE_ALL;
-
-            if (call/rec pingu.rel_getpixel(0, -1)) == _GT_NOTHING then
-                // stop mining when in the air
-                call/rec mine(true);
-                escape _A_WALKER;
-            else/if (call/rec pingu.rel_getpixel(0, -1)) == _GT_SOLID or (call/rec pingu.rel_getpixel(0, _pingu_height)) == _GT_SOLID then
-                // stop mining when hitting solid ground
-                if (call/rec pingu.rel_getpixel(0, -1)) == _GT_SOLID then
-                    _Sound_PingusSound_play_sound("chink");
-                end
-
-                call/rec mine(true);
-
-                // stop pingu from walking further into the solid.
-                emit pingu.direction().change;
-
-                escape _A_WALKER;
-            else
-                // mine and walk forward
-                call/rec mine(false);
-                pingu.set_posf(
-                    (int)pingu.get_x() + pingu.direction().value,
-                    (int)pingu.get_y() + 1
-                );
-            end
-
-            //await 3 more frames
-            loop i in 3 do
-                await global:e_PINGU_UPDATE_ALL;
-            end
         end
     end
 end
