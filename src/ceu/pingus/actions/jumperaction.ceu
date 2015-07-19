@@ -6,7 +6,7 @@
 #include "../../engine/display/scene_context.ceu"
 #include "../iaction.ceu"
 #include "../ipingu.ceu"
-#include "../state_sprite.ceu"
+#include "../right_left_sprite.ceu"
 
 class JumperAction with
     interface IAction;
@@ -30,38 +30,36 @@ do
         return _get_screenname(_A_JUMPER);
     end
 
-    var StateSprite sprite;
-    load_file_directions(sprite, "/jumper/");
+    var RightLeftSprite sprite with
+        this.pingu = pingu;
+        this.pos_giver = pingu;
+        this.left_name = _new_String(_concat2(pingu.get_owner_str(), "/jumper/left"));
+        this.right_name = _new_String(_concat2(pingu.get_owner_str(), "/jumper/right"));
+    end;
 
-    par do
-        every gc in pingu.e_DRAW_CALLED do
-            _gc_color_draw2(gc, sprite.get(pingu.direction().value), _toVector3f((call/rec pingu.get_pos())));
-        end
-    with
-        await global:e_PINGU_UPDATE_ALL;
+    await global:e_PINGU_UPDATE_ALL;
 
-        // if climber, do a wall-jump, else just jump forward
-        if pingu.get_previous_action() == _A_CLIMBER then
-            emit pingu.direction().change;
-        end
-
-        var float y_velocity = -4.58;
-        var float x_velocity = y_velocity; //left
-
-        if pingu.direction().is_right() then
-            x_velocity = x_velocity * -1;
-        end
-
-        var Vector3f newvel = pingu.get_velocity();
-        newvel.x = newvel.x + x_velocity;
-        newvel.y = newvel.y + y_velocity;
-        pingu.set_velocity(newvel);
-
-        // Move the pingu in the air, so that it can start 'falling'
-        pingu.set_y(pingu.get_y() - 1);
-
-        escape _A_FALLER;
+    // if climber, do a wall-jump, else just jump forward
+    if pingu.get_previous_action() == _A_CLIMBER then
+        emit pingu.direction().change;
     end
+
+    var float y_velocity = -4.58;
+    var float x_velocity = y_velocity; //left
+
+    if pingu.direction().is_right() then
+        x_velocity = x_velocity * -1;
+    end
+
+    var Vector3f newvel = pingu.get_velocity();
+    newvel.x = newvel.x + x_velocity;
+    newvel.y = newvel.y + y_velocity;
+    pingu.set_velocity(newvel);
+
+    // Move the pingu in the air, so that it can start 'falling'
+    pingu.set_y(pingu.get_y() - 1);
+
+    escape _A_FALLER;
 end
 
 #endif
