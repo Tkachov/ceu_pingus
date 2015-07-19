@@ -3,35 +3,70 @@
 
 #include "../../c.ceu"
 #include "../../sdl.ceu"
+#include "../../math/vector3f.ceu"
 #include "../global_interface.ceu"
-#include "../ipingu_holder.ceu"
 #include "../iworld.ceu"
 
-native/pre do
-    ##include "pingus/colliders/pingu_collider.hpp"
-    ##define PCollider Colliders::PinguCollider
-end
-
-input _PCollider* NEW_PINGU_COLLIDER;
-input _ColliderGetPixelPackage* COLLIDER_GET_PIXEL;
-input _PCollider* DELETE_PINGU_COLLIDER;
-
 class PinguCollider with
-    var _PCollider* me;
+    var int height;
+    function @rec (Vector3f current_pos, Vector3f step_vector) => bool work;
+    function @rec (Vector3f pos) => int getpixel;
 do
-    var _PCollider&? collider = _PTR2REF(me);
+    function @rec (Vector3f current_pos, Vector3f step_vector) => bool work do
+        var Vector3f new_pos = current_pos;
+        new_pos.x = new_pos.x + step_vector.x;
+        new_pos.y = new_pos.y + step_vector.y;
+        new_pos.z = new_pos.z + step_vector.z;
+        var int pixel;
+        var bool falling = false;
 
-    par/or do
-        every package in COLLIDER_GET_PIXEL do
-            if package:collider != &collider then
-                continue;
-            end
-
-            package:result = _PTR2REF(global:world:get_colmap():getpixel(package:pos.x, package:pos.y) finalize with end);
+        if step_vector.y > 0 then
+            falling = true;
         end
-    with
-        var _PCollider* e = await DELETE_PINGU_COLLIDER until (e == &collider);
+
+        // If the Pingu is going to move sideways to the next pixel...
+        if (int)(new_pos.x) != (int)(current_pos.x) then        
+            var float top_of_pingu = new_pos.y - (float)(height);
+            
+            loop do
+                if new_pos.y < top_of_pingu then
+                    break;
+                end
+
+                pixel = call/rec getpixel(new_pos);
+
+                // If there is something in the way, then Pingu has collided with
+                // something.  However, if not falling and colliding with a
+                // Bridge, allow Pingu to go through it.
+                if pixel != _GT_NOTHING and not (pixel == _GT_BRIDGE and not falling) then
+                    return true;
+                end
+
+                new_pos.y = new_pos.y - 1;
+            end      
+        // If the Pingu is not falling...
+        else/if not falling then
+            var Vector3f npp = new_pos;
+            npp.y = npp.y - (float)(height);
+            pixel = call/rec getpixel(npp);
+
+            // If the top of the Pingu has hit something except a bridge...
+            if pixel != _GT_NOTHING and pixel != _GT_BRIDGE then            
+                return true;
+            end
+        // If the Pingu's "feet" has hit something...
+        else/if (call/rec getpixel(new_pos)) != _GT_NOTHING then        
+            return true;
+        end
+
+        return false;
     end
+
+    function @rec (Vector3f pos) => int getpixel do
+        return global:world:get_colmap():getpixel(pos.x, pos.y);
+    end
+
+    await FOREVER;
 end
 
 #endif

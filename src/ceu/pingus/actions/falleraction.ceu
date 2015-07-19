@@ -11,13 +11,9 @@
 #include "../right_left_sprite.ceu"
 #include "../movers/linear_mover.ceu"
 
-native/pre do
-    ##include "pingus/colliders/pingu_collider.hpp"
+native/pre do    
     ##include "pingus/pingu_enums.hpp"
-    ##define Colliders__PinguCollider Colliders::PinguCollider
 end
-
-native @pure _Colliders__PinguCollider();
 
 class FallerAction with
     interface IAction;
@@ -40,9 +36,6 @@ do
     function (void) => _const_char_string get_name do
         return _get_screenname(_A_FALLER);
     end
-
-    var _Movers_LinearMover&? mover = _new_LinearMover();
-    finalize with _delete_obj(mover); end;
 
     function @rec (void) => bool is_tumbling do
         // If we are going fast enough to get smashed, start tumbling
@@ -104,8 +97,13 @@ do
             pingu.set_velocity(vel);
 
             // Move the Pingu as far is it can go
-            mover.reset(_toVector3f((call/rec pingu.get_pos())));
-            mover.update(_toVector3f(pingu.get_velocity()), _Colliders__PinguCollider(_pingu_height));
+            var LinearMover mover with
+                this.pos = call/rec pingu.get_pos();
+            end;
+            var PinguCollider collider with
+                this.height = _pingu_height;
+            end;
+            call/rec mover.update(pingu.get_velocity(), &collider);
             pingu.set_pos(_toVector3f(mover.get_pos()));
 
             var bool collided = mover.collided();

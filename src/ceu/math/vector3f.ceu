@@ -1,6 +1,8 @@
 #ifndef VECTOR3F_CEU
 #define VECTOR3F_CEU
 
+#include "math.ceu"
+
 native/pre do
     ##include "math/vector3f.hpp"
     ##define toVector3f(v) Vector3f(v.x, v.y, v.z)
@@ -13,6 +15,17 @@ data Vector3f with
     var float x;
     var float y;
     var float z;
+end;
+
+#define Vector3f_normalize(p) do \
+    var float f = _Math__sqrt(p.x*p.x + p.y*p.y + p.z*p.z); \
+    if f != 0 then \
+        p.x = p.x / f; \
+        p.y = p.y / f; \
+        p.z = p.z / f; \
+    end \
 end
+
+#define Vector3f_length(p) _Math__sqrt(p.x*p.x + p.y*p.y + p.z*p.z)
 
 #endif

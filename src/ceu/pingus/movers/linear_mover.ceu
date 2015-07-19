@@ -1,12 +1,69 @@
 #ifndef LINEAR_MOVER_CEU
 #define LINEAR_MOVER_CEU
 
-native/pre do
-    ##include "pingus/movers/linear_mover.hpp"
-    ##define Movers_LinearMover Movers::LinearMover
-    ##define new_LinearMover() new Movers::LinearMover(0, Vector3f(0, 0, 0))
-end
+#include "../../math/vector3f.ceu"
+#include "../colliders/pingu_collider.ceu"
 
-native @pure _new_LinearMover();
+class LinearMover with
+    var Vector3f pos;
+    var Vector3f remaining_move;
+    var bool collision = false;
+
+    function (void) => Vector3f get_pos;
+    function (void) => Vector3f remaining;
+    function (void) => bool collided;
+    function @rec (Vector3f move, PinguCollider* collider) => void* update;
+do
+    remaining_move.x = 0;
+    remaining_move.y = 0;
+    remaining_move.z = 0;
+
+    function (void) => Vector3f get_pos do
+        return pos;
+    end
+
+    function (void) => Vector3f remaining do
+        return remaining_move;
+    end
+
+    function (void) => bool collided do
+        return collision;
+    end
+
+    function @rec (Vector3f move, PinguCollider* collider) => void* update do
+        var Vector3f target_pos = pos;
+        target_pos.x = target_pos.x + move.x;
+        target_pos.y = target_pos.y + move.y;
+        target_pos.z = target_pos.z + move.z;
+        var Vector3f step_vector = move;
+        var int move_length = Vector3f_length(move);
+
+        // Make the step vector (i.e. change to a unit vector)
+        Vector3f_normalize(step_vector);
+
+        // Move to the destination one unit vector at a time
+        collision = false;
+        loop i in move_length do  
+            if collision then break; end
+            collision = (call/rec collider:work(pos, step_vector));
+            pos.x = pos.x + step_vector.x;
+            pos.y = pos.y + step_vector.y;
+            pos.z = pos.z + step_vector.z;
+        end
+
+        // If on a collision pixel, back away from it.
+        if collision then
+            pos.x = pos.x - step_vector.x;
+            pos.y = pos.y - step_vector.y;
+            pos.z = pos.z - step_vector.z;
+        end
+        
+        remaining_move.x = target_pos.x - pos.x;
+        remaining_move.y = target_pos.y - pos.y;
+        remaining_move.z = target_pos.z - pos.z;
+    end
+
+    await FOREVER;
+end
 
 #endif

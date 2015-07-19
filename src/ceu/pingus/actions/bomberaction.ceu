@@ -17,13 +17,8 @@
 #include "../particles/particles.ceu"
 
 native/pre do
-    ##include "pingus/colliders/pingu_collider.hpp"
-    ##include "pingus/movers/linear_mover.hpp"
-    ##include "pingus/pingu_enums.hpp"
-    ##define Colliders__PinguCollider Colliders::PinguCollider
+    ##include "pingus/pingu_enums.hpp"    
 end
-
-native @pure _Colliders__PinguCollider();
 
 class BomberAction with
     interface IAction;
@@ -60,9 +55,6 @@ do
     var _CollisionMask&? bomber_radius = _new_CollisionMask("other/bomber_radius_gfx", "other/bomber_radius");
     finalize with _delete_obj(bomber_radius); end;
 
-    var _Movers_LinearMover&? mover = _new_LinearMover();
-    finalize with _delete_obj(mover); end;
-
     global:world:play_sound("ohno", (call/rec pingu.get_pos()), 0.5);
 
     par do
@@ -70,9 +62,14 @@ do
             await global:e_PINGU_UPDATE_ALL;            
 
             // Move the Pingu
-            mover.reset(_toVector3f((call/rec pingu.get_pos())));
-            mover.update(_toVector3f(pingu.get_velocity()), _Colliders__PinguCollider(_pingu_height));
-            pingu.set_pos(mover.get_pos());
+            var LinearMover mover with
+                this.pos = call/rec pingu.get_pos();
+            end;
+            var PinguCollider collider with
+                this.height = _pingu_height;
+            end;            
+            call/rec mover.update(pingu.get_velocity(), &collider);
+            pingu.set_pos(_toVector3f(mover.get_pos()));
         end
     with        
         var _SceneContext* gc = await pingu.e_DRAW_CALLED until sprite.get_current():get_current_frame() >= 13;
