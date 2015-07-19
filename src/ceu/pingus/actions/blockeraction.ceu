@@ -6,7 +6,7 @@
 #include "../../engine/display/scene_context.ceu"
 #include "../iaction.ceu"
 #include "../ipingu.ceu"
-#include "../state_sprite.ceu"
+#include "../right_left_sprite.ceu"
 #include "../global_interface.ceu"
 
 class BlockerAction with
@@ -31,9 +31,6 @@ do
         return _get_screenname(_A_BLOCKER);
     end
 
-    var StateSprite sprite;
-    load_file_directions(sprite, "/blocker/");
-
     if (call/rec pingu.rel_getpixel(0, -1)) == _GT_NOTHING then
         if (call/rec pingu.rel_getpixel(0, -2)) == _GT_GROUND then
             pingu.set_y(pingu.get_y() + 1);
@@ -42,39 +39,38 @@ do
         end
     end
 
-    par do
-        every gc in pingu.e_DRAW_CALLED do
-            _gc_color_draw2(gc, sprite.get(pingu.direction().value), _toVector3f((call/rec pingu.get_pos())));
+    var RightLeftSprite sprite with
+        this.pingu = pingu;
+        this.pos_giver = pingu;
+        this.left_name = _new_String(_concat2(pingu.get_owner_str(), "/blocker/left"));
+        this.right_name = _new_String(_concat2(pingu.get_owner_str(), "/blocker/right"));
+    end;
+
+    loop do
+        await global:e_PINGU_UPDATE_ALL;
+        
+        if (call/rec pingu.rel_getpixel(0,-1)) == _GT_NOTHING then
+            escape _A_FALLER;
         end
-    with
-        loop do
-            await global:e_PINGU_UPDATE_ALL;
-            
-            if (call/rec pingu.rel_getpixel(0,-1)) == _GT_NOTHING then
-                escape _A_FALLER;
+
+        loop catched in global:world:get_pingus():all_pingus do
+            // avoid 'self' catch
+            if catched == &pingu then
+                continue;
             end
 
-            loop catched in global:world:get_pingus():all_pingus do
-                // avoid 'self' catch
-                if catched == &pingu then
-                    continue;
-                end
-
-                if catched:get_x() > pingu.get_x()-16 and
-                   catched:get_x() < pingu.get_x()+16 and
-                   catched:get_y() > pingu.get_y()-32 and
-                   catched:get_y() < pingu.get_y()+5 then
-                    if catched:get_x() > pingu.get_x() then
-                        emit catched:direction().right;
-                    else
-                        emit catched:direction().left;
-                    end
+            if catched:get_x() > pingu.get_x()-16 and
+               catched:get_x() < pingu.get_x()+16 and
+               catched:get_y() > pingu.get_y()-32 and
+               catched:get_y() < pingu.get_y()+5 then
+                if catched:get_x() > pingu.get_x() then
+                    emit catched:direction().right;
+                else
+                    emit catched:direction().left;
                 end
             end
-
-            sprite.update();
         end
-    end
+    end    
 end
 
 #endif

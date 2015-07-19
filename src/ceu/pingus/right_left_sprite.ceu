@@ -13,6 +13,8 @@ class RightLeftSprite with
     var _std__string* right_name = null;
     var _std__string* left_name = null;
 
+    function (void) => Sprite3* get_current;
+
     event void finished;
 do
     finalize with
@@ -22,6 +24,13 @@ do
 
     if right_name == null or left_name == null then
         _log_error("name's not given");
+    end
+
+    var Sprite3* current = null;
+
+    function (void) => Sprite3* get_current do
+        if current == null then _log_error("get_current() == null\n"); end
+        return current;
     end
 
     loop do
@@ -35,9 +44,11 @@ do
                 this.pos_giver = pos_giver;
             end;
             right.reload_by_name(right_name:c_str());
+            current = _PTR2REF(&right);
 
             par/or do
                 await pingu.direction().changed;
+                current = null;
             with
                 every right.finished do
                     emit finished;
@@ -50,9 +61,11 @@ do
                 this.pos_giver = pos_giver;
             end;
             left.reload_by_name(left_name:c_str());
+            current = _PTR2REF(&left);
 
             par/or do
                 await pingu.direction().changed;
+                current = null;
             with
                 every left.finished do
                     emit finished;

@@ -4,7 +4,7 @@
 #include "../../c.ceu"
 #include "../../sdl.ceu"
 #include "../../engine/display/scene_context.ceu"
-#include "../../engine/display/sprite.ceu"
+#include "../../engine/display/sprite3.ceu"
 #include "../../math/math.ceu"
 #include "../iaction.ceu"
 #include "../ipingu.ceu"
@@ -39,29 +39,23 @@ do
         return _get_screenname(_A_ANGEL);
     end
 
-    var _Sprite&? sprite = _PTR2REF(_new_SpriteA(_scc3("pingus/player", pingu.get_owner_str(), "/angel")));
-    finalize with _delete_obj(sprite); end;
+    var Sprite3 sprite with
+        this.pos_giver = pingu;
+    end;
+    sprite.reload_by_name(_scc3("pingus/player", pingu.get_owner_str(), "/angel").c_str());    
 
     var float counter = 0;
     var float x_pos = pingu.get_x();
+    
+    loop do
+        await global:e_PINGU_UPDATE_ALL;
 
-    par do
-        loop do
-            await global:e_PINGU_UPDATE_ALL;
+        counter = counter + (float)_globals__game_speed;
+        pingu.set_posf(x_pos + 4.0*_Math__sin(counter*0.01), pingu.get_y() - 40.0*0.025);
 
-            sprite.update();
-
-            counter = counter + (float)_globals__game_speed;
-            pingu.set_posf(x_pos + 4.0*_Math__sin(counter*0.01), pingu.get_y() - 40.0*0.025);
-
-            // Out of screen, let the pingu die
-            if pingu.get_y() < -32 then
-                escape _A_DEAD;
-            end
-        end
-    with
-        every gc in pingu.e_DRAW_CALLED do
-            _gc_color_draw2(gc, sprite, _toVector3f(call/rec (call/rec pingu.get_pos())));
+        // Out of screen, let the pingu die
+        if pingu.get_y() < -32 then
+            escape _A_DEAD;
         end
     end
 end
