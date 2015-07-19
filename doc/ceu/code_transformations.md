@@ -36,6 +36,52 @@ That also simplifies iterating over a collection of objects with similar type:
             end
 ```
 
+### Autonomous sprites
+
+Written already, but yet experimental, `Sprite3` and `RightLeftSprite` are promising classes for code simplification.
+
+All we need to play animation is declare a variable and initialize it's fields.
+
+<table width="100%" border="0">
+    <tr valign="top">
+        <td width="50%">
+            **Old `StateSprite` C++ wrapper**
+            <pre><code>
+    <b>var</b> StateSprite sprite;
+    load_file_directions(sprite, "/exit/");
+
+    <b>par do</b>
+        <b>every</b> gc <b>in</b> pingu.e_DRAW_CALLED <b>do</b>
+            _gc_color_draw2(gc, sprite.get(pingu.direction().value), _toVector3f((call/rec pingu.get_pos())));
+        <b>end</b>
+    <b>with</b>
+        <b>every</b> global:e_PINGU_UPDATE_ALL <b>do</b>
+            sprite.get(pingu.direction().value):update();
+
+            <b>if</b> sprite.get(pingu.direction().value):is_finished() <b>then</b>
+                <b>escape</b> _A_EXITED;
+            <b>end</b>
+        <b>end</b>
+    <b>end</b>
+            </code></pre>
+        </td>
+        <td>
+            **New `RightLeftSprite`**
+            <pre><code>
+    <b>var</b> RightLeftSprite sprite <b>with</b>
+        <b>this</b>.pingu = pingu;
+        <b>this</b>.pos_giver = pingu;
+        <b>this</b>.left_name = _new_String(_concat2(pingu.get_owner_str(), "/exit/left"));
+        <b>this</b>.right_name = _new_String(_concat2(pingu.get_owner_str(), "/exit/right"));
+    <b>end</b>;
+
+    <b>await</b> sprite.finished;
+    <b>escape</b> _A_EXITED;
+            </code></pre>
+        </td>
+    </tr>
+</table>
+
 ## Bad ones
 
 ### Having `PTR2REF` and `deref` hacks

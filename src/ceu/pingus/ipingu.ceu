@@ -25,6 +25,7 @@ end
 interface IPingu with
     interface IPosGiver;
     var IPinguAction* ceu_action;
+    var int init_direction_value;
 
     event _SceneContext* e_DRAW_CALLED;
 

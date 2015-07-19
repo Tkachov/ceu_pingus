@@ -7,7 +7,7 @@
 #include "../../engine/sound/sound.ceu"
 #include "../iaction.ceu"
 #include "../ipingu.ceu"
-#include "../state_sprite.ceu"
+#include "../right_left_sprite.ceu"
 
 class ExiterAction with
     interface IAction;
@@ -31,21 +31,16 @@ do
         return _get_screenname(_A_EXITER);
     end
 
-    var StateSprite sprite;
-    load_file_directions(sprite, "/exit/");
-
     par do
-        every global:e_PINGU_UPDATE_ALL do
-            sprite.get(pingu.direction().value):update();
+        var RightLeftSprite sprite with
+            this.pingu = pingu;
+            this.pos_giver = pingu;
+            this.left_name = _new_String(_concat2(pingu.get_owner_str(), "/exit/left"));
+            this.right_name = _new_String(_concat2(pingu.get_owner_str(), "/exit/right"));
+        end;
 
-            if sprite.get(pingu.direction().value):is_finished() then
-                escape _A_EXITED;
-            end
-        end
-    with
-        every gc in pingu.e_DRAW_CALLED do
-            _gc_color_draw2(gc, sprite.get(pingu.direction().value), _toVector3f((call/rec pingu.get_pos())));
-        end
+        await sprite.finished;
+        escape _A_EXITED;
     with
         await global:e_PINGU_UPDATE_ALL;
         _Sound_PingusSound_play_sound("yipee");

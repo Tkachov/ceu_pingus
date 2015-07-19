@@ -8,7 +8,7 @@
 #include "../../math/math.ceu"
 #include "../iaction.ceu"
 #include "../ipingu.ceu"
-#include "../state_sprite.ceu"
+#include "../right_left_sprite.ceu"
 #include "../movers/linear_mover.ceu"
 
 native/pre do
@@ -41,11 +41,6 @@ do
         return _get_screenname(_A_FALLER);
     end
 
-    var StateSprite sprite;
-    var StateSprite tumbler;
-    load_file_directions(sprite, "/faller/");
-    load_file_directions(tumbler, "/tumbler/");
-
     var _Movers_LinearMover&? mover = _new_LinearMover();
     finalize with _delete_obj(mover); end;
 
@@ -56,22 +51,42 @@ do
     end
 
     par do
-        every gc in pingu.e_DRAW_CALLED do
-            if call/rec is_tumbling() then
-                _gc_color_draw2(gc, tumbler.get(pingu.direction().value), _toVector3f((call/rec pingu.get_pos())));
-            else
-                _gc_color_draw2(gc, sprite.get(pingu.direction().value), _toVector3f((call/rec pingu.get_pos())));
+        loop do
+            do
+                var RightLeftSprite sprite with
+                    this.pingu = pingu;
+                    this.pos_giver = pingu;
+                    this.left_name = _new_String(_concat2(pingu.get_owner_str(), "/faller/left"));
+                    this.right_name = _new_String(_concat2(pingu.get_owner_str(), "/faller/right"));
+                end;
+
+                loop do 
+                    await global:update;
+                    if call/rec is_tumbling() then
+                        break;
+                    end
+                end
+            end
+
+            do
+                var RightLeftSprite tumbler with
+                    this.pingu = pingu;
+                    this.pos_giver = pingu;
+                    this.left_name = _new_String(_concat2(pingu.get_owner_str(), "/tumbler/left"));
+                    this.right_name = _new_String(_concat2(pingu.get_owner_str(), "/tumbler/right"));
+                end;
+
+                loop do 
+                    await global:update;
+                    if not call/rec is_tumbling() then
+                        break;
+                    end
+                end
             end
         end
     with
         loop do
             await global:e_PINGU_UPDATE_ALL;
-        
-            if call/rec is_tumbling() then
-                tumbler.get(pingu.direction().value):update();
-            else
-                sprite.get(pingu.direction().value):update();
-            end
 
             /* original Pingus FIXME:
 

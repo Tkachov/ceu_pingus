@@ -61,6 +61,7 @@ class Pingu with
     var uint id;
 do
     var Direction dir;
+    dir.value = init_direction_value;
 
     function (void) => Direction& direction do
         return dir;

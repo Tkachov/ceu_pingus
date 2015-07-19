@@ -58,21 +58,18 @@ do
     with
         every (entrance, owner_id, turn_left) in e_MAKE_PINGU do
             if number_of_allowed > pingus_emitted then
-                // We use all_pingus.size() as pingu_id, so that id == array index
-                var Pingu* p;
+                // We use all_pingus.size() as pingu_id, so that id == array index                
                 spawn Pingu in all_pingus with
                     this.pos_x = entrance:pos.x;
                     this.pos_y = entrance:pos.y;
                     this.owner_id = owner_id;
                     this.id = pingus_emitted;
-                    p = &this;
+                    if turn_left then
+                        this.init_direction_value = D_LEFT;
+                    else
+                        this.init_direction_value = D_RIGHT;
+                    end
                 end;
-
-                if turn_left then
-                    p:direction().value = D_LEFT;
-                else
-                    p:direction().value = D_RIGHT;
-                end
 
                 // FIXME: Find the "oing" sound
                 //world->play_sound("oing", pos, 0.5);
