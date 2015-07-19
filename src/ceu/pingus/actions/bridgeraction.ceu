@@ -8,7 +8,7 @@
 #include "../collision_mask.ceu"
 #include "../iaction.ceu"
 #include "../ipingu.ceu"
-#include "../state_sprite.ceu"
+#include "../right_left_sprite.ceu"
 #include "../worldobj.ceu"
 
 native/pre do
@@ -25,6 +25,7 @@ native @pure _make_name();
 class BridgerAction with
     interface IAction;
     interface IPinguAction;
+    interface IPosGiver;
 do
     pingu.ceu_action = &this;
 
@@ -40,8 +41,6 @@ do
         return result;
     end
 
-    var float x_offset = 6;
-    var float y_offset = 4;
     var int bricks = MAX_BRICKS;
     var String name;
     name.set(_make_name(bricks));
@@ -49,11 +48,6 @@ do
     function (void) => _const_char_string get_name do
         return name.get();
     end
-
-    var StateSprite walk_sprite;
-    var StateSprite build_sprite;
-    load_file_directions(walk_sprite, "/bridger_walk/");
-    load_file_directions(build_sprite, "/bridger/");
 
     var _CollisionMask&? brick_l = _new_CollisionMask("other/brick_left");
     finalize with _delete_obj(brick_l); end;
@@ -118,9 +112,9 @@ do
         );
     end
 
-    loop do
-        x_offset = 6;
-        y_offset = 4;
+    function @rec (void) => Vector3f get_pos do
+        var float x_offset = 6;
+        var float y_offset = 4;
 
         if bricks == MAX_BRICKS then
             x_offset = -4;
@@ -135,25 +129,23 @@ do
 
         x_offset = x_offset * (float)pingu.direction().value;
 
-        //building step
-        par/or do
-            every global:e_PINGU_UPDATE_ALL do
-                build_sprite.get(pingu.direction().value):update();
-            end
-        with
-            every gc in pingu.e_DRAW_CALLED do
-                var Vector3f p = (call/rec pingu.get_pos());
-                p.x = p.x - x_offset;
-                p.y = p.y + y_offset;
+        var Vector3f p = (call/rec pingu.get_pos());
+        p.x = p.x - x_offset;
+        p.y = p.y + y_offset;
+        return p;
+    end
 
-                _gc_color_draw2(
-                    gc,
-                    build_sprite.get(pingu.direction().value),
-                    _toVector3f(p)
-                );
-            end
-        with
-            await global:e_PINGU_UPDATE_ALL until (build_sprite.get(pingu.direction().value):get_current_frame () >= 7);
+    loop do
+        //building step
+        do
+            var RightLeftSprite build_sprite with
+                this.pingu = pingu;
+                this.pos_giver = outer;
+                this.left_name = _new_String(_concat2(pingu.get_owner_str(), "/bridger/left"));
+                this.right_name = _new_String(_concat2(pingu.get_owner_str(), "/bridger/right"));
+            end;
+
+            await global:e_PINGU_UPDATE_ALL until (build_sprite.get_current():get_current_frame () >= 7);
 
             if bricks > 0 then
                 if call/rec brick_placement_allowed() then
@@ -166,37 +158,24 @@ do
                 escape _A_WAITER;
             end
 
-            PRE_CONDITION_AWAIT(global:e_PINGU_UPDATE_ALL, build_sprite.get(pingu.direction().value):is_finished());
-
-            build_sprite.get(pingu.direction().value):restart();
+            if not build_sprite.get_current():is_finished() then
+                await build_sprite.finished;
+            end
         end
 
         //walking step
-        par/or do
-            every global:e_PINGU_UPDATE_ALL do
-                //original FIXME: Dangerous! might not be fixed timing
-                if walk_sprite.get(pingu.direction().value):is_finished() then
-                    break;
-                end
+        do
+            var RightLeftSprite walk_sprite with
+                this.pingu = pingu;
+                this.pos_giver = outer;
+                this.left_name = _new_String(_concat2(pingu.get_owner_str(), "/bridger_walk/left"));
+                this.right_name = _new_String(_concat2(pingu.get_owner_str(), "/bridger_walk/right"));
+            end;
 
-                walk_sprite.update();
-            end
-        with
-            every gc in pingu.e_DRAW_CALLED do
-                var Vector3f p = (call/rec pingu.get_pos());
-                p.x = p.x - x_offset;
-                p.y = p.y + y_offset;                
-
-                _gc_color_draw2(
-                    gc,
-                    walk_sprite.get(pingu.direction().value),
-                    _toVector3f(p)
-                );
-            end
+            await walk_sprite.finished;
         end
 
         if call/rec way_is_free() then
-            walk_sprite.get(pingu.direction().value):restart();
             call/rec walk_one_step_up();
         else // We reached a wall...
             emit pingu.direction().change;

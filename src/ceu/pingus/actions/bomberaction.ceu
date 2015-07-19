@@ -11,7 +11,7 @@
 #include "../iaction.ceu"
 #include "../ipingu.ceu"
 #include "../global_interface.ceu"
-#include "../state_sprite.ceu"
+#include "../right_left_sprite.ceu"
 #include "../worldobj.ceu"
 #include "../movers/linear_mover.ceu"
 #include "../particles/particles.ceu"
@@ -47,8 +47,12 @@ do
         return _get_screenname(_A_BOMBER);
     end
 
-    var StateSprite sprite;
-    load_file_directions(sprite, "/bomber/");
+    var RightLeftSprite sprite with
+        this.pingu = pingu;
+        this.pos_giver = pingu;
+        this.left_name = _new_String(_concat2(pingu.get_owner_str(), "/bomber/left"));
+        this.right_name = _new_String(_concat2(pingu.get_owner_str(), "/bomber/right"));
+    end;
 
     var _Sprite&? explo_surf = _new_SpriteA(_scc3("pingus/player", pingu.get_owner_str(), "/explo"));
     finalize with _delete_obj(explo_surf); end;
@@ -63,29 +67,22 @@ do
 
     par do
         loop do
-            await global:e_PINGU_UPDATE_ALL;
-            sprite.update();
+            await global:e_PINGU_UPDATE_ALL;            
 
             // Move the Pingu
             mover.reset(_toVector3f((call/rec pingu.get_pos())));
             mover.update(_toVector3f(pingu.get_velocity()), _Colliders__PinguCollider(_pingu_height));
             pingu.set_pos(mover.get_pos());
         end
-    with
-        par do
-            var _SceneContext* gc = await pingu.e_DRAW_CALLED until sprite.get(pingu.direction().value):get_current_frame() >= 13;
-            _gc_color_draw2(gc, explo_surf, _Vector3f(pingu.get_x()-32, pingu.get_y()-48));
-        with
-            every gc in pingu.e_DRAW_CALLED do
-                _gc_color_draw2(gc, sprite.get(pingu.direction().value), _toVector3f((call/rec pingu.get_pos())));
-            end
-        end
+    with        
+        var _SceneContext* gc = await pingu.e_DRAW_CALLED until sprite.get_current():get_current_frame() >= 13;
+        _gc_color_draw2(gc, explo_surf, _Vector3f(pingu.get_x()-32, pingu.get_y()-48));
     with
         // If the Bomber hasn't 'exploded' yet...
         loop do
             await global:e_PINGU_UPDATE_ALL;
             
-            if sprite.get(pingu.direction().value):get_current_frame() > 9 then
+            if sprite.get_current():get_current_frame() > 9 then
                 break;
             end
 
@@ -104,15 +101,15 @@ do
         global:world:play_sound("plop", (call/rec pingu.get_pos()), 0.5);
 
         //Wait for 13th frame to throw particles
-        await global:e_PINGU_UPDATE_ALL until (sprite.get(pingu.direction().value):get_current_frame() > 12);
+        await global:e_PINGU_UPDATE_ALL until (sprite.get_current():get_current_frame() > 12);
 
         // Throwing particles
         call/rec global:world:get_pingu_particles_holder():add_particle(
             pingu.get_x(), pingu.get_y() - 5
         );
 
-        //Wait for 13th frame again?..
-        PRE_CONDITION_AWAIT(global:e_PINGU_UPDATE_ALL, sprite.get(pingu.direction().value):get_current_frame() >= 13);
+        //Wait for 13th frame again?..        
+        PRE_CONDITION_AWAIT(global:e_PINGU_UPDATE_ALL, sprite.get_current():get_current_frame() >= 13);
 
         global:world:remove(
             &bomber_radius,
@@ -121,7 +118,9 @@ do
         );
 
         // The pingu explode
-        PRE_CONDITION_AWAIT(global:e_PINGU_UPDATE_ALL, sprite.get(pingu.direction().value):is_finished());
+        if not sprite.get_current():is_finished() then
+            await sprite.finished;
+        end
 
         escape _A_DEAD;
     end
