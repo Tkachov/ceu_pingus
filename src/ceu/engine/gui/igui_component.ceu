@@ -14,6 +14,7 @@ interface IGUI_Component with
 
     event _DrawingContext* draw;
     event float update;
+    event _ComponentIsAtPackage* is_at;
 
     event void mouse_enter;
     event void mouse_leave;

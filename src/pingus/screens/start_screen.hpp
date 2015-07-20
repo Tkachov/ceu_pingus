@@ -20,29 +20,14 @@
 #include "engine/screen/gui_screen.hpp"
 #include "pingus/pingus_level.hpp"
 
-namespace GUI {
-class SurfaceButton;
-} // namespace GUI
-
-class StartScreen : public GUIScreen
+class StartScreen: public GUIScreen
 {
 private:
   PingusLevel plf;
-  GUI::SurfaceButton* abort_button;
-  GUI::SurfaceButton* ok_button;
 
 public:
   StartScreen(const PingusLevel& plf);
   ~StartScreen();
-
-  void start_game();
-  void cancel_game();
-
-  void on_pause_press();
-  void on_fast_forward_press();
-  void on_escape_press();
-
-  void resize(const Size&);
 
 private:
   StartScreen (const StartScreen&);

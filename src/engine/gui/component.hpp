@@ -54,7 +54,7 @@ public:
   virtual void draw(DrawingContext& gc);
   virtual void update(float delta);
 
-  virtual bool is_at (int x, int y) { return false; }
+  virtual bool is_at (int x, int y);
 
   // Events
   /** Gets issued once the primary button is pressed */
@@ -122,6 +122,14 @@ struct PositionPackage {
   Vector2i mouse_pos;
 
   PositionPackage(GUI::Component* c, Vector2i p): component(c), mouse_pos(p) {};
+};
+
+struct ComponentIsAtPackage {
+  GUI::Component* component;
+  Vector2i mouse_pos;
+  bool result;
+
+  ComponentIsAtPackage(GUI::Component* c, Vector2i p): component(c), mouse_pos(p), result(false) {};
 };
 
 #endif

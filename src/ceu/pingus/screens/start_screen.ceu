@@ -1,0 +1,280 @@
+#ifndef START_SCREEN_CEU
+#define START_SCREEN_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../../engine/gui/igui_component.ceu"
+#include "../../engine/gui/surface_button.ceu"
+#include "../../engine/screen/screen.ceu"
+#include "../../engine/sound/sound.ceu"
+#include "../../math/math.ceu"
+#include "../iworld.ceu"
+#include "../global_interface.ceu"
+
+native/pre do
+    ##include "engine/display/display.hpp"
+    ##include "engine/display/graphic_context_state.hpp"
+    ##include "engine/gui/gui_manager.hpp"
+    ##include "engine/gui/rect_component.hpp"
+    ##include "engine/gui/surface_button.hpp"
+    ##include "engine/screen/screen_manager.hpp"
+    ##include "engine/sound/sound.hpp"
+    ##include "engine/sound/sound.hpp"
+    ##include "pingus/fonts.hpp"
+    ##include "pingus/game_time.hpp"
+    ##include "pingus/gettext.h"
+    ##include "pingus/globals.hpp"
+    ##include "pingus/savegame_manager.hpp"
+    ##include "pingus/screens/game_session.hpp"
+    ##include "pingus/screens/result_screen.hpp"
+    ##include "pingus/screens/start_screen.hpp"
+    ##include "pingus/server.hpp"
+    ##include "pingus/string_format.hpp"
+    ##include "util/log.hpp"
+    ##include "util/string_util.hpp"
+
+    ##define new_GUI_Component() new GUI::Component()
+    ##define ScreenManager__instance() ScreenManager::instance()
+    ##define std__make_shared_GameSession std::make_shared<GameSession>
+    ##define Display__get_width() Display::get_width()
+    ##define Display__get_height() Display::get_height()
+    ##define SU2str(x) StringUtil::to_string(x)
+    ##define Fonts__chalk_large Fonts::chalk_large
+    ##define Fonts__chalk_normal Fonts::chalk_normal
+    ##define Fonts__chalk_small Fonts::chalk_small
+    ##define StringFormat__break_line StringFormat::break_line
+end
+
+native @pure _new_GUI_Component(), _ScreenManager__instance(), _std__make_shared_GameScreen(),
+             _Display__get_width(), _Display__get_height(),
+             _SU2str(), _StringFormat__break_line();
+
+input _StartScreen* DELETE_START_SCREEN;
+
+interface IStartScreen with
+    function (void) => void start_game;
+    function (void) => void cancel_game;
+    function (void) => _PingusLevel* get_plf;
+end
+
+////////////////////////////////////////////////
+
+class StartScreenOkButton with
+    interface IGUI_Component;
+    var IStartScreen& parent;
+
+    function @rec (int x, int y) => void set_pos;
+do
+    var SurfaceButton sb with
+        this.me = outer.me;
+        this.pos.x = _Display__get_width()/2 + 245;
+        this.pos.y = _Display__get_height()/2 + 150;
+    end;
+
+    call/rec sb.load("core/start/ok", "core/start/ok_clicked", "core/start/ok_hover");
+
+    var PrimaryButtonProxy p with this.gui = outer; end;
+    var PointerProxy pp with this.gui = outer; end;
+    var EventProxy ep with this.gui = outer; end;
+
+    function @rec (int x, int y) => void set_pos do
+        sb.set_pos(x, y);
+    end
+
+    par do
+        every mouse_click do
+            _Sound__PingusSound__play_sound("yipee");
+            parent.start_game();
+        end
+    with
+        every mouse_enter do
+            _Sound__PingusSound__play_sound("tick");
+        end
+    with
+        every package in is_at do
+            package:result = (package:mouse_pos.x > sb.pos.x and package:mouse_pos.x < sb.pos.x + (call/rec sb.get_width())
+                          and package:mouse_pos.y > sb.pos.y - 20 and package:mouse_pos.y < sb.pos.y + (call/rec sb.get_height()));
+        end
+    with
+        every gc in draw do
+            gc:print_center(_Fonts__chalk_normal, _Vector2i(sb.pos.x + 30, sb.pos.y - 20), __("Play"));
+        end
+    end
+end
+
+////////////////////////////////////////////////
+
+class StartScreenAbortButton with
+    interface IGUI_Component;
+    var IStartScreen& parent;
+
+    function @rec (int x, int y) => void set_pos;
+do
+    var SurfaceButton sb with
+        this.me = outer.me;
+        this.pos.x = _Display__get_width()/2 - 300;
+        this.pos.y = _Display__get_height()/2 + 200;
+    end;
+
+    call/rec sb.load("core/start/back", "core/start/back_clicked", "core/start/back_hover");
+
+    var PrimaryButtonProxy p with this.gui = outer; end;
+    var PointerProxy pp with this.gui = outer; end;
+    var EventProxy ep with this.gui = outer; end;
+
+    function @rec (int x, int y) => void set_pos do
+        sb.set_pos(x, y);
+    end
+
+    par do
+        every mouse_click do
+            parent.cancel_game();
+        end
+    with
+        every mouse_enter do
+            _Sound__PingusSound__play_sound("tick");
+        end
+    with
+        every gc in draw do
+            gc:print_center(_Fonts__chalk_normal, _Vector2i(sb.pos.x + 55, sb.pos.y), __("Back"));
+        end
+    end
+end
+
+////////////////////////////////////////////////
+
+class StartScreenComponent with
+    interface IGUI_Component;
+    var IStartScreen& parent;
+do
+    var PrimaryButtonProxy p with this.gui = outer; end;
+    var PointerProxy pp with this.gui = outer; end;
+    var EventProxy ep with this.gui = outer; end;
+
+    var Sprite background;
+    var Sprite blackboard;
+    call/rec background.reload_by_name("core/menu/wood");
+    call/rec blackboard.reload_by_name("core/menu/blackboard");
+
+    every gc in draw do
+        // Paint the background wood panel
+        var int y = 0;
+        loop do
+            if y >= gc:get_height() then break; end
+            var int x = 0;
+            loop do
+                if x >= gc:get_width() then break; end
+                gc:draw(_deref(background.get()), _Vector2i(x, y));
+                x = x + background.get_width();
+            end
+            y = y + background.get_height();
+        end
+
+        gc:draw(_deref(blackboard.get()), _Vector2i(gc:get_width()/2, gc:get_height()/2));
+
+
+        var int left_x  = gc:get_width()/2 - 150;
+        var int right_x = gc:get_width()/2 + 150;
+        y = gc:get_height()/2 + 40;
+
+        gc:print_center(_Fonts__chalk_large, _Vector2i(gc:get_width() /2, gc:get_height()/2 - 230),
+                        __(parent.get_plf():get_levelname()));
+
+        gc:print_left(_Fonts__chalk_normal, _Vector2i(gc:get_width() /2 - 300, gc:get_height()/2 - 170),
+                      _StringFormat__break_line(__(parent.get_plf():get_description()), 600, _Fonts__chalk_normal));
+
+        y = y + 77;
+
+        gc:print_left (_Fonts__chalk_normal, _Vector2i(left_x,  y), __("Number of Pingus: "));
+        gc:print_right(_Fonts__chalk_normal, _Vector2i(right_x, y), _SU2str(parent.get_plf():get_number_of_pingus()));
+
+        y = y + 30;
+
+        gc:print_left (_Fonts__chalk_normal, _Vector2i(left_x, y), __("Number to Save: "));
+        gc:print_right(_Fonts__chalk_normal, _Vector2i(right_x, y), _SU2str(parent.get_plf():get_number_to_save()));
+
+        y = y + 30;
+
+        gc:print_left (_Fonts__chalk_normal, _Vector2i(left_x, y), __("Time: "));
+        gc:print_right(_Fonts__chalk_normal, _Vector2i(right_x, y), _GameTime__ticks_to_realtime_string(parent.get_plf():get_time()));
+
+        gc:print_center(_Fonts__chalk_small, _Vector2i(gc:get_width()/2, gc:get_height()/2 + 215), __("Author: ") + parent.get_plf():get_author());
+
+        if _globals__developer_mode then
+            gc:print_center(_Fonts__chalk_small, _Vector2i(gc:get_width()/2, gc:get_height()-50), parent.get_plf():get_resname());
+        end
+    end
+end
+
+////////////////////////////////////////////////
+
+class StartScreen with
+    interface IStartScreen;
+    var _StartScreen* me;
+do
+    var _StartScreen&? start_screen = _PTR2REF((_StartScreen*)me);
+
+    var StartScreenComponent comp with
+        this.me = _new_GUI_Component();
+        this.parent = outer;
+    end;
+
+    var StartScreenOkButton ok_button with
+        this.me = _new_GUI_Component();
+        this.parent = outer;
+    end;
+
+    var StartScreenAbortButton abort_button with
+        this.me = _new_GUI_Component();
+        this.parent = outer;
+    end;
+
+    start_screen.gui_manager:add(&comp.me) finalize with end;
+    start_screen.gui_manager:add(&ok_button.me) finalize with end;
+    start_screen.gui_manager:add(&abort_button.me) finalize with end;
+
+    function (void) => void start_game do
+        _ScreenManager__instance():replace_screen(_std__make_shared_GameSession(start_screen.plf, true));
+    end
+
+    function (void) => void cancel_game do
+        _ScreenManager__instance():pop_screen();
+    end
+
+    function (void) => _PingusLevel* get_plf do
+        return &start_screen.plf;
+    end
+
+    par/or do
+        every screen in ON_ESCAPE_PRESS do
+            if screen == &start_screen then
+                cancel_game();
+            end
+        end
+    with
+        every screen in ON_PAUSE_PRESS do
+            if screen == &start_screen then
+                start_game();
+            end
+        end
+    with
+        every screen in ON_FAST_FORWARD_PRESS do
+            if screen == &start_screen then
+                start_game();
+            end
+        end
+    with
+        every package in SCREEN_RESIZE do
+            if package:screen != &start_screen then
+                continue;
+            end
+
+            call/rec abort_button.set_pos(start_screen.size.width/2 - 300, start_screen.size.height/2 + 200);
+            call/rec ok_button.set_pos(start_screen.size.width/2 + 245, start_screen.size.height/2 + 150);
+        end
+    with
+        var _StartScreen* e = await DELETE_START_SCREEN until (e == &start_screen);
+    end
+end
+
+#endif

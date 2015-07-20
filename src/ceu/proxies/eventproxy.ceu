@@ -26,6 +26,12 @@ do
                 emit gui.update => package:delta;
             end
         end
+    with
+        every package in COMPONENT_IS_AT do
+            if package:component == &gui.me then
+                emit gui.is_at => package;
+            end
+        end
     end
 end
 

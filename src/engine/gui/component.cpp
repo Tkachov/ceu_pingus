@@ -32,6 +32,13 @@ void Component::update(float delta) {
   ceu_out_go(&CEUapp, CEU_IN_COMPONENT_UPDATE, &pp);
 }
 
+bool Component::is_at(int x, int y) {  
+  ComponentIsAtPackage package(this, Vector2i(x, y));
+  ComponentIsAtPackage* pp = &package;
+  ceu_out_go(&CEUapp, CEU_IN_COMPONENT_IS_AT, &pp);
+  return package.result;
+}
+
 void Component::on_primary_button_press(int x, int y) {
   //Ceu ON_PRIMARY_BUTTON_PRESS
   PositionPackage package(this, Vector2i(x, y));

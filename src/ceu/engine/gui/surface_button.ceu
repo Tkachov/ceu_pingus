@@ -1,0 +1,89 @@
+#ifndef SURFACE_BUTTON_CEU
+#define SURFACE_BUTTON_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../../math/vector2i.ceu"
+#include "../display/sprite.ceu"
+#include "igui_component.ceu"
+
+native/pre do
+    ##include "engine/display/sprite.hpp"
+    ##include "engine/gui/component.hpp"
+    ##include "engine/display/drawing_context.hpp"
+end
+
+class SurfaceButton with
+    interface IGUI_Component;
+    var Vector2i pos;
+
+    function @rec (_const_char_string a, _const_char_string b, _const_char_string c) => void load;
+    function (int x, int y) => void set_pos;
+    function @rec (void) => int get_width;
+    function @rec (void) => int get_height;
+do
+    var bool pressed = false;
+    var bool mouse_over = false;
+
+    var PrimaryButtonProxy p with this.gui = outer; end;
+    var PointerProxy pp with this.gui = outer; end;
+    var EventProxy ep with this.gui = outer; end;
+
+    var Sprite button_surface;
+    var Sprite button_pressed_surface;
+    var Sprite button_mouse_over_surface;
+
+    function @rec (_const_char_string a, _const_char_string b, _const_char_string c) => void load do
+        call/rec button_surface.reload_by_name(a);
+        call/rec button_pressed_surface.reload_by_name(b);
+        call/rec button_mouse_over_surface.reload_by_name(c);
+    end
+
+    function (int x, int y) => void set_pos do
+        pos.x = x;
+        pos.y = y;
+    end
+
+    function @rec (void) => int get_width do
+        return button_surface.get_width();
+    end
+
+    function @rec (void) => int get_height do
+        return button_surface.get_height();
+    end
+
+    par do
+        loop do
+            await mouse_enter;
+            mouse_over = true;
+
+            await mouse_leave;
+            mouse_over = false;
+        end
+    with
+        loop do
+            await mouse_press;
+            pressed = true;
+
+            await mouse_release;
+            pressed = false;
+        end
+    with
+        every package in is_at do
+            package:result = (package:mouse_pos.x > pos.x and package:mouse_pos.x < pos.x + (int)button_surface.get_width()
+                          and package:mouse_pos.y > pos.y and package:mouse_pos.y < pos.y + (int)button_surface.get_height());
+        end
+    with
+        every gc in draw do
+            if pressed and mouse_over then
+                gc:draw(_deref(button_pressed_surface.get()), _toVector2i(pos));
+            else/if not pressed and mouse_over then
+                gc:draw(_deref(button_mouse_over_surface.get()), _toVector2i(pos));
+            else
+                gc:draw(_deref(button_surface.get()), _toVector2i(pos));
+            end
+        end
+    end
+end
+
+#endif

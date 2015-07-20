@@ -3,11 +3,12 @@
 
 native/pre do
     ##include "engine/sound/sound.hpp"
-    ##define Sound_PingusSound_play_sound Sound::PingusSound::play_sound    
+    ##define Sound_PingusSound_play_sound Sound::PingusSound::play_sound
+    ##define Sound__PingusSound__play_sound Sound::PingusSound::play_sound
     ##define Sound__PingusSound__play_music(track); Sound::PingusSound::play_music(track);
     ##define Sound__PingusSound__stop_music() Sound::PingusSound::stop_music()
 end
 
-native @pure _Sound__PingusSound__play_music(), _Sound__PingusSound__stop_music();
+native @pure _Sound__PingusSound__play_sound(), _Sound__PingusSound__play_music(), _Sound__PingusSound__stop_music();
 
 #endif
