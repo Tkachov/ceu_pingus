@@ -1,0 +1,186 @@
+#ifndef BUTTON_FIELD_CEU
+#define BUTTON_FIELD_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../../engine/display/sprite.ceu"
+#include "../../engine/gui/igui_component.ceu"
+#include "../../math/vector2i.ceu"
+#include "../../proxies/eventproxy.ceu"
+#include "../../proxies/pointerproxy.ceu"
+#include "../../proxies/primarybuttonproxy.ceu"
+#include "../global_interface.ceu"
+#include "../iserver.ceu"
+#include "ibutton_panel.ceu"
+
+native/pre do    
+    ##include "engine/display/display.hpp"
+    ##include "engine/display/drawing_context.hpp"
+    ##include "engine/display/sprite.hpp"
+    ##include "engine/gui/rect_component.hpp"
+    ##include "pingus/fonts.hpp"
+    ##include "pingus/globals.hpp"
+    ##include "pingus/server.hpp"
+    ##include "util/string_util.hpp"
+
+    ##define globals__developer_mode globals::developer_mode
+    ##define globals__drag_drop_scrolling globals::drag_drop_scrolling
+    ##define globals__auto_scrolling globals::auto_scrolling
+    ##define Display__is_fullscreen() Display::is_fullscreen()
+    ##define Display__has_grab() Display::has_grab()
+    ##define Display__get_width() Display::get_width()
+    ##define Display__get_height() Display::get_height()
+
+    ##define Vector_ActionName std::vector<ActionName::Enum>
+    ##define new_Vector_ActionName new std::vector<ActionName::Enum>
+    ##define std__sort std::sort
+    ##define Vector_ActionButton std::vector<ActionButton>
+    ##define new_Vector_ActionButton new std::vector<ActionButton>
+    ##define ActionName__to_string ActionName::to_string
+    ##define ActionName__to_screenname ActionName::to_screenname
+    ##define SU2str(x) StringUtil::to_string(x)
+    ##define Fonts__pingus_small Fonts::pingus_small
+    ##define make_Sprite Sprite
+
+    struct ActionButton 
+    {
+        ActionName::Enum name;
+        Sprite sprite;        
+    };
+end
+
+native @pure _new_Vector_ActionName(), _std__sort(), _new_Vector_ActionButton(),
+             _ActionName__to_string(), _ActionName__to_screenname(), _SU2str(), _make_Sprite();
+
+#define BHEIGHT 38
+
+class ButtonPanel with
+    interface IGUI_Component;
+    interface IButtonPanel;
+    var IServer& server;
+do
+    var _GUI_RectComponent&? button_panel = _PTR2REF((_GUI_RectComponent*)&me);
+
+    var Sprite background;
+    var Sprite highlight;
+    call/rec background.reload_by_name("core/buttons/buttonbackground");    
+    call/rec highlight.reload_by_name("core/buttons/buttonbackgroundhl");
+
+    var int current_button = 0;
+    var int tip_button = 0;
+    var bool show_tip = false;
+
+    var _ActionHolder&? aholder_ = _PTR2REF(server.me:get_action_holder());
+    var _Vector_ActionName&? actions = _new_Vector_ActionName(aholder_.get_available_actions());
+
+    // Sort the action so that they always have the same order in the panel
+    _std__sort(actions.begin(), actions.end());
+
+    var _Vector_ActionButton&? buttons = _new_Vector_ActionButton(actions.size());    
+    finalize with _delete_obj(buttons); end
+
+    loop i in actions.size() do        
+        buttons.at(i).name   = _PTR2REF(actions.at(i));
+        buttons.at(i).sprite = _make_Sprite(_scc3("pingus/player0/", _ActionName__to_string(actions.at(i)), "/right"));
+        buttons.at(i).sprite.set_hotspot(_origin_center, 0, 0);
+        buttons.at(i).sprite.set_play_loop(true);        
+    end
+
+    _delete_obj(actions);
+  
+    var EventProxy ep with this.gui = outer; end;
+    var PointerProxy pp with this.gui = outer; end;
+    var PrimaryButtonProxy pbp with this.gui = outer; end;
+  
+    function (void) => int get_action_name do
+        return buttons[current_button].name;
+    end
+
+    function (int n) => void set_button do
+        if n >= 0 or n < ((int)buttons.size()-1) then  
+            current_button = n;  
+        else  
+            //original FIXME: Play 'boing' sound here
+        end
+    end
+
+    function (void) => void next_action do
+        current_button = (current_button + (int)buttons.size() + 1) % (int)buttons.size();
+    end
+
+    function (void) => void previous_action do
+        current_button = (current_button + (int)buttons.size() - 1) % (int)buttons.size();
+    end
+
+    function (Vector2i pos) => void set_pos do
+        button_panel.set_rect(
+            _Rect(
+                _Vector2i(pos.x, pos.y - ((int)buttons.size())*BHEIGHT/2),
+                _Size(60, ((int)buttons.size())*BHEIGHT)
+            )
+        );
+    end
+
+    par do
+        every gc in draw do        
+            var _ActionHolder&? aholder = _PTR2REF(server.me:get_action_holder());
+
+            loop i in buttons.size() do
+                var Vector3f pos;
+                pos.x = button_panel.rect.left;
+                pos.y = button_panel.rect.top + BHEIGHT*((int)i);
+
+                if current_button == i then
+                    gc:draw(_deref(highlight.get()), _toVector2i(pos));
+                else
+                    gc:draw(_deref(background.get()), _toVector2i(pos));
+                end
+
+                gc:draw(buttons.at(i).sprite, _Vector2i(pos.x + 20, pos.y + 16));
+
+                if _globals__developer_mode then                                        
+                    gc:print_left(_Fonts__pingus_small, _Vector2i(pos.x + 46, pos.y + 5),
+                                  _scc3(_SU2str(aholder.get_available(buttons.at(i).name)), " / ", _SU2str(aholder.get_used(buttons.at(i).name))));                    
+                else
+                    gc:print_center(_Fonts__pingus_small, _Vector2i(pos.x + 46, pos.y + 5),
+                                    _SU2str(aholder.get_available(buttons.at(i).name)));
+                end
+
+                if show_tip and tip_button == i then    
+                    gc:print_left(_Fonts__pingus_small, _Vector2i(pos.x + 65, pos.y + 5),
+                                  _ActionName__to_screenname(buttons.at(i).name));
+                end
+            end
+        end
+    with
+        every delta in update do
+            loop i in buttons.size() do
+                if i == current_button then
+                    buttons.at(i).sprite.update(delta);
+                else
+                    buttons.at(i).sprite.set_frame(0);
+                end
+            end
+        end
+    with
+        loop do
+            await mouse_enter;
+            show_tip = true;
+
+            await mouse_leave;
+            show_tip = false;
+        end
+    with
+        every (x, y) in mouse_move do
+            var int action = (y - button_panel.rect.top) / BHEIGHT;
+            tip_button = _Math__clamp(0, action, (int)(buttons.size()-1));
+        end
+    with
+        every (x, y) in mouse_press do
+            var int action = (y - button_panel.rect.top) / BHEIGHT;
+            current_button = _Math__clamp(0, action, (int)(buttons.size()-1));
+        end
+    end
+end
+
+#endif

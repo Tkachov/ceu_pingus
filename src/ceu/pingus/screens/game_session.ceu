@@ -8,6 +8,7 @@
 #include "../iworld.ceu"
 #include "../global_interface.ceu"
 #include "../components/armageddonbutton.ceu"
+#include "../components/button_panel.ceu"
 #include "../components/forwardbutton.ceu"
 #include "../components/pausebutton.ceu"
 #include "../components/pingus_counter.ceu"
@@ -28,8 +29,7 @@ native/pre do
 
     ##include "engine/screen/screen_manager.hpp"
     ##include "pingus/server.hpp"
-    ##include "engine/sound/sound.hpp"
-    ##include "pingus/components/button_panel.hpp"    
+    ##include "engine/sound/sound.hpp" 
 
     ##include "engine/display/graphic_context_state.hpp"
     ##include "engine/gui/rect_component.hpp"
@@ -40,8 +40,7 @@ native/pre do
     ##define new_Rect(v, s) new Rect(v, s)
     ##define new_SceneContext(rect) new SceneContext(rect)
     ##define new_GraphicContextState(w, h) new GraphicContextState(w, h)
-    ##define new_Server(a) new Server(a)
-    ##define new_ButtonPanel(a, b) new ButtonPanel(a, b)    
+    ##define new_Server(a) new Server(a)  
     ##define new_TimeDisplay(s) new TimeDisplay(s)
     ##define new_Result() new Result()
     ##define new_Savegame new Savegame
@@ -70,7 +69,7 @@ native/pre do
     ##define Input__TEXT_INPUT_EVENT_TYPE Input::TEXT_INPUT_EVENT_TYPE    
 end
 
-native @pure _new_PingusCounter(), _new_GUI_Component(), _new_RectComponent(), _new_Server(), _new_ButtonPanel(),
+native @pure _new_PingusCounter(), _new_GUI_Component(), _new_RectComponent(), _new_Server(),
              _new_Rect(), _new_SceneContext(), _new_GraphicContextState(), _new_TimeDisplay(), _new_Result(), _new_Savegame(),
              _SavegameManager__instance(), _ScreenManager__instance(), _get_demostream(),
              _std__make_shared_ResultScreen(), _toSStatus(), _Display__get_width(), _Display__get_height();
@@ -89,7 +88,17 @@ do
         this.me:demostream = _get_demostream(this.me:plf);
     end;
 
-    var _ButtonPanel* button_panel = _new_ButtonPanel(server.me, _Vector2i(0, (game_session.size.height - 150)/2));
+    var ButtonPanel button_panel with
+        this.me = _PTR2REF(_new_RectComponent(_Rect()));
+        this.server = server;
+    end;
+
+    do
+        var Vector2i bp_pos;
+        bp_pos.x = 0;
+        bp_pos.y = (game_session.size.height - 150)/2;
+        button_panel.set_pos(bp_pos);
+    end
 
     var PingusCounter pcounter with
         this.me = _new_GUI_Component();
@@ -144,7 +153,7 @@ do
     end;
 
     game_session.gui_manager:add(&playfield.me) finalize with end;
-    game_session.gui_manager:add(button_panel) finalize with end;
+    game_session.gui_manager:add(&button_panel.me) finalize with end;
     game_session.gui_manager:add(&pcounter.me) finalize with end;
     game_session.gui_manager:add(&small_map.rect) finalize with end;
     game_session.gui_manager:add(&time_display.me) finalize with end;
@@ -173,7 +182,7 @@ do
     end
 
     function (void) => int get_action_name do
-        return button_panel:get_action_name();
+        return button_panel.get_action_name();
     end
 
     function (void) => bool get_fast_forward do    
@@ -276,11 +285,11 @@ do
                 if package:event.button.state == _Input__BUTTON_PRESSED then              
                     if  package:event.button.name >= _Input__ACTION_1_BUTTON
                     and package:event.button.name <= _Input__ACTION_10_BUTTON then
-                        button_panel:set_button(package:event.button.name - _Input__ACTION_1_BUTTON);                    
+                        button_panel.set_button(package:event.button.name - _Input__ACTION_1_BUTTON);                    
                     else/if package:event.button.name == _Input__ACTION_DOWN_BUTTON then                    
-                        button_panel:next_action();                    
+                        button_panel.next_action();                    
                     else/if package:event.button.name == _Input__ACTION_UP_BUTTON then                    
-                        button_panel:previous_action();
+                        button_panel.previous_action();
                     end
                 end
             else/if package:event.type == _Input__SCROLLER_EVENT_TYPE then
@@ -402,7 +411,11 @@ do
             ((_GUI_RectComponent*)&forward_button.me):set_rect(_Rect(_Vector2i(game_session.size.width - 40*2, game_session.size.height - 62), _Size(38, 60)));
             ((_GUI_RectComponent*)&pause_button.me):set_rect(_Rect(_Vector2i(game_session.size.width - 40*3, game_session.size.height - 62), _Size(38, 60)));
             small_map.rect.set_rect(_Rect(_Vector2i(5, game_session.size.height - 105), _Size(175, 100)));
-            button_panel:set_pos(_Vector2i(0, (game_session.size.height - 150)/2));
+
+            var Vector2i bp_pos;
+            bp_pos.x = 0;
+            bp_pos.y = (game_session.size.height - 150)/2;
+            button_panel.set_pos(bp_pos);
         end
     with
         every package in ON_ACTION_AXIS_MOVE do
@@ -411,9 +424,9 @@ do
             end
 
             if package:move > 0 then
-                button_panel:next_action();
+                button_panel.next_action();
             else/if package:move < 0 then
-                button_panel:previous_action();
+                button_panel.previous_action();
             end
         end
     with

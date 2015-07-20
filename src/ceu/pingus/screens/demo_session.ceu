@@ -6,6 +6,7 @@
 #include "../../engine/screen/screen.ceu"
 #include "../iworld.ceu"
 #include "../global_interface.ceu"
+#include "../components/button_panel.ceu"
 #include "../components/pingus_counter.ceu"
 #include "../components/playfield.ceu"
 #include "../components/smallmap.ceu"
@@ -16,14 +17,12 @@ native/pre do
     ##include "engine/gui/gui_manager.hpp"
     ##include "engine/gui/surface_button.hpp"
     ##include "engine/screen/screen_manager.hpp"
-    ##include "pingus/components/button_panel.hpp"
     ##include "pingus/pingus_demo.hpp"
     ##include "pingus/server.hpp"
     ##include "util/log.hpp"
     ##define new_GUI_Component() new GUI::Component()
     ##define new_RectComponent(r) new GUI::RectComponent(r)
     ##define new_Rect(v, s) new Rect(v, s)
-    ##define new_ButtonPanel(a, b) new ButtonPanel(a, b)    
     ##define new_SceneContext(rect) new SceneContext(rect)
     ##define new_GraphicContextState(w, h) new GraphicContextState(w, h)
     ##define new_Server(a) new Server(a)    
@@ -32,7 +31,7 @@ native/pre do
 end
 
 native @pure _new_PingusCounter(), _new_GUI_Component(), _new_RectComponent(), 
-             _new_Rect(), _new_ButtonPanel(), _new_SceneContext(), _new_GraphicContextState(),
+             _new_Rect(), _new_SceneContext(), _new_GraphicContextState(),
              _new_Server(), _ScreenManager__instance(), _addr();
 
 input _ComponentUpdatePackage* DEMO_SESSION_UPDATE_SERVER;
@@ -83,8 +82,20 @@ do
         this.playfield = playfield;
     end;
 
+    var ButtonPanel button_panel with
+        this.me = _PTR2REF(_new_RectComponent(_Rect()));
+        this.server = server;
+    end;
+
+    do
+        var Vector2i bp_pos;
+        bp_pos.x = 0;
+        bp_pos.y = (demo_session.size.height - 100)/2;
+        button_panel.set_pos(bp_pos);
+    end
+
     demo_session.gui_manager:add(&pcounter.me) finalize with end;
-    demo_session.gui_manager:add(_new_ButtonPanel(demo_session.server, _Vector2i(0, (demo_session.size.height - 100)/2)));
+    demo_session.gui_manager:add(&button_panel.me) finalize with end;
     demo_session.gui_manager:add(&playfield.me) finalize with end;
     demo_session.gui_manager:add(&small_map.rect) finalize with end;
 

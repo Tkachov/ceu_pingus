@@ -1,0 +1,14 @@
+#ifndef IBUTTON_PANEL_CEU
+#define IBUTTON_PANEL_CEU
+
+#include "../../math/vector2i.ceu"
+
+interface IButtonPanel with
+    function (void) => int get_action_name;
+    function (int n) => void set_button;
+    function (void) => void next_action;
+    function (void) => void previous_action;
+    function (Vector2i pos) => void set_pos;
+end
+
+#endif
