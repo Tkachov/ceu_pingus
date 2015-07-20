@@ -1,3 +1,13 @@
+# Week 9 (20/07--26/07)
+
+## What I was supposed to do the past week?
+
+* port screens, components, worldmap classes.
+
+## What I actually did the past week?
+
+## What I'll do this week?
+
 # Week 8 (13/07--19/07)
 
 ## What I was supposed to do the past week?
@@ -10,7 +20,30 @@
 
 ## What I actually did the past week?
 
+* ported `GameSession` as far as it could be done:
+	* `SmallMap` and `Playfield` ported;
+	* ported `Server` almost as far as it could be done;
+	* `WorldObjFactory` ported into `World`.
+* worked more on `Sprite` wrappers and autonomous sprites:
+	* `Sprite2` - Céu implementation of C++ `SpriteImpl`;
+	* `Sprite3` - autonomous sprite implementation which reacts on global `draw` and `update` events;
+	* simple cache in C++ `FramebufferSurface`;
+	* ported `Direction`;
+	* `RightLeftSprite` - Céu replacement for C++ `StateSprite` (uses `Sprite3`);
+	* used `Sprite2`, `Sprite3` and `RightLeftSprite` everywhere (actions, world objects);
+	* documented that as good example of code transformation.
+
+What else:
+
+* switched to new version of Céu `recurse` compiler;
+* some small fixes (like using `loop` to iterate vectors);
+* ported `ButtonPanel` of `DemoSession`
+* ported `LinearMover` & `PinguCollider` (used in `Faller` and `Bomber` actions) - game lagged because of lots of dynamically spawned `PinguCollider` organisms;
+* removed state machines in some world objects.
+
 ## What I'll do this week?
+
+* port screens, components, worldmap classes.
 
 # Week 7 (6/07--12/07)
 
