@@ -1,0 +1,387 @@
+#ifndef WORLDMAP_SCREEN_CEU
+#define WORLDMAP_SCREEN_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../../engine/gui/igui_component.ceu"
+#include "../../engine/gui/surface_button.ceu"
+#include "../../engine/screen/screen.ceu"
+#include "../../engine/sound/sound.ceu"
+#include "../../math/math.ceu"
+#include "../../math/rect.ceu"
+#include "../iworld.ceu"
+#include "../global_interface.ceu"
+
+native/pre do
+    ##include "engine/display/display.hpp"
+    ##include "engine/display/graphic_context_state.hpp"
+    ##include "engine/gui/gui_manager.hpp"
+    ##include "engine/gui/rect_component.hpp"
+    ##include "engine/gui/surface_button.hpp"
+    ##include "engine/screen/screen_manager.hpp"
+    ##include "engine/sound/sound.hpp"
+    ##include "engine/sound/sound.hpp"
+    ##include "pingus/fonts.hpp"
+    ##include "pingus/game_time.hpp"
+    ##include "pingus/gettext.h"
+    ##include "pingus/globals.hpp"
+    ##include "pingus/savegame_manager.hpp"
+    ##include "pingus/screens/game_session.hpp"
+    ##include "pingus/screens/result_screen.hpp"
+    ##include "pingus/worldmap/worldmap_screen.hpp"
+    ##include "pingus/server.hpp"
+    ##include "pingus/string_format.hpp"
+    ##include "util/log.hpp"
+    ##include "util/string_util.hpp"
+    ##include "engine/display/display.hpp"
+    ##include "engine/gui/surface_button.hpp"
+    ##include "engine/screen/screen_manager.hpp"
+    ##include "engine/sound/sound.hpp"
+    ##include "pingus/fonts.hpp"
+    ##include "pingus/gettext.h"
+    ##include "pingus/screens/story_screen.hpp"
+    ##include "pingus/worldmap/pingus.hpp"
+    ##include "pingus/worldmap/worldmap.hpp"
+
+    ##include "engine/display/display.hpp"
+    ##include "pingus/globals.hpp"
+    ##include "pingus/worldmap/worldmap.hpp"
+    ##include "pingus/worldmap/worldmap_screen.hpp"
+
+    ##define new_GUI_Component() new GUI::Component()
+    ##define new_Worldmap(pn) new WorldmapNS::Worldmap(pn)
+    ##define ScreenManager__instance() ScreenManager::instance()
+    ##define std__make_shared_GameSession std::make_shared<GameSession>
+    ##define std__make_shared_StoryScreen std::make_shared<StoryScreen>
+    ##define Display__get_width() Display::get_width()
+    ##define Display__get_height() Display::get_height()
+    ##define SU2str(x) StringUtil::to_string(x)
+    ##define Fonts__chalk_large Fonts::chalk_large
+    ##define Fonts__chalk_normal Fonts::chalk_normal
+    ##define Fonts__chalk_small Fonts::chalk_small
+    ##define StringFormat__break_line StringFormat::break_line
+
+    ##define new_SceneContextE() new SceneContext()
+
+    ##define WorldmapNS__Worldmap WorldmapNS::Worldmap
+    ##define WorldmapNS__WorldmapScreen WorldmapNS::WorldmapScreen
+end
+
+native @pure _new_GUI_Component(), _ScreenManager__instance(), _std__make_shared_GameScreen(), _std__make_shared_StoryScreen(),
+             _Display__get_width(), _Display__get_height(), _new_Worldmap(),
+             _SU2str(), _StringFormat__break_line(), _new_SceneContextE();
+
+input _WorldmapScreenLoadPackage* LOAD_WORLDMAP_SCREEN;
+input _ScreenUpdatePackage* WORLDMAP_SCREEN_UPDATE;
+input _WorldmapNS__WorldmapScreen* DELETE_WORLDMAP_SCREEN;
+
+interface IWorldmapScreen with
+    function (void) => void show_intro_story;
+    function (void) => void show_end_story;
+    function (void) => _WorldmapNS__Worldmap*? get_worldmap;
+    function (void) => Rect get_trans_rect;
+
+    var _WorldmapNS__WorldmapScreen* me;
+end
+
+////////////////////////////////////////////////
+
+class WorldmapScreenCreditsButton with
+    interface IGUI_Component;
+    var IWorldmapScreen& parent;
+
+    function @rec (int x, int y) => void set_pos;
+do
+    var SurfaceButton sb with
+        this.me = outer.me;
+        this.pos.x = _Display__get_width() - 150;
+        this.pos.y = 0;
+    end;
+
+    call/rec sb.load("core/worldmap/credits_button_normal",
+                     "core/worldmap/credits_button_pressed",
+                     "core/worldmap/credits_button_hover");
+
+    var PrimaryButtonProxy p with this.gui = outer; end;
+    var PointerProxy pp with this.gui = outer; end;
+    var EventProxy ep with this.gui = outer; end;
+
+    function @rec (int x, int y) => void set_pos do
+        sb.set_pos(x, y);
+    end
+
+    par do
+        every mouse_click do
+            parent.show_end_story();
+        end
+    with
+        every mouse_enter do
+            _Sound__PingusSound__play_sound("tick");
+        end
+    with
+        every gc in draw do
+            gc:print_center(_Fonts__chalk_small, _Vector2i( _Display__get_width() - 83, 2), __("Show Ending?"));
+        end
+    end
+end
+
+////////////////////////////////////////////////
+
+class WorldmapScreenCloseButton with
+    interface IGUI_Component;
+    var IWorldmapScreen& parent;
+
+    function @rec (int x, int y) => void set_pos;
+do
+    var SurfaceButton sb with
+        this.me = outer.me;
+        this.pos.x = 0;
+        this.pos.y = _Display__get_height() - 37;
+    end;
+
+    call/rec sb.load("core/worldmap/leave_button_normal",
+                     "core/worldmap/leave_button_pressed",
+                     "core/worldmap/leave_button_hover");
+
+    var PrimaryButtonProxy p with this.gui = outer; end;
+    var PointerProxy pp with this.gui = outer; end;
+    var EventProxy ep with this.gui = outer; end;
+
+    function @rec (int x, int y) => void set_pos do
+        sb.set_pos(x, y);
+    end
+
+    par do
+        every mouse_click do
+            _ScreenManager__instance():pop_screen();
+        end
+    with
+        every mouse_enter do
+            _Sound__PingusSound__play_sound("tick");
+        end
+    with
+        every gc in draw do
+            gc:print_center(_Fonts__chalk_small, _Vector2i(44, _Display__get_height() - 25), __("Leave?"));
+        end
+    end
+end
+
+////////////////////////////////////////////////
+
+class WorldmapScreenComponent with
+    interface IGUI_Component;
+    var IWorldmapScreen& parent;
+
+    event void fast_forward_press;
+    event void fast_forward_release;
+do
+    var _SceneContext&? scene_context = _new_SceneContextE();
+    finalize with _delete_obj(scene_context); end
+
+    var PrimaryButtonProxy p with this.gui = outer; end;
+    var SecondaryButtonProxy sbp with this.gui = outer; end;
+    var PointerProxy pp with this.gui = outer; end;
+    var EventProxy ep with this.gui = outer; end;
+
+    par do
+        every package in is_at do
+            package:result = true;
+        end
+    with
+        loop do
+            par/or do
+                every delta in update do
+                    parent.get_worldmap():update(delta);
+                end
+            with
+                await fast_forward_press;
+            end
+
+            par/or do
+                every delta in update do
+                    loop i in _globals__fast_forward_time_scale do
+                        parent.get_worldmap():update(delta);
+                    end
+                end
+            with
+                await fast_forward_release;
+            end
+        end
+    with
+        every gc in draw do
+            var Rect cliprect = parent.get_trans_rect();
+            scene_context.set_rect(_toRect(cliprect));
+            scene_context.clear();
+
+            scene_context.push_modelview();
+            parent.get_worldmap():draw(scene_context.color());
+            gc:draw(_new_SceneContextDrawingRequest(&scene_context, _Vector2i(0, 0), -1000));
+            scene_context.pop_modelview();
+
+            // Draw border
+            if _toRect(cliprect) != _Rect(_Vector2i(0, 0), _Size(_Display__get_width(), _Display__get_height())) then
+                // top
+                gc:draw_fillrect(_Rect(0, 0, _Display__get_width(), cliprect.top), _Color(0, 0, 0));
+                // bottom
+                gc:draw_fillrect(_Rect(0, cliprect.bottom, _Display__get_width(), _Display__get_height()), _Color(0, 0, 0));
+                // left
+                gc:draw_fillrect(_Rect(0, cliprect.top, cliprect.left, cliprect.bottom), _Color(0, 0, 0));
+                // right
+                gc:draw_fillrect(_Rect(cliprect.right, cliprect.top, _Display__get_width(), cliprect.bottom), _Color(0, 0, 0));
+            end
+        end
+    with
+        every (x, y) in mouse_press do
+            var Rect cliprect = parent.get_trans_rect();
+            parent.get_worldmap():on_primary_button_press(x - cliprect.left, y - cliprect.top);
+        end
+    with
+        every (x, y) in mouse_secondary_press do
+            var Rect cliprect = parent.get_trans_rect();
+            parent.get_worldmap():on_secondary_button_press(x - cliprect.left, y - cliprect.top);
+        end
+    with
+        every (x, y) in mouse_move do
+            var Rect cliprect = parent.get_trans_rect();
+            parent.get_worldmap():on_pointer_move(x - cliprect.left, y - cliprect.top);
+        end
+    end
+end
+
+////////////////////////////////////////////////
+
+class WorldmapScreen with
+    interface IWorldmapScreen;
+do
+    var _WorldmapNS__WorldmapScreen&? worldmap_screen = _PTR2REF((_WorldmapNS__WorldmapScreen*)me);
+    var _WorldmapNS__Worldmap*? worldmap = null;
+    var _WorldmapNS__Worldmap*? new_worldmap = null;
+    var bool exit_worldmap = false;
+
+    var WorldmapScreenComponent comp with
+        this.me = _new_GUI_Component();
+        this.parent = outer;
+    end;
+
+    var WorldmapScreenCloseButton close_button with
+        this.me = _new_GUI_Component();
+        this.parent = outer;
+    end;
+
+    var WorldmapScreenCreditsButton*? credits_button = null;
+
+    worldmap_screen.gui_manager:add(&comp.me) finalize with end;
+    worldmap_screen.gui_manager:add(&close_button.me) finalize with end;
+
+    function (void) => void show_intro_story do
+        _ScreenManager__instance():push_screen(_std__make_shared_StoryScreen(
+            worldmap:get_worldmap().get_intro_story()
+        ));
+    end
+
+    function (void) => void show_end_story do
+        _ScreenManager__instance():push_screen(_std__make_shared_StoryScreen(
+            worldmap:get_worldmap().get_end_story()
+        ));
+    end
+
+    function (void) => _WorldmapNS__Worldmap*? get_worldmap do
+        return worldmap;
+    end
+
+    function (void) => Rect get_trans_rect do
+        var Rect r;
+        Rect_load_XYWH(
+            r,
+            _Math__max((_Display__get_width()  - worldmap:get_width())/2,  0),
+            _Math__max((_Display__get_height() - worldmap:get_height())/2, 0),
+            _Math__min(_Display__get_width(),  worldmap:get_width()),
+            _Math__min(_Display__get_height(), worldmap:get_height())
+        );
+        return r;
+    end
+
+    par/or do
+        every package in LOAD_WORLDMAP_SCREEN do
+            if package:screen != &worldmap_screen then
+                continue;
+            end
+
+            worldmap = _new_Worldmap(package:filename);
+
+            var bool credits_unlocked = false;
+            //StatManager::instance()->get_bool(worldmap->get_short_name() + "-endstory-seen", credits_unlocked);
+            if credits_unlocked then
+                credits_button = spawn WorldmapScreenCreditsButton with
+                    this.me = _new_GUI_Component();
+                    this.parent = outer;
+                end;
+                worldmap_screen.gui_manager:add(&credits_button:me) finalize with end;
+            end
+        end
+    with
+        every screen in ON_STARTUP do
+            if screen != &worldmap_screen then
+                continue;
+            end
+
+            exit_worldmap = false;
+            _Sound__PingusSound__stop_music();
+
+            if worldmap then
+                worldmap:on_startup();
+            end
+        end
+    with
+        every package in WORLDMAP_SCREEN_UPDATE do
+            if package:screen != &worldmap_screen then
+                continue;
+            end
+
+            //Exit the world
+            if exit_worldmap then
+                _ScreenManager__instance():pop_screen();
+            end
+
+            //Check if new worldmap is set and if so, change it
+            if new_worldmap then
+                _delete_obj(worldmap);
+                worldmap = new_worldmap;
+                new_worldmap = null;
+            end
+        end
+    with
+        every screen in ON_ESCAPE_PRESS do
+            if screen == &worldmap_screen then
+                exit_worldmap = true;
+            end
+        end
+    with
+        every screen in ON_FAST_FORWARD_PRESS do
+            if screen == &worldmap_screen then
+                emit comp.fast_forward_press;
+            end
+        end
+    with
+        every screen in ON_FAST_FORWARD_RELEASE do
+            if screen == &worldmap_screen then
+                emit comp.fast_forward_release;
+            end
+        end
+    with
+        every package in SCREEN_RESIZE do
+            if package:screen != &worldmap_screen then
+                continue;
+            end
+
+            call/rec close_button.set_pos(0, worldmap_screen.size.height - 37);
+            if credits_button then
+                call/rec credits_button:set_pos(worldmap_screen.size.width - 150, 0);
+            end
+        end
+    with
+        var _WorldmapNS__WorldmapScreen* e = await DELETE_WORLDMAP_SCREEN until (e == &worldmap_screen);
+    end
+end
+
+#endif
