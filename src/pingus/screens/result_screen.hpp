@@ -20,30 +20,15 @@
 #include "engine/screen/gui_screen.hpp"
 #include "pingus/result.hpp"
 
-namespace GUI {
-class SurfaceButton;
-} // namespace GUI
-
-class ResultScreen : public GUIScreen
+class ResultScreen: public GUIScreen
 {
 private:
   Result result;
-  GUI::SurfaceButton*   ok_button;
-  GUI::SurfaceButton* abort_button;
-  GUI::SurfaceButton* retry_button;
 
 public:
   ResultScreen(Result result);
-  void on_startup();
+  ~ResultScreen();
 
-  void on_pause_press();
-  void on_fast_forward_press();
-  void on_escape_press();
-
-  void retry_level();
-  void close_screen();
-
-  void resize(const Size&);
 private:
   ResultScreen (const ResultScreen&);
   ResultScreen& operator= (const ResultScreen&);

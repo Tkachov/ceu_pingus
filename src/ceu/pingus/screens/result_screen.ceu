@@ -1,0 +1,384 @@
+#ifndef RESULT_SCREEN_CEU
+#define RESULT_SCREEN_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../../engine/gui/igui_component.ceu"
+#include "../../engine/gui/surface_button.ceu"
+#include "../../engine/screen/screen.ceu"
+#include "../../engine/sound/sound.ceu"
+#include "../../math/math.ceu"
+#include "../iworld.ceu"
+#include "../global_interface.ceu"
+
+native/pre do
+    ##include "engine/display/display.hpp"
+    ##include "engine/gui/gui_manager.hpp"    
+    ##include "engine/gui/surface_button.hpp"
+    ##include "engine/screen/screen_manager.hpp"
+    ##include "engine/sound/sound.hpp"
+    ##include "pingus/fonts.hpp"
+    ##include "pingus/game_time.hpp"
+    ##include "pingus/gettext.h"
+    ##include "pingus/globals.hpp"
+    ##include "pingus/savegame_manager.hpp"
+    ##include "pingus/screens/game_session.hpp"
+    ##include "pingus/screens/result_screen.hpp"
+    ##include "pingus/server.hpp"
+    ##include "pingus/string_format.hpp"
+    ##include "util/string_util.hpp"
+
+    ##define new_GUI_Component() new GUI::Component()
+    ##define ScreenManager__instance() ScreenManager::instance()
+    ##define std__make_shared_GameSession std::make_shared<GameSession>
+    ##define Display__get_width() Display::get_width()
+    ##define Display__get_height() Display::get_height()
+    ##define SU2str(x) StringUtil::to_string(x)
+    ##define Fonts__chalk_large Fonts::chalk_large
+    ##define Fonts__chalk_normal Fonts::chalk_normal
+end
+
+native @pure _new_GUI_Component(), _ScreenManager__instance(), _std__make_shared_GameScreen(),
+             _Display__get_width(), _Display__get_height(),
+             _SU2str();
+
+input _ResultScreen* DELETE_RESULT_SCREEN;
+
+interface IResultScreen with
+    function (void) => void retry_level;
+    function (void) => void close_screen;
+    function (void) => _Result* get_result;
+end
+
+////////////////////////////////////////////////
+
+class ResultScreenOkButton with
+    interface IGUI_Component;
+    var IResultScreen& parent;
+
+    function @rec (int x, int y) => void set_pos;
+do
+    var SurfaceButton sb with
+        this.me = outer.me;
+        this.pos.x = _Display__get_width()/2 + 245;
+        this.pos.y = _Display__get_height()/2 + 150;
+    end;
+
+    call/rec sb.load("core/start/ok", "core/start/ok_clicked", "core/start/ok_hover");
+
+    var PrimaryButtonProxy p with this.gui = outer; end;
+    var PointerProxy pp with this.gui = outer; end;
+
+    function @rec (int x, int y) => void set_pos do
+        sb.set_pos(x, y);
+    end
+
+    par do
+        every mouse_click do
+            parent.close_screen();
+            _Sound__PingusSound__play_sound("yipee");
+        end
+    with
+        every mouse_enter do
+            _Sound__PingusSound__play_sound("tick");
+        end
+    end
+end
+
+////////////////////////////////////////////////
+
+class ResultScreenAbortButton with
+    interface IGUI_Component;
+    var IResultScreen& parent;
+
+    function @rec (int x, int y) => void set_pos;
+do
+    var SurfaceButton sb with
+        this.me = outer.me;
+        this.pos.x = _Display__get_width()/2 - 300;
+        this.pos.y = _Display__get_height()/2 + 200;
+    end;
+
+    call/rec sb.load("core/start/back", "core/start/back_clicked", "core/start/back_hover");
+
+    var PrimaryButtonProxy p with this.gui = outer; end;
+    var PointerProxy pp with this.gui = outer; end;
+    var EventProxy ep with this.gui = outer; end;
+
+    function @rec (int x, int y) => void set_pos do
+        sb.set_pos(x, y);
+    end
+
+    par do
+        every mouse_click do
+            parent.close_screen();
+        end
+    with
+        every mouse_enter do
+            _Sound__PingusSound__play_sound("tick");
+        end
+    with
+        every gc in draw do
+            gc:print_center(_Fonts__chalk_normal, _Vector2i(sb.pos.x + 55, sb.pos.y - 4), __("Give up"));
+        end
+    end
+end
+
+////////////////////////////////////////////////
+
+class ResultScreenRetryButton with
+    interface IGUI_Component;
+    var IResultScreen& parent;
+
+    function @rec (int x, int y) => void set_pos;
+do
+    var SurfaceButton sb with
+        this.me = outer.me;
+        this.pos.x = _Display__get_width()/2 + 245;
+        this.pos.y = _Display__get_height()/2 + 150;
+    end;
+
+    call/rec sb.load("core/start/ok", "core/start/ok_clicked", "core/start/ok_hover");
+
+    var PrimaryButtonProxy p with this.gui = outer; end;
+    var PointerProxy pp with this.gui = outer; end;
+    var EventProxy ep with this.gui = outer; end;
+
+    function @rec (int x, int y) => void set_pos do
+        sb.set_pos(x, y);
+    end
+
+    par do
+        every mouse_click do
+            parent.retry_level();
+        end
+    with
+        every mouse_enter do
+            _Sound__PingusSound__play_sound("tick");
+        end
+    with
+        every gc in draw do
+            gc:print_center(_Fonts__chalk_normal, _Vector2i(sb.pos.x + 30, sb.pos.y - 24), __("Retry"));
+        end
+    with
+        every package in is_at do
+            package:result = (package:mouse_pos.x > sb.pos.x and package:mouse_pos.x < sb.pos.x + (call/rec sb.get_width())
+                          and package:mouse_pos.y > sb.pos.y - 24 and package:mouse_pos.y < sb.pos.y + (call/rec sb.get_height()));
+        end
+    end
+end
+
+////////////////////////////////////////////////
+
+class ResultScreenComponent with
+    interface IGUI_Component;
+    var IResultScreen& parent;
+do
+    var PrimaryButtonProxy p with this.gui = outer; end;
+    var PointerProxy pp with this.gui = outer; end;
+    var EventProxy ep with this.gui = outer; end;
+
+    var Sprite background;
+    var Sprite blackboard;
+    call/rec background.reload_by_name("core/menu/wood");
+    call/rec blackboard.reload_by_name("core/menu/blackboard");
+
+    var _std__string*? message;
+
+    if parent.get_result():success() then
+        if parent.get_result():killed == 0 and parent.get_result():saved == parent.get_result():total then
+            message = _new_String(__("Perfect! You saved everyone possible - great!"));
+        else/if parent.get_result():killed == 0 then
+            message = _new_String(__("No-one got killed, pretty good work."));
+        else/if parent.get_result():saved == parent.get_result():needed then
+            message = _new_String(__("You saved exactly what you needed - you made it, but\nmaybe you can do better?"));
+        else/if parent.get_result():killed >= 5 then
+            message = _new_String(__("Not everybody was saved, but still good work!"));
+        else
+            message = _new_String(__("What can I say, you made it - congratulations!"));
+        end
+    else
+        if parent.get_result():killed == parent.get_result():total then
+            message = _new_String(__("You killed everybody, not good."));
+        else/if parent.get_result():saved == 0 then
+            message = _new_String(__("No-one got saved - I know you can do better."));
+        else/if parent.get_result():saved > 0 then
+            message = _new_String(__("You didn't save enough, but you saved a few.  Next\ntime you might do better."));
+        else/if parent.get_result():saved + 1 >= parent.get_result():needed then
+            message = _new_String(__("Only one more and you would have made it - try again!"));
+        else/if parent.get_result():saved + 5 >= parent.get_result():needed then
+            message = _new_String(__("Only a handful more and you would have made it - try again!"));
+        else
+            message = _new_String(__("Better luck next time!"));
+        end
+    end
+
+    finalize with _delete_obj(message); end
+
+    every gc in draw do
+        // Paint the background wood panel
+        var int y = 0;
+        loop do
+            if y >= gc:get_height() then break; end
+            var int x = 0;
+            loop do
+                if x >= gc:get_width() then break; end
+                gc:draw(_deref(background.get()), _Vector2i(x, y));
+                x = x + background.get_width();
+            end
+            y = y + background.get_height();
+        end
+
+        gc:draw(_deref(blackboard.get()), _Vector2i(gc:get_width()/2, gc:get_height()/2));
+
+        gc:print_center(_Fonts__chalk_large, _Vector2i(gc:get_width()/2, gc:get_height()/2 - 200),
+                        __(parent.get_result():plf.get_levelname()));
+
+        if parent.get_result():success() then
+            gc:print_center(_Fonts__chalk_large, _Vector2i(gc:get_width()/2, gc:get_height()/2 - 140),
+                            __("Success!"));
+        else
+            gc:print_center(_Fonts__chalk_large, _Vector2i(gc:get_width()/2, gc:get_height()/2 - 140),
+                            __("Failure!"));
+        end
+
+        gc:print_center(_Fonts__chalk_normal, _Vector2i(gc:get_width()/2, gc:get_height()/2 - 70), message:c_str());
+
+        var int left_x  = gc:get_width()/2 - 100;
+        var int right_x = gc:get_width()/2 + 100;
+        y = gc:get_height()/2 + 10;
+
+        gc:print_left (_Fonts__chalk_normal, _Vector2i(left_x,  y), __("Saved: "));
+        gc:print_right(_Fonts__chalk_normal, _Vector2i(right_x, y), _scc3(_SU2str(parent.get_result():saved), "/", _SU2str(parent.get_result():needed)));
+
+        y = y + 30;
+
+        gc:print_left (_Fonts__chalk_normal, _Vector2i(left_x, y), __("Died: "));
+        gc:print_right(_Fonts__chalk_normal, _Vector2i(right_x, y), _SU2str(parent.get_result():killed));
+
+        y = y + 30;
+
+        gc:print_left (_Fonts__chalk_normal, _Vector2i(left_x, y), __("Time left: "));
+
+        if parent.get_result():max_time == -1 then
+            gc:print_right(_Fonts__chalk_normal, _Vector2i(right_x, y), "-");
+        else
+            gc:print_right(_Fonts__chalk_normal, _Vector2i(right_x, y), _GameTime__ticks_to_realtime_string(parent.get_result():max_time - parent.get_result():used_time));
+        end
+    end
+end
+
+////////////////////////////////////////////////
+
+class ResultScreen with
+    interface IResultScreen;
+    var _ResultScreen* me;
+do
+    var _ResultScreen&? result_screen = _PTR2REF((_ResultScreen*)me);
+
+    var ResultScreenComponent comp with
+        this.me = _new_GUI_Component();
+        this.parent = outer;
+    end;
+
+    result_screen.gui_manager:add(&comp.me) finalize with end;
+
+    var ResultScreenOkButton*? ok_button = null;
+    var ResultScreenAbortButton*? abort_button = null;
+    var ResultScreenRetryButton*? retry_button = null;
+
+    if result_screen.result.success() then
+        ok_button = spawn ResultScreenOkButton with
+            this.me = _new_GUI_Component();
+            this.parent = outer;
+        end;
+        result_screen.gui_manager:add(&ok_button:me) finalize with end;
+    else
+        abort_button = spawn ResultScreenAbortButton with
+            this.me = _new_GUI_Component();
+            this.parent = outer;
+        end;
+
+        retry_button = spawn ResultScreenRetryButton with
+            this.me = _new_GUI_Component();
+            this.parent = outer;
+        end;
+
+        result_screen.gui_manager:add(&abort_button:me) finalize with end;
+        result_screen.gui_manager:add(&retry_button:me) finalize with end;
+    end
+
+    function (void) => void retry_level do
+        _ScreenManager__instance():replace_screen(_std__make_shared_GameSession(result_screen.result.plf, true));
+    end
+
+    function (void) => void close_screen do
+        _ScreenManager__instance():pop_screen();
+    end
+
+    function (void) => _Result* get_result do
+        return &result_screen.result;
+    end
+
+    par/or do
+        every screen in ON_STARTUP do
+            if screen == &result_screen then
+                if result_screen.result.success() then
+                    _Sound__PingusSound__play_music("success_1.wav", 1, false);
+                else
+                    _Sound__PingusSound__play_music("pingus-2.wav", 1, false);
+                end
+            end
+        end
+    with
+        every screen in ON_ESCAPE_PRESS do
+            if screen == &result_screen then
+                close_screen();
+            end
+        end
+    with
+        every screen in ON_PAUSE_PRESS do
+            if screen == &result_screen then
+                //same as fast_forward_press
+                if result_screen.result.success() then
+                    close_screen();
+                else
+                    retry_level();
+                end
+            end
+        end
+    with
+        every screen in ON_FAST_FORWARD_PRESS do
+            if screen == &result_screen then
+                //same as pause_press
+                if result_screen.result.success() then
+                    close_screen();
+                else
+                    retry_level();
+                end
+            end
+        end
+    with
+        every package in SCREEN_RESIZE do
+            if package:screen != &result_screen then
+                continue;
+            end
+
+            if ok_button then
+                call/rec ok_button:set_pos(result_screen.size.width/2 + 245, result_screen.size.height/2 + 150);
+            end
+
+            if abort_button then
+                call/rec abort_button:set_pos(result_screen.size.width/2 - 300, result_screen.size.height/2 + 200);
+            end
+
+            if retry_button then
+                call/rec retry_button:set_pos(result_screen.size.width/2 + 245, result_screen.size.height/2 + 150);
+            end
+        end
+    with
+        var _ResultScreen* e = await DELETE_RESULT_SCREEN until (e == &result_screen);
+    end
+end
+
+#endif
