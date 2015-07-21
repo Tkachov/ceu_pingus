@@ -11,6 +11,7 @@
 #include "../../math/rect.ceu"
 #include "../iworld.ceu"
 #include "../global_interface.ceu"
+#include "worldmap.ceu"
 
 native/pre do
     ##include "engine/display/display.hpp"
@@ -20,7 +21,6 @@ native/pre do
     ##include "engine/gui/surface_button.hpp"
     ##include "engine/screen/screen_manager.hpp"
     ##include "engine/sound/sound.hpp"
-    ##include "engine/sound/sound.hpp"
     ##include "pingus/fonts.hpp"
     ##include "pingus/game_time.hpp"
     ##include "pingus/gettext.h"
@@ -28,25 +28,14 @@ native/pre do
     ##include "pingus/savegame_manager.hpp"
     ##include "pingus/screens/game_session.hpp"
     ##include "pingus/screens/result_screen.hpp"
-    ##include "pingus/worldmap/worldmap_screen.hpp"
+    ##include "pingus/screens/story_screen.hpp"
     ##include "pingus/server.hpp"
     ##include "pingus/string_format.hpp"
-    ##include "util/log.hpp"
-    ##include "util/string_util.hpp"
-    ##include "engine/display/display.hpp"
-    ##include "engine/gui/surface_button.hpp"
-    ##include "engine/screen/screen_manager.hpp"
-    ##include "engine/sound/sound.hpp"
-    ##include "pingus/fonts.hpp"
-    ##include "pingus/gettext.h"
-    ##include "pingus/screens/story_screen.hpp"
     ##include "pingus/worldmap/pingus.hpp"
     ##include "pingus/worldmap/worldmap.hpp"
-
-    ##include "engine/display/display.hpp"
-    ##include "pingus/globals.hpp"
-    ##include "pingus/worldmap/worldmap.hpp"
     ##include "pingus/worldmap/worldmap_screen.hpp"
+    ##include "util/log.hpp"
+    ##include "util/string_util.hpp"
 
     ##define new_GUI_Component() new GUI::Component()
     ##define new_Worldmap(pn) new WorldmapNS::Worldmap(pn)
@@ -65,11 +54,12 @@ native/pre do
 
     ##define WorldmapNS__Worldmap WorldmapNS::Worldmap
     ##define WorldmapNS__WorldmapScreen WorldmapNS::WorldmapScreen
+    ##define addr(x) &x
 end
 
 native @pure _new_GUI_Component(), _ScreenManager__instance(), _std__make_shared_GameScreen(), _std__make_shared_StoryScreen(),
              _Display__get_width(), _Display__get_height(), _new_Worldmap(),
-             _SU2str(), _StringFormat__break_line(), _new_SceneContextE();
+             _SU2str(), _StringFormat__break_line(), _new_SceneContextE(), _addr();
 
 input _WorldmapScreenLoadPackage* LOAD_WORLDMAP_SCREEN;
 input _ScreenUpdatePackage* WORLDMAP_SCREEN_UPDATE;
@@ -79,6 +69,7 @@ interface IWorldmapScreen with
     function (void) => void show_intro_story;
     function (void) => void show_end_story;
     function (void) => _WorldmapNS__Worldmap*? get_worldmap;
+    function (void) => Worldmap*? get_ceu_worldmap;
     function (void) => Rect get_trans_rect;
 
     var _WorldmapNS__WorldmapScreen* me;
@@ -191,7 +182,7 @@ do
         loop do
             par/or do
                 every delta in update do
-                    parent.get_worldmap():update(delta);
+                    emit parent.get_ceu_worldmap():update => delta;
                 end
             with
                 await fast_forward_press;
@@ -200,7 +191,7 @@ do
             par/or do
                 every delta in update do
                     loop i in _globals__fast_forward_time_scale do
-                        parent.get_worldmap():update(delta);
+                        emit parent.get_ceu_worldmap():update => delta;
                     end
                 end
             with
@@ -214,7 +205,7 @@ do
             scene_context.clear();
 
             scene_context.push_modelview();
-            parent.get_worldmap():draw(scene_context.color());
+            emit parent.get_ceu_worldmap():draw => _addr(scene_context.color());
             gc:draw(_new_SceneContextDrawingRequest(&scene_context, _Vector2i(0, 0), -1000));
             scene_context.pop_modelview();
 
@@ -233,17 +224,17 @@ do
     with
         every (x, y) in mouse_press do
             var Rect cliprect = parent.get_trans_rect();
-            parent.get_worldmap():on_primary_button_press(x - cliprect.left, y - cliprect.top);
+            emit parent.get_ceu_worldmap():mouse_press => (x - cliprect.left, y - cliprect.top);
         end
     with
         every (x, y) in mouse_secondary_press do
             var Rect cliprect = parent.get_trans_rect();
-            parent.get_worldmap():on_secondary_button_press(x - cliprect.left, y - cliprect.top);
+            emit parent.get_ceu_worldmap():mouse_secondary_press => (x - cliprect.left, y - cliprect.top);
         end
     with
         every (x, y) in mouse_move do
             var Rect cliprect = parent.get_trans_rect();
-            parent.get_worldmap():on_pointer_move(x - cliprect.left, y - cliprect.top);
+            emit parent.get_ceu_worldmap():mouse_move => (x - cliprect.left, y - cliprect.top);
         end
     end
 end
@@ -254,8 +245,7 @@ class WorldmapScreen with
     interface IWorldmapScreen;
 do
     var _WorldmapNS__WorldmapScreen&? worldmap_screen = _PTR2REF((_WorldmapNS__WorldmapScreen*)me);
-    var _WorldmapNS__Worldmap*? worldmap = null;
-    var _WorldmapNS__Worldmap*? new_worldmap = null;
+    var Worldmap*? worldmap = null;
     var bool exit_worldmap = false;
 
     var WorldmapScreenComponent comp with
@@ -286,6 +276,10 @@ do
     end
 
     function (void) => _WorldmapNS__Worldmap*? get_worldmap do
+        return worldmap:me;
+    end
+
+    function (void) => Worldmap*? get_ceu_worldmap do
         return worldmap;
     end
 
@@ -307,10 +301,12 @@ do
                 continue;
             end
 
-            worldmap = _new_Worldmap(package:filename);
+            worldmap = spawn Worldmap with
+                this.me = _new_Worldmap(package:filename);
+            end;
 
             var bool credits_unlocked = false;
-            //StatManager::instance()->get_bool(worldmap->get_short_name() + "-endstory-seen", credits_unlocked);
+            //StatManager::instance()->get_bool(worldmap:me:get_short_name() + "-endstory-seen", credits_unlocked);
             if credits_unlocked then
                 credits_button = spawn WorldmapScreenCreditsButton with
                     this.me = _new_GUI_Component();
@@ -329,7 +325,7 @@ do
             _Sound__PingusSound__stop_music();
 
             if worldmap then
-                worldmap:on_startup();
+                emit worldmap:startup;
             end
         end
     with
@@ -341,13 +337,6 @@ do
             //Exit the world
             if exit_worldmap then
                 _ScreenManager__instance():pop_screen();
-            end
-
-            //Check if new worldmap is set and if so, change it
-            if new_worldmap then
-                _delete_obj(worldmap);
-                worldmap = new_worldmap;
-                new_worldmap = null;
             end
         end
     with

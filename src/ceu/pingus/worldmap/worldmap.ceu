@@ -1,0 +1,275 @@
+#ifndef WORLDMAP_CEU
+#define WORLDMAP_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../../engine/gui/igui_component.ceu"
+#include "../../engine/gui/surface_button.ceu"
+#include "../../engine/screen/screen.ceu"
+#include "../../engine/sound/sound.ceu"
+#include "../../math/math.ceu"
+#include "../../math/rect.ceu"
+#include "../iworld.ceu"
+#include "../global_interface.ceu"
+
+native/pre do
+    ##include "engine/display/display.hpp"
+    ##include "engine/display/graphic_context_state.hpp"
+    ##include "engine/gui/gui_manager.hpp"
+    ##include "engine/gui/rect_component.hpp"
+    ##include "engine/gui/surface_button.hpp"
+    ##include "engine/screen/screen_manager.hpp"
+    ##include "engine/sound/sound.hpp"
+    ##include "pingus/fonts.hpp"
+    ##include "pingus/game_time.hpp"
+    ##include "pingus/gettext.h"
+    ##include "pingus/globals.hpp"
+    ##include "pingus/savegame_manager.hpp"
+    ##include "pingus/screens/game_session.hpp"
+    ##include "pingus/screens/result_screen.hpp"
+    ##include "pingus/screens/story_screen.hpp"
+    ##include "pingus/server.hpp"
+    ##include "pingus/string_format.hpp"
+    ##include "pingus/worldmap/pingus.hpp"
+    ##include "pingus/worldmap/worldmap.hpp"
+    ##include "pingus/worldmap/worldmap_screen.hpp"
+    ##include "util/log.hpp"
+    ##include "util/string_util.hpp"
+    ##include <iostream>
+    ##include "engine/sound/sound.hpp"
+    ##include "pingus/gettext.h"
+    ##include "pingus/globals.hpp"
+    ##include "pingus/stat_manager.hpp"
+    ##include "pingus/worldmap/drawable_factory.hpp"
+    ##include "pingus/worldmap/level_dot.hpp"
+    ##include "pingus/worldmap/pingus.hpp"
+    ##include "util/log.hpp"
+    ##include "util/sexpr_file_writer.hpp"
+    ##include "util/pathname.hpp"
+    ##include <memory>
+    ##include <vector>
+    ##include "engine/display/graphic_context_state.hpp"
+    ##include "pingus/worldmap/pingus_worldmap.hpp"
+
+    ##define new_GUI_Component() new GUI::Component()
+    ##define new_Worldmap(pn) new WorldmapNS::Worldmap(pn)
+    ##define ScreenManager__instance() ScreenManager::instance()
+    ##define std__make_shared_GameSession std::make_shared<GameSession>
+    ##define std__make_shared_StoryScreen std::make_shared<StoryScreen>
+    ##define Display__get_width() Display::get_width()
+    ##define Display__get_height() Display::get_height()
+    ##define SU2str(x) StringUtil::to_string(x)
+    ##define Fonts__chalk_large Fonts::chalk_large
+    ##define Fonts__chalk_normal Fonts::chalk_normal
+    ##define Fonts__chalk_small Fonts::chalk_small
+    ##define StringFormat__break_line StringFormat::break_line
+
+    ##define new_SceneContextE() new SceneContext()
+    ##define new_Pingus(x) new WorldmapNS::Pingus(x)
+
+    ##define WorldmapNS__Worldmap WorldmapNS::Worldmap
+    ##define WorldmapNS__WorldmapScreen WorldmapNS::WorldmapScreen
+    ##define WorldmapNS__Dot WorldmapNS::Dot
+
+    ##define StatManager__instance() StatManager::instance()
+end
+
+native @pure _new_GUI_Component(), _ScreenManager__instance(), _std__make_shared_GameScreen(), _std__make_shared_StoryScreen(),
+             _Display__get_width(), _Display__get_height(), _new_Worldmap(), _new_Pingus(),
+             _SU2str(), _StringFormat__break_line(), _new_SceneContextE(), _StatManager__instance();
+
+input _WorldmapNS__Worldmap* DELETE_WORLDMAP;
+
+interface IWorldmap with
+    var _WorldmapNS__Worldmap* me;
+
+    function (void) => int get_width;
+    function (void) => int get_height;
+    function (void) => _PingusWorldmap get_worldmap;
+
+    event void startup;
+    event _DrawingContext* draw;
+    event float update;
+    event (int, int) mouse_move;
+    event (int, int) mouse_press;
+    event (int, int) mouse_secondary_press;
+end
+
+class Worldmap with
+    interface IWorldmap;
+do
+    var _WorldmapNS__Worldmap&? worldmap = _PTR2REF((_WorldmapNS__Worldmap*)me);
+
+    worldmap.pingus = _new_Pingus(worldmap.path_graph.get());
+    worldmap.set_starting_node();
+    worldmap.add_drawable(worldmap.pingus) finalize with end;
+    worldmap.gc_state.set_limit(_Rect(_Vector2i(0, 0), _Size(worldmap.worldmap.get_width(), worldmap.worldmap.get_height())));
+
+    function (void) => _PingusWorldmap get_worldmap do
+        return worldmap.worldmap;
+    end
+
+    function (void) => int get_width do    
+        return worldmap.worldmap.get_width();
+    end
+
+    function (void) => int get_height do
+        return worldmap.worldmap.get_height();
+    end
+
+    function (int x, int y) => _WorldmapNS__Dot* find_dot do        
+        return worldmap.path_graph:get_dot(
+            worldmap.gc_state.screen2world(_Vector2i(x, y)).x,
+            worldmap.gc_state.screen2world(_Vector2i(x, y)).y
+        );
+    end
+
+    par/or do
+        every startup do
+            _Sound__PingusSound__play_music(worldmap.worldmap.get_music());
+
+            //update_locked_nodes:
+            //original FIXME: This shouldn't be a polling function
+            worldmap.path_graph:graph.for_each_node(_unlock_nodes(worldmap.path_graph.get()));
+
+            /*#if 0
+              bool credits_unlocked = false;
+              StatManager::instance()->get_bool(worldmap.get_short_name() + "-endstory-seen", credits_unlocked);
+
+              if (!credits_unlocked)
+              {
+                // See if the last level is finished
+                Dot* dot = path_graph->get_dot(final_node);
+                if (dot)
+                {
+                  if (dot->finished())
+                  {
+                    ScreenManager::instance()->push_screen(new StoryScreen(worldmap.get_end_story()));
+                  }
+                }
+                else
+                {
+                  log_info("Error: Worldmap: Last level missing");
+                }
+              }
+            #endif*/
+        end
+    with
+        every gc in draw do
+            var Vector2i pingu_pos;
+            pingu_pos.x = worldmap.pingus:get_pos().x;
+            pingu_pos.y = worldmap.pingus:get_pos().y; 
+
+            var int min;
+            var int max;
+            var int width  = worldmap.worldmap.get_width();
+            var int height = worldmap.worldmap.get_height();
+
+            if width >= gc:get_width() then  
+                min = gc:get_width()/2;
+                max = width - gc:get_width()/2;
+            else
+                min = width - gc:get_width()/2;
+                max = gc:get_width()/2;
+            end
+
+            pingu_pos.x = _Math__clamp(min, pingu_pos.x, max);
+
+            if height >= gc:get_height() then
+                min = gc:get_height()/2;
+                max = height - gc:get_height()/2;
+            else
+                min = height - gc:get_height()/2;
+                max = gc:get_height()/2;
+            end
+
+            pingu_pos.y = _Math__clamp(min, pingu_pos.y, max);
+
+            worldmap.gc_state.set_size(gc:get_width(), gc:get_height());
+            worldmap.gc_state.set_pos(_Vector2i(pingu_pos.x, pingu_pos.y));
+                
+            worldmap.gc_state.push(_deref(gc));
+  
+            loop i in worldmap.drawables.size() do  
+                worldmap.drawables.at(i):draw(_deref(gc));
+            end
+
+            var _WorldmapNS__Dot* dot = _PTR2REF(find_dot(worldmap.mouse_x, worldmap.mouse_y));
+            if dot then
+                dot:draw_hover(_deref(gc));
+            end
+  
+            worldmap.gc_state.pop(_deref(gc)); 
+        end
+    with
+        every delta in update do
+            loop i in worldmap.drawables.size() do  
+                worldmap.drawables.at(i):update(delta);
+            end  
+        end
+    with
+        every (x, y) in mouse_move do
+            worldmap.mouse_x = x;
+            worldmap.mouse_y = y;
+        end
+    with
+        every (x, y) in mouse_press do
+            /*
+            var Vector2f click_pos = gc_state.screen2world(_Vector2i(x, y));
+            if _globals__developer_mode then
+                SExprFileWriter writer(std::cout);
+                writer.begin_section("leveldot");
+                writer.write_string("levelname", "");
+                writer.begin_section("dot");
+                writer.write_string("name", "leveldot_X");
+                writer.write_vector("position", click_pos);
+                writer.end_section();
+                writer.end_section();
+                std::cout << std::endl;
+                std::cout << std::endl;
+            end
+            */
+
+            var _WorldmapNS__Dot* dot = _PTR2REF(find_dot(x, y));
+            if dot then
+                if _globals__developer_mode then
+                    _log_info("Worldmap: Clicked on: %1%", dot:get_name());
+                end
+
+                if worldmap.path_graph:lookup_node(dot:get_name()) == worldmap.pingus:get_node() then
+                    if _globals__developer_mode then
+                        _log_info("Worldmap: Pingu is on node, issue on_click()");
+                    end
+                    dot:on_click();
+                else
+                    if dot:accessible() then
+                        if not worldmap.pingus:walk_to_node(worldmap.path_graph:lookup_node(dot:get_name())) then
+                            if _globals__developer_mode then
+                                _log_info("Worldmap: NO PATH TO NODE FOUND!");
+                            end
+                        else
+                            _StatManager__instance():set_string(_scc2(worldmap.worldmap.get_short_name(), "-current-node"), dot:get_name());
+                        end
+                    else
+                        _Sound__PingusSound__play_sound("chink");
+                    end
+                end
+            end
+        end
+    with
+        every (x, y) in mouse_secondary_press do
+            if _globals__developer_mode then
+                var _WorldmapNS__Dot* dot = _PTR2REF(find_dot(x, y));
+                if dot then
+                    // FIXME: Dot NodeID missmatch...
+                    var int id = worldmap.path_graph:get_id(dot) finalize with end;
+                    worldmap.pingus:set_position(id);
+                end
+            end
+        end
+    with
+        var _WorldmapNS__Worldmap* e = await DELETE_WORLDMAP until (e == &worldmap);
+    end
+end
+
+#endif

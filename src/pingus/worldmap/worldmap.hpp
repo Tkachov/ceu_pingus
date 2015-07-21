@@ -22,6 +22,7 @@
 
 #include "engine/display/graphic_context_state.hpp"
 #include "pingus/worldmap/pingus_worldmap.hpp"
+#include "pingus/worldmap/graph.hpp"
 
 class Font;
 class DrawingContext;
@@ -78,49 +79,31 @@ public:
 
   Pingus* get_pingus() { return pingus; }
 
-  void on_startup();
-
-  bool is_final_map();
-
-  void draw (DrawingContext& gc);
-  void update (float delta);
-
-  /** Enters the level on which the Pingu is currently standing */
-  void enter_level();
-
   void add_drawable(Drawable* drawable);
 
-  /** @return the shortest path between node1 and node2  */
-  std::vector<EdgeId> find_path (NodeId node1, NodeId node2);
-
-  /** x,y are in Worldmap CO, not ScreenCO */
-  void on_primary_button_press(int x, int y);
-  void on_secondary_button_press(int x, int y);
-  void on_pointer_move(int x, int y);
-
-  int get_width()  const;
-  int get_height() const;
-
-  PingusWorldmap get_worldmap() const { return worldmap; }
 private:
-  /** Unlock nodes according to the finished ones */
-  void update_locked_nodes();
-
   /** Sets the starting level on the worldmap.  Either take it from the StatManager
       or use the "default-node" option from the XML file */
   void set_starting_node();
 
-private:
   static Worldmap* current_; 
-public:
-  static Worldmap* current() { return current_; }
 
-private:
   Worldmap(const Worldmap&);
   Worldmap & operator=(const Worldmap&);
+  
+public:
+  static Worldmap* current() { return current_; }
 };
 
 } // namespace WorldmapNS
+
+struct unlock_nodes
+{
+  WorldmapNS::PathGraph* path_graph;
+
+  unlock_nodes(WorldmapNS::PathGraph* g);
+  void operator()(WorldmapNS::Node<WorldmapNS::Dot*>& node);
+};
 
 #endif
 
