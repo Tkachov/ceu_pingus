@@ -1,0 +1,42 @@
+#ifndef DOT_CEU
+#define DOT_CEU
+
+#include "drawable.ceu"
+
+interface Dot with
+    interface Drawable;
+
+    event _DrawingContext* draw_hover;    
+    event void on_click;
+
+    function (void) => bool finished;
+    function (void) => bool accessible;
+    function (void) => void unlock; 
+end
+
+input _DrawableDrawPackage* DOT_DRAW_HOVER;
+input _WorldmapNS__Dot* DOT_ON_CLICK;
+
+class DotProxy with
+    var Dot& dot;
+do
+    var DrawableProxy proxy with
+        this.drawable = dot;
+    end;
+
+    par do
+        every package in DOT_DRAW_HOVER do
+            if package:drawable == &dot.me then
+                emit dot.draw_hover => &package:gc;
+            end
+        end
+    with
+        every d in DOT_ON_CLICK do
+            if d == &dot.me then
+                emit dot.on_click;
+            end
+        end
+    end
+end
+
+#endif

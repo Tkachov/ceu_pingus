@@ -22,31 +22,12 @@
 #include "pingus/gettext.h"
 #include "pingus/globals.hpp"
 #include "pingus/stat_manager.hpp"
-#include "pingus/worldmap/level_dot.hpp"
 #include "pingus/worldmap/pingus.hpp"
 #include "util/log.hpp"
 #include "util/sexpr_file_writer.hpp"
 #include "util/pathname.hpp"
 
 #include "ceuvars.h"
-
-unlock_nodes::unlock_nodes(WorldmapNS::PathGraph* g): path_graph(g) {}
-
-void unlock_nodes::operator()(WorldmapNS::Node<WorldmapNS::Dot*>& node)
-{
-  if (node.data->finished())
-  {
-    //log_info("Unlocking neightbours of: " << node.data);
-    for (std::vector<WorldmapNS::EdgeId>::iterator i = node.next.begin(); i != node.next.end(); ++i)
-    {
-      WorldmapNS::Edge<WorldmapNS::Path*>& edge = path_graph->graph.resolve_edge(*i);
-
-      // FIXME: This should be identical to node.data->unlock(), but not sure
-      path_graph->graph.resolve_node(edge.source).data->unlock();
-      path_graph->graph.resolve_node(edge.destination).data->unlock();
-    }
-  }
-}
 
 namespace WorldmapNS {
 
@@ -69,13 +50,7 @@ Worldmap::Worldmap(const Pathname& filename) :
   worldmap = PingusWorldmap(filename);
 }
 
-Worldmap::~Worldmap()
-{
-  for (auto i = drawables.begin (); i != drawables.end (); ++i)
-  {
-    delete (*i);
-  }
-
+Worldmap::~Worldmap() {
   Worldmap* self = this;
   ceu_out_go(&CEUapp, CEU_IN_DELETE_WORLDMAP, &self);
 }
@@ -84,34 +59,6 @@ void
 Worldmap::add_drawable(Drawable* drawable)
 {
   drawables.push_back(drawable);
-}
-
-// Determine starting node
-void
-Worldmap::set_starting_node()
-{
-  // See if the user has played this map before.  If not, use the <default-node>
-  // tag from the XML file.
-  NodeId id;
-  std::string node_name;
-
-  if (StatManager::instance()->get_string(worldmap.get_short_name() + "-current-node", node_name))
-  {
-    // Just in case that level doesn't exist, look it up.
-    id = path_graph->lookup_node(node_name);
-    if (id == NoNode)
-      id = default_node;
-  }
-  else
-    id = default_node;
-                
-  pingus->set_position(id);
-
-  LevelDot* leveldot = dynamic_cast<LevelDot*>(path_graph->get_dot(id));
-  if (leveldot)
-  {
-    leveldot->unlock();
-  }
 }
 
 } // namespace WorldmapNS

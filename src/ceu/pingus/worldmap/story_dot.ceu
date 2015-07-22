@@ -5,7 +5,7 @@
 #include "../../sdl.ceu"
 #include "../../string.ceu"
 #include "../../engine/display/sprite.ceu"
-#include "drawable.ceu"
+#include "dot.ceu"
 
 native/pre do
     ##include "engine/display/drawing_context.hpp"
@@ -27,13 +27,10 @@ native/pre do
     ##define Pathname__DATA_PATH Pathname::DATA_PATH            
 end
 
-native @pure _try_catch_log_error(), _ScreenManager__instance(), _std__make_shared_StoryScreen(), _FileReader__parse();
-
-input _DrawableDrawPackage* DOT_DRAW_HOVER;
-input _WorldmapNS__Dot* DOT_ON_CLICK;
+native @pure _ScreenManager__instance(), _std__make_shared_StoryScreen(), _FileReader__parse();
 
 class StoryDot with
-    interface Drawable;
+    interface Dot;
     var _FileReader* reader;
 do
     var _WorldmapNS__Dot&? dot = _PTR2REF((_WorldmapNS__Dot*)&me);
@@ -56,8 +53,12 @@ do
         _delete_obj(m_story);
     end
 
-    var DrawableProxy proxy with
-        this.drawable = outer;
+    function (void) => bool finished do return true; end
+    function (void) => bool accessible do return true; end
+    function (void) => void unlock do end
+
+    var DotProxy proxy with
+        this.dot = outer;
     end;
 
     par/or do
@@ -65,20 +66,12 @@ do
             gc:draw(_deref(m_story_dot.get()), dot.pos) finalize with end;
         end
     with
-        every package in DOT_DRAW_HOVER do
-            if package:drawable != &dot then
-                continue;
-            end
-
-            package:gc.draw(_deref(m_story_dot_highlight.get()), dot.pos) finalize with end;
-            package:gc.print_center(_Fonts__pingus_small, _Vector2i(dot.pos.x, dot.pos.y - 44) finalize with end, __(_deref(m_name)), 10000);
+        every gc in draw_hover do
+            gc:draw(_deref(m_story_dot_highlight.get()), dot.pos) finalize with end;
+            gc:print_center(_Fonts__pingus_small, _Vector2i(dot.pos.x, dot.pos.y - 44) finalize with end, __(_deref(m_name)), 10000);
         end
     with
-        every d in DOT_ON_CLICK do
-            if d != &dot then
-                continue;
-            end
-            
+        every on_click do            
             //it throws std::exception, but I won't catch it and log_error() it - there is no `try`/`catch` in Ceu
             _ScreenManager__instance():push_screen(
                 _std__make_shared_StoryScreen(

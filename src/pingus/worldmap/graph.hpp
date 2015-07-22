@@ -190,6 +190,8 @@ public:
     return nodes.size ();
   }
 
+  Node<NodeType>& get_node(int i) { return nodes[i]; }
+
   int max_node_handler_value () {
     return static_cast<int>(nodes.size());
   }

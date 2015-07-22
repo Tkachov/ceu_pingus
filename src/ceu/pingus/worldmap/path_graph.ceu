@@ -13,6 +13,7 @@
 #include "../global_interface.ceu"
 #include "pingus.ceu"
 #include "sprite_drawable.ceu"
+#include "level_dot.ceu"
 #include "story_dot.ceu"
 
 native/pre do
@@ -36,8 +37,7 @@ native/pre do
     ##include "pingus/stat_manager.hpp"    
     ##include "pingus/string_format.hpp"
     ##include "pingus/worldmap/dot.hpp"
-    ##include "pingus/worldmap/graph.hpp"
-    ##include "pingus/worldmap/level_dot.hpp"
+    ##include "pingus/worldmap/graph.hpp"    
     ##include "pingus/worldmap/path.hpp"
     ##include "pingus/worldmap/path_drawable.hpp"
     ##include "pingus/worldmap/pathfinder.hpp"
@@ -109,10 +109,16 @@ do
             spawn StoryDot with
                 dot = _new_Dot(childs.at(i).read_section("dot"));
                 this.me = _PTR2REF(dot);
-                this.reader = (_FileReader*)_addr(childs.at(i));                
+                this.reader = (_FileReader*)_addr(childs.at(i));
+                dot:ceu = &this;              
             end;
-        else/if childs.at(i).get_name() == "leveldot" then
-            dot = _new_LevelDot(childs.at(i));
+        else/if childs.at(i).get_name() == "leveldot" then            
+            spawn LevelDot with
+                dot = _new_Dot(childs.at(i).read_section("dot"));
+                this.me = _PTR2REF(dot);
+                this.reader = (_FileReader*)_addr(childs.at(i));
+                dot:ceu = &this;                
+            end;
         else
             _log_error("DotFactory: unknown tag: %1%", childs.at(i).get_name());
         end

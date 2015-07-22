@@ -1,0 +1,179 @@
+#ifndef DRAWABLE_LEVEL_DOT_CEU
+#define DRAWABLE_LEVEL_DOT_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../../string.ceu"
+#include "../../engine/display/sprite.ceu"
+#include "dot.ceu"
+
+native/pre do
+    ##include "engine/display/drawing_context.hpp"
+    ##include "engine/display/sprite.hpp"
+    ##include "engine/screen/screen_manager.hpp"
+    ##include "pingus/fonts.hpp"
+    ##include "pingus/gettext.h"
+    ##include "pingus/screens/story_screen.hpp"
+    ##include "pingus/worldmap/dot.hpp"
+    ##include "util/file_reader.hpp"
+    ##include "util/log.hpp"
+    ##include "util/pathname.hpp"
+    ##include <string>
+    ##include "engine/display/sprite.hpp"
+    ##include "pingus/pingus_level.hpp"
+    ##include "pingus/worldmap/dot.hpp"
+    ##include "engine/display/drawing_context.hpp"
+    ##include "engine/input/control.hpp"
+    ##include "engine/screen/screen_manager.hpp"
+    ##include "pingus/fonts.hpp"
+    ##include "pingus/gettext.h"
+    ##include "pingus/globals.hpp"
+    ##include "pingus/plf_res_mgr.hpp"
+    ##include "pingus/savegame_manager.hpp"
+    ##include "pingus/screens/start_screen.hpp"
+
+
+    ##define Fonts__pingus_small Fonts::pingus_small
+    ##define ScreenManager__instance() ScreenManager::instance()
+    ##define std__make_shared_StoryScreen std::make_shared<StoryScreen>
+    ##define FileReader__parse(x) FileReader::parse(x)
+    ##define Pathname__DATA_PATH Pathname::DATA_PATH
+
+    ##define PLFResMgr__load_plf PLFResMgr::load_plf
+    ##define new_PingusLevel new PingusLevel
+    ##define std__make_shared_StartScreen std::make_shared<StartScreen>
+
+    ##define SavegameManager__instance() SavegameManager::instance()
+    ##define Savegame__FINISHED Savegame::FINISHED
+    ##define Savegame__ACCESSIBLE Savegame::ACCESSIBLE
+    ##define Savegame__NONE Savegame::NONE
+    ##define new_Savegame2(x, y, w, h) new Savegame(x, y, w, h)
+    ##define Input__Controller__current() Input::Controller::current()
+    ##define Input__STANDARD_POINTER Input::STANDARD_POINTER
+end
+
+native @pure _ScreenManager__instance(), _SavegameManager__instance(), _std__make_shared_StoryScreen(), _FileReader__parse(),
+             _PLFResMgr__load_plf(), _new_PingusLevel(), _std__make_shared_StartScreen, _new_Savegame2(),
+             _Input__Controller__current();
+
+class LevelDot with
+    interface Dot;
+    var _FileReader* reader;
+    function (void) => _PingusLevel* get_plf;
+do
+    var _WorldmapNS__Dot&? dot = _PTR2REF((_WorldmapNS__Dot*)&me);
+
+    var Sprite green_dot_sur;
+    var Sprite red_dot_sur;
+    var Sprite inaccessible_dot_sur;
+    var Sprite highlight_green_dot_sur;
+    var Sprite highlight_red_dot_sur;
+    call/rec green_dot_sur.reload_by_name("core/worldmap/dot_green");
+    call/rec red_dot_sur.reload_by_name("core/worldmap/dot_red");
+    call/rec inaccessible_dot_sur.reload_by_name("core/worldmap/dot_invalid");
+    call/rec highlight_green_dot_sur.reload_by_name("core/worldmap/dot_green_hl");
+    call/rec highlight_red_dot_sur.reload_by_name("core/worldmap/dot_red_hl");
+
+    var _std__string&? resname = _new_String();
+    reader:read_string("levelname", _deref(resname)); 
+
+    var _PingusLevel&? plf = _new_PingusLevel(_PLFResMgr__load_plf(_deref(resname)));
+    finalize with
+        _delete_obj(plf);
+    end
+    _delete_obj(resname);
+
+    function (void) => _PingusLevel* get_plf do
+        return &plf;
+    end    
+
+    function (void) => bool finished do
+        var _Savegame* savegame = _PTR2REF(_SavegameManager__instance():get(plf.get_resname()));
+        if savegame and savegame:get_status() == _Savegame__FINISHED then
+            return true;
+        else
+            return false;
+        end
+    end
+
+    function (void) => bool accessible do
+        var _Savegame* savegame = _PTR2REF(_SavegameManager__instance():get(plf.get_resname()));
+        if savegame and savegame:get_status() != _Savegame__NONE then
+            return true;
+        else
+            return false;
+        end
+    end
+
+    function (void) => void unlock do
+        var _Savegame* savegame = _PTR2REF(_SavegameManager__instance():get(plf.get_resname()));
+        if not savegame or savegame:get_status() == _Savegame__NONE then            
+            var _Savegame&? sg = _new_Savegame2(plf.get_resname(), _Savegame__ACCESSIBLE, 0, 0);
+            _SavegameManager__instance():store(_deref(sg));
+            _delete_obj(sg);
+        end        
+    end
+
+    var DotProxy proxy with
+        this.dot = outer;
+    end;
+
+    par/or do
+        every gc in draw do
+            var Vector2i mpos;
+            _readVector2i(mpos,
+                gc:screen_to_world(
+                    _Vector2i(
+                        _Input__Controller__current():get_pointer(_Input__STANDARD_POINTER):get_pos()
+            )));            
+
+            var float x = ((float)mpos.x) - dot.pos.x;
+            var float y = ((float)mpos.y) - dot.pos.y;
+
+            var bool highlight = false;
+
+            if _Math__sqrt(x*x + y*y) < 30.0 then
+                highlight = true;
+            end
+
+            var _Savegame* savegame = _PTR2REF(_SavegameManager__instance():get(plf.get_resname()));
+            if savegame and (savegame:get_status() == _Savegame__FINISHED or savegame:get_status() == _Savegame__ACCESSIBLE) then
+                if savegame:get_status() == _Savegame__FINISHED then
+                    if highlight then
+                        gc:draw(_deref(highlight_green_dot_sur.get()), dot.pos) finalize with end;
+                    else
+                        gc:draw(_deref(green_dot_sur.get()), dot.pos) finalize with end;
+                    end
+                else
+                    if highlight then
+                        gc:draw(_deref(highlight_red_dot_sur.get()), dot.pos) finalize with end;
+                    else
+                        gc:draw(_deref(red_dot_sur.get()), dot.pos) finalize with end;
+                    end
+                end
+            else
+                gc:draw(_deref(inaccessible_dot_sur.get()), dot.pos) finalize with end;
+            end
+        end
+    with
+        every gc in draw_hover do
+            if accessible() then  
+                gc:print_center(_Fonts__pingus_small, _Vector2i(dot.pos.x, dot.pos.y - 44) finalize with end, __(_PTR2REF(get_plf():get_levelname())), 10000);
+            else
+                gc:print_center(_Fonts__pingus_small, _Vector2i(dot.pos.x, dot.pos.y - 44) finalize with end, __("???"), 10000);
+            end
+
+            if _globals__developer_mode then  
+                gc:print_center(_Fonts__pingus_small, _Vector2i(dot.pos.x, dot.pos.y - 70) finalize with end, _PTR2REF(get_plf():get_resname()), 10000);
+            end
+        end
+    with
+        every on_click do
+            _ScreenManager__instance():push_screen(_std__make_shared_StartScreen(_deref(plf)));
+        end
+    with
+        await delete;
+    end
+end
+
+#endif

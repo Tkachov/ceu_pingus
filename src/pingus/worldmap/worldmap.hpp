@@ -82,10 +82,6 @@ public:
   void add_drawable(Drawable* drawable);
 
 private:
-  /** Sets the starting level on the worldmap.  Either take it from the StatManager
-      or use the "default-node" option from the XML file */
-  void set_starting_node();
-
   static Worldmap* current_; 
 
   Worldmap(const Worldmap&);
@@ -96,14 +92,6 @@ public:
 };
 
 } // namespace WorldmapNS
-
-struct unlock_nodes
-{
-  WorldmapNS::PathGraph* path_graph;
-
-  unlock_nodes(WorldmapNS::PathGraph* g);
-  void operator()(WorldmapNS::Node<WorldmapNS::Dot*>& node);
-};
 
 #endif
 

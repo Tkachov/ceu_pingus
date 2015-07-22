@@ -26,6 +26,8 @@ namespace WorldmapNS {
     LevelDots TubeDots and other availabe. */
 class Dot : public Drawable
 {
+public:
+  void* ceu;
 protected:
   Vector3f pos;
 
@@ -39,10 +41,6 @@ public:
 
   virtual void on_click();
 
-  virtual bool finished() { return true; }
-  virtual bool accessible() { return true; }
-  /** makes the node accessible */
-  virtual void unlock() {}
 private:
   Dot (const Dot&);
   Dot& operator= (const Dot&);

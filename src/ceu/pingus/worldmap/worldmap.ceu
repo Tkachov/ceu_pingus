@@ -34,7 +34,6 @@ native/pre do
     ##include "pingus/server.hpp"
     ##include "pingus/stat_manager.hpp"    
     ##include "pingus/string_format.hpp"
-    ##include "pingus/worldmap/level_dot.hpp"
     ##include "pingus/worldmap/pingus.hpp"
     ##include "pingus/worldmap/pingus_worldmap.hpp"
     ##include "pingus/worldmap/worldmap.hpp"
@@ -50,6 +49,7 @@ native/pre do
     ##define new_GUI_Component() new GUI::Component()
     ##define new_Worldmap(pn) new WorldmapNS::Worldmap(pn)
     ##define ScreenManager__instance() ScreenManager::instance()
+    ##define StatManager__instance() StatManager::instance()
     ##define std__make_shared_GameSession std::make_shared<GameSession>
     ##define std__make_shared_StoryScreen std::make_shared<StoryScreen>
     ##define Display__get_width() Display::get_width()
@@ -72,9 +72,11 @@ native/pre do
     ##define DrawableFactory__create(x) WorldmapNS::DrawableFactory::create(x)
     ##define addr(x) &x
     ##define new_Drawable new WorldmapNS::Drawable
+    ##define WorldmapNS__Node_WorldmapNS__Dot WorldmapNS::Node<WorldmapNS::Dot*>
+    ##define WorldmapNS__Edge_WorldmapNS__Path WorldmapNS::Edge<WorldmapNS::Path*>
 end
 
-native @pure _new_GUI_Component(), _ScreenManager__instance(), _std__make_shared_GameScreen(), _std__make_shared_StoryScreen(),
+native @pure _new_GUI_Component(), _ScreenManager__instance(), _StatManager__instance(), _std__make_shared_GameScreen(), _std__make_shared_StoryScreen(),
              _Display__get_width(), _Display__get_height(), _new_Worldmap(), _new_Pingus(), _DrawableFactory__create(), _new_Drawable(),
              _SU2str(), _StringFormat__break_line(), _new_SceneContextE(), _StatManager__instance(), _new_PathGraph(), _addr();
 
@@ -97,6 +99,7 @@ end
 
 class Worldmap with
     interface IWorldmap;
+    function @rec (void) => void set_starting_node;
 do
     var _WorldmapNS__Worldmap&? worldmap = _PTR2REF((_WorldmapNS__Worldmap*)me);
 
@@ -138,9 +141,35 @@ do
         worldmap.pingus = _new_Pingus(worldmap.path_graph);
         this.me = _PTR2REF(worldmap.pingus);
     end;    
-    worldmap.set_starting_node();
+    call/rec set_starting_node();
     worldmap.add_drawable(worldmap.pingus) finalize with end;
     worldmap.gc_state.set_limit(_Rect(_Vector2i(0, 0), _Size(worldmap.worldmap.get_width(), worldmap.worldmap.get_height())));
+
+    function @rec (void) => void set_starting_node do
+        // See if the user has played this map before.  If not, use the <default-node>
+        // tag from the XML file.
+        var int id;
+        var _std__string* node_name = _new_String();
+
+        if _StatManager__instance():get_string(_scc2(worldmap.worldmap.get_short_name(), "-current-node"), _deref(node_name)) then
+            // Just in case that level doesn't exist, look it up.
+            id = worldmap.path_graph:lookup_node(_deref(node_name));
+            if id == _WNS_NoNode then
+                id = worldmap.default_node;
+            end        
+        else
+            id = worldmap.default_node;
+        end
+
+        _delete_obj(node_name);
+
+        worldmap.pingus:set_position(id);
+
+        var _WorldmapNS__Dot* dot = _PTR2REF(worldmap.path_graph:get_dot(id));
+        if dot then        
+            ((Dot*)dot:ceu):unlock();
+        end        
+    end
 
     function (void) => _PingusWorldmap get_worldmap do
         return worldmap.worldmap;
@@ -167,7 +196,20 @@ do
 
             //update_locked_nodes:
             //original FIXME: This shouldn't be a polling function
-            worldmap.path_graph:graph.for_each_node(_unlock_nodes(worldmap.path_graph) finalize with end);
+            loop i in worldmap.path_graph:graph.nodes_size() do
+                var _WorldmapNS__Node_WorldmapNS__Dot* node = _addr(worldmap.path_graph:graph.get_node(i));
+                var Dot* dot = _PTR2REF(node:data:ceu);
+                if dot:finished() then
+                    //log_info("Unlocking neightbours of: " << node.data);                    
+                    loop j in node:next.size() do                        
+                        var _WorldmapNS__Edge_WorldmapNS__Path* edge = _addr(worldmap.path_graph:graph.resolve_edge(node:next.at(j)));
+
+                        //original FIXME: This should be identical to node.data->unlock(), but not sure
+                        ((Dot*)worldmap.path_graph:graph.resolve_node(_PTR2REF(edge:source)).data:ceu):unlock();
+                        ((Dot*)worldmap.path_graph:graph.resolve_node(_PTR2REF(edge:destination)).data:ceu):unlock();
+                    end
+                end
+            end
 
             /*#if 0
               bool credits_unlocked = false;
@@ -231,9 +273,10 @@ do
                 worldmap.drawables.at(i):draw(_deref(gc));
             end
 
-            var _WorldmapNS__Dot* dot = _PTR2REF(find_dot(worldmap.mouse_x, worldmap.mouse_y));
+            var _WorldmapNS__Dot* dot = _PTR2REF(find_dot(worldmap.mouse_x, worldmap.mouse_y));            
             if dot then
-                dot:draw_hover(_deref(gc));
+                var Dot* ceudot = _PTR2REF(dot:ceu);
+                emit ceudot:draw_hover => gc;
             end
   
             worldmap.gc_state.pop(_deref(gc)); 
@@ -268,6 +311,7 @@ do
             */
 
             var _WorldmapNS__Dot* dot = _PTR2REF(find_dot(x, y));
+            var Dot* ceudot = _PTR2REF(dot:ceu);
             if dot then
                 if _globals__developer_mode then
                     _log_info("Worldmap: Clicked on: %1%", dot:get_name());
@@ -277,9 +321,9 @@ do
                     if _globals__developer_mode then
                         _log_info("Worldmap: Pingu is on node, issue on_click()");
                     end
-                    dot:on_click();
+                    emit ceudot:on_click;
                 else
-                    if dot:accessible() then
+                    if ceudot:accessible() then
                         if not worldmap.pingus:walk_to_node(worldmap.path_graph:lookup_node(dot:get_name())) then
                             if _globals__developer_mode then
                                 _log_info("Worldmap: NO PATH TO NODE FOUND!");
@@ -306,6 +350,10 @@ do
         end
     with
         var _WorldmapNS__Worldmap* e = await DELETE_WORLDMAP until (e == &worldmap);
+        //TODO: solve stack overflow / segfault error
+        loop i in worldmap.drawables.size() do  
+            _delete_obj(worldmap.drawables.at(i));
+        end
     end
 end
 
