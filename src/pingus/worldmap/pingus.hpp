@@ -29,9 +29,6 @@ class Pingus : public Drawable
 {
 private:
   PathGraph* path;
-  StateSprite sprite;
-  Sprite sprite_standing;
-  Sprite arrow;
 
   /** The node on which the pingu currently stands, NoNode if the pingu is
       currently on the move to another node */
@@ -75,11 +72,8 @@ private:
   Vector3f last_pos;
 
 public:
-  Pingus (PathGraph* arg_path);
-  ~Pingus ();
-
-  void draw (DrawingContext& gc);
-  void update (float delta);
+  Pingus(PathGraph* arg_path);
+  ~Pingus() {};
 
   /** @return true if the node is reachable, false otherwise */
   bool walk_to_node (NodeId target);

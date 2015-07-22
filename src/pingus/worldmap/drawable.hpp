@@ -56,13 +56,13 @@ public:
     reader.read_string("name", name);
   }
 
-  virtual ~Drawable() {}
+  virtual ~Drawable();
 
   bool is_visible() { return visible; }
   std::string get_name() { return name; }
 
-  virtual void draw(DrawingContext& gc) =0;
-  virtual void update(float delta) =0;
+  virtual void draw(DrawingContext& gc);
+  virtual void update(float delta);
 
 private:
   Drawable (const Drawable&);
@@ -70,6 +70,20 @@ private:
 };
 
 } // namespace WorldmapNS
+
+struct DrawableDrawPackage {
+  WorldmapNS::Drawable* drawable;
+  DrawingContext& gc;
+
+  DrawableDrawPackage(WorldmapNS::Drawable* d, DrawingContext& g): drawable(d), gc(g) {};
+};
+
+struct DrawableUpdatePackage {
+  WorldmapNS::Drawable* drawable;
+  float delta;
+
+  DrawableUpdatePackage(WorldmapNS::Drawable* d, float del): drawable(d), delta(del) {};
+};
 
 #endif
 

@@ -11,6 +11,8 @@
 #include "../../math/rect.ceu"
 #include "../iworld.ceu"
 #include "../global_interface.ceu"
+#include "pingus.ceu"
+#include "sprite_drawable.ceu"
 
 native/pre do
     ##include "engine/display/display.hpp"
@@ -29,27 +31,20 @@ native/pre do
     ##include "pingus/screens/result_screen.hpp"
     ##include "pingus/screens/story_screen.hpp"
     ##include "pingus/server.hpp"
+    ##include "pingus/stat_manager.hpp"    
     ##include "pingus/string_format.hpp"
+    ##include "pingus/worldmap/level_dot.hpp"
     ##include "pingus/worldmap/pingus.hpp"
+    ##include "pingus/worldmap/pingus_worldmap.hpp"
     ##include "pingus/worldmap/worldmap.hpp"
     ##include "pingus/worldmap/worldmap_screen.hpp"
     ##include "util/log.hpp"
+    ##include "util/pathname.hpp"
+    ##include "util/sexpr_file_writer.hpp"
     ##include "util/string_util.hpp"
     ##include <iostream>
-    ##include "engine/sound/sound.hpp"
-    ##include "pingus/gettext.h"
-    ##include "pingus/globals.hpp"
-    ##include "pingus/stat_manager.hpp"
-    ##include "pingus/worldmap/drawable_factory.hpp"
-    ##include "pingus/worldmap/level_dot.hpp"
-    ##include "pingus/worldmap/pingus.hpp"
-    ##include "util/log.hpp"
-    ##include "util/sexpr_file_writer.hpp"
-    ##include "util/pathname.hpp"
     ##include <memory>
     ##include <vector>
-    ##include "engine/display/graphic_context_state.hpp"
-    ##include "pingus/worldmap/pingus_worldmap.hpp"
 
     ##define new_GUI_Component() new GUI::Component()
     ##define new_Worldmap(pn) new WorldmapNS::Worldmap(pn)
@@ -72,11 +67,15 @@ native/pre do
     ##define WorldmapNS__Dot WorldmapNS::Dot
 
     ##define StatManager__instance() StatManager::instance()
+    ##define new_PathGraph new WorldmapNS::PathGraph
+    ##define DrawableFactory__create(x) WorldmapNS::DrawableFactory::create(x)
+    ##define addr(x) &x
+    ##define new_Drawable new WorldmapNS::Drawable
 end
 
 native @pure _new_GUI_Component(), _ScreenManager__instance(), _std__make_shared_GameScreen(), _std__make_shared_StoryScreen(),
-             _Display__get_width(), _Display__get_height(), _new_Worldmap(), _new_Pingus(),
-             _SU2str(), _StringFormat__break_line(), _new_SceneContextE(), _StatManager__instance();
+             _Display__get_width(), _Display__get_height(), _new_Worldmap(), _new_Pingus(), _DrawableFactory__create(), _new_Drawable(),
+             _SU2str(), _StringFormat__break_line(), _new_SceneContextE(), _StatManager__instance(), _new_PathGraph(), _addr();
 
 input _WorldmapNS__Worldmap* DELETE_WORLDMAP;
 
@@ -100,7 +99,38 @@ class Worldmap with
 do
     var _WorldmapNS__Worldmap&? worldmap = _PTR2REF((_WorldmapNS__Worldmap*)me);
 
-    worldmap.pingus = _new_Pingus(worldmap.path_graph.get());
+    // Create all objects
+    loop i in worldmap.worldmap.get_objects().size() do  
+        var _WorldmapNS__Drawable* drawable = null;
+
+        //_DrawableFactory__create(worldmap.worldmap.get_objects().at(i));
+        if worldmap.worldmap.get_objects().at(i).get_name() == "surface" then  
+            spawn SpriteDrawable with
+                this.me = _new_Drawable(worldmap.worldmap.get_objects().at(i));
+                this.reader = (_FileReader*)_addr(worldmap.worldmap.get_objects().at(i));
+                drawable = _PTR2REF(&this.me);
+            end;
+        else  
+            _log_error("can't create %1%", worldmap.worldmap.get_objects().at(i).get_name());
+        end
+        ////////////////////////////
+
+        if drawable then
+            worldmap.objects.push_back(drawable) finalize with end;
+            worldmap.drawables.push_back(drawable) finalize with end;
+        else
+            _log_info("Worldmap::parse_objects: Parse Error");
+        end
+    end
+    
+    worldmap.path_graph.reset(_new_PathGraph(&worldmap, worldmap.worldmap.get_graph()));
+    finalize worldmap.default_node = worldmap.path_graph:lookup_node(worldmap.worldmap.get_default_node()); with end
+    finalize worldmap.final_node   = worldmap.path_graph:lookup_node(worldmap.worldmap.get_final_node()); with end
+
+    var Pingus pingus with
+        worldmap.pingus = _new_Pingus(worldmap.path_graph.get());
+        this.me = _PTR2REF(worldmap.pingus);
+    end;    
     worldmap.set_starting_node();
     worldmap.add_drawable(worldmap.pingus) finalize with end;
     worldmap.gc_state.set_limit(_Rect(_Vector2i(0, 0), _Size(worldmap.worldmap.get_width(), worldmap.worldmap.get_height())));

@@ -25,9 +25,6 @@ namespace WorldmapNS {
 Pingus::Pingus (PathGraph* arg_path) :
   Drawable("pingus"),
   path(arg_path),
-  sprite(),
-  sprite_standing("core/worldmap/pingus_standing"),
-  arrow("core/worldmap/arrow"),
   current_node(),
   source_node(),
   target_node(),
@@ -38,54 +35,8 @@ Pingus::Pingus (PathGraph* arg_path) :
   pos(),
   last_pos()
 {
-  sprite.load(Direction::LEFT,  Sprite("core/worldmap/pingus/left"));
-  sprite.load(Direction::RIGHT, Sprite("core/worldmap/pingus/right"));
-
   final_target_node = NoNode;
   current_node = NoNode;
-}
-
-Pingus::~Pingus ()
-{
-}
-
-void
-Pingus::draw (DrawingContext& gc)
-{
-  // Add 10 to z_pos so that the pingu gets drawn above the node it is
-  // standing one
-  if (final_target_node != NoNode && current_node == NoNode)
-  {
-    gc.draw(arrow, path->get_dot(final_target_node)->get_pos() + Vector3f(0, 0, 10));
-  }
-
-  if (!is_walking())
-  {
-    gc.draw(sprite_standing, pos);
-  }
-  else
-  {
-    // FIXME: Replace the sprite and add up/down here
-    float direction = get_direction();
-      
-    if (direction >= 0 && direction < 180)
-      gc.draw(sprite[Direction::RIGHT], pos + Vector3f(0, 0, 10));
-    else
-      gc.draw(sprite[Direction::LEFT], pos + Vector3f(0, 0, 10));
-  }
-}
-
-void
-Pingus::update (float delta)
-{
-  float direction = get_direction();
-  if (direction >= 0 && direction < 180)
-    sprite[Direction::RIGHT].update(delta);
-  else
-    sprite[Direction::LEFT].update(delta);
-  
-  if (is_walking())
-    update_walk(delta);
 }
 
 void

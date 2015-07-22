@@ -1,0 +1,71 @@
+#ifndef DRAWABLE_PINGUS_CEU
+#define DRAWABLE_PINGUS_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../../engine/display/sprite.ceu"
+#include "drawable.ceu"
+
+native/pre do
+    ##define WorldmapNS__Pingus WorldmapNS::Pingus
+    ##define WNS_NoNode WorldmapNS::NoNode
+end
+
+class Pingus with
+    interface Drawable;
+do
+    var _WorldmapNS__Pingus&? pingus = _PTR2REF((_WorldmapNS__Pingus*)&me);
+
+    var DrawableProxy proxy with
+        this.drawable = outer;
+    end;
+
+    var Sprite sprite_standing;    
+    var Sprite sprite_right;
+    var Sprite sprite_left;
+    var Sprite arrow;
+    call/rec sprite_standing.reload_by_name("core/worldmap/pingus_standing");
+    call/rec sprite_right.reload_by_name("core/worldmap/pingus/right");
+    call/rec sprite_left.reload_by_name("core/worldmap/pingus/left");
+    call/rec arrow.reload_by_name("core/worldmap/arrow");
+
+    par/or do
+        every gc in draw do
+            // Add 10 to z_pos so that the pingu gets drawn above the node it is
+            // standing one
+            if pingus.final_target_node != _WNS_NoNode and pingus.current_node == _WNS_NoNode then              
+                gc:draw(_deref(arrow.get()), (pingus.path:get_dot(pingus.final_target_node) finalize with end):get_pos() + _Vector3f(0, 0, 10));
+            end
+
+            if not pingus.is_walking() then
+                gc:draw(_deref(sprite_standing.get()), pingus.pos) finalize with end;
+            else  
+                //original FIXME: Replace the sprite and add up/down here
+                var float direction = pingus.get_direction();
+      
+                if direction >= 0 and direction < 180 then
+                    gc:draw(_deref(sprite_right.get()), pingus.pos + _Vector3f(0, 0, 10));
+                else
+                    gc:draw(_deref(sprite_left.get()), pingus.pos + _Vector3f(0, 0, 10));
+                end
+            end
+        end
+    with
+        every delta in update do
+            var float direction = pingus.get_direction();
+            if direction >= 0 and direction < 180 then
+                sprite_right.update_delta(delta);
+            else
+                sprite_left.update_delta(delta);
+            end
+  
+            if pingus.is_walking() then
+                pingus.update_walk(delta);
+            end
+        end
+    with        
+        await delete;
+    end
+end
+
+#endif

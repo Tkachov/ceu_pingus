@@ -22,7 +22,6 @@
 #include "pingus/gettext.h"
 #include "pingus/globals.hpp"
 #include "pingus/stat_manager.hpp"
-#include "pingus/worldmap/drawable_factory.hpp"
 #include "pingus/worldmap/level_dot.hpp"
 #include "pingus/worldmap/pingus.hpp"
 #include "util/log.hpp"
@@ -68,28 +67,6 @@ Worldmap::Worldmap(const Pathname& filename) :
   current_ = this;
 
   worldmap = PingusWorldmap(filename);
-
-  // Create all objects
-  const std::vector<FileReader>& object_reader = worldmap.get_objects();
-  for(std::vector<FileReader>::const_iterator i = object_reader.begin(); i != object_reader.end(); ++i)
-  {
-    Drawable* drawable = DrawableFactory::create(*i);
-    if (drawable)
-    {
-      objects.push_back(drawable);
-      drawables.push_back(drawable);
-    }
-    else
-    {
-      log_info("Worldmap::parse_objects: Parse Error");
-    }
-  }
-
-  FileReader path_graph_reader = worldmap.get_graph();
-  path_graph.reset(new PathGraph(this, path_graph_reader));
-
-  default_node = path_graph->lookup_node(worldmap.get_default_node());
-  final_node   = path_graph->lookup_node(worldmap.get_final_node());
 }
 
 Worldmap::~Worldmap()

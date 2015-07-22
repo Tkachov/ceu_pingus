@@ -1,0 +1,77 @@
+#ifndef DRAWABLE_SPRITE_DRAWABLE_CEU
+#define DRAWABLE_SPRITE_DRAWABLE_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../../engine/display/sprite.ceu"
+#include "drawable.ceu"
+
+native/pre do
+    ##include "engine/display/sprite.hpp"
+    ##include "math/vector3f.hpp"
+    ##include "pingus/worldmap/drawable.hpp"
+    ##include "pingus/res_descriptor.hpp"
+    ##include "pingus/worldmap/pingus.hpp"
+    ##include "pingus/worldmap/worldmap.hpp"
+
+    ##define WorldmapNS__Pingus WorldmapNS::Pingus
+    ##define WNS_NoNode WorldmapNS::NoNode
+
+    ##define Worldmap__current() WorldmapNS::Worldmap::current()
+
+    ##define reader_read_vector(rdr, dst) { Vector3f rd; rdr->read_vector("position", rd); dst.x = rd.x; dst.y = rd.y; dst.z = rd.z; }
+end
+
+native @pure _Worldmap__current(), _reader_read_vector();
+
+class SpriteDrawable with
+    interface Drawable;
+    var _FileReader* reader;
+do
+    var _WorldmapNS__Drawable&? drawable = _PTR2REF(&me);
+
+    var Sprite surface;
+    var Vector3f pos;
+    var bool auto_uncover = false;
+
+    var _ResDescriptor* desc = _new_ResDescriptor();
+    reader:read_desc  ("surface", _deref(desc));
+    _reader_read_vector(reader, pos);
+    reader:read_bool  ("auto-uncover", auto_uncover);
+
+    call/rec surface.reload_by_desc(desc);
+    _delete_obj(desc);
+
+    var DrawableProxy proxy with
+        this.drawable = outer;
+    end;
+
+    par/or do
+        every gc in draw do
+            var bool visible = false;
+            //if (surface)  
+                if auto_uncover then
+                    var Vector3f pingus_pos;
+                    _readVector3f(pingus_pos, _Worldmap__current():get_pingus():get_pos());
+                    // Pingu is not over the surface
+                    if pingus_pos.x <= pos.x or pingus_pos.x >= pos.x + (float)surface.get_width() or
+                       pingus_pos.y <= pos.y or pingus_pos.y >= pos.y + (float)surface.get_height() then
+                        visible = true;                    
+                    else/if pingus_pos.z > pos.z + 1000 then
+                        //original FIXME: Hack for the 0.6.0 release/tutorial world remove later
+                        visible = true;
+                    end                
+                else
+                    visible = true;
+                end
+
+            if visible then
+                gc:draw(_deref(surface.get()), _toVector3f(pos));
+            end
+        end
+    with        
+        await delete;
+    end
+end
+
+#endif

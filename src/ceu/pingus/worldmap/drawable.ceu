@@ -1,0 +1,77 @@
+#ifndef DRAWABLE_CEU
+#define DRAWABLE_CEU
+
+native/pre do
+    ##include "pingus/worldmap/drawable.hpp"
+    ##define WorldmapNS__Drawable WorldmapNS::Drawable
+end
+
+interface Drawable with
+    var _WorldmapNS__Drawable& me;
+
+    event _DrawingContext* draw;
+    event float update;
+    /*
+    event _ComponentIsAtPackage* is_at;
+
+    event void mouse_enter;
+    event void mouse_leave;
+    event (int, int) mouse_move;
+
+    event (int, int) mouse_press;
+    event (int, int) mouse_release;
+    event (int, int) mouse_click;
+    event void mouse_double_click;
+
+    event (int, int) mouse_secondary_press;
+    event (int, int) mouse_secondary_release;
+    event (int, int) mouse_secondary_click;
+    event void mouse_secondary_double_click;
+    */
+    event void delete;
+end
+
+input _DrawableDrawPackage* DRAWABLE_DRAW;
+input _DrawableUpdatePackage* DRAWABLE_UPDATE;
+/*
+input _ComponentIsAtPackage* COMPONENT_IS_AT;
+
+input _GUI_Component* ON_POINTER_ENTER;
+input _GUI_Component* ON_POINTER_LEAVE;
+input _PositionPackage* ON_POINTER_MOVE;
+
+input _PositionPackage* ON_PRIMARY_BUTTON_PRESS;
+input _PositionPackage* ON_PRIMARY_BUTTON_RELEASE;
+input _PositionPackage* ON_PRIMARY_BUTTON_CLICK;
+
+input _PositionPackage* ON_SECONDARY_BUTTON_PRESS;
+input _PositionPackage* ON_SECONDARY_BUTTON_RELEASE;
+input _PositionPackage* ON_SECONDARY_BUTTON_CLICK;
+*/
+input _WorldmapNS__Drawable* DRAWABLE_DELETE;
+
+class DrawableProxy with
+    var Drawable& drawable;
+do
+    par do
+        every package in DRAWABLE_DRAW do
+            if package:drawable == &drawable.me then
+                emit drawable.draw => &package:gc;
+            end
+        end
+    with
+        every package in DRAWABLE_UPDATE do
+            if package:drawable == &drawable.me then
+                emit drawable.update => package:delta;
+            end
+        end
+    with
+        every d in DRAWABLE_DELETE do
+            if d == &drawable.me then
+                emit drawable.delete;
+            end
+        end
+    end
+end
+
+#endif

@@ -14,4 +14,25 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+#include "pingus/worldmap/drawable.hpp"
+
+#include "ceuvars.h"
+
+WorldmapNS::Drawable::~Drawable() {
+  WorldmapNS::Drawable* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_DRAWABLE_DELETE, &self);
+}
+
+void WorldmapNS::Drawable::draw(DrawingContext& gc) {
+  DrawableDrawPackage package(this, gc);
+  DrawableDrawPackage* pp = &package;
+  ceu_out_go(&CEUapp, CEU_IN_DRAWABLE_DRAW, &pp);
+}
+
+void WorldmapNS::Drawable::update(float delta) {
+  DrawableUpdatePackage package(this, delta);
+  DrawableUpdatePackage* pp = &package;
+  ceu_out_go(&CEUapp, CEU_IN_DRAWABLE_UPDATE, &pp);
+}
+
 /* EOF */
