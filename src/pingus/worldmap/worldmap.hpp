@@ -58,7 +58,7 @@ private:
   GraphicContextState gc_state;
 
   /** The graph that represents the path on the map */
-  std::unique_ptr<PathGraph> path_graph;
+  PathGraph* path_graph;
 
   /** A collection of drawable things, allocation and deallocation
       takes place elsewhere these are only references to other

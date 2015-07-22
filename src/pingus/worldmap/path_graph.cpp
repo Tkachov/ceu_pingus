@@ -18,7 +18,6 @@
 
 #include "pingus/globals.hpp"
 #include "pingus/worldmap/dot.hpp"
-#include "pingus/worldmap/dot_factory.hpp"
 #include "pingus/worldmap/path_drawable.hpp"
 #include "pingus/worldmap/worldmap.hpp"
 #include "util/log.hpp"
@@ -26,19 +25,14 @@
 
 namespace WorldmapNS {
 
-PathGraph::PathGraph(Worldmap* arg_worldmap, const FileReader& reader) :
+PathGraph::PathGraph(Worldmap* arg_worldmap):
   worldmap(arg_worldmap),
   graph(),
   dots(),
   pathfinder_cache(),
   node_lookup(),
   edge_lookup()
-{
-  parse_nodes(reader.read_section("nodes"));
-  parse_edges(reader.read_section("edges"));
-  
-  init_cache();
-}
+{}
 
 void delete_Path(Edge<Path*> x)
 {
@@ -51,37 +45,6 @@ PathGraph::~PathGraph()
   for(PFinderCache::iterator i = pathfinder_cache.begin();
       i != pathfinder_cache.end(); ++i)
     delete *i;
-}
-
-void
-PathGraph::parse_nodes(const FileReader& reader)
-{
-  const std::vector<FileReader>& childs = reader.get_sections();
-
-  for(std::vector<FileReader>::const_iterator i = childs.begin(); 
-      i != childs.end(); ++i)
-  {
-    Dot* dot = DotFactory::create(*i);
-    if (dot)
-    {
-      // add the dot to the pathfinding
-      NodeId id = graph.add_node(dot);
-
-      //log_info("Adding to lookup table: " << dot->get_name());
-      node_lookup[dot->get_name()] = id;
-
-      // add the dot to the list of drawables
-      if (worldmap)
-        worldmap->add_drawable(dot);
-
-      // FIXME: should be use this for freeing the stuff?
-      dots.push_back(dot);
-    }
-    else
-    {
-      log_info("PathGraph: Couldn't create node");
-    }
-  }
 }
 
 void

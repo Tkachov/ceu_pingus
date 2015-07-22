@@ -16,6 +16,7 @@
 
 #include "pingus/worldmap/dot.hpp"
 
+#include "ceuvars.h"
 
 namespace WorldmapNS {
 
@@ -27,6 +28,17 @@ Dot::Dot(const FileReader& reader) :
   reader.read_string("name",     name);
 
   assert(!name.empty());
+}
+
+void Dot::draw_hover(DrawingContext& gc) {
+  DrawableDrawPackage package(this, gc);
+  DrawableDrawPackage* pp = &package;
+  ceu_out_go(&CEUapp, CEU_IN_DOT_DRAW_HOVER, &pp);
+}
+
+void Dot::on_click() {
+  Dot* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_DOT_ON_CLICK, &self);
 }
 
 } // namespace WorldmapNS

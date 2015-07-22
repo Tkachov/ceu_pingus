@@ -1,0 +1,147 @@
+#ifndef PATH_GRAPH_CEU
+#define PATH_GRAPH_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../../engine/gui/igui_component.ceu"
+#include "../../engine/gui/surface_button.ceu"
+#include "../../engine/screen/screen.ceu"
+#include "../../engine/sound/sound.ceu"
+#include "../../math/math.ceu"
+#include "../../math/rect.ceu"
+#include "../iworld.ceu"
+#include "../global_interface.ceu"
+#include "pingus.ceu"
+#include "sprite_drawable.ceu"
+#include "story_dot.ceu"
+
+native/pre do
+    ##include "engine/display/display.hpp"
+    ##include "engine/display/graphic_context_state.hpp"
+    ##include "engine/gui/gui_manager.hpp"
+    ##include "engine/gui/rect_component.hpp"
+    ##include "engine/gui/surface_button.hpp"
+    ##include "engine/screen/screen_manager.hpp"
+    ##include "engine/sound/sound.hpp"
+    ##include "math/vector3f.hpp"
+    ##include "pingus/fonts.hpp"
+    ##include "pingus/game_time.hpp"
+    ##include "pingus/gettext.h"
+    ##include "pingus/globals.hpp"
+    ##include "pingus/savegame_manager.hpp"
+    ##include "pingus/screens/game_session.hpp"
+    ##include "pingus/screens/result_screen.hpp"
+    ##include "pingus/screens/story_screen.hpp"
+    ##include "pingus/server.hpp"
+    ##include "pingus/stat_manager.hpp"    
+    ##include "pingus/string_format.hpp"
+    ##include "pingus/worldmap/dot.hpp"
+    ##include "pingus/worldmap/graph.hpp"
+    ##include "pingus/worldmap/level_dot.hpp"
+    ##include "pingus/worldmap/path.hpp"
+    ##include "pingus/worldmap/path_drawable.hpp"
+    ##include "pingus/worldmap/pathfinder.hpp"
+    ##include "pingus/worldmap/pingus.hpp"
+    ##include "pingus/worldmap/pingus_worldmap.hpp"    
+    ##include "pingus/worldmap/worldmap.hpp"
+    ##include "pingus/worldmap/worldmap_screen.hpp"
+    ##include "util/file_reader.hpp"
+    ##include "util/log.hpp"
+    ##include "util/pathname.hpp"
+    ##include "util/raise_exception.hpp"
+    ##include "util/sexpr_file_writer.hpp"
+    ##include "util/string_util.hpp"
+    ##include <iostream>
+    ##include <map>
+    ##include <memory>
+    ##include <stdexcept>
+    ##include <vector>
+
+    ##define new_GUI_Component() new GUI::Component()
+    ##define new_Worldmap(pn) new WorldmapNS::Worldmap(pn)
+    ##define ScreenManager__instance() ScreenManager::instance()
+    ##define std__make_shared_GameSession std::make_shared<GameSession>
+    ##define std__make_shared_StoryScreen std::make_shared<StoryScreen>
+    ##define Display__get_width() Display::get_width()
+    ##define Display__get_height() Display::get_height()
+    ##define SU2str(x) StringUtil::to_string(x)
+    ##define Fonts__chalk_large Fonts::chalk_large
+    ##define Fonts__chalk_normal Fonts::chalk_normal
+    ##define Fonts__chalk_small Fonts::chalk_small
+    ##define StringFormat__break_line StringFormat::break_line
+
+    ##define new_SceneContextE() new SceneContext()
+    ##define new_Pingus(x) new WorldmapNS::Pingus(x)
+
+    ##define WorldmapNS__Worldmap WorldmapNS::Worldmap
+    ##define WorldmapNS__WorldmapScreen WorldmapNS::WorldmapScreen
+    ##define WorldmapNS__Dot WorldmapNS::Dot
+
+    ##define StatManager__instance() StatManager::instance()
+    ##define new_PathGraph new WorldmapNS::PathGraph
+    ##define DrawableFactory__create(x) WorldmapNS::DrawableFactory::create(x)
+    ##define addr(x) &x
+    ##define new_Drawable new WorldmapNS::Drawable
+
+    ##define WorldmapNS__PathGraph WorldmapNS::PathGraph
+    ##define Vector_FileReader std::vector<FileReader>
+    ##define new_Vector_FileReader new std::vector<FileReader>
+
+    ##define new_Dot new WorldmapNS::Dot    
+    ##define new_LevelDot new WorldmapNS::LevelDot
+end
+
+native @pure _new_GUI_Component(), _ScreenManager__instance(), _std__make_shared_GameScreen(), _std__make_shared_StoryScreen(),
+             _Display__get_width(), _Display__get_height(), _new_Worldmap(), _new_Pingus(), _DrawableFactory__create(), _new_Drawable(),
+             _SU2str(), _StringFormat__break_line(), _new_SceneContextE(), _StatManager__instance(), _new_PathGraph(), _addr(),
+             _new_Vector_FileReader(), _new_Dot(), _new_StoryDot(), _new_LevelDot();
+
+class PathGraph with
+    var _WorldmapNS__PathGraph&? path_graph;    
+do
+    //parse_nodes:
+    var _Vector_FileReader&? childs = _new_Vector_FileReader(path_graph.worldmap:worldmap.get_graph().read_section("nodes").get_sections());
+    loop i in childs.size() do
+        var _WorldmapNS__Dot* dot = null;
+
+        //DotFactory:
+        if childs.at(i).get_name() == "storydot" then            
+            spawn StoryDot with
+                dot = _new_Dot(childs.at(i).read_section("dot"));
+                this.me = _PTR2REF(dot);
+                this.reader = (_FileReader*)_addr(childs.at(i));                
+            end;
+        else/if childs.at(i).get_name() == "leveldot" then
+            dot = _new_LevelDot(childs.at(i));
+        else
+            _log_error("DotFactory: unknown tag: %1%", childs.at(i).get_name());
+        end
+
+        if dot then
+            // add the dot to the pathfinding
+            var int id = path_graph.graph.add_node(_PTR2REF(dot));
+
+            //log_info("Adding to lookup table: " << dot->get_name());
+            path_graph.node_lookup[dot:get_name()] = id;
+
+            // add the dot to the list of drawables
+            if path_graph.worldmap then
+                path_graph.worldmap:add_drawable(_PTR2REF(dot));
+            end
+
+            //original FIXME: should be use this for freeing the stuff?
+            path_graph.dots.push_back(_PTR2REF(dot));
+        else
+            _log_info("PathGraph: Couldn't create node");
+        end
+    end
+    _delete_obj(childs);
+    ////////
+
+    path_graph.parse_edges(path_graph.worldmap:worldmap.get_graph().read_section("edges"));  
+    path_graph.init_cache();
+
+    await FOREVER;
+end
+
+#endif

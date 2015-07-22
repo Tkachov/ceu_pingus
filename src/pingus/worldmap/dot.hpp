@@ -33,16 +33,16 @@ public:
   Dot(const FileReader& reader);
 
   /** Draw stuff that should be displayed if the mouse is over the dot */
-  virtual void draw_hover(DrawingContext& gc) =0;
+  virtual void draw_hover(DrawingContext& gc);
 
   Vector3f get_pos() { return pos; }
 
-  virtual void on_click() =0;
+  virtual void on_click();
 
-  virtual bool finished() =0;
-  virtual bool accessible() =0;
+  virtual bool finished() { return true; }
+  virtual bool accessible() { return true; }
   /** makes the node accessible */
-  virtual void unlock() =0;
+  virtual void unlock() {}
 private:
   Dot (const Dot&);
   Dot& operator= (const Dot&);

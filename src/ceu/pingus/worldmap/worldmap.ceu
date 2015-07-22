@@ -13,6 +13,7 @@
 #include "../global_interface.ceu"
 #include "pingus.ceu"
 #include "sprite_drawable.ceu"
+#include "path_graph.ceu"
 
 native/pre do
     ##include "engine/display/display.hpp"
@@ -123,12 +124,18 @@ do
         end
     end
     
-    worldmap.path_graph.reset(_new_PathGraph(&worldmap, worldmap.worldmap.get_graph()));
+    var PathGraph path_graph with
+        worldmap.path_graph = _new_PathGraph(&worldmap);
+        this.path_graph = _PTR2REF(worldmap.path_graph);
+    end;
+
+    finalize with _delete_obj(worldmap.path_graph); end
+
     finalize worldmap.default_node = worldmap.path_graph:lookup_node(worldmap.worldmap.get_default_node()); with end
     finalize worldmap.final_node   = worldmap.path_graph:lookup_node(worldmap.worldmap.get_final_node()); with end
 
     var Pingus pingus with
-        worldmap.pingus = _new_Pingus(worldmap.path_graph.get());
+        worldmap.pingus = _new_Pingus(worldmap.path_graph);
         this.me = _PTR2REF(worldmap.pingus);
     end;    
     worldmap.set_starting_node();
@@ -160,7 +167,7 @@ do
 
             //update_locked_nodes:
             //original FIXME: This shouldn't be a polling function
-            worldmap.path_graph:graph.for_each_node(_unlock_nodes(worldmap.path_graph.get()));
+            worldmap.path_graph:graph.for_each_node(_unlock_nodes(worldmap.path_graph) finalize with end);
 
             /*#if 0
               bool credits_unlocked = false;
