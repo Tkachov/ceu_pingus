@@ -19,8 +19,10 @@
 #include "ceuvars.h"
 
 WorldmapNS::Drawable::~Drawable() {
+  /*printf("~Drawable\n");
   WorldmapNS::Drawable* self = this;
   ceu_out_go(&CEUapp, CEU_IN_DRAWABLE_DELETE, &self);
+  */
 }
 
 void WorldmapNS::Drawable::draw(DrawingContext& gc) {

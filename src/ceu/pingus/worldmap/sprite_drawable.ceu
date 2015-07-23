@@ -5,6 +5,7 @@
 #include "../../sdl.ceu"
 #include "../../engine/display/sprite.ceu"
 #include "drawable.ceu"
+#include "iworldmap.ceu"
 
 native/pre do
     ##include "engine/display/sprite.hpp"
@@ -15,9 +16,7 @@ native/pre do
     ##include "pingus/worldmap/worldmap.hpp"
 
     ##define WorldmapNS__Pingus WorldmapNS::Pingus
-    ##define WNS_NoNode WorldmapNS::NoNode
-
-    ##define Worldmap__current() WorldmapNS::Worldmap::current()
+    ##define WNS_NoNode WorldmapNS::NoNode    
 
     ##define reader_read_vector(rdr, dst) { Vector3f rd; rdr->read_vector("position", rd); dst.x = rd.x; dst.y = rd.y; dst.z = rd.z; }
 end
@@ -27,6 +26,7 @@ native @pure _Worldmap__current(), _reader_read_vector();
 class SpriteDrawable with
     interface Drawable;
     var _FileReader* reader;
+    var IWorldmap& worldmap;
 do
     var _WorldmapNS__Drawable&? drawable = _PTR2REF(&me);
 
@@ -51,8 +51,7 @@ do
             var bool visible = false;
             //if (surface)  
                 if auto_uncover then
-                    var Vector3f pingus_pos;
-                    _readVector3f(pingus_pos, _Worldmap__current():get_pingus():get_pos());
+                    var Vector3f pingus_pos = worldmap.get_pingus():get_pos();
                     // Pingu is not over the surface
                     if pingus_pos.x <= pos.x or pingus_pos.x >= pos.x + (float)surface.get_width() or
                        pingus_pos.y <= pos.y or pingus_pos.y >= pos.y + (float)surface.get_height() then

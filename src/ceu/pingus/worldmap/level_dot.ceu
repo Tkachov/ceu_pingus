@@ -75,17 +75,23 @@ do
     call/rec highlight_red_dot_sur.reload_by_name("core/worldmap/dot_red_hl");
 
     var _std__string&? resname = _new_String();
-    reader:read_string("levelname", _deref(resname)); 
+    reader:read_string("levelname", _deref(resname));
 
-    var _PingusLevel&? plf = _new_PingusLevel(_PLFResMgr__load_plf(_deref(resname)));
-    finalize with
-        _delete_obj(plf);
-    end
+    var _PingusLevel&? plf = _new_PingusLevel(_PLFResMgr__load_plf(_deref(resname)));    
+    finalize with _delete_obj(plf); end
     _delete_obj(resname);
 
     function (void) => _PingusLevel* get_plf do
         return &plf;
-    end    
+    end
+
+    function (void) => _std__string get_name do
+        return dot.get_name();
+    end
+
+    function (void) => _Vector3f get_pos do
+        return dot.pos;
+    end
 
     function (void) => bool finished do
         var _Savegame* savegame = _PTR2REF(_SavegameManager__instance():get(plf.get_resname()));

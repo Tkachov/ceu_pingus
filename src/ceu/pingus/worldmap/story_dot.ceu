@@ -48,9 +48,21 @@ do
     reader:read_string("story", _deref(m_story));
     reader:read_bool("credits", m_credits);
 
+    /*
     finalize with
+        _printf("delete StoryDot\n");
         _delete_obj(m_name);
         _delete_obj(m_story);
+        _printf("delete StoryDot - done\n");
+    end
+    */
+
+    function (void) => _std__string get_name do
+        return dot.get_name();
+    end
+
+    function (void) => _Vector3f get_pos do
+        return dot.pos;
     end
 
     function (void) => bool finished do return true; end

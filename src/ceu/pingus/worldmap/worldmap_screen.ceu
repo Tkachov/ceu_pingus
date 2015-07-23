@@ -370,6 +370,9 @@ do
         end
     with
         var _WorldmapNS__WorldmapScreen* e = await DELETE_WORLDMAP_SCREEN until (e == &worldmap_screen);
+        if worldmap then
+            emit worldmap:delete;
+        end
     end
 end
 

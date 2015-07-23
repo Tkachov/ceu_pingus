@@ -39,32 +39,6 @@ Pingus::Pingus (PathGraph* arg_path) :
   current_node = NoNode;
 }
 
-void
-Pingus::update_walk (float delta)
-{
-  float velocity = 70.0f;
-
-  // Update the edge_path_position
-  edge_path_position += velocity * delta;
-
-  if (edge_path_position > edge_path.length()) // target reached
-  {
-    if (node_path.empty ()) // final target reached
-    {
-      current_node = target_node;
-      final_target_node = NoNode;
-    }
-    else // edge is traveled, now go to the next node
-    {
-      update_edge_path();
-    }
-  }
-
-  // Recalc pingu position on the screen
-  last_pos = pos;
-  pos = calc_pos ();
-}
-
 float
 Pingus::get_direction() const
 {
@@ -163,26 +137,6 @@ Pingus::walk_to_node (NodeId target)
   }
 }
 
-Vector3f
-Pingus::calc_pos ()
-{
-  if (current_node != NoNode) // pingu stands still
-  {
-    return path->graph.resolve_node(current_node).data->get_pos ();
-  }
-  else // between two nodes
-  {
-    return edge_path.at(edge_path_position);
-  }
-}
-
-void
-Pingus::set_position (NodeId node)
-{
-  pos = path->get_dot(node)->get_pos();
-  current_node = node;
-}
-
 void
 Pingus::update_edge_path()
 {
@@ -202,11 +156,7 @@ Pingus::update_edge_path()
   edge_path.push_back(path->graph.resolve_node(target_node).data->get_pos());
 }
 
-bool
-Pingus::is_walking()
-{
-  return current_node == NoNode;
-}
+
 
 } // namespace WorldmapNS
 

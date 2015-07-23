@@ -86,6 +86,7 @@ native/pre do
     ##define WorldmapNS__PathGraph WorldmapNS::PathGraph
     ##define Vector_FileReader std::vector<FileReader>
     ##define new_Vector_FileReader new std::vector<FileReader>
+    ##define WNS_NoNode WorldmapNS::NoNode
 
     ##define new_Dot new WorldmapNS::Dot    
     ##define new_LevelDot new WorldmapNS::LevelDot
@@ -97,7 +98,13 @@ native @pure _new_GUI_Component(), _ScreenManager__instance(), _std__make_shared
              _new_Vector_FileReader(), _new_Dot(), _new_StoryDot(), _new_LevelDot();
 
 class PathGraph with
-    var _WorldmapNS__PathGraph&? path_graph;    
+    var _WorldmapNS__PathGraph&? path_graph;
+    function @rec (float x_pos, float y_pos) => Dot* get_dot;
+    function (int id) => Dot* get_dot_by_id;
+    function @rec (Dot* dot) => int get_id;
+    event void delete;
+    pool LevelDot[] lds;
+    pool StoryDot[] sds;
 do
     //parse_nodes:
     var _Vector_FileReader&? childs = _new_Vector_FileReader(path_graph.worldmap:worldmap.get_graph().read_section("nodes").get_sections());
@@ -106,14 +113,14 @@ do
 
         //DotFactory:
         if childs.at(i).get_name() == "storydot" then            
-            spawn StoryDot with
+            spawn StoryDot in sds with
                 dot = _new_Dot(childs.at(i).read_section("dot"));
                 this.me = _PTR2REF(dot);
                 this.reader = (_FileReader*)_addr(childs.at(i));
                 dot:ceu = &this;              
             end;
         else/if childs.at(i).get_name() == "leveldot" then            
-            spawn LevelDot with
+            spawn LevelDot in lds with
                 dot = _new_Dot(childs.at(i).read_section("dot"));
                 this.me = _PTR2REF(dot);
                 this.reader = (_FileReader*)_addr(childs.at(i));
@@ -144,10 +151,56 @@ do
     _delete_obj(childs);
     ////////
 
-    path_graph.parse_edges(path_graph.worldmap:worldmap.get_graph().read_section("edges"));  
-    path_graph.init_cache();
+    path_graph.parse_edges(path_graph.worldmap:worldmap.get_graph().read_section("edges"));    
 
-    await FOREVER;
+    // Init the pathfinder cache
+    path_graph.pathfinder_cache.resize(path_graph.graph.max_node_handler_value());
+    path_graph.pathfinder_cache.assign(path_graph.pathfinder_cache.size(), 0);
+
+    finalize with
+        _printf("path_graph\n");
+        _delete_obj(path_graph);
+    end
+
+    function @rec (float x_pos, float y_pos) => Dot* get_dot do
+        loop i in path_graph.dots.size() do  
+            var Dot* r = _PTR2REF((Dot*)path_graph.dots.at(i):ceu);
+            var float x = x_pos - r:get_pos().x;
+            var float y = y_pos - r:get_pos().y;
+
+            if _Math__sqrt(x*x + y*y) < 30.0 then
+                return r;
+            end
+        end
+
+        return null;
+    end
+
+    function (int id) => Dot* get_dot_by_id do
+        var _WorldmapNS__Dot* dot = _PTR2REF(path_graph.graph.resolve_node(id).data);
+        if dot then
+            return (Dot*)dot:ceu;
+        end
+        return null;
+    end
+
+    function @rec (Dot* dot) => int get_id do
+        loop i in path_graph.dots.size() do 
+            if path_graph.dots.at(i):ceu == dot then
+                return i;
+            end
+        end
+
+        return _WNS_NoNode;
+    end
+
+    await delete;
+    loop ld in lds do
+        emit ld:delete;
+    end
+    loop sd in sds do
+        emit sd:delete;
+    end
 end
 
 #endif

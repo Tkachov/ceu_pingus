@@ -4,7 +4,9 @@
 #include "../../c.ceu"
 #include "../../sdl.ceu"
 #include "../../engine/display/sprite.ceu"
+#include "../../math/vector3f.ceu"
 #include "drawable.ceu"
+#include "path_graph.ceu"
 
 native/pre do
     ##define WorldmapNS__Pingus WorldmapNS::Pingus
@@ -13,6 +15,11 @@ end
 
 class Pingus with
     interface Drawable;
+    var PathGraph* path_graph;
+    function @rec (int node) => void set_position;
+    function (void) => Vector3f get_pos;
+    function (void) => int get_node;
+    function (int n) => bool walk_to_node;
 do
     var _WorldmapNS__Pingus&? pingus = _PTR2REF((_WorldmapNS__Pingus*)&me);
 
@@ -29,15 +36,68 @@ do
     call/rec sprite_left.reload_by_name("core/worldmap/pingus/left");
     call/rec arrow.reload_by_name("core/worldmap/arrow");
 
+    function @rec (int node) => void set_position do
+        pingus.pos = _PTR2REF(path_graph:get_dot_by_id(node):get_pos());
+        pingus.current_node = node;
+    end
+
+    function (void) => Vector3f get_pos do
+        var Vector3f v;
+        v.x = pingus.pos.x;
+        v.y = pingus.pos.y;
+        v.z = pingus.pos.z;
+        return v;
+    end
+
+    function (void) => int get_node do
+        return pingus.current_node;
+    end
+
+    function (int n) => bool walk_to_node do
+        return pingus.walk_to_node(n);
+    end
+
+    function (float delta) => void update_walk do
+        var float velocity = 70.0;
+
+        // Update the edge_path_position
+        pingus.edge_path_position = pingus.edge_path_position + velocity*delta;
+
+        if pingus.edge_path_position > pingus.edge_path.length() then
+            // target reached  
+            if pingus.node_path.empty() then
+                // final target reached    
+                pingus.current_node = pingus.target_node;
+                pingus.final_target_node = _WNS_NoNode;    
+            else
+                // edge is traveled, now go to the next node    
+                pingus.update_edge_path();
+            end
+        end
+
+        // Recalc pingu position on the screen
+        pingus.last_pos = pingus.pos;
+
+        if pingus.current_node != _WNS_NoNode then // pingu stands still
+            pingus.pos = _PTR2REF(pingus.path:graph.resolve_node(pingus.current_node).data:get_pos());
+        else // between two nodes  
+            pingus.pos = _PTR2REF(pingus.edge_path.at(pingus.edge_path_position));
+        end
+    end
+
+    function (void) => bool is_walking do
+        return pingus.current_node == _WNS_NoNode;
+    end
+
     par/or do
         every gc in draw do
             // Add 10 to z_pos so that the pingu gets drawn above the node it is
             // standing one
             if pingus.final_target_node != _WNS_NoNode and pingus.current_node == _WNS_NoNode then              
-                gc:draw(_deref(arrow.get()), (pingus.path:get_dot(pingus.final_target_node) finalize with end):get_pos() + _Vector3f(0, 0, 10));
+                gc:draw(_deref(arrow.get()), path_graph:get_dot_by_id(pingus.final_target_node):get_pos() + _Vector3f(0, 0, 10));
             end
 
-            if not pingus.is_walking() then
+            if not is_walking() then
                 gc:draw(_deref(sprite_standing.get()), pingus.pos) finalize with end;
             else  
                 //original FIXME: Replace the sprite and add up/down here
@@ -59,8 +119,8 @@ do
                 sprite_left.update_delta(delta);
             end
   
-            if pingus.is_walking() then
-                pingus.update_walk(delta);
+            if is_walking() then
+                update_walk(delta);
             end
         end
     with        

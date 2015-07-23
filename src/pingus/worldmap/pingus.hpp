@@ -77,36 +77,15 @@ public:
 
   /** @return true if the node is reachable, false otherwise */
   bool walk_to_node (NodeId target);
-
-  bool is_walking();
-
-  /** @return the node on which the pingu is currently standing, 0 is
-      returned if the pingu is currently between two nodes */
-  NodeId get_node () {
-    return current_node;
-  }
-
-  /** Set the pingu to the position of a given node */
-  void set_position (NodeId node);
-
-  /** return the current position in world coordinates */
-  Vector3f get_pos() const { return pos; }
-
+  
 private:
   /** Calculate the direction in which the pingu is heading, return
       value is in degrees => [0,360[, 0=north, 180=south, 270=east, 90=west */
   float get_direction() const;
 
-  /** calculate the position of the pingu */
-  Vector3f calc_pos ();
-
-  void  update_walk (float delta);
-
   void update_edge_path();
 
   float calc_edge_path_length();
-
-  Vector3f interpolate(const Vector3f& a, const Vector3f& b, float perc);
 
   Pingus (const Pingus&);
   Pingus& operator= (const Pingus&);

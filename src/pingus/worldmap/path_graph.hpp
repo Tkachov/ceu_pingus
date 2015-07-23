@@ -66,14 +66,6 @@ public:
       starting from \a start */
   PathfinderResult get_path(NodeId start, NodeId end);
 
-  /** Get a node by it id */
-  Dot* get_dot(NodeId id);
-
-  NodeId get_id(Dot*);
-
-  /** Get a node by its position */
-  Dot* get_dot(float x, float y);
-
   EdgeId lookup_edge(const std::string& name);
   NodeId lookup_node(const std::string& name);
 
@@ -81,8 +73,7 @@ public:
   std::string lookup_edge(NodeId id);
 
 private:
-  void parse_edges(const FileReader& reader);
-  void init_cache();
+  void parse_edges(const FileReader& reader);  
 
   PathGraph (const PathGraph&);
   PathGraph& operator= (const PathGraph&);

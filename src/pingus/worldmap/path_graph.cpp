@@ -41,10 +41,13 @@ void delete_Path(Edge<Path*> x)
 
 PathGraph::~PathGraph()
 {
+  printf("~PathGraph\n");
   graph.for_each_edge(delete_Path);
+  printf("~PathGraph 2\n");
   for(PFinderCache::iterator i = pathfinder_cache.begin();
       i != pathfinder_cache.end(); ++i)
     delete *i;
+  printf("~PathGraph done\n");
 }
 
 void
@@ -191,45 +194,6 @@ PathGraph::lookup_edge(NodeId id)
   }
   log_info("PathGraph: Couldn't find id: %1%", id);
   return "error_node";
-}
-
-Dot*
-PathGraph::get_dot(NodeId id)
-{
-  return graph.resolve_node(id).data;
-}
-
-Dot*
-PathGraph::get_dot(float x_pos, float y_pos)
-{
-  for(std::vector<Dot*>::iterator i = dots.begin(); i != dots.end(); ++i)
-  {
-    float x = x_pos - (*i)->get_pos().x;
-    float y = y_pos - (*i)->get_pos().y;
-
-    if (Math::sqrt(x*x + y*y) < 30.0f)
-      return *i;
-  }
-  return 0;
-}
-
-NodeId
-PathGraph::get_id(Dot* dot)
-{
-  for(std::vector<Dot*>::iterator i = dots.begin(); i != dots.end(); ++i)
-    if (dot == *i)
-      return static_cast<int>(i - dots.begin());
-  return NoNode;
-}
-
-void
-PathGraph::init_cache()
-{
-  // Init the pathfinder cache
-  pathfinder_cache.resize(graph.max_node_handler_value());
-  for(PFinderCache::iterator i = pathfinder_cache.begin();
-      i != pathfinder_cache.end(); ++i)
-    *i = 0;
 }
 
 } // namespace WorldmapNS

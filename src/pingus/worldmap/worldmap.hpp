@@ -50,15 +50,7 @@ private:
   typedef std::vector<Drawable*>   ObjectLst;
   typedef std::vector<Drawable*> DrawableLst;
 
-  NodeId default_node;
-  NodeId final_node;
-
-  Pingus* pingus;
-
   GraphicContextState gc_state;
-
-  /** The graph that represents the path on the map */
-  PathGraph* path_graph;
 
   /** A collection of drawable things, allocation and deallocation
       takes place elsewhere these are only references to other
@@ -69,26 +61,15 @@ private:
       gets deleted at the end */
   ObjectLst objects;
 
-  int mouse_x;
-  int mouse_y;
-
 public:
   /** Load the given*/
   Worldmap(const Pathname& filename);
-  ~Worldmap();
-
-  Pingus* get_pingus() { return pingus; }
 
   void add_drawable(Drawable* drawable);
 
 private:
-  static Worldmap* current_; 
-
   Worldmap(const Worldmap&);
   Worldmap & operator=(const Worldmap&);
-  
-public:
-  static Worldmap* current() { return current_; }
 };
 
 } // namespace WorldmapNS

@@ -31,28 +31,13 @@
 
 namespace WorldmapNS {
 
-Worldmap* Worldmap::current_ = 0; 
-
 Worldmap::Worldmap(const Pathname& filename) :
   worldmap(),
-  default_node(),
-  final_node(),
-  pingus(),
   gc_state(),
-  path_graph(),
   drawables(),
-  objects(),
-  mouse_x(0),
-  mouse_y(0)
+  objects()
 {
-  current_ = this;
-
   worldmap = PingusWorldmap(filename);
-}
-
-Worldmap::~Worldmap() {
-  Worldmap* self = this;
-  ceu_out_go(&CEUapp, CEU_IN_DELETE_WORLDMAP, &self);
 }
 
 void

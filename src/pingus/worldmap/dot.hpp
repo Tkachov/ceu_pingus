@@ -34,12 +34,7 @@ protected:
 public:
   Dot(const FileReader& reader);
 
-  /** Draw stuff that should be displayed if the mouse is over the dot */
-  virtual void draw_hover(DrawingContext& gc);
-
   Vector3f get_pos() { return pos; }
-
-  virtual void on_click();
 
 private:
   Dot (const Dot&);
