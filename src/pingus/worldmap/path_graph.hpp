@@ -21,6 +21,7 @@
 #include <vector>
 
 #include "math/vector3f.hpp"
+#include "pingus/worldmap/drawable.hpp"
 #include "pingus/worldmap/graph.hpp"
 #include "pingus/worldmap/path.hpp"
 #include "pingus/worldmap/pathfinder.hpp"
@@ -28,7 +29,6 @@
 
 namespace WorldmapNS {
 
-class Dot;
 class Worldmap;
 
 /** This class represents the walkable path on the Worldmap */
@@ -40,10 +40,10 @@ private:
 public:
   // FIXME: Memory leak? Where do we free stuff data inside the graph?
   // FIXME: shouldn't be public
-  Graph<Dot*, Path*> graph;
+  Graph<Drawable*, Path*> graph;
 
-  std::vector<Dot*> dots;
-  typedef std::vector<Pathfinder<Dot*, Path*>* > PFinderCache;
+  std::vector<Drawable*> dots;
+  typedef std::vector<Pathfinder<Drawable*, Path*>* > PFinderCache;
   PFinderCache pathfinder_cache;
 private:
 
@@ -73,8 +73,6 @@ public:
   std::string lookup_edge(NodeId id);
 
 private:
-  void parse_edges(const FileReader& reader);  
-
   PathGraph (const PathGraph&);
   PathGraph& operator= (const PathGraph&);
 };

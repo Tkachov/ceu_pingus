@@ -14,7 +14,6 @@ native/pre do
     ##include "pingus/fonts.hpp"
     ##include "pingus/gettext.h"
     ##include "pingus/screens/story_screen.hpp"
-    ##include "pingus/worldmap/dot.hpp"
     ##include "util/file_reader.hpp"
     ##include "util/log.hpp"
     ##include "util/pathname.hpp"
@@ -33,7 +32,7 @@ class StoryDot with
     interface Dot;
     var _FileReader* reader;
 do
-    var _WorldmapNS__Dot&? dot = _PTR2REF((_WorldmapNS__Dot*)&me);
+    var _WorldmapNS__Drawable&? dot = _PTR2REF((_WorldmapNS__Drawable*)&me);
 
     var Sprite m_story_dot_highlight;
     var Sprite m_story_dot;
@@ -47,22 +46,18 @@ do
     reader:read_string("name", _deref(m_name));
     reader:read_string("story", _deref(m_story));
     reader:read_bool("credits", m_credits);
-
-    /*
+    
     finalize with
-        _printf("delete StoryDot\n");
         _delete_obj(m_name);
         _delete_obj(m_story);
-        _printf("delete StoryDot - done\n");
     end
-    */
 
     function (void) => _std__string get_name do
         return dot.get_name();
     end
 
     function (void) => _Vector3f get_pos do
-        return dot.pos;
+        return _toVector3f(pos);
     end
 
     function (void) => bool finished do return true; end
@@ -75,12 +70,12 @@ do
 
     par/or do
         every gc in draw do
-            gc:draw(_deref(m_story_dot.get()), dot.pos) finalize with end;
+            gc:draw(_deref(m_story_dot.get()), _toVector3f(pos));
         end
     with
         every gc in draw_hover do
-            gc:draw(_deref(m_story_dot_highlight.get()), dot.pos) finalize with end;
-            gc:print_center(_Fonts__pingus_small, _Vector2i(dot.pos.x, dot.pos.y - 44) finalize with end, __(_deref(m_name)), 10000);
+            gc:draw(_deref(m_story_dot_highlight.get()), _toVector3f(pos));
+            gc:print_center(_Fonts__pingus_small, _Vector2i(pos.x, pos.y - 44), __(_deref(m_name)), 10000);
         end
     with
         every on_click do            

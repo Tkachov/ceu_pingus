@@ -22,7 +22,6 @@
 #include "pingus/gettext.h"
 #include "pingus/globals.hpp"
 #include "pingus/stat_manager.hpp"
-#include "pingus/worldmap/pingus.hpp"
 #include "util/log.hpp"
 #include "util/sexpr_file_writer.hpp"
 #include "util/pathname.hpp"

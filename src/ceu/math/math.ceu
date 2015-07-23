@@ -3,7 +3,7 @@
 
 native/pre do
     ##include "math/math.hpp"
-    ##define Math__pi Math::pi
+    ##define Math__pi (Math::pi)
     ##define Math__pi_2 Math::pi_2
 
     ##define Math__min Math::min

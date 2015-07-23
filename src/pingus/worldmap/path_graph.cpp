@@ -17,7 +17,6 @@
 #include <stdexcept>
 
 #include "pingus/globals.hpp"
-#include "pingus/worldmap/dot.hpp"
 #include "pingus/worldmap/path_drawable.hpp"
 #include "pingus/worldmap/worldmap.hpp"
 #include "util/log.hpp"
@@ -36,100 +35,25 @@ PathGraph::PathGraph(Worldmap* arg_worldmap):
 
 void delete_Path(Edge<Path*> x)
 {
-  delete x.data;
+  ///delete x.data;
 }
 
 PathGraph::~PathGraph()
 {
-  printf("~PathGraph\n");
   graph.for_each_edge(delete_Path);
-  printf("~PathGraph 2\n");
   for(PFinderCache::iterator i = pathfinder_cache.begin();
       i != pathfinder_cache.end(); ++i)
     delete *i;
-  printf("~PathGraph done\n");
-}
-
-void
-PathGraph::parse_edges(const FileReader& reader)
-{
-  const std::vector<FileReader>& childs = reader.get_sections();
-
-  for(std::vector<FileReader>::const_iterator i = childs.begin(); 
-      i != childs.end(); ++i)
-  {
-    if (i->get_name() == "edge")
-    {
-      std::string name;
-      std::string source;
-      std::string destination;
-
-      i->read_string("name",   name);
-      i->read_string("source", source);
-      i->read_string("destination", destination);
-          
-      // FIXME: add path-data parsing here
-      Path* path = new Path();
-          
-      const std::vector<FileReader>& childs2 = reader.read_section("positions").get_sections();
-          
-      for(std::vector<FileReader>::const_iterator j = childs2.begin(); 
-          j != childs2.end(); ++j)
-      {
-        if (j->get_name() == "position")
-        {
-          Vector3f pos;
-          j->read_float("x", pos.x);
-          j->read_float("y", pos.y);
-          j->read_float("z", pos.z);
-          path->push_back(pos);
-        }
-      }
-
-      Path full_path;
-      full_path.push_back(graph.resolve_node(lookup_node(source)).data->get_pos());
-      full_path.insert(*path);
-      full_path.push_back(graph.resolve_node(lookup_node(destination)).data->get_pos());
-
-      // FIXME: merge this together with the Pingus::distance() stuff in a seperate Path class
-      float cost = full_path.length();
-
-      if (worldmap && globals::developer_mode)
-        worldmap->add_drawable(new PathDrawable(full_path));
-
-      // FIXME: No error checking,
-      EdgeId id1 = graph.add_edge(path, // FIXME: Memory leak!
-                                  lookup_node(destination), lookup_node(source),
-                                  cost /* costs */);
-
-      Path* path2 = new Path();
-      path2->reverse_insert(*path);
-      //EdgeId id2 =
-      graph.add_edge(path2, // FIXME: Memory leak!
-                     lookup_node(source), lookup_node(destination),
-                     cost /* costs */);
-
-      //log_info("Cost: " << cost);
-
-      // FIXME: edge lookup is flawed, since we have different edges in both directions
-
-      edge_lookup[name] = id1;
-    }
-    else
-    {
-      raise_exception(std::runtime_error, "PathGraph: unhandled: ");
-    }
-  }
 }
 
 PathfinderResult
 PathGraph::get_path(NodeId start_id, NodeId end_id)
 {
-  Pathfinder<Dot*,Path*>*& pfinder = pathfinder_cache[start_id];
+  Pathfinder<Drawable*,Path*>*& pfinder = pathfinder_cache[start_id];
 
   if (!pfinder)
   {
-    pfinder = new Pathfinder<Dot*, Path*>(graph, start_id);
+    pfinder = new Pathfinder<Drawable*, Path*>(graph, start_id);
     pathfinder_cache[start_id] = pfinder;
   }
 

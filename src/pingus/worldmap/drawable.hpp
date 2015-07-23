@@ -37,6 +37,8 @@ protected:
   bool visible;
 
 public:
+  void* ceu;
+
   Drawable() :
     name(),
     visible(true)

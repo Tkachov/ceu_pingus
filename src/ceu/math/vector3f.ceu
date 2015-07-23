@@ -7,10 +7,11 @@ native/pre do
     ##include "math/vector3f.hpp"
     ##define toVector3f(v) Vector3f(v.x, v.y, v.z)
     ##define readVector3f(dst, src) { Vector3f __s = src; dst.x = __s.x; dst.y = __s.y; dst.z = __s.z; }
+    ##define reader_read_Vector3f(reader, dst) { Vector3f __s; reader.read_vector("position", __s); dst.x = __s.x; dst.y = __s.y; dst.z = __s.z; }
 end
 
 native @plain _Vector3f;
-native @pure _toVector3f(), _readVector3f();
+native @pure _toVector3f(), _readVector3f(), _reader_read_Vector3f();
 
 data Vector3f with
     var float x;

@@ -34,7 +34,6 @@ native/pre do
     ##include "pingus/server.hpp"
     ##include "pingus/stat_manager.hpp"    
     ##include "pingus/string_format.hpp"
-    ##include "pingus/worldmap/pingus.hpp"
     ##include "pingus/worldmap/pingus_worldmap.hpp"
     ##include "pingus/worldmap/worldmap.hpp"
     ##include "pingus/worldmap/worldmap_screen.hpp"
@@ -64,15 +63,14 @@ native/pre do
     ##define new_Pingus(x) new WorldmapNS::Pingus(x)
 
     ##define WorldmapNS__Worldmap WorldmapNS::Worldmap
-    ##define WorldmapNS__WorldmapScreen WorldmapNS::WorldmapScreen
-    ##define WorldmapNS__Dot WorldmapNS::Dot
+    ##define WorldmapNS__WorldmapScreen WorldmapNS::WorldmapScreen    
 
     ##define StatManager__instance() StatManager::instance()
     ##define new_PathGraph new WorldmapNS::PathGraph
     ##define DrawableFactory__create(x) WorldmapNS::DrawableFactory::create(x)
     ##define addr(x) &x
     ##define new_Drawable new WorldmapNS::Drawable
-    ##define WorldmapNS__Node_WorldmapNS__Dot WorldmapNS::Node<WorldmapNS::Dot*>
+    ##define WorldmapNS__Node_WorldmapNS__Drawable WorldmapNS::Node<WorldmapNS::Drawable*>
     ##define WorldmapNS__Edge_WorldmapNS__Path WorldmapNS::Edge<WorldmapNS::Path*>
 end
 
@@ -124,7 +122,7 @@ do
     final_node   = path_graph.path_graph.lookup_node(worldmap.worldmap.get_final_node());
 
     var Pingus pingus with        
-        this.me = _PTR2REF(_new_Pingus(&path_graph.path_graph));
+        this.me = _PTR2REF(_new_Drawable("pingus"));
         this.path_graph = &path_graph;
     end;    
     call/rec set_starting_node();
@@ -187,7 +185,7 @@ do
             //update_locked_nodes:
             //original FIXME: This shouldn't be a polling function
             loop i in path_graph.path_graph.graph.nodes_size() do
-                var _WorldmapNS__Node_WorldmapNS__Dot* node = _addr(path_graph.path_graph.graph.get_node(i));
+                var _WorldmapNS__Node_WorldmapNS__Drawable* node = _addr(path_graph.path_graph.graph.get_node(i));
                 var Dot* dot = _PTR2REF(node:data:ceu);
                 if dot:finished() then
                     //log_info("Unlocking neightbours of: " << node.data);                    
@@ -290,7 +288,7 @@ do
                     emit dot:on_click;
                 else
                     if dot:accessible() then
-                        if not pingus.walk_to_node(path_graph.path_graph.lookup_node(dot:get_name())) then
+                        if not call/rec pingus.walk_to_node(path_graph.path_graph.lookup_node(dot:get_name())) then
                             if _globals__developer_mode then
                                 _log_info("Worldmap: NO PATH TO NODE FOUND!");
                             end
@@ -315,8 +313,7 @@ do
             end
         end
     with
-        await delete;
-        _printf("delete worldmap;\n");
+        await delete;        
         emit path_graph.delete;
     end
 end
