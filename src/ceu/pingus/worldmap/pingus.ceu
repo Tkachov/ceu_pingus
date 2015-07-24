@@ -4,9 +4,8 @@
 #include "../../c.ceu"
 #include "../../sdl.ceu"
 #include "../../engine/display/sprite.ceu"
-#include "../../math/vector3f.ceu"
-#include "drawable.ceu"
-#include "path_graph.ceu"
+#include "ipingus.ceu"
+#include "ipath_graph.ceu"
 
 native/pre do
     ##define WorldmapNS__Pingus WorldmapNS::Pingus
@@ -24,14 +23,8 @@ end
 native @pure _std__swap(), _addr(), _new_Path(), _new_PathfinderResult(), _new_Vector_NodeId();
 
 class Pingus with
-    interface Drawable;
-    var PathGraph* path_graph;
-    function @rec (int node) => void set_position;
-    function (void) => Vector3f get_pos;
-    function (void) => int get_node;
-    function @rec (int target) => bool walk_to_node;
-    function @rec (void) => void update_edge_path;
-    function (void) => float get_direction;
+    interface IPingus;
+    var IPathGraph& path_graph;
 do
     var int current_node = _WNS_NoNode;
     var int source_node;
@@ -61,7 +54,7 @@ do
     call/rec arrow.reload_by_name("core/worldmap/arrow");
 
     function @rec (int node) => void set_position do
-        _readVector3f(pos, path_graph:get_dot_by_id(node):get_pos());
+        _readVector3f(pos, path_graph.get_dot_by_id(node):get_pos());
         current_node = node;
     end
 
@@ -95,7 +88,7 @@ do
         last_pos = pos;
 
         if current_node != _WNS_NoNode then // pingu stands still
-            _readVector3f(pos, ((Dot*)path_graph:path_graph.graph.resolve_node(current_node).data:ceu):get_pos());
+            _readVector3f(pos, ((Dot*)path_graph.path_graph.graph.resolve_node(current_node).data:ceu):get_pos());
         else // between two nodes  
             _readVector3f(pos, edge_path.at(edge_path_position));
         end
@@ -111,11 +104,11 @@ do
         if current_node == target then  
             return true;  
         else/if current_node != _WNS_NoNode then // pingu stands still            
-            if path_graph:path_graph.get_path(current_node, target).path.empty() then            
+            if path_graph.path_graph.get_path(current_node, target).path.empty() then            
                 // No path could be found
                 return false;            
             else            
-                node_path = _PTR2REF(path_graph:path_graph.get_path(current_node, target).path);
+                node_path = _PTR2REF(path_graph.path_graph.get_path(current_node, target).path);
 
                 // Simulate that we just reached current_node, then update the edge_path
                 target_node = _PTR2REF(node_path.back()); // equal to current_node;
@@ -137,8 +130,8 @@ do
                 node_path.clear();
                 return true;            
             else                
-                var _WorldmapNS__PathfinderResult&? node_path1 = _new_PathfinderResult(path_graph:path_graph.get_path(source_node, target));
-                var _WorldmapNS__PathfinderResult&? node_path2 = _new_PathfinderResult(path_graph:path_graph.get_path(target_node, target));
+                var _WorldmapNS__PathfinderResult&? node_path1 = _new_PathfinderResult(path_graph.path_graph.get_path(source_node, target));
+                var _WorldmapNS__PathfinderResult&? node_path2 = _new_PathfinderResult(path_graph.path_graph.get_path(target_node, target));
 
                 // Check that a path exist
                 if node_path1.path.empty() then
@@ -185,12 +178,12 @@ do
         edge_path_position = 0.0;
         edge_path.clear();
         
-        var _WorldmapNS__Path* partial_path = _PTR2REF(path_graph:path_graph.graph.resolve_edge(source_node, target_node).data);
+        var _WorldmapNS__Path* partial_path = _PTR2REF(path_graph.path_graph.graph.resolve_edge(source_node, target_node).data);
 
-        edge_path.push_back(((Dot*)path_graph:path_graph.graph.resolve_node(source_node).data:ceu):get_pos());
+        edge_path.push_back(((Dot*)path_graph.path_graph.graph.resolve_node(source_node).data:ceu):get_pos());
         // Why do we need to reverse this?!
         edge_path.reverse_insert(_PTR2REF(*partial_path));
-        edge_path.push_back(((Dot*)path_graph:path_graph.graph.resolve_node(target_node).data:ceu):get_pos());
+        edge_path.push_back(((Dot*)path_graph.path_graph.graph.resolve_node(target_node).data:ceu):get_pos());
     end
 
     function (void) => float get_direction do
@@ -202,7 +195,7 @@ do
             // Add 10 to z_pos so that the pingu gets drawn above the node it is
             // standing one
             if final_target_node != _WNS_NoNode and current_node == _WNS_NoNode then              
-                gc:draw(_deref(arrow.get()), path_graph:get_dot_by_id(final_target_node):get_pos() + _Vector3f(0, 0, 10));
+                gc:draw(_deref(arrow.get()), path_graph.get_dot_by_id(final_target_node):get_pos() + _Vector3f(0, 0, 10));
             end
 
             if not is_walking() then

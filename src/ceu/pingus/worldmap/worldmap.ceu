@@ -11,9 +11,10 @@
 #include "../../math/rect.ceu"
 #include "../iworld.ceu"
 #include "../global_interface.ceu"
+#include "path_graph.ceu"
 #include "sprite_drawable.ceu"
 #include "iworldmap.ceu"
-#include "path_graph.ceu"
+#include "pingus_worldmap.ceu"
 
 native/pre do
     ##include "engine/display/display.hpp"
@@ -34,8 +35,6 @@ native/pre do
     ##include "pingus/server.hpp"
     ##include "pingus/stat_manager.hpp"    
     ##include "pingus/string_format.hpp"
-    ##include "pingus/worldmap/pingus_worldmap.hpp"
-    ##include "pingus/worldmap/worldmap.hpp"
     ##include "pingus/worldmap/worldmap_screen.hpp"
     ##include "util/log.hpp"
     ##include "util/pathname.hpp"
@@ -46,7 +45,6 @@ native/pre do
     ##include <vector>
 
     ##define new_GUI_Component() new GUI::Component()
-    ##define new_Worldmap(pn) new WorldmapNS::Worldmap(pn)
     ##define ScreenManager__instance() ScreenManager::instance()
     ##define StatManager__instance() StatManager::instance()
     ##define std__make_shared_GameSession std::make_shared<GameSession>
@@ -62,7 +60,6 @@ native/pre do
     ##define new_SceneContextE() new SceneContext()
     ##define new_Pingus(x) new WorldmapNS::Pingus(x)
 
-    ##define WorldmapNS__Worldmap WorldmapNS::Worldmap
     ##define WorldmapNS__WorldmapScreen WorldmapNS::WorldmapScreen    
 
     ##define StatManager__instance() StatManager::instance()
@@ -72,17 +69,28 @@ native/pre do
     ##define new_Drawable new WorldmapNS::Drawable
     ##define WorldmapNS__Node_WorldmapNS__Drawable WorldmapNS::Node<WorldmapNS::Drawable*>
     ##define WorldmapNS__Edge_WorldmapNS__Path WorldmapNS::Edge<WorldmapNS::Path*>
+
+    ##define std__vector_Drawable std::vector<WorldmapNS::Drawable*>
+    ##define new_Vector_Drawable new std::vector<WorldmapNS::Drawable*>
+    ##define new_GraphicContextState new GraphicContextState
 end
 
 native @pure _new_GUI_Component(), _ScreenManager__instance(), _StatManager__instance(), _std__make_shared_GameScreen(), _std__make_shared_StoryScreen(),
-             _Display__get_width(), _Display__get_height(), _new_Worldmap(), _new_Pingus(), _DrawableFactory__create(), _new_Drawable(),
-             _SU2str(), _StringFormat__break_line(), _new_SceneContextE(), _StatManager__instance(), _new_PathGraph(), _addr();
+             _Display__get_width(), _Display__get_height(), _new_Pingus(), _DrawableFactory__create(), _new_Drawable(),
+             _SU2str(), _StringFormat__break_line(), _new_SceneContextE(), _StatManager__instance(),
+             _new_PathGraph(), _addr(), _new_GraphicContextState(), _new_Vector_Drawable();
 
 class Worldmap with
     interface IWorldmap;
-    function @rec (void) => void set_starting_node;
+    function @rec (void) => void set_starting_node;    
 do
-    var _WorldmapNS__Worldmap&? worldmap = _PTR2REF((_WorldmapNS__Worldmap*)me);
+    var _GraphicContextState&? gc_state = _new_GraphicContextState();
+    var _std__vector_Drawable&? drawables = _new_Vector_Drawable;
+
+    finalize with
+        _delete_obj(gc_state);
+        _delete_obj(drawables);
+    end
 
     var int mouse_x = 0;
     var int mouse_y = 0;
@@ -90,46 +98,46 @@ do
     var int final_node;
 
     // Create all objects
-    loop i in worldmap.worldmap.get_objects().size() do  
+    loop i in pingus_worldmap:get_objects():size() do  
         var _WorldmapNS__Drawable* drawable = null;
 
-        //_DrawableFactory__create(worldmap.worldmap.get_objects().at(i));
-        if worldmap.worldmap.get_objects().at(i).get_name() == "surface" then  
+        //_DrawableFactory__create(pingus_worldmap:get_objects():at(i));
+        if pingus_worldmap:get_objects():at(i).get_name() == "surface" then  
             spawn SpriteDrawable with
-                this.me = _new_Drawable(worldmap.worldmap.get_objects().at(i));
-                this.reader = (_FileReader*)_addr(worldmap.worldmap.get_objects().at(i));
+                this.me = _new_Drawable(pingus_worldmap:get_objects():at(i));
+                this.reader = (_FileReader*)_addr(pingus_worldmap:get_objects():at(i));
                 this.worldmap = outer;
                 drawable = _PTR2REF(&this.me);
             end;
         else  
-            _log_error("can't create %1%", worldmap.worldmap.get_objects().at(i).get_name());
+            _log_error("can't create %1%", pingus_worldmap:get_objects():at(i).get_name());
         end
         ////////////////////////////
 
-        if drawable then
-            worldmap.objects.push_back(drawable) finalize with end;
-            worldmap.drawables.push_back(drawable) finalize with end;
+        if drawable then            
+            drawables.push_back(drawable) finalize with end;
         else
             _log_info("Worldmap::parse_objects: Parse Error");
         end
     end
     
     var PathGraph path_graph with
-        this.path_graph = _PTR2REF(_new_PathGraph(&worldmap));
+        this.worldmap = outer;
+        this.path_graph = _PTR2REF(_new_PathGraph());
     end;
 
-    default_node = path_graph.path_graph.lookup_node(worldmap.worldmap.get_default_node());
-    final_node   = path_graph.path_graph.lookup_node(worldmap.worldmap.get_final_node());
+    default_node = path_graph.path_graph.lookup_node(_deref(pingus_worldmap:get_default_node()));
+    final_node   = path_graph.path_graph.lookup_node(_deref(pingus_worldmap:get_final_node()));
 
     var Pingus pingus with        
         this.me = _PTR2REF(_new_Drawable("pingus"));
-        this.path_graph = &path_graph;
+        this.path_graph = path_graph;
     end;    
     call/rec set_starting_node();
-    worldmap.add_drawable(&pingus.me) finalize with end;
-    worldmap.gc_state.set_limit(_Rect(_Vector2i(0, 0), _Size(worldmap.worldmap.get_width(), worldmap.worldmap.get_height())));
+    add_drawable(&pingus.me);
+    gc_state.set_limit(_Rect(_Vector2i(0, 0), _Size(pingus_worldmap:get_width(), pingus_worldmap:get_height())));
 
-    function (void) => Pingus* get_pingus do
+    function (void) => IPingus* get_pingus do
         return &pingus;
     end
 
@@ -139,7 +147,7 @@ do
         var int id;
         var _std__string* node_name = _new_String();
 
-        if _StatManager__instance():get_string(_scc2(worldmap.worldmap.get_short_name(), "-current-node"), _deref(node_name)) then
+        if _StatManager__instance():get_string(_scc2(_deref(pingus_worldmap:get_short_name()), "-current-node"), _deref(node_name)) then
             // Just in case that level doesn't exist, look it up.
             id = path_graph.path_graph.lookup_node(_deref(node_name));
             if id == _WNS_NoNode then
@@ -159,28 +167,32 @@ do
         end        
     end
 
-    function (void) => _PingusWorldmap get_worldmap do
-        return worldmap.worldmap;
+    function (_WorldmapNS__Drawable* a) => void add_drawable do
+        drawables.push_back(a);
+    end
+
+    function (void) => PingusWorldmap* get_worldmap do
+        return pingus_worldmap;
     end
 
     function (void) => int get_width do    
-        return worldmap.worldmap.get_width();
+        return pingus_worldmap:get_width();
     end
 
     function (void) => int get_height do
-        return worldmap.worldmap.get_height();
+        return pingus_worldmap:get_height();
     end
 
     function @rec (int x, int y) => Dot* find_dot do        
         return call/rec path_graph.get_dot(
-            worldmap.gc_state.screen2world(_Vector2i(x, y)).x,
-            worldmap.gc_state.screen2world(_Vector2i(x, y)).y
+            gc_state.screen2world(_Vector2i(x, y)).x,
+            gc_state.screen2world(_Vector2i(x, y)).y
         );
     end
 
     par/or do
         every startup do
-            _Sound__PingusSound__play_music(worldmap.worldmap.get_music());
+            _Sound__PingusSound__play_music(_deref(pingus_worldmap:get_music()));
 
             //update_locked_nodes:
             //original FIXME: This shouldn't be a polling function
@@ -207,8 +219,8 @@ do
 
             var int min;
             var int max;
-            var int width  = worldmap.worldmap.get_width();
-            var int height = worldmap.worldmap.get_height();
+            var int width  = pingus_worldmap:get_width();
+            var int height = pingus_worldmap:get_height();
 
             if width >= gc:get_width() then  
                 min = gc:get_width()/2;
@@ -230,13 +242,13 @@ do
 
             pingu_pos.y = _Math__clamp(min, pingu_pos.y, max);
 
-            worldmap.gc_state.set_size(gc:get_width(), gc:get_height());
-            worldmap.gc_state.set_pos(_Vector2i(pingu_pos.x, pingu_pos.y));
+            gc_state.set_size(gc:get_width(), gc:get_height());
+            gc_state.set_pos(_Vector2i(pingu_pos.x, pingu_pos.y));
                 
-            worldmap.gc_state.push(_deref(gc));
+            gc_state.push(_deref(gc));
   
-            loop i in worldmap.drawables.size() do  
-                worldmap.drawables.at(i):draw(_deref(gc));
+            loop i in drawables.size() do  
+                drawables.at(i):draw(_deref(gc));
             end
 
             var Dot* dot = _PTR2REF(call/rec find_dot(mouse_x, mouse_y));            
@@ -244,12 +256,12 @@ do
                 emit dot:draw_hover => gc;
             end
   
-            worldmap.gc_state.pop(_deref(gc)); 
+            gc_state.pop(_deref(gc)); 
         end
     with
         every delta in update do
-            loop i in worldmap.drawables.size() do  
-                worldmap.drawables.at(i):update(delta);
+            loop i in drawables.size() do  
+                drawables.at(i):update(delta);
             end  
         end
     with
@@ -293,7 +305,7 @@ do
                                 _log_info("Worldmap: NO PATH TO NODE FOUND!");
                             end
                         else
-                            _StatManager__instance():set_string(_scc2(worldmap.worldmap.get_short_name(), "-current-node"), dot:get_name());
+                            _StatManager__instance():set_string(_scc2(_deref(pingus_worldmap:get_short_name()), "-current-node"), dot:get_name());
                         end
                     else
                         _Sound__PingusSound__play_sound("chink");

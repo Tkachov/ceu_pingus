@@ -29,14 +29,9 @@
 
 namespace WorldmapNS {
 
-class Worldmap;
-
 /** This class represents the walkable path on the Worldmap */
 class PathGraph
 {
-private:
-  Worldmap* worldmap;
-
 public:
   // FIXME: Memory leak? Where do we free stuff data inside the graph?
   // FIXME: shouldn't be public
@@ -58,8 +53,7 @@ public:
   /** @param worldmap is a pointer to the worldmap that holds this
       PathGraph, it is used so that the PathGraph can insert its
       drawables into the world */
-  PathGraph(Worldmap* worldmap);
-
+  PathGraph();
   ~PathGraph();
 
   /** @return a list of positions to walk to reach node \a end, by

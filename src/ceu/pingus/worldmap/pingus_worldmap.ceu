@@ -1,0 +1,226 @@
+#ifndef PINGUS_WORLDMAP_CEU
+#define PINGUS_WORLDMAP_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+
+native/pre do
+    ##include "engine/display/display.hpp"
+    ##include "engine/display/graphic_context_state.hpp"
+    ##include "engine/gui/gui_manager.hpp"
+    ##include "engine/gui/rect_component.hpp"
+    ##include "engine/gui/surface_button.hpp"
+    ##include "engine/screen/screen_manager.hpp"
+    ##include "engine/sound/sound.hpp"
+    ##include "pingus/fonts.hpp"
+    ##include "pingus/game_time.hpp"
+    ##include "pingus/gettext.h"
+    ##include "pingus/globals.hpp"
+    ##include "pingus/savegame_manager.hpp"
+    ##include "pingus/screens/game_session.hpp"
+    ##include "pingus/screens/result_screen.hpp"
+    ##include "pingus/screens/story_screen.hpp"
+    ##include "pingus/server.hpp"
+    ##include "pingus/stat_manager.hpp"    
+    ##include "pingus/string_format.hpp"
+    ##include "pingus/worldmap/worldmap_screen.hpp"
+    ##include "util/log.hpp"
+    ##include "util/pathname.hpp"
+    ##include "util/sexpr_file_writer.hpp"
+    ##include "util/string_util.hpp"
+    ##include <iostream>
+    ##include <memory>
+    ##include <vector>
+
+    ##define new_GUI_Component() new GUI::Component()
+    ##define ScreenManager__instance() ScreenManager::instance()
+    ##define StatManager__instance() StatManager::instance()
+    ##define std__make_shared_GameSession std::make_shared<GameSession>
+    ##define std__make_shared_StoryScreen std::make_shared<StoryScreen>
+    ##define Display__get_width() Display::get_width()
+    ##define Display__get_height() Display::get_height()
+    ##define SU2str(x) StringUtil::to_string(x)
+    ##define Fonts__chalk_large Fonts::chalk_large
+    ##define Fonts__chalk_normal Fonts::chalk_normal
+    ##define Fonts__chalk_small Fonts::chalk_small
+    ##define StringFormat__break_line StringFormat::break_line
+
+    ##define new_SceneContextE() new SceneContext()
+    ##define new_Pingus(x) new WorldmapNS::Pingus(x)
+
+    ##define WorldmapNS__WorldmapScreen WorldmapNS::WorldmapScreen    
+
+    ##define StatManager__instance() StatManager::instance()
+    ##define new_PathGraph new WorldmapNS::PathGraph
+    ##define DrawableFactory__create(x) WorldmapNS::DrawableFactory::create(x)
+    ##define addr(x) &x
+    ##define new_Drawable new WorldmapNS::Drawable
+    ##define WorldmapNS__Node_WorldmapNS__Drawable WorldmapNS::Node<WorldmapNS::Drawable*>
+    ##define WorldmapNS__Edge_WorldmapNS__Path WorldmapNS::Edge<WorldmapNS::Path*>
+
+    ##define std__vector_FileReader std::vector<FileReader>
+    ##define new_Vector_FileReader new std::vector<FileReader>
+    ##define new_FileReader new FileReader
+    ##define FileReader__parse FileReader::parse
+end
+
+native @pure _new_GUI_Component(), _ScreenManager__instance(), _StatManager__instance(),
+             _std__make_shared_GameScreen(), _std__make_shared_StoryScreen(), _new_Pingus(),
+             _Display__get_width(), _Display__get_height(), _addr(),
+             _DrawableFactory__create(), _new_Drawable(), _SU2str(), _StringFormat__break_line(),
+             _new_SceneContextE(), _StatManager__instance(), _new_PathGraph(), _new_Vector_FileReader(),
+             _new_FileReader(), _FileReader__parse();
+
+class PingusWorldmap with
+    function (void) => _std__string&? get_name;
+    function (void) => _std__string&? get_short_name;
+    function (void) => _std__string&? get_description;
+    function (void) => _std__string&? get_music;
+    function (void) => _std__string&? get_author;
+    function (void) => _std__string&? get_email;
+    function (void) => int get_width;
+    function (void) => int get_height;
+
+    function (void) => _std__string&? get_default_node;
+    function (void) => _std__string&? get_final_node;
+    
+    function (void) => _FileReader* get_intro_story;
+    function (void) => _FileReader* get_end_story;
+
+    function (void) => _FileReader* get_graph;
+    function (void) => _std__vector_FileReader* get_objects;
+
+    function @rec (_FileReader* reader) => void parse_file;
+    function (_FileReader* reader) => void parse_properties;
+do
+    var _std__string&? filename = _new_String();
+    var _std__string&? name = _new_String();
+    var _std__string&? short_name = _new_String();
+    var _std__string&? description = _new_String();
+    var _std__string&? music = _new_String();
+    var _std__string&? author = _new_String();
+    var _std__string&? email = _new_String();
+    var int width;
+    var int height;
+
+    var _std__string&? default_node = _new_String();
+    var _std__string&? final_node = _new_String();
+
+    var _FileReader&? intro_story = _new_FileReader();
+    var _FileReader&? end_story = _new_FileReader();
+    var _FileReader&? path_graph = _new_FileReader();
+
+    var _std__vector_FileReader&? objects = _new_Vector_FileReader();
+
+    //////////////////
+
+    function (void) => _std__string&? get_name do
+        return &name;
+    end
+
+    function (void) => _std__string&? get_short_name do
+        return &short_name;
+    end
+
+    function (void) => _std__string&? get_description do
+        return &description;
+    end
+
+    function (void) => _std__string&? get_music do
+        return &music;
+    end
+
+    function (void) => _std__string&? get_author do
+        return &author;
+    end
+
+    function (void) => _std__string&? get_email do
+        return &email;
+    end
+
+    function (void) => int get_width do
+        return width;
+    end
+
+    function (void) => int get_height do
+        return height;
+    end
+
+    ////
+
+    function (void) => _std__string&? get_default_node do
+        return &default_node;
+    end
+
+    function (void) => _std__string&? get_final_node do
+        return &final_node;
+    end
+
+    ////
+    
+    function (void) => _FileReader* get_intro_story do
+        return &intro_story;
+    end
+
+    function (void) => _FileReader* get_end_story do
+        return &end_story;
+    end
+
+    ////
+
+    function (void) => _FileReader* get_graph do
+        return &path_graph;
+    end
+
+    function (void) => _std__vector_FileReader* get_objects do
+        return &objects;
+    end
+
+    ////
+
+    function @rec (_FileReader* reader) => void parse_file do
+        if reader:get_name() == "pingus-worldmap" then
+            if not reader:read_section("graph", _deref(path_graph)) then            
+                _log_error("Worldmap: %1% is missed 'graph' section", filename);
+            end
+
+            objects = _PTR2REF(reader:read_section("objects").get_sections());
+
+            parse_properties(reader);
+
+            var _std__string&? intro_story_str = _new_String();
+            var _std__string&? end_story_str = _new_String();
+            
+            if reader:read_string("intro-story", _deref(intro_story_str)) then
+                intro_story = _FileReader__parse(_Pathname(_deref(intro_story_str), _Pathname__DATA_PATH));
+            end
+
+            if reader:read_string("end-story", _deref(end_story_str)) then
+                end_story = _FileReader__parse(_Pathname(_deref(end_story_str), _Pathname__DATA_PATH));
+            end
+
+            _delete_obj(intro_story_str);
+            _delete_obj(end_story_str);
+        else
+            _log_error("Worldmap:%1%: not a Worldmap file", filename);
+        end
+    end
+
+    function (_FileReader* reader) => void parse_properties do
+        reader:read_section("head").read_string("music", _deref(music));
+        reader:read_section("head").read_string("author", _deref(author));
+        reader:read_section("head").read_string("name", _deref(name));
+        reader:read_section("head").read_string("short-name", _deref(short_name));
+        reader:read_section("head").read_string("email", _deref(email));
+        reader:read_section("head").read_int("width", width);
+        reader:read_section("head").read_int("height", height);
+        reader:read_section("head").read_string("default-node", _deref(default_node));
+        reader:read_section("head").read_string("final-node", _deref(final_node));
+    end
+
+    //////////////////
+
+    await FOREVER;
+end
+
+#endif

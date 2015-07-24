@@ -12,6 +12,7 @@
 #include "../iworld.ceu"
 #include "../global_interface.ceu"
 #include "worldmap.ceu"
+#include "pingus_worldmap.ceu"
 
 native/pre do
     ##include "engine/display/display.hpp"
@@ -31,13 +32,11 @@ native/pre do
     ##include "pingus/screens/story_screen.hpp"
     ##include "pingus/server.hpp"
     ##include "pingus/string_format.hpp"
-    ##include "pingus/worldmap/worldmap.hpp"
     ##include "pingus/worldmap/worldmap_screen.hpp"
     ##include "util/log.hpp"
     ##include "util/string_util.hpp"
 
     ##define new_GUI_Component() new GUI::Component()
-    ##define new_Worldmap(pn) new WorldmapNS::Worldmap(pn)
     ##define ScreenManager__instance() ScreenManager::instance()
     ##define std__make_shared_GameSession std::make_shared<GameSession>
     ##define std__make_shared_StoryScreen std::make_shared<StoryScreen>
@@ -51,13 +50,13 @@ native/pre do
 
     ##define new_SceneContextE() new SceneContext()
 
-    ##define WorldmapNS__Worldmap WorldmapNS::Worldmap
     ##define WorldmapNS__WorldmapScreen WorldmapNS::WorldmapScreen
     ##define addr(x) &x
+    ##define new_FileReader new FileReader
 end
 
 native @pure _new_GUI_Component(), _ScreenManager__instance(), _std__make_shared_GameScreen(), _std__make_shared_StoryScreen(),
-             _Display__get_width(), _Display__get_height(), _new_Worldmap(),
+             _Display__get_width(), _Display__get_height(), _new_FileReader(),
              _SU2str(), _StringFormat__break_line(), _new_SceneContextE(), _addr();
 
 input _WorldmapScreenLoadPackage* LOAD_WORLDMAP_SCREEN;
@@ -66,8 +65,7 @@ input _GUIScreen* DELETE_WORLDMAP_SCREEN;
 
 interface IWorldmapScreen with
     function (void) => void show_intro_story;
-    function (void) => void show_end_story;
-    function (void) => _WorldmapNS__Worldmap*? get_worldmap;
+    function (void) => void show_end_story;    
     function (void) => Worldmap*? get_ceu_worldmap;
     function (void) => Rect get_trans_rect;
 
@@ -266,18 +264,14 @@ do
 
     function (void) => void show_intro_story do
         _ScreenManager__instance():push_screen(_std__make_shared_StoryScreen(
-            worldmap:get_worldmap().get_intro_story()
+            _deref(worldmap:get_worldmap():get_intro_story())
         ));
     end
 
     function (void) => void show_end_story do
         _ScreenManager__instance():push_screen(_std__make_shared_StoryScreen(
-            worldmap:get_worldmap().get_end_story()
+            _deref(worldmap:get_worldmap():get_end_story())
         ));
-    end
-
-    function (void) => _WorldmapNS__Worldmap*? get_worldmap do
-        return worldmap:me;
     end
 
     function (void) => Worldmap*? get_ceu_worldmap do
@@ -306,11 +300,17 @@ do
         end
     with
         every filename in load do
-            worldmap = spawn Worldmap with
-                this.me = _new_Worldmap(_deref(filename));
+            var PingusWorldmap*? pingus_worldmap = spawn PingusWorldmap;
+            var _FileReader&? fr = _new_FileReader(_FileReader__parse(_deref(filename)));
+            call/rec pingus_worldmap:parse_file(&fr);
+            _delete_obj(fr);
+
+            worldmap = spawn Worldmap with                
+                this.pingus_worldmap = pingus_worldmap;
             end;
 
             var bool credits_unlocked = false;
+            //originally commented out:
             //StatManager::instance()->get_bool(worldmap:me:get_short_name() + "-endstory-seen", credits_unlocked);
             if credits_unlocked then
                 credits_button = spawn WorldmapScreenCreditsButton with

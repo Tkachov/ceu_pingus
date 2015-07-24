@@ -1,45 +1,22 @@
 #ifndef IWORLDMAP_CEU
 #define IWORLDMAP_CEU
 
-#include "pingus.ceu"
+#include "ipingus.ceu"
+#include "pingus_worldmap.ceu"
 
 native/pre do
     ##include "engine/display/display.hpp"
-    ##include "engine/display/graphic_context_state.hpp"
-    ##include "engine/gui/gui_manager.hpp"
-    ##include "engine/gui/rect_component.hpp"
-    ##include "engine/gui/surface_button.hpp"
-    ##include "engine/screen/screen_manager.hpp"
-    ##include "engine/sound/sound.hpp"
-    ##include "pingus/fonts.hpp"
-    ##include "pingus/game_time.hpp"
-    ##include "pingus/gettext.h"
-    ##include "pingus/globals.hpp"
-    ##include "pingus/savegame_manager.hpp"
-    ##include "pingus/screens/game_session.hpp"
-    ##include "pingus/screens/result_screen.hpp"
-    ##include "pingus/screens/story_screen.hpp"
-    ##include "pingus/server.hpp"
-    ##include "pingus/stat_manager.hpp"    
-    ##include "pingus/string_format.hpp"
-    ##include "pingus/worldmap/pingus_worldmap.hpp"
-    ##include "pingus/worldmap/worldmap.hpp"
-    ##include "pingus/worldmap/worldmap_screen.hpp"
-    ##include "util/log.hpp"
-    ##include "util/pathname.hpp"
-    ##include "util/sexpr_file_writer.hpp"
-    ##include "util/string_util.hpp"
-
-    ##define WorldmapNS__Worldmap WorldmapNS::Worldmap
+    ##define WorldmapNS__Drawable WorldmapNS::Drawable
 end
 
-interface IWorldmap with
-    var _WorldmapNS__Worldmap* me;
+interface IWorldmap with    
+    var PingusWorldmap* pingus_worldmap;
 
+    function (_WorldmapNS__Drawable*) => void add_drawable;
     function (void) => int get_width;
     function (void) => int get_height;
-    function (void) => _PingusWorldmap get_worldmap;
-    function (void) => Pingus* get_pingus;
+    function (void) => PingusWorldmap* get_worldmap;
+    function (void) => IPingus* get_pingus;
 
     event void startup;
     event _DrawingContext* draw;

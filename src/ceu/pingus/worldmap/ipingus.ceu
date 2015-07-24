@@ -1,0 +1,17 @@
+#ifndef IPINGUS_CEU
+#define IPINGUS_CEU
+
+#include "../../math/vector3f.ceu"
+#include "drawable.ceu"
+
+interface IPingus with
+    interface Drawable;    
+    function @rec (int node) => void set_position;
+    function (void) => Vector3f get_pos;
+    function (void) => int get_node;
+    function @rec (int target) => bool walk_to_node;
+    function @rec (void) => void update_edge_path;
+    function (void) => float get_direction;
+end
+
+#endif

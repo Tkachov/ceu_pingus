@@ -18,14 +18,12 @@
 
 #include "pingus/globals.hpp"
 #include "pingus/worldmap/path_drawable.hpp"
-#include "pingus/worldmap/worldmap.hpp"
 #include "util/log.hpp"
 #include "util/raise_exception.hpp"
 
 namespace WorldmapNS {
 
-PathGraph::PathGraph(Worldmap* arg_worldmap):
-  worldmap(arg_worldmap),
+PathGraph::PathGraph():
   graph(),
   dots(),
   pathfinder_cache(),

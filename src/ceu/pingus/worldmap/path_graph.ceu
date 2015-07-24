@@ -11,6 +11,8 @@
 #include "../../math/rect.ceu"
 #include "../iworld.ceu"
 #include "../global_interface.ceu"
+#include "ipath_graph.ceu"
+#include "iworldmap.ceu"
 #include "pingus.ceu"
 #include "sprite_drawable.ceu"
 #include "level_dot.ceu"
@@ -40,8 +42,6 @@ native/pre do
     ##include "pingus/worldmap/path.hpp"
     ##include "pingus/worldmap/path_drawable.hpp"
     ##include "pingus/worldmap/pathfinder.hpp"
-    ##include "pingus/worldmap/pingus_worldmap.hpp"    
-    ##include "pingus/worldmap/worldmap.hpp"
     ##include "pingus/worldmap/worldmap_screen.hpp"
     ##include "util/file_reader.hpp"
     ##include "util/log.hpp"
@@ -96,17 +96,13 @@ native @pure _new_GUI_Component(), _ScreenManager__instance(), _std__make_shared
              _new_Vector_FileReader(), _new_Path(), _new_PathDrawable();
 
 class PathGraph with
-    var _WorldmapNS__PathGraph&? path_graph;
-    function @rec (float x_pos, float y_pos) => Dot* get_dot;
-    function (int id) => Dot* get_dot_by_id;
-    function @rec (Dot* dot) => int get_id;
-    event void delete;
+    interface IPathGraph;
     pool LevelDot[] lds;
     pool StoryDot[] sds;
 do
     //parse_nodes:
     do
-    var _Vector_FileReader&? childs = _new_Vector_FileReader(path_graph.worldmap:worldmap.get_graph().read_section("nodes").get_sections());
+    var _Vector_FileReader&? childs = _new_Vector_FileReader(worldmap.pingus_worldmap:get_graph():read_section("nodes").get_sections());
     loop i in childs.size() do
         var _WorldmapNS__Drawable* dot = null;
 
@@ -145,9 +141,7 @@ do
             path_graph.node_lookup[dot:get_name()] = id;
 
             // add the dot to the list of drawables
-            if path_graph.worldmap then
-                path_graph.worldmap:add_drawable(_PTR2REF(dot));
-            end
+            worldmap.add_drawable(_PTR2REF(dot));            
 
             //original FIXME: should be use this for freeing the stuff?
             path_graph.dots.push_back(_PTR2REF(dot));
@@ -159,9 +153,9 @@ do
     end
     ////////
 
-    //parse_edges(path_graph.worldmap:worldmap.get_graph().read_section("edges"));    
+    //parse_edges:   
     do
-    var _Vector_FileReader&? childs = _new_Vector_FileReader(path_graph.worldmap:worldmap.get_graph().read_section("edges").get_sections());
+    var _Vector_FileReader&? childs = _new_Vector_FileReader(worldmap.pingus_worldmap:get_graph():read_section("edges").get_sections());
 
     var _std__string* name = _new_String();
     var _std__string* source = _new_String();
@@ -175,7 +169,7 @@ do
             //original FIXME: add path-data parsing here
             var _WorldmapNS__Path* path = _new_Path();
               
-            var _Vector_FileReader&? childs2 = _new_Vector_FileReader(path_graph.worldmap:worldmap.get_graph().read_section("edges").read_section("positions").get_sections());
+            var _Vector_FileReader&? childs2 = _new_Vector_FileReader(worldmap.pingus_worldmap:get_graph():read_section("edges").read_section("positions").get_sections());
               
             loop j in childs2.size() do
                 if childs2.at(j).get_name() == "position" then                
@@ -195,8 +189,8 @@ do
             //original FIXME: merge this together with the Pingus::distance() stuff in a seperate Path class
             var float cost = full_path.length();
 
-            if path_graph.worldmap and _globals__developer_mode then
-                path_graph.worldmap:add_drawable(_new_PathDrawable(_deref(full_path)));
+            if _globals__developer_mode then
+                worldmap.add_drawable(_new_PathDrawable(_deref(full_path)));
             end
 
             //original FIXME: No error checking,

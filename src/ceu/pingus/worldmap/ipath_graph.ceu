@@ -1,0 +1,45 @@
+#ifndef IPATH_GRAPH_CEU
+#define IPATH_GRAPH_CEU
+
+#include "iworldmap.ceu"
+#include "dot.ceu"
+
+native/pre do
+    ##include "engine/display/display.hpp"
+    ##include "engine/display/graphic_context_state.hpp"
+    ##include "engine/gui/gui_manager.hpp"
+    ##include "engine/gui/rect_component.hpp"
+    ##include "engine/gui/surface_button.hpp"
+    ##include "engine/screen/screen_manager.hpp"
+    ##include "engine/sound/sound.hpp"
+    ##include "pingus/fonts.hpp"
+    ##include "pingus/game_time.hpp"
+    ##include "pingus/gettext.h"
+    ##include "pingus/globals.hpp"
+    ##include "pingus/savegame_manager.hpp"
+    ##include "pingus/screens/game_session.hpp"
+    ##include "pingus/screens/result_screen.hpp"
+    ##include "pingus/screens/story_screen.hpp"
+    ##include "pingus/server.hpp"
+    ##include "pingus/stat_manager.hpp"    
+    ##include "pingus/string_format.hpp"
+    ##include "pingus/worldmap/worldmap_screen.hpp"
+    ##include "util/log.hpp"
+    ##include "util/pathname.hpp"
+    ##include "util/sexpr_file_writer.hpp"
+    ##include "util/string_util.hpp"
+
+    ##define WorldmapNS__Worldmap WorldmapNS::Worldmap
+    ##define WorldmapNS__Drawable WorldmapNS::Drawable
+end
+
+interface IPathGraph with
+    var _WorldmapNS__PathGraph&? path_graph;
+    var IWorldmap& worldmap;
+    function @rec (float x_pos, float y_pos) => Dot* get_dot;
+    function (int id) => Dot* get_dot_by_id;
+    function @rec (Dot* dot) => int get_id;
+    event void delete;
+end
+
+#endif
