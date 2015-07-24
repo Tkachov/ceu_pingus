@@ -5,10 +5,7 @@
 #include "dot.ceu"
 
 native/pre do
-    ##include "pingus/worldmap/drawable.hpp"
     ##include "pingus/worldmap/path_graph.hpp"
-
-    ##define WorldmapNS__Drawable WorldmapNS::Drawable
 end
 
 interface IPathGraph with

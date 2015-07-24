@@ -7,7 +7,6 @@
 
 native/pre do    
     ##include "math/vector3f.hpp"
-    ##include "pingus/worldmap/drawable.hpp"
     ##include "pingus/worldmap/path.hpp"
 
     ##define WorldmapNS__Path WorldmapNS::Path
@@ -17,13 +16,7 @@ class PathDrawable with
     interface Drawable;
     var _WorldmapNS__Path&? path;    
 do
-    var _WorldmapNS__Drawable&? drawable = _PTR2REF(&me);
-
     finalize with _delete_obj(path); end
-
-    var DrawableProxy proxy with
-        this.drawable = outer;
-    end;
 
     par/or do
         every gc in draw do

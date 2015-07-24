@@ -53,9 +53,7 @@ native/pre do
     ##define StatManager__instance() StatManager::instance()
     ##define new_PathGraph new WorldmapNS::PathGraph
     ##define DrawableFactory__create(x) WorldmapNS::DrawableFactory::create(x)
-    ##define addr(x) &x
-    ##define new_Drawable new WorldmapNS::Drawable
-    ##define WorldmapNS__Node_WorldmapNS__Drawable WorldmapNS::Node<WorldmapNS::Drawable*>
+    ##define addr(x) &x    
     ##define WorldmapNS__Edge_WorldmapNS__Path WorldmapNS::Edge<WorldmapNS::Path*>
 
     ##define std__vector_FileReader std::vector<FileReader>
@@ -67,7 +65,7 @@ end
 native @pure _new_GUI_Component(), _ScreenManager__instance(), _StatManager__instance(),
              _std__make_shared_GameScreen(), _std__make_shared_StoryScreen(), _new_Pingus(),
              _Display__get_width(), _Display__get_height(), _addr(),
-             _DrawableFactory__create(), _new_Drawable(), _SU2str(), _StringFormat__break_line(),
+             _SU2str(), _StringFormat__break_line(),
              _new_SceneContextE(), _StatManager__instance(), _new_PathGraph(), _new_Vector_FileReader(),
              _new_FileReader(), _FileReader__parse();
 

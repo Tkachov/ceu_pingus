@@ -59,8 +59,6 @@ class LevelDot with
     var _FileReader* reader;
     function (void) => _PingusLevel* get_plf;
 do
-    var _WorldmapNS__Drawable&? dot = _PTR2REF((_WorldmapNS__Drawable*)&me);
-
     var Sprite green_dot_sur;
     var Sprite red_dot_sur;
     var Sprite inaccessible_dot_sur;
@@ -76,15 +74,14 @@ do
     reader:read_string("levelname", _deref(resname));
 
     var _PingusLevel&? plf = _new_PingusLevel(_PLFResMgr__load_plf(_deref(resname)));    
-    finalize with _delete_obj(plf); end
+    finalize with
+        _delete_obj(name);
+        _delete_obj(plf);
+    end
     _delete_obj(resname);
 
     function (void) => _PingusLevel* get_plf do
         return &plf;
-    end
-
-    function (void) => _std__string get_name do
-        return dot.get_name();
     end
 
     function (void) => _Vector3f get_pos do
@@ -117,10 +114,6 @@ do
             _delete_obj(sg);
         end        
     end
-
-    var DotProxy proxy with
-        this.dot = outer;
-    end;
 
     par/or do
         every gc in draw do

@@ -21,7 +21,6 @@
 #include <vector>
 
 #include "math/vector3f.hpp"
-#include "pingus/worldmap/drawable.hpp"
 #include "pingus/worldmap/graph.hpp"
 #include "pingus/worldmap/path.hpp"
 #include "pingus/worldmap/pathfinder.hpp"
@@ -35,10 +34,10 @@ class PathGraph
 public:
   // FIXME: Memory leak? Where do we free stuff data inside the graph?
   // FIXME: shouldn't be public
-  Graph<Drawable*, Path*> graph;
+  Graph<void*, Path*> graph;
 
-  std::vector<Drawable*> dots;
-  typedef std::vector<Pathfinder<Drawable*, Path*>* > PFinderCache;
+  std::vector<void*> dots;
+  typedef std::vector<Pathfinder<void*, Path*>* > PFinderCache;
   PFinderCache pathfinder_cache;
 private:
 

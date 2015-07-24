@@ -36,13 +36,10 @@ do
     var _std__vector_NodeId&? node_path = _new_Vector_NodeId();
     var _WorldmapNS__Path&? edge_path = _new_Path();
     finalize with
+        _delete_obj(name);
         _delete_obj(node_path);
         _delete_obj(edge_path);
     end
-
-    var DrawableProxy proxy with
-        this.drawable = outer;
-    end;
 
     var Sprite sprite_standing;    
     var Sprite sprite_right;
@@ -88,7 +85,7 @@ do
         last_pos = pos;
 
         if current_node != _WNS_NoNode then // pingu stands still
-            _readVector3f(pos, ((Dot*)path_graph.path_graph.graph.resolve_node(current_node).data:ceu):get_pos());
+            _readVector3f(pos, ((Dot*)path_graph.path_graph.graph.resolve_node(current_node).data):get_pos());
         else // between two nodes  
             _readVector3f(pos, edge_path.at(edge_path_position));
         end
@@ -180,10 +177,10 @@ do
         
         var _WorldmapNS__Path* partial_path = _PTR2REF(path_graph.path_graph.graph.resolve_edge(source_node, target_node).data);
 
-        edge_path.push_back(((Dot*)path_graph.path_graph.graph.resolve_node(source_node).data:ceu):get_pos());
+        edge_path.push_back(((Dot*)path_graph.path_graph.graph.resolve_node(source_node).data):get_pos());
         // Why do we need to reverse this?!
         edge_path.reverse_insert(_PTR2REF(*partial_path));
-        edge_path.push_back(((Dot*)path_graph.path_graph.graph.resolve_node(target_node).data:ceu):get_pos());
+        edge_path.push_back(((Dot*)path_graph.path_graph.graph.resolve_node(target_node).data):get_pos());
     end
 
     function (void) => float get_direction do

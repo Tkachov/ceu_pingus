@@ -1,46 +1,20 @@
 #ifndef DRAWABLE_CEU
 #define DRAWABLE_CEU
 
+#include "../../string.ceu"
+
 native/pre do
-    ##include "pingus/worldmap/drawable.hpp"
-    ##define WorldmapNS__Drawable WorldmapNS::Drawable
+    ##include <string>
+    ##include "util/file_reader.hpp"
+    class DrawingContext;    
 end
 
 interface Drawable with
-    var _WorldmapNS__Drawable& me;
+    var _std__string&? name;
 
     event _DrawingContext* draw;
     event float update;
     event void delete;
-end
-
-input _DrawableDrawPackage* DRAWABLE_DRAW;
-input _DrawableUpdatePackage* DRAWABLE_UPDATE;
-input _WorldmapNS__Drawable* DRAWABLE_DELETE;
-
-class DrawableProxy with
-    var Drawable& drawable;
-do
-    par do
-        every package in DRAWABLE_DRAW do
-            if package:drawable == &drawable.me then
-                emit drawable.draw => &package:gc;
-            end
-        end
-    with
-        every package in DRAWABLE_UPDATE do
-            if package:drawable == &drawable.me then
-                emit drawable.update => package:delta;
-            end
-        end
-    with
-        every d in DRAWABLE_DELETE do
-            if d == &drawable.me then
-                _printf("drawable::delete;\n");
-                emit drawable.delete;
-            end
-        end
-    end
 end
 
 #endif

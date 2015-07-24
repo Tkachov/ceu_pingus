@@ -3,16 +3,16 @@
 
 #include "ipingus.ceu"
 #include "pingus_worldmap.ceu"
+#include "drawable.ceu"
 
 native/pre do
     ##include "engine/display/display.hpp"
-    ##define WorldmapNS__Drawable WorldmapNS::Drawable
 end
 
 interface IWorldmap with    
     var PingusWorldmap* pingus_worldmap;
 
-    function (_WorldmapNS__Drawable*) => void add_drawable;
+    function (Drawable*) => void add_drawable;
     function (void) => int get_width;
     function (void) => int get_height;
     function (void) => PingusWorldmap* get_worldmap;

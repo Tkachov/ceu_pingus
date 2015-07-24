@@ -32,8 +32,6 @@ class StoryDot with
     interface Dot;
     var _FileReader* reader;
 do
-    var _WorldmapNS__Drawable&? dot = _PTR2REF((_WorldmapNS__Drawable*)&me);
-
     var Sprite m_story_dot_highlight;
     var Sprite m_story_dot;
     call/rec m_story_dot_highlight.reload_by_name("core/worldmap/story_dot_highlight");
@@ -48,12 +46,9 @@ do
     reader:read_bool("credits", m_credits);
     
     finalize with
+        _delete_obj(name);
         _delete_obj(m_name);
         _delete_obj(m_story);
-    end
-
-    function (void) => _std__string get_name do
-        return dot.get_name();
     end
 
     function (void) => _Vector3f get_pos do
@@ -63,10 +58,6 @@ do
     function (void) => bool finished do return true; end
     function (void) => bool accessible do return true; end
     function (void) => void unlock do end
-
-    var DotProxy proxy with
-        this.dot = outer;
-    end;
 
     par/or do
         every gc in draw do

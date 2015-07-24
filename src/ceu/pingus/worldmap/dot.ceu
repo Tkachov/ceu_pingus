@@ -8,24 +8,13 @@ interface Dot with
 
     event _DrawingContext* draw_hover;    
     event void on_click;
-
-    function (void) => _std__string get_name;
+    
     function (void) => _Vector3f get_pos;
     function (void) => bool finished;
     function (void) => bool accessible;
     function (void) => void unlock; 
 
     var Vector3f pos;
-end
-
-class DotProxy with
-    var Dot& dot;
-do
-    var DrawableProxy proxy with
-        this.drawable = dot;
-    end;
-
-    await FOREVER;
 end
 
 #endif

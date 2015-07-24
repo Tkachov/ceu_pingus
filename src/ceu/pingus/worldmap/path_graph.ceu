@@ -79,7 +79,6 @@ native/pre do
     ##define new_PathGraph new WorldmapNS::PathGraph
     ##define DrawableFactory__create(x) WorldmapNS::DrawableFactory::create(x)
     ##define addr(x) &x
-    ##define new_Drawable new WorldmapNS::Drawable
 
     ##define WorldmapNS__PathGraph WorldmapNS::PathGraph
     ##define Vector_FileReader std::vector<FileReader>
@@ -91,7 +90,7 @@ native/pre do
 end
 
 native @pure _new_GUI_Component(), _ScreenManager__instance(), _std__make_shared_GameScreen(), _std__make_shared_StoryScreen(),
-             _Display__get_width(), _Display__get_height(), _new_Worldmap(), _new_Pingus(), _DrawableFactory__create(), _new_Drawable(),
+             _Display__get_width(), _Display__get_height(), _new_Worldmap(), _new_Pingus(),
              _SU2str(), _StringFormat__break_line(), _new_SceneContextE(), _StatManager__instance(), _new_PathGraph(), _addr(),
              _new_Vector_FileReader(), _new_Path();
 
@@ -105,30 +104,28 @@ do
     do
     var _Vector_FileReader&? childs = _new_Vector_FileReader(worldmap.pingus_worldmap:get_graph():read_section("nodes").get_sections());
     loop i in childs.size() do
-        var _WorldmapNS__Drawable* dot = null;
+        var Drawable*? dot = null;
 
         //DotFactory:
         if childs.at(i).get_name() == "storydot" then            
             spawn StoryDot in sds with
-                dot = _new_Drawable();
-                this.me = _PTR2REF(dot);
+                dot = &this;
                 this.reader = (_FileReader*)_addr(childs.at(i));
-                dot:ceu = &this;               
 
                 _reader_read_Vector3f(childs.at(i).read_section("dot"), this.pos);
-                childs.at(i).read_section("dot").read_string("name", _PTR2REF(this.me.name));
-                _assert(not this.me.name.empty());
+                this.name = _new_String();
+                childs.at(i).read_section("dot").read_string("name", _deref(this.name));
+                _assert(not this.name.empty());
             end;
         else/if childs.at(i).get_name() == "leveldot" then
             spawn LevelDot in lds with
-                dot = _new_Drawable();                
-                this.me = _PTR2REF(dot);
-                this.reader = (_FileReader*)_addr(childs.at(i));
-                dot:ceu = &this;
+                dot = &this;
+                this.reader = (_FileReader*)_addr(childs.at(i));                
                 
                 _reader_read_Vector3f(childs.at(i).read_section("dot"), this.pos);
-                childs.at(i).read_section("dot").read_string("name", _PTR2REF(this.me.name));
-                _assert(not this.me.name.empty());
+                this.name = _new_String();
+                childs.at(i).read_section("dot").read_string("name", _deref(this.name));
+                _assert(not this.name.empty());
             end;
         else
             _log_error("DotFactory: unknown tag: %1%", childs.at(i).get_name());
@@ -139,7 +136,7 @@ do
             var int id = path_graph.graph.add_node(_PTR2REF(dot));
 
             //log_info("Adding to lookup table: " << dot->get_name());
-            path_graph.node_lookup[dot:get_name()] = id;
+            path_graph.node_lookup[_deref(dot:name)] = id;
 
             // add the dot to the list of drawables
             worldmap.add_drawable(_PTR2REF(dot));            
@@ -183,17 +180,17 @@ do
             end
 
             var _WorldmapNS__Path&? full_path = _new_Path();
-            full_path.push_back(((Dot*)path_graph.graph.resolve_node(path_graph.lookup_node(_deref(source))).data:ceu):get_pos());
+            full_path.push_back(((Dot*)path_graph.graph.resolve_node(path_graph.lookup_node(_deref(source))).data):get_pos());
             full_path.insert(*path) finalize with end;
-            full_path.push_back(((Dot*)path_graph.graph.resolve_node(path_graph.lookup_node(_deref(destination))).data:ceu):get_pos());
+            full_path.push_back(((Dot*)path_graph.graph.resolve_node(path_graph.lookup_node(_deref(destination))).data):get_pos());
 
             //original FIXME: merge this together with the Pingus::distance() stuff in a seperate Path class
             var float cost = full_path.length();
 
             if _globals__developer_mode then                
-                spawn PathDrawable in pds with                    
-                    this.me = _new_Drawable();
-                    worldmap.add_drawable(&this.me);
+                spawn PathDrawable in pds with
+                    this.name = _new_String();                    
+                    worldmap.add_drawable(&this);
                     this.path = _PTR2REF(full_path); //delete inside
                 end;
             end
@@ -237,7 +234,7 @@ do
 
     function @rec (float x_pos, float y_pos) => Dot* get_dot do
         loop/1000 i in path_graph.dots.size() do  
-            var Dot* r = _PTR2REF((Dot*)path_graph.dots.at(i):ceu);
+            var Dot* r = _PTR2REF((Dot*)path_graph.dots.at(i));
             var float x = x_pos - r:get_pos().x;
             var float y = y_pos - r:get_pos().y;
 
@@ -250,16 +247,12 @@ do
     end
 
     function (int id) => Dot* get_dot_by_id do
-        var _WorldmapNS__Drawable* dot = _PTR2REF(path_graph.graph.resolve_node(id).data);
-        if dot then
-            return (Dot*)dot:ceu;
-        end
-        return null;
+        return (Dot*)path_graph.graph.resolve_node(id).data;
     end
 
     function @rec (Dot* dot) => int get_id do
         loop/1000 i in path_graph.dots.size() do 
-            if path_graph.dots.at(i):ceu == dot then
+            if path_graph.dots.at(i) == dot then
                 return i;
             end
         end

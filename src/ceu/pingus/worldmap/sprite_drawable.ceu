@@ -10,7 +10,6 @@
 native/pre do
     ##include "engine/display/sprite.hpp"
     ##include "math/vector3f.hpp"
-    ##include "pingus/worldmap/drawable.hpp"
     ##include "pingus/res_descriptor.hpp"
 
     ##define WorldmapNS__Pingus WorldmapNS::Pingus
@@ -26,7 +25,7 @@ class SpriteDrawable with
     var _FileReader* reader;
     var IWorldmap& worldmap;
 do
-    var _WorldmapNS__Drawable&? drawable = _PTR2REF(&me);
+    finalize with _delete_obj(name); end
 
     var Sprite surface;
     var Vector3f pos;
@@ -39,10 +38,6 @@ do
 
     call/rec surface.reload_by_desc(desc);
     _delete_obj(desc);
-
-    var DrawableProxy proxy with
-        this.drawable = outer;
-    end;
 
     par/or do
         every gc in draw do

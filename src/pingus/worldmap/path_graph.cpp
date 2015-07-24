@@ -48,11 +48,11 @@ PathGraph::~PathGraph()
 PathfinderResult
 PathGraph::get_path(NodeId start_id, NodeId end_id)
 {
-  Pathfinder<Drawable*,Path*>*& pfinder = pathfinder_cache[start_id];
+  Pathfinder<void*,Path*>*& pfinder = pathfinder_cache[start_id];
 
   if (!pfinder)
   {
-    pfinder = new Pathfinder<Drawable*, Path*>(graph, start_id);
+    pfinder = new Pathfinder<void*, Path*>(graph, start_id);
     pathfinder_cache[start_id] = pfinder;
   }
 
