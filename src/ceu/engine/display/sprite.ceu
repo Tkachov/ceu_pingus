@@ -8,10 +8,12 @@ native/pre do
 
     ##define new_Sprite new Sprite
     ##define new_SpriteA(a) new Sprite(a)
+    ##define new_Surface new Surface
 end
 
 native @pure _new_Sprite(),
-             _new_SpriteA();
+             _new_SpriteA(),
+             _new_Surface();
 
 class Sprite with
     function @rec (_const_char_string filename) => void reload_by_name;

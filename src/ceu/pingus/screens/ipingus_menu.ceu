@@ -1,0 +1,16 @@
+#ifndef IPINGUS_MENU_CEU
+#define IPINGUS_MENU_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../../string.ceu"
+
+interface IPingusMenu with
+    function (_const_char_string) => void set_hint;
+end
+
+interface Function with
+    event void execute;
+end
+
+#endif

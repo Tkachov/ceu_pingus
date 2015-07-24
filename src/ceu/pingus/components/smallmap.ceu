@@ -14,12 +14,6 @@
 #include "ismallmap.ceu"
 #include "iplayfield.ceu"
 
-native/pre do    
-    ##define new_Surface2(a, b) new Surface(a, b)
-end
-
-native @pure _new_Surface2();
-
 class SmallMap with
     interface IGUI_Component;
     interface ISmallMap;
@@ -29,7 +23,7 @@ do
     var _DrawingContext* gc_ptr = null;
 
     var SmallMapImage image with
-        this.canvas = _new_Surface2(rect.rect.get_width(), rect.rect.get_height());
+        this.canvas = _new_Surface(rect.rect.get_width(), rect.rect.get_height());
     end;
 
     var EventProxy ep with this.gui = outer; end;

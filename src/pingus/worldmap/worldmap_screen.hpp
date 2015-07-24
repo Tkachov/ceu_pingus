@@ -39,8 +39,7 @@ public:
   WorldmapScreen();
   ~WorldmapScreen();
 
-  void load(const Pathname& filename);
-  void update(float);
+  void load(const Pathname& filename);  
 
 private:
   WorldmapScreen (const WorldmapScreen&);

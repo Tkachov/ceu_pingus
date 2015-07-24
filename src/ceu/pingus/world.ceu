@@ -40,8 +40,7 @@ native/pre do
     ##include "pingus/resource.hpp"
     ##define Resource__load_surface Resource::load_surface
 
-    ##define opeq(x, y) *x = y
-    ##define new_Surface() new Surface()
+    ##define opeq(x, y) *x = y    
 
     ##include "util/container.h"
     ##define new_Container() new Container()
@@ -80,7 +79,7 @@ end
 native @pure _new_CreationPackage(), _vecget(), _vecget_addr(), _addr(), _new_OverrideFileReader(), _new_FileReader(),
              _new_std__vector_FileReader(), _new_PrefabFile(), _PrefabFile__from_resource();
 
-native @pure _reader_read_Groundtype(), _Resource__load_surface(), _opeq(), _new_Surface(), _new_Container(), _new_Color(),
+native @pure _reader_read_Groundtype(), _Resource__load_surface(), _opeq(), _new_Container(), _new_Color(),
              _read_position(), _read_position2(), _log_error(), _log_warn();
 
 input IWorldObj* WORLD_DRAW_OBJECT;

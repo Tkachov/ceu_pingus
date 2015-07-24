@@ -4,7 +4,11 @@
 native/pre do
     ##include "engine/screen/gui_screen.hpp"
     ##include "engine/screen/screen.hpp"
+
+    ##define new_GUIScreen() new GUIScreen()
 end
+
+native @pure _new_GUIScreen();
 
 input _GUIScreen* ON_STARTUP;
 input _GUIScreen* ON_ARMAGEDDON_PRESS;
@@ -17,6 +21,7 @@ input _GUIScreen* ON_SINGLE_STEP_PRESS;
 input _GUIScreen* ON_SINGLE_STEP_RELEASE;
 input _GUIScreen* ON_FAST_FORWARD_PRESS;
 input _GUIScreen* ON_FAST_FORWARD_RELEASE;
+input _ScreenUpdatePackage* SCREEN_UPDATE;
 input _ScreenUpdateEventPackage* SCREEN_UPDATE_EVENT;
 input _ScreenDrawPackage* SCREEN_DRAW_BACKGROUND;
 input _ScreenResizePackage* SCREEN_RESIZE;

@@ -32,38 +32,17 @@ class MenuButton: public GUI::Component
 {
 public: //protected and public here is public for Ceu
   PingusMenu* menu;
-  Sprite surface_p;
-  Sprite highlight;
-  Font   font;
-  Font   font_large;
 
   int x_pos;
   int y_pos;
 
-  std::string desc;
-  std::string text;
+  MenuButton(PingusMenu* menu, const Vector2i& pos, const std::string& text, const std::string& desc) {}
+  virtual ~MenuButton() {}
 
-  bool mouse_over;
-  bool pressed;
-
-  MenuButton(PingusMenu* menu, const Vector2i& pos, const std::string& text, const std::string& desc);
-  virtual ~MenuButton();
-
-  void draw(DrawingContext& gc);
-  void update(float delta);
-
-  bool is_at(int x, int y);
-
-  void on_pointer_enter();
-  void on_pointer_leave();
-  void on_pointer_press();
-  void on_pointer_release();
-
-  void on_primary_button_click(int x, int y) { on_click (); }
-
-  virtual void on_click();
-
-  void set_pos(int x, int y);
+  void set_pos(int x, int y) {
+    x_pos = x;
+    y_pos = y;
+  }
 
 private:
   MenuButton(const MenuButton&);

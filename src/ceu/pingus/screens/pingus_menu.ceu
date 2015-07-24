@@ -1,0 +1,322 @@
+#ifndef PINGUS_MENU_CEU
+#define PINGUS_MENU_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../../string.ceu"
+#include "../../engine/gui/igui_component.ceu"
+#include "../../engine/gui/surface_button.ceu"
+#include "../../engine/screen/screen.ceu"
+#include "../../engine/sound/sound.ceu"
+#include "../../math/math.ceu"
+#include "../iworld.ceu"
+#include "../global_interface.ceu"
+#include "ipingus_menu.ceu"
+#include "../components/menu_button.ceu"
+
+native/pre do
+    ##include "editor/editor_screen.hpp"
+    ##include "engine/display/display.hpp"
+    ##include "engine/display/graphic_context_state.hpp"
+    ##include "engine/display/sprite.hpp"
+    ##include "engine/gui/gui_manager.hpp"
+    ##include "engine/gui/rect_component.hpp"
+    ##include "engine/gui/surface_button.hpp"
+    ##include "engine/screen/gui_screen.hpp"
+    ##include "engine/screen/screen_manager.hpp"
+    ##include "engine/sound/sound.hpp"
+    ##include "pingus/components/menu_button.hpp"
+    ##include "pingus/fonts.hpp"
+    ##include "pingus/game_time.hpp"
+    ##include "pingus/gettext.h"
+    ##include "pingus/globals.hpp"
+    ##include "pingus/layer_manager.hpp"
+    ##include "pingus/plf_res_mgr.hpp"
+    ##include "pingus/resource.hpp"
+    ##include "pingus/savegame_manager.hpp"
+    ##include "pingus/screens/credits.hpp"
+    ##include "pingus/screens/game_session.hpp"    
+    ##include "pingus/screens/level_menu.hpp"
+    ##include "pingus/screens/option_menu.hpp"
+    ##include "pingus/screens/pingus_menu.hpp"
+    ##include "pingus/screens/start_screen.hpp"
+    ##include "pingus/screens/story_screen.hpp"
+    ##include "pingus/server.hpp"
+    ##include "pingus/stat_manager.hpp"
+    ##include "pingus/string_format.hpp"
+    ##include "pingus/worldmap/worldmap_screen.hpp"
+    ##include "util/log.hpp"
+    ##include "util/string_util.hpp"
+
+    ##define new_GUI_Component() new GUI::Component()
+    ##define ScreenManager__instance() ScreenManager::instance()
+    ##define std__make_shared_GameSession std::make_shared<GameSession>
+    ##define Display__get_width() Display::get_width()
+    ##define Display__get_height() Display::get_height()
+    ##define SU2str(x) StringUtil::to_string(x)
+    ##define Fonts__chalk_large Fonts::chalk_large
+    ##define Fonts__chalk_normal Fonts::chalk_normal
+    ##define Fonts__chalk_small Fonts::chalk_small
+    ##define StringFormat__break_line StringFormat::break_line
+    ##define std__make_shared_OptionMenu std::make_shared<OptionMenu>
+    ##define std__make_shared_LevelMenu std::make_shared<LevelMenu>
+    ##define std__make_shared_Editor__EditorScreen std::make_shared<Editor::EditorScreen>
+
+    ##define new_LayerManager new LayerManager
+    ##define Resource__load_surface Resource::load_surface
+    ##define globals__default_screen_width globals::default_screen_width
+    ##define globals__default_screen_height globals::default_screen_height
+    ##define make_Sprite2(x) Sprite(x)
+end
+
+native @pure _new_GUI_Component(), _ScreenManager__instance(), _std__make_shared_GameScreen(),
+             _Display__get_width(), _Display__get_height(),
+             _SU2str(), _StringFormat__break_line(), _std__make_shared_OptionMenu(), _std__make_shared_LevelMenu(),
+             _std__make_shared_Editor__EditorScreen(), _new_LayerManager(), _Resource__load_surface(), _make_Sprite2();
+
+input _ScreenUpdatePackage* PINGUS_MENU_UPDATE;
+input _PingusMenu* DELETE_PINGUS_MENU;
+
+class FunctionStart with
+    interface Function;
+do
+    every execute do
+        // Start the story or worldmap mode
+        _Sound__PingusSound__play_sound("letsgo");
+
+        emit global:push_worldmap_tutorial_screen;
+
+        var bool story_seen = false;
+        _StatManager__instance():get_bool("tutorial-startstory-seen", story_seen); //original FIXME: Hardcoding tutorial is evil
+        if not story_seen then
+            /*
+            FileReader reader = FileReader::parse(Pathname("stories/tutorial_intro.story", Pathname::DATA_PATH));
+            ScreenManager::instance()->push_screen(std::make_shared<StoryScreen>(reader));
+            StatManager::instance()->set_bool("tutorial-startstory-seen", true);
+            */
+        end
+    end
+end
+
+class FunctionEdit with
+    interface Function;
+do
+    every execute do
+        // Launch the level editor
+        _Sound__PingusSound__stop_music();        
+        _ScreenManager__instance():push_screen(_std__make_shared_Editor__EditorScreen());
+    end
+end
+
+class FunctionOptions with
+    interface Function;
+do
+    every execute do    
+        _ScreenManager__instance():push_screen(_std__make_shared_OptionMenu());
+    end
+end
+
+class FunctionContrib with
+    interface Function;
+do
+    every execute do
+        _ScreenManager__instance():push_screen(_std__make_shared_LevelMenu());
+    end
+end
+
+class FunctionQuit with
+    interface Function;
+do
+    every execute do
+        _ScreenManager__instance():pop_screen();
+    end
+end
+
+////////////////////////////////////////////////
+
+class PingusMenu with
+    interface IPingusMenu;
+    var _PingusMenu* me;
+
+    function (int width, int height) => void create_background;
+do
+    var _PingusMenu&? pingus_menu = _PTR2REF((_PingusMenu*)me);
+
+    var FunctionStart do_start;
+    var FunctionEdit do_edit;
+    var FunctionOptions do_options;
+    var FunctionContrib do_contrib;
+    var FunctionQuit do_quit;
+
+    var MenuButton start_button with
+        this.me = _new_GUI_Component();
+        this.menu = outer;
+        this.func = do_start;
+        this.x_pos = _Display__get_width()/2 - 125;
+        this.y_pos = _Display__get_height()/2 - 20;
+        this.text = _new_String(__("Story"));
+        this.desc = _new_String(__("..:: Start the game ::.."));
+    end;
+
+    var MenuButton editor_button with
+        this.me = _new_GUI_Component();
+        this.menu = outer;
+        this.func = do_edit;
+        this.x_pos = _Display__get_width()/2 + 125;
+        this.y_pos = _Display__get_height()/2 - 20;
+        this.text = _new_String(__("Editor"));
+        this.desc = _new_String(__("..:: Create your own levels ::.."));
+    end;
+
+    var MenuButton options_button with
+        this.me = _new_GUI_Component();
+        this.menu = outer;
+        this.func = do_options;
+        this.x_pos = _Display__get_width()/2 + 125;
+        this.y_pos = _Display__get_height()/2 + 50;
+        this.text = _new_String(__("Options"));
+        this.desc = _new_String(__("..:: Configure the game ::.."));
+    end;
+
+    var MenuButton contrib_button with
+        this.me = _new_GUI_Component();
+        this.menu = outer;
+        this.func = do_contrib;
+        this.x_pos = _Display__get_width()/2 - 125;
+        this.y_pos = _Display__get_height()/2 + 50;
+        this.text = _new_String(__("Levelsets"));
+        this.desc = _new_String(__("..:: Play User Built levels ::.."));
+    end;
+
+    var MenuButton quit_button with
+        this.me = _new_GUI_Component();
+        this.menu = outer;
+        this.func = do_quit;
+        this.x_pos = _Display__get_width()/2;
+        this.y_pos = _Display__get_height()/2 + 120;
+        this.text = _new_String(__("Exit"));
+        this.desc = _new_String(__("..:: Bye, bye ::.."));
+    end;
+
+    pingus_menu.gui_manager:add(_PTR2REF(&quit_button.me));
+    pingus_menu.gui_manager:add(_PTR2REF(&options_button.me));
+    pingus_menu.gui_manager:add(_PTR2REF(&contrib_button.me));
+    pingus_menu.gui_manager:add(_PTR2REF(&start_button.me));
+    pingus_menu.gui_manager:add(_PTR2REF(&editor_button.me));
+
+    var _std__string&? hint = _new_String();
+    var _std__string&? help = _new_String();
+    var _LayerManager* background = null;
+
+    var Sprite logo;
+    call/rec logo.reload_by_name("core/misc/logo");
+
+    finalize with
+        _delete_obj(hint);
+        _delete_obj(help);
+        _delete_obj(background);
+    end
+
+    create_background(_Display__get_width(), _Display__get_height());
+
+    help = _PTR2REF(__("..:: Ctrl-g: mouse grab   ::   F10: fps counter   ::   F11: fullscreen   ::   F12: screenshot ::.."));
+
+    _Sound__PingusSound__play_music("pingus-1.wav");
+
+    function (_const_char_string str) => void set_hint do
+        hint = _PTR2REF(str);
+    end
+
+    function (int width, int height) => void create_background do
+        // Recreate the layer manager in the new size
+        _delete_obj(background);
+        background = _PTR2REF(_new_LayerManager());
+
+        var _Surface&? layer1 = _new_Surface(_Resource__load_surface("core/menu/layer1"));
+        var _Surface&? layer2 = _new_Surface(_Resource__load_surface("core/menu/layer2"));
+        var _Surface&? layer3 = _new_Surface(_Resource__load_surface("core/menu/layer3"));
+        var _Surface&? layer4 = _new_Surface(_Resource__load_surface("core/menu/layer4"));
+        var _Surface&? layer5 = _new_Surface(_Resource__load_surface("core/menu/layer5"));
+
+        // We only need to scale the background main menu images if the screen 
+        // resolution is not default
+        if width != _globals__default_screen_width or height != _globals__default_screen_height then
+            layer1 = _PTR2REF(layer1.scale(width, 185 * height / _globals__default_screen_height));
+            layer2 = _PTR2REF(layer2.scale(width, 362 * height / _globals__default_screen_height));
+            layer3 = _PTR2REF(layer3.scale(width, 306 * height / _globals__default_screen_height));
+            layer4 = _PTR2REF(layer4.scale(width, 171 * height / _globals__default_screen_height));
+            layer5 = _PTR2REF(layer5.scale(302 * width / _globals__default_screen_width, 104 * height / _globals__default_screen_height));
+              
+            background:add_layer(_make_Sprite2(_deref(layer1)), 0, 0, 12, 0);
+            background:add_layer(_make_Sprite2(_deref(layer2)), 0, 150 * ((float)height) / ((float)_globals__default_screen_height), 25, 0);
+            background:add_layer(_make_Sprite2(_deref(layer3)), 0, 200 * ((float)height) / ((float)_globals__default_screen_height), 50, 0);
+            background:add_layer(_make_Sprite2(_deref(layer4)), 0, 429 * ((float)height) / ((float)_globals__default_screen_height), 100, 0);
+            background:add_layer(_make_Sprite2(_deref(layer5)), 0, 500 * ((float)height) / ((float)_globals__default_screen_height), 200, 0);
+        else
+            background:add_layer(_make_Sprite2(_deref(layer1)), 0, 0, 12, 0);
+            background:add_layer(_make_Sprite2(_deref(layer2)), 0, 150, 25, 0);
+            background:add_layer(_make_Sprite2(_deref(layer3)), 0, 200, 50, 0);
+            background:add_layer(_make_Sprite2(_deref(layer4)), 0, 429, 100, 0);
+            background:add_layer(_make_Sprite2(_deref(layer5)), 0, 500, 200, 0);
+        end
+
+        _delete_obj(layer1);
+        _delete_obj(layer2);
+        _delete_obj(layer3);
+        _delete_obj(layer4);
+        _delete_obj(layer5);
+    end
+
+    par/or do
+        every package in SCREEN_DRAW_BACKGROUND do
+            if package:screen != &pingus_menu then
+                continue;
+            end
+
+            background:draw(_PTR2REF(package:gc));
+            package:gc.draw(_deref(logo.get()), _Vector2i(package:gc.get_width()/2 - logo.get_width()/2, package:gc.get_height()/2 - 280));
+            package:gc.print_left(_Fonts__pingus_small, _Vector2i(package:gc.get_width()/2 - 400 + 25, package:gc.get_height()-140),
+                                  _make_String("Pingus ") + _VERSION + _make_String(" - Copyright (C) 1998-2011 Ingo Ruhnke <grumbel@gmail.com>\nSee the file AUTHORS for a complete list of contributors.\nPingus comes with ABSOLUTELY NO WARRANTY. This is free software, and you are\nwelcome to redistribute it under certain conditions; see the file COPYING for details.\n"));
+            package:gc.draw_fillrect(_Rect(0, _Display__get_height()-26, _Display__get_width(), _Display__get_height()), _Color(0, 0, 0, 255));
+            package:gc.print_center(_Fonts__pingus_small, _Vector2i(package:gc.get_width()/2, package:gc.get_height() - _Fonts__pingus_small.get_height() - 8), _deref(help));
+
+            if 0 then // display hint  
+                package:gc.print_center(_Fonts__pingus_small, 
+                    _Vector2i(package:gc.get_width()/2, package:gc.get_height() - _Fonts__pingus_small.get_height()),
+                    _deref(hint));
+            end
+        end
+    with        
+        every package in PINGUS_MENU_UPDATE do
+            if package:screen != &pingus_menu then
+                continue;
+            end
+
+            background:update(_PTR2REF(package:delta));
+        end
+    with
+        every screen in ON_ESCAPE_PRESS do
+            if screen == &pingus_menu then
+                //original FIXME: get_manager()->show_exit_menu ();
+            end
+        end
+    with
+        every package in SCREEN_RESIZE do
+            if package:screen != &pingus_menu then
+                continue;
+            end
+
+            create_background(pingus_menu.size.width, pingus_menu.size.height);
+
+            start_button.set_pos(pingus_menu.size.width/2 - 125, pingus_menu.size.height/2 - 20);
+            editor_button.set_pos(pingus_menu.size.width/2 + 125, pingus_menu.size.height/2 - 20);
+            contrib_button.set_pos(pingus_menu.size.width/2 - 125, pingus_menu.size.height/2 + 50);
+            options_button.set_pos(pingus_menu.size.width/2 + 125, pingus_menu.size.height/2 + 50);
+            quit_button.set_pos(pingus_menu.size.width/2, pingus_menu.size.height/2 + 120);
+        end
+    with
+        var _PingusMenu* e = await DELETE_PINGUS_MENU until (e == &pingus_menu);
+    end
+end
+
+#endif

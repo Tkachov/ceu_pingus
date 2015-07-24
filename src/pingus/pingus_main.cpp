@@ -24,6 +24,7 @@
 #include "engine/input/manager.hpp"
 #include "engine/system/sdl_system.hpp"
 #include "pingus/config_manager.hpp"
+#include "pingus/fonts.hpp"
 #include "pingus/screens/demo_session.hpp"
 #include "pingus/screens/pingus_menu.hpp"
 #include "pingus/worldmap/worldmap_screen.hpp"

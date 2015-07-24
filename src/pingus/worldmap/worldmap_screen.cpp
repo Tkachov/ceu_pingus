@@ -36,14 +36,6 @@ void WorldmapScreen::load(const Pathname& filename) {
   ceu_out_go(&CEUapp, CEU_IN_LOAD_WORLDMAP_SCREEN, &pp);
 }
 
-void WorldmapScreen::update(float delta) {
-  GUIScreen::update(delta);
-
-  ScreenUpdatePackage package(this, delta);
-  ScreenUpdatePackage* pp = &package;
-  ceu_out_go(&CEUapp, CEU_IN_WORLDMAP_SCREEN_UPDATE, &pp);
-}
-
 } // namespace WorldmapNS
 
 /* EOF */

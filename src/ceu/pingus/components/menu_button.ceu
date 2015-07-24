@@ -1,0 +1,91 @@
+#ifndef MENU_BUTTON_CEU
+#define MENU_BUTTON_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../../engine/gui/igui_component.ceu"
+#include "../../proxies/pointerproxy.ceu"
+
+native/pre do
+    ##include "engine/sound/sound.hpp"
+    ##include "pingus/components/menu_button.hpp"
+    ##include "pingus/screens/pingus_menu.hpp"
+    ##include "engine/display/drawing_context.hpp"
+    ##include "engine/sound/sound.hpp"
+    ##include "math/vector2i.hpp"
+    ##include "pingus/screens/pingus_menu.hpp"
+    ##include "engine/display/font.hpp"
+    ##include "engine/display/sprite.hpp"
+    ##include "engine/gui/component.hpp"
+end
+
+class MenuButton with
+    interface IGUI_Component;
+
+    var IPingusMenu& menu;
+    var Function& func;
+    var int x_pos;
+    var int y_pos;
+    var _std__string&? desc;
+    var _std__string&? text;
+
+    function (int x, int y) => void set_pos;
+do
+    var _MenuButton&? me_ = _PTR2REF((_MenuButton*)&this.me);
+
+    finalize with
+        _delete_obj(desc);
+        _delete_obj(text);
+    end
+    
+    var PrimaryButtonProxy p with this.gui = outer; end;
+    var PointerProxy pp with this.gui = outer; end;
+    var EventProxy ep with this.gui = outer; end;
+
+    var Sprite surface_p;
+    var Sprite highlight;
+    call/rec surface_p.reload_by_name("core/menu/menuitem");
+    call/rec highlight.reload_by_name("core/menu/menuitem_highlight");
+
+    function (int x, int y) => void set_pos do
+        x_pos = x;
+        y_pos = y;
+    end
+
+    par do
+        loop do
+            par/or do
+                every gc in draw do
+                    gc:draw(_deref(surface_p.get()), _Vector2i(x_pos, y_pos));
+                    gc:print_center(_Fonts__chalk_large, _Vector2i(x_pos, y_pos - 28), _deref(text));
+                end
+            with
+                await mouse_enter;
+                _Sound__PingusSound__play_sound("tick");
+                menu.set_hint(desc.c_str());
+            end
+
+            par/or do
+                every gc in draw do
+                    gc:draw(_deref(surface_p.get()), _Vector2i(x_pos, y_pos));
+                    gc:draw(_deref(highlight.get()), _Vector2i(x_pos, y_pos));
+                    gc:print_center(_Fonts__chalk_large, _Vector2i(x_pos, y_pos - 28), _deref(text));
+                end
+            with
+                await mouse_leave;                
+                menu.set_hint("");
+            end
+        end
+    with
+        every mouse_click do
+            emit func.execute;
+        end
+    with
+        every package in is_at do
+            package:result = (package:mouse_pos.x > x_pos - (int)surface_p.get_width()/2 and package:mouse_pos.x < x_pos + (int)surface_p.get_width()/2
+                          and package:mouse_pos.y > y_pos - (int)surface_p.get_height()/2 and package:mouse_pos.y < y_pos + (int)surface_p.get_height()/2);
+        end
+    end
+end
+
+#endif
