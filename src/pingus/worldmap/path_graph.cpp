@@ -14,10 +14,11 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+#include "pingus/worldmap/path_graph.hpp"
+
 #include <stdexcept>
 
 #include "pingus/globals.hpp"
-#include "pingus/worldmap/path_drawable.hpp"
 #include "util/log.hpp"
 #include "util/raise_exception.hpp"
 

@@ -17,6 +17,7 @@
 #include "sprite_drawable.ceu"
 #include "level_dot.ceu"
 #include "story_dot.ceu"
+#include "path_drawable.ceu"
 
 native/pre do
     ##include "engine/display/display.hpp"
@@ -40,7 +41,7 @@ native/pre do
     ##include "pingus/string_format.hpp"
     ##include "pingus/worldmap/graph.hpp"    
     ##include "pingus/worldmap/path.hpp"
-    ##include "pingus/worldmap/path_drawable.hpp"
+    ##include "pingus/worldmap/path_graph.hpp"
     ##include "pingus/worldmap/pathfinder.hpp"
     ##include "pingus/worldmap/worldmap_screen.hpp"
     ##include "util/file_reader.hpp"
@@ -87,18 +88,18 @@ native/pre do
 
     ##define WorldmapNS__Path WorldmapNS::Path
     ##define new_Path new WorldmapNS::Path
-    ##define new_PathDrawable new WorldmapNS::PathDrawable
 end
 
 native @pure _new_GUI_Component(), _ScreenManager__instance(), _std__make_shared_GameScreen(), _std__make_shared_StoryScreen(),
              _Display__get_width(), _Display__get_height(), _new_Worldmap(), _new_Pingus(), _DrawableFactory__create(), _new_Drawable(),
              _SU2str(), _StringFormat__break_line(), _new_SceneContextE(), _StatManager__instance(), _new_PathGraph(), _addr(),
-             _new_Vector_FileReader(), _new_Path(), _new_PathDrawable();
+             _new_Vector_FileReader(), _new_Path();
 
 class PathGraph with
     interface IPathGraph;
     pool LevelDot[] lds;
     pool StoryDot[] sds;
+    pool PathDrawable[] pds;
 do
     //parse_nodes:
     do
@@ -189,8 +190,12 @@ do
             //original FIXME: merge this together with the Pingus::distance() stuff in a seperate Path class
             var float cost = full_path.length();
 
-            if _globals__developer_mode then
-                worldmap.add_drawable(_new_PathDrawable(_deref(full_path)));
+            if _globals__developer_mode then                
+                spawn PathDrawable in pds with                    
+                    this.me = _new_Drawable();
+                    worldmap.add_drawable(&this.me);
+                    this.path = _PTR2REF(full_path); //delete inside
+                end;
             end
 
             //original FIXME: No error checking,
@@ -268,6 +273,9 @@ do
     end
     loop sd in sds do
         emit sd:delete;
+    end
+    loop pd in pds do
+        emit pd:delete;
     end
 end
 

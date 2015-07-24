@@ -46,6 +46,8 @@ public:
   /** Return the number of nodes */
   Vec::size_type size();
 
+  Vector3f get(Vec::size_type i) { return vec[i]; }
+
   /** @return the length of the path in pixels */
   float length();
 

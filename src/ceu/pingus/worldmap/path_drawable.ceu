@@ -1,0 +1,43 @@
+#ifndef DRAWABLE_PATH_DRAWABLE_CEU
+#define DRAWABLE_PATH_DRAWABLE_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "drawable.ceu"
+
+native/pre do    
+    ##include "math/vector3f.hpp"
+    ##include "pingus/worldmap/drawable.hpp"
+    ##include "pingus/worldmap/path.hpp"
+
+    ##define WorldmapNS__Path WorldmapNS::Path
+end
+
+class PathDrawable with
+    interface Drawable;
+    var _WorldmapNS__Path&? path;    
+do
+    var _WorldmapNS__Drawable&? drawable = _PTR2REF(&me);
+
+    finalize with _delete_obj(path); end
+
+    var DrawableProxy proxy with
+        this.drawable = outer;
+    end;
+
+    par/or do
+        every gc in draw do
+            loop i in path.size()-1 do                
+                gc:draw_line(
+                    _Vector2i(path.get(i).x, path.get(i).y),
+                    _Vector2i(path.get(i+1).x, path.get(i+1).y),
+                    _Color(255, 255, 255)
+                );
+            end              
+        end
+    with        
+        await delete;
+    end
+end
+
+#endif
