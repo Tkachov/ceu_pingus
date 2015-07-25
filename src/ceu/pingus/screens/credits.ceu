@@ -1,0 +1,277 @@
+#ifndef CREDITS_CEU
+#define CREDITS_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../../string.ceu"
+#include "../../engine/gui/igui_component.ceu"
+#include "../../engine/gui/surface_button.ceu"
+#include "../../engine/screen/screen.ceu"
+#include "../../engine/sound/sound.ceu"
+#include "../../math/vector2i.ceu"
+
+native/pre do
+    ##include "editor/editor_screen.hpp"
+    ##include "engine/display/display.hpp"
+    ##include "engine/display/font.hpp"
+    ##include "engine/display/graphic_context_state.hpp"
+    ##include "engine/display/scene_context.hpp"
+    ##include "engine/display/sprite.hpp"
+    ##include "engine/gui/gui_manager.hpp"
+    ##include "engine/gui/rect_component.hpp"
+    ##include "engine/gui/surface_button.hpp"
+    ##include "engine/screen/gui_screen.hpp"
+    ##include "engine/screen/screen_manager.hpp"
+    ##include "engine/sound/sound.hpp"
+    ##include "pingus/components/menu_button.hpp"
+    ##include "pingus/fonts.hpp"
+    ##include "pingus/game_time.hpp"
+    ##include "pingus/gettext.h"
+    ##include "pingus/globals.hpp"
+    ##include "pingus/layer_manager.hpp"
+    ##include "pingus/plf_res_mgr.hpp"
+    ##include "pingus/resource.hpp"
+    ##include "pingus/savegame_manager.hpp"
+    ##include "pingus/screens/credits.hpp"
+    ##include "pingus/server.hpp"
+    ##include "pingus/stat_manager.hpp"
+    ##include "pingus/string_format.hpp"
+    ##include "pingus/worldmap/worldmap_screen.hpp"
+    ##include "util/log.hpp"
+    ##include "util/pathname.hpp"
+    ##include "util/string_util.hpp"
+
+    ##define new_GUI_Component() new GUI::Component()
+    ##define ScreenManager__instance() ScreenManager::instance()
+    ##define std__make_shared_GameSession std::make_shared<GameSession>
+    ##define Display__get_width() Display::get_width()
+    ##define Display__get_height() Display::get_height()
+    ##define SU2str(x) StringUtil::to_string(x)
+    ##define Fonts__chalk_large Fonts::chalk_large
+    ##define Fonts__chalk_normal Fonts::chalk_normal
+    ##define Fonts__chalk_small Fonts::chalk_small
+
+    ##define std__make_shared_StoryScreen std::make_shared<StoryScreen>
+    ##define FileReader__parse FileReader::parse
+    ##define Pathname__DATA_PATH Pathname::DATA_PATH
+    ##define StatManager__instance StatManager::instance
+
+    ##define std__vector_std__string std::vector<std::string>
+    ##define new_Vector_String new std::vector<std::string>
+    ##define new_SceneContext new SceneContext
+    ##define new_SceneContextDrawingRequest new SceneContextDrawingRequest
+
+    ##define std__ifstream std::ifstream
+    ##define new_std__ifstream new std::ifstream
+end
+
+native @pure _new_GUI_Component(), _ScreenManager__instance(), _couldnt_open(),
+             _Display__get_width(), _Display__get_height(), _read_file(), _new_std__ifstream(),
+             _StringFormat__break_line(), _new_Vector_String(), _new_SceneContext(), _new_SceneContextDrawingRequest();
+
+input _ScreenUpdatePackage* CREDITS_UPDATE;
+input _Credits* DELETE_CREDITS;
+
+interface ICredits with
+    function (void) => void close;
+end
+
+////////////////////////////////////////////////
+
+class CreditsOkButton with
+    interface IGUI_Component;
+    var ICredits& parent;
+
+    function @rec (int x, int y) => void set_pos;
+do
+    var SurfaceButton sb with
+        this.me = outer.me;
+        this.pos.x = _Display__get_width()/2 + 260;
+        this.pos.y = _Display__get_height()/2 + 170;
+    end;
+
+    call/rec sb.load("core/start/ok", "core/start/ok_clicked", "core/start/ok_hover");
+
+    var PrimaryButtonProxy p with this.gui = outer; end;
+    var PointerProxy pp with this.gui = outer; end;
+    var EventProxy ep with this.gui = outer; end;
+
+    function @rec (int x, int y) => void set_pos do
+        sb.set_pos(x, y);
+    end
+
+    par do
+        every mouse_click do            
+            parent.close();
+            _Sound__PingusSound__play_sound("yipee");
+        end
+    with
+        every mouse_enter do
+            _Sound__PingusSound__play_sound("tick");
+        end
+    end
+end
+
+////////////////////////////////////////////////
+
+class Credits with
+    interface ICredits;
+    var _Credits* me;
+do
+    var _Credits&? credits_screen = _PTR2REF((_Credits*)me);
+
+    var Sprite background;
+    var Sprite blackboard;
+    var Sprite pingu;
+    call/rec background.reload_by_name("core/menu/wood");
+    call/rec blackboard.reload_by_name("core/menu/blackboard");
+    call/rec pingu.reload_by_name("core/misc/creditpingu");
+
+    var float end_offset = 0;
+    var float offset = 0;
+    var _std__vector_std__string&? credits = _new_Vector_String();
+    var _SceneContext&? scene_context = _new_SceneContext();
+
+    var CreditsOkButton button with
+        this.me = _new_GUI_Component();
+        this.parent = outer;
+    end;
+
+    credits_screen.gui_manager:add(_PTR2REF(&button.me));
+
+    // The credits vector holds the strings to display. The first
+    // character of each string is a special character, which indicates
+    // the size of the font or other special stuff. "-" means large
+    // font, "_" is a small font and "n" means a newline.
+  
+    do // read credit information from filename        
+        var _std__ifstream&? fin = _new_std__ifstream(credits_screen.filename.get_sys_path());
+        if not fin then
+            _log_error("couldn't open %1%", credits_screen.filename);            
+            _couldnt_open(credits_screen.filename, _deref(credits));
+        else
+            _read_file(_deref(fin), _deref(credits));
+        end
+    end
+
+    end_offset = - ((float)_Display__get_height())/2 - 50; // screen height + grace time
+
+    loop i in credits.size() do  
+        if credits.at(i)[0] == '-' then
+            end_offset = end_offset + (float)(_Fonts__chalk_large.get_height() + 5);
+        else/if credits.at(i)[0] == '_' then
+            end_offset = end_offset + (float)(_Fonts__chalk_large.get_height() + 5);
+        else/if credits.at(i)[0] == 'n' then
+            end_offset = end_offset + 50;
+        else
+            _log_error("Credits: Syntax error: Unknown format: '%1%'", credits.at(i)[0]);
+        end
+    end
+
+    end_offset = -end_offset;
+
+    finalize with
+        _delete_obj(scene_context);
+        _delete_obj(credits);
+        _StatManager__instance():set_bool("credits-seen", true);
+    end
+
+    function (void) => void close do
+        var bool credits_seen = false;   
+        _StatManager__instance():get_bool("credits-seen", credits_seen);
+        if not credits_seen then
+            _ScreenManager__instance():pop_screen();
+        end
+        _ScreenManager__instance():pop_screen();
+    end
+
+    par/or do
+        every screen in ON_STARTUP do
+            offset = (float)_Display__get_height() - 50;
+        end
+    with
+        every package in SCREEN_DRAW_BACKGROUND do
+            if package:screen != &credits_screen then
+                continue;
+            end
+
+            do
+                // Paint the background wood panel
+                var int y = 0;
+                loop do
+                    if y >= package:gc.get_height() then break; end
+                    var int x = 0;
+                    loop do
+                        if x >= package:gc.get_width() then break; end
+                        package:gc.draw(_deref(background.get()), _Vector2i(x, y));
+                        x = x + background.get_width();
+                    end
+                    y = y + background.get_height();
+                end
+            end
+
+            var int x = _Display__get_width()/2;
+            var int y = offset;
+            var int yof = 0;
+
+            package:gc.draw(_deref(blackboard.get()), _Vector2i(package:gc.get_width()/2, package:gc.get_height()/2));
+            package:gc.draw(_deref(pingu.get()), _Vector2i(package:gc.get_width()/2, package:gc.get_height()/2 - 20));
+
+            scene_context.clear();
+            scene_context.set_cliprect(
+                _Rect(package:gc.get_width()/2 - 685/2, package:gc.get_height()/2 - 250,
+                      package:gc.get_width()/2 + 685/2, package:gc.get_height()/2 + 250)
+            );
+
+            loop i in credits.size() do
+                if credits.at(i)[0] == '-' then
+                    scene_context.color().print_center(_Fonts__chalk_large, _Vector2i(x, (y + yof)), credits.at(i).substr(1));
+                    yof = yof + _Fonts__chalk_large.get_height() + 5;
+                else/if credits.at(i)[0] == '_' then
+                    scene_context.color().print_center(_Fonts__chalk_large, _Vector2i(x, (y + yof)), credits.at(i).substr(1));
+                    yof = yof + _Fonts__chalk_large.get_height() + 5;
+                else/if credits.at(i)[0] == 'n' then
+                    yof = yof + 50;
+                else
+                    _log_error("Credits: Syntax error: Unknown format: '%1%'", credits.at(i)[0]);
+                end
+            end
+
+            package:gc.draw(_new_SceneContextDrawingRequest(scene_context, _Vector2i(0, 0), 100));
+        end
+    with
+        loop do
+            //usual update
+            par/or do
+                every package in CREDITS_UPDATE do
+                    if package:screen == &credits_screen and offset >= end_offset then
+                        offset = offset - 35.0 * package:delta;
+                    end
+                end
+            with
+                var _GUIScreen* e = await ON_FAST_FORWARD_PRESS until (e == &credits_screen);
+            end
+
+            //after fast-forward pressed
+            par/or do
+                every package in CREDITS_UPDATE do
+                    if package:screen == &credits_screen and offset >= end_offset then
+                        offset = offset - 450.0 * package:delta;
+                    end
+                end
+            with
+                var _GUIScreen* e = await ON_FAST_FORWARD_PRESS until (e == &credits_screen);
+            end
+        end
+    with
+        every screen in ON_ESCAPE_PRESS do
+            if screen == &credits_screen then
+                close();
+            end
+        end
+    with
+        var _Credits* e = await DELETE_CREDITS until (e == &credits_screen);
+    end
+end
+
+#endif

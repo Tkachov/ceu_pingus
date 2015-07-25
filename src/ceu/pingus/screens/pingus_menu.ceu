@@ -67,12 +67,18 @@ native/pre do
     ##define globals__default_screen_width globals::default_screen_width
     ##define globals__default_screen_height globals::default_screen_height
     ##define make_Sprite2(x) Sprite(x)
+
+    ##define std__make_shared_StoryScreen std::make_shared<StoryScreen>
+    ##define FileReader__parse FileReader::parse
+    ##define Pathname__DATA_PATH Pathname::DATA_PATH
+    ##define StatManager__instance StatManager::instance
 end
 
 native @pure _new_GUI_Component(), _ScreenManager__instance(), _std__make_shared_GameScreen(),
              _Display__get_width(), _Display__get_height(),
              _SU2str(), _StringFormat__break_line(), _std__make_shared_OptionMenu(), _std__make_shared_LevelMenu(),
-             _std__make_shared_Editor__EditorScreen(), _new_LayerManager(), _Resource__load_surface(), _make_Sprite2();
+             _std__make_shared_Editor__EditorScreen(), _new_LayerManager(), _Resource__load_surface(), _make_Sprite2(),
+             _std__make_shared_StoryScreen(), _FileReader__parse(), _StatManager__instance();
 
 input _ScreenUpdatePackage* PINGUS_MENU_UPDATE;
 input _PingusMenu* DELETE_PINGUS_MENU;
@@ -89,11 +95,10 @@ do
         var bool story_seen = false;
         _StatManager__instance():get_bool("tutorial-startstory-seen", story_seen); //original FIXME: Hardcoding tutorial is evil
         if not story_seen then
-            /*
-            FileReader reader = FileReader::parse(Pathname("stories/tutorial_intro.story", Pathname::DATA_PATH));
-            ScreenManager::instance()->push_screen(std::make_shared<StoryScreen>(reader));
-            StatManager::instance()->set_bool("tutorial-startstory-seen", true);
-            */
+            _ScreenManager__instance():push_screen(_std__make_shared_StoryScreen(
+                _FileReader__parse(_Pathname("stories/tutorial_intro.story", _Pathname__DATA_PATH))
+            ));
+            _StatManager__instance():set_bool("tutorial-startstory-seen", true);
         end
     end
 end

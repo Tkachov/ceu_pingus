@@ -17,56 +17,27 @@
 #ifndef HEADER_PINGUS_PINGUS_SCREENS_CREDITS_HPP
 #define HEADER_PINGUS_PINGUS_SCREENS_CREDITS_HPP
 
-#include <memory>
 #include <string>
 #include <vector>
+#include <fstream>
+#include <sstream>
 
-#include "engine/display/font.hpp"
-#include "engine/display/scene_context.hpp"
-#include "engine/display/sprite.hpp"
 #include "engine/screen/gui_screen.hpp"
 
 class Pathname;
 
-class Credits : public GUIScreen
-{
+void read_file(std::ifstream& fin, std::vector<std::string>& credits);
+void couldnt_open(const Pathname& filename, std::vector<std::string>& credits);
+
+class Credits: public GUIScreen {
 private:
-  std::unique_ptr<SceneContext> scene_context;
-
-  bool fast_scrolling;
-  Sprite background;
-  Sprite blackboard;
-  Sprite pingu;
-
-  Font    font;
-  Font    font_small;
-
-  bool is_init;
-
-  float end_offset;
-  float offset;
-
-  /** The string's which are shown in the scrolling text, the first
-      character of the string can be used to apply a special format.
-
-      'n' - Inserts a newline
-      '_' - Use small font
-      '-' - Use large font
-  */
-  std::vector<std::string> credits;
+  const Pathname& filename;
 
 public:
   Credits(const Pathname& filename);
   virtual ~Credits();
 
   void update(float);
-  void draw_background(DrawingContext& gc);
-
-  void on_startup();
-
-  void on_pause_press();
-  void on_fast_forward_press();
-  void on_escape_press();
 
 private:
   Credits(const Credits&);

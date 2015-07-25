@@ -12,6 +12,7 @@ end
 #include "pingus/screens/start_screen.ceu"
 #include "pingus/screens/result_screen.ceu"
 #include "pingus/screens/pingus_menu.ceu"
+#include "pingus/screens/credits.ceu"
 #include "pingus/worldmap/worldmap_screen.ceu"
 #include "pingus/pingu_holder.ceu"
 #include "pingus/pingu_events.ceu"
@@ -45,6 +46,7 @@ input _StartScreen* NEW_START_SCREEN;
 input _ResultScreen* NEW_RESULT_SCREEN;
 input _WorldmapNS__WorldmapScreen* NEW_WORLDMAP_SCREEN;
 input _PingusMenu* NEW_PINGUS_MENU;
+input _Credits* NEW_CREDITS;
 
 #define WITH_SCREEN(CClassName, ClassName, Event) with \
     loop do \
@@ -88,6 +90,7 @@ with
 WITH_SCREEN(_ResultScreen, ResultScreen, NEW_RESULT_SCREEN)
 WITH_SCREEN(_WorldmapNS__WorldmapScreen, WorldmapScreen, NEW_WORLDMAP_SCREEN)
 WITH_SCREEN(_PingusMenu, PingusMenu, NEW_PINGUS_MENU)
+WITH_SCREEN(_Credits, Credits, NEW_CREDITS)
 with
     every push_worldmap_tutorial_screen do
         /*
