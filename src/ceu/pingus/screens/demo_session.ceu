@@ -27,7 +27,6 @@ native/pre do
     ##define new_GraphicContextState(w, h) new GraphicContextState(w, h)
     ##define new_Server(a) new Server(a)    
     ##define ScreenManager__instance() ScreenManager::instance()
-    ##define addr(x) &x
 end
 
 native @pure _new_PingusCounter(), _new_GUI_Component(), _new_RectComponent(), 

@@ -9,6 +9,7 @@
 #include "../../engine/sound/sound.ceu"
 #include "../../math/math.ceu"
 #include "../../math/rect.ceu"
+#include "../../util/file_reader.ceu"
 #include "../iworld.ceu"
 #include "../global_interface.ceu"
 #include "worldmap.ceu"
@@ -50,14 +51,12 @@ native/pre do
 
     ##define new_SceneContextE() new SceneContext()
 
-    ##define WorldmapNS__WorldmapScreen WorldmapNS::WorldmapScreen
-    ##define addr(x) &x
-    ##define new_FileReader new FileReader
+    ##define WorldmapNS__WorldmapScreen WorldmapNS::WorldmapScreen    
 end
 
 native @pure _new_GUI_Component(), _ScreenManager__instance(), _std__make_shared_GameScreen(), _std__make_shared_StoryScreen(),
-             _Display__get_width(), _Display__get_height(), _new_FileReader(),
-             _SU2str(), _StringFormat__break_line(), _new_SceneContextE(), _addr();
+             _Display__get_width(), _Display__get_height(),
+             _SU2str(), _StringFormat__break_line(), _new_SceneContextE();
 
 input _WorldmapScreenLoadPackage* LOAD_WORLDMAP_SCREEN;
 input _ScreenUpdatePackage* WORLDMAP_SCREEN_UPDATE;

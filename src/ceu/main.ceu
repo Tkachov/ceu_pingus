@@ -10,6 +10,7 @@ end
 #include "pingus/screens/demo_session.ceu"
 #include "pingus/screens/game_session.ceu"
 #include "pingus/screens/start_screen.ceu"
+#include "pingus/screens/story_screen.ceu"
 #include "pingus/screens/result_screen.ceu"
 #include "pingus/screens/pingus_menu.ceu"
 #include "pingus/screens/credits.ceu"
@@ -43,6 +44,7 @@ input _MenuButton* NEW_MENUBUTTON;
 input _DemoSession* NEW_DEMO_SESSION;
 input _GameSession* NEW_GAME_SESSION;
 input _StartScreen* NEW_START_SCREEN;
+input _StoryScreen* NEW_STORY_SCREEN;
 input _ResultScreen* NEW_RESULT_SCREEN;
 input _WorldmapNS__WorldmapScreen* NEW_WORLDMAP_SCREEN;
 input _PingusMenu* NEW_PINGUS_MENU;
@@ -80,13 +82,8 @@ with
             this.me = _PTR2REF(new_game_session);
         end;
     end
-with
-    loop do
-        var _StartScreen* new_start_screen = await NEW_START_SCREEN;        
-        spawn StartScreen with
-            this.me = _PTR2REF(new_start_screen);
-        end;
-    end
+WITH_SCREEN(_StartScreen, StartScreen, NEW_START_SCREEN)
+WITH_SCREEN(_StoryScreen, StoryScreen, NEW_STORY_SCREEN)
 WITH_SCREEN(_ResultScreen, ResultScreen, NEW_RESULT_SCREEN)
 WITH_SCREEN(_WorldmapNS__WorldmapScreen, WorldmapScreen, NEW_WORLDMAP_SCREEN)
 WITH_SCREEN(_PingusMenu, PingusMenu, NEW_PINGUS_MENU)

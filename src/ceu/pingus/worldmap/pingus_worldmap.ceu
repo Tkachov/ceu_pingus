@@ -3,6 +3,7 @@
 
 #include "../../c.ceu"
 #include "../../sdl.ceu"
+#include "../../util/file_reader.ceu"
 
 native/pre do
     ##include "engine/display/display.hpp"
@@ -52,22 +53,15 @@ native/pre do
 
     ##define StatManager__instance() StatManager::instance()
     ##define new_PathGraph new WorldmapNS::PathGraph
-    ##define DrawableFactory__create(x) WorldmapNS::DrawableFactory::create(x)
-    ##define addr(x) &x    
+    ##define DrawableFactory__create(x) WorldmapNS::DrawableFactory::create(x)    
     ##define WorldmapNS__Edge_WorldmapNS__Path WorldmapNS::Edge<WorldmapNS::Path*>
-
-    ##define std__vector_FileReader std::vector<FileReader>
-    ##define new_Vector_FileReader new std::vector<FileReader>
-    ##define new_FileReader new FileReader
-    ##define FileReader__parse FileReader::parse
 end
 
 native @pure _new_GUI_Component(), _ScreenManager__instance(), _StatManager__instance(),
              _std__make_shared_GameScreen(), _std__make_shared_StoryScreen(), _new_Pingus(),
              _Display__get_width(), _Display__get_height(), _addr(),
              _SU2str(), _StringFormat__break_line(),
-             _new_SceneContextE(), _StatManager__instance(), _new_PathGraph(), _new_Vector_FileReader(),
-             _new_FileReader(), _FileReader__parse();
+             _new_SceneContextE(), _StatManager__instance(), _new_PathGraph();
 
 class PingusWorldmap with
     function (void) => _std__string&? get_name;

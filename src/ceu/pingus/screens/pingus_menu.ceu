@@ -9,6 +9,7 @@
 #include "../../engine/screen/screen.ceu"
 #include "../../engine/sound/sound.ceu"
 #include "../../math/math.ceu"
+#include "../../util/file_reader.ceu"
 #include "../iworld.ceu"
 #include "../global_interface.ceu"
 #include "ipingus_menu.ceu"
@@ -69,7 +70,6 @@ native/pre do
     ##define make_Sprite2(x) Sprite(x)
 
     ##define std__make_shared_StoryScreen std::make_shared<StoryScreen>
-    ##define FileReader__parse FileReader::parse
     ##define Pathname__DATA_PATH Pathname::DATA_PATH
     ##define StatManager__instance StatManager::instance
 end
@@ -78,7 +78,7 @@ native @pure _new_GUI_Component(), _ScreenManager__instance(), _std__make_shared
              _Display__get_width(), _Display__get_height(),
              _SU2str(), _StringFormat__break_line(), _std__make_shared_OptionMenu(), _std__make_shared_LevelMenu(),
              _std__make_shared_Editor__EditorScreen(), _new_LayerManager(), _Resource__load_surface(), _make_Sprite2(),
-             _std__make_shared_StoryScreen(), _FileReader__parse(), _StatManager__instance();
+             _std__make_shared_StoryScreen(), _StatManager__instance();
 
 input _ScreenUpdatePackage* PINGUS_MENU_UPDATE;
 input _PingusMenu* DELETE_PINGUS_MENU;

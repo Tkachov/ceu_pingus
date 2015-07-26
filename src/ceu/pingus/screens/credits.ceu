@@ -9,6 +9,7 @@
 #include "../../engine/screen/screen.ceu"
 #include "../../engine/sound/sound.ceu"
 #include "../../math/vector2i.ceu"
+#include "../../util/file_reader.ceu"
 
 native/pre do
     ##include "editor/editor_screen.hpp"
@@ -52,7 +53,6 @@ native/pre do
     ##define Fonts__chalk_small Fonts::chalk_small
 
     ##define std__make_shared_StoryScreen std::make_shared<StoryScreen>
-    ##define FileReader__parse FileReader::parse
     ##define Pathname__DATA_PATH Pathname::DATA_PATH
     ##define StatManager__instance StatManager::instance
 

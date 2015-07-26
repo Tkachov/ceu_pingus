@@ -65,7 +65,6 @@ native/pre do
     ##define StatManager__instance() StatManager::instance()
     ##define new_PathGraph new WorldmapNS::PathGraph
     ##define DrawableFactory__create(x) WorldmapNS::DrawableFactory::create(x)
-    ##define addr(x) &x
     ##define WorldmapNS__Edge_WorldmapNS__Path WorldmapNS::Edge<WorldmapNS::Path*>
     ##define WorldmapNS__Node_WorldmapNS__Drawable WorldmapNS::Node<void*>
 

@@ -9,6 +9,7 @@
 #include "../../engine/sound/sound.ceu"
 #include "../../math/math.ceu"
 #include "../../math/rect.ceu"
+#include "../../util/file_reader.ceu"
 #include "../iworld.ceu"
 #include "../global_interface.ceu"
 #include "ipath_graph.ceu"
@@ -44,7 +45,6 @@ native/pre do
     ##include "pingus/worldmap/path_graph.hpp"
     ##include "pingus/worldmap/pathfinder.hpp"
     ##include "pingus/worldmap/worldmap_screen.hpp"
-    ##include "util/file_reader.hpp"
     ##include "util/log.hpp"
     ##include "util/pathname.hpp"
     ##include "util/raise_exception.hpp"
@@ -78,11 +78,8 @@ native/pre do
     ##define StatManager__instance() StatManager::instance()
     ##define new_PathGraph new WorldmapNS::PathGraph
     ##define DrawableFactory__create(x) WorldmapNS::DrawableFactory::create(x)
-    ##define addr(x) &x
 
     ##define WorldmapNS__PathGraph WorldmapNS::PathGraph
-    ##define Vector_FileReader std::vector<FileReader>
-    ##define new_Vector_FileReader new std::vector<FileReader>
     ##define WNS_NoNode WorldmapNS::NoNode
 
     ##define WorldmapNS__Path WorldmapNS::Path
@@ -91,8 +88,7 @@ end
 
 native @pure _new_GUI_Component(), _ScreenManager__instance(), _std__make_shared_GameScreen(), _std__make_shared_StoryScreen(),
              _Display__get_width(), _Display__get_height(), _new_Worldmap(), _new_Pingus(),
-             _SU2str(), _StringFormat__break_line(), _new_SceneContextE(), _StatManager__instance(), _new_PathGraph(), _addr(),
-             _new_Vector_FileReader(), _new_Path();
+             _SU2str(), _StringFormat__break_line(), _new_SceneContextE(), _StatManager__instance(), _new_PathGraph(), _new_Path();
 
 class PathGraph with
     interface IPathGraph;
@@ -102,7 +98,7 @@ class PathGraph with
 do
     //parse_nodes:
     do
-    var _Vector_FileReader&? childs = _new_Vector_FileReader(worldmap.pingus_worldmap:get_graph():read_section("nodes").get_sections());
+    var _std__vector_FileReader&? childs = _new_Vector_FileReader(worldmap.pingus_worldmap:get_graph():read_section("nodes").get_sections());
     loop i in childs.size() do
         var Drawable*? dot = null;
 
@@ -153,7 +149,7 @@ do
 
     //parse_edges:   
     do
-    var _Vector_FileReader&? childs = _new_Vector_FileReader(worldmap.pingus_worldmap:get_graph():read_section("edges").get_sections());
+    var _std__vector_FileReader&? childs = _new_Vector_FileReader(worldmap.pingus_worldmap:get_graph():read_section("edges").get_sections());
 
     var _std__string* name = _new_String();
     var _std__string* source = _new_String();
@@ -167,7 +163,7 @@ do
             //original FIXME: add path-data parsing here
             var _WorldmapNS__Path* path = _new_Path();
               
-            var _Vector_FileReader&? childs2 = _new_Vector_FileReader(worldmap.pingus_worldmap:get_graph():read_section("edges").read_section("positions").get_sections());
+            var _std__vector_FileReader&? childs2 = _new_Vector_FileReader(worldmap.pingus_worldmap:get_graph():read_section("edges").read_section("positions").get_sections());
               
             loop j in childs2.size() do
                 if childs2.at(j).get_name() == "position" then                

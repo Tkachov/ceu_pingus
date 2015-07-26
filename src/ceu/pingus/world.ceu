@@ -3,6 +3,7 @@
 
 #include "../c.ceu"
 #include "../sdl.ceu"
+#include "../util/file_reader.ceu"
 #include "iworld.ceu"
 #include "pingu.ceu"
 #include "pingu_holder.ceu"
@@ -54,7 +55,6 @@ native/pre do
     ##include "pingus/prefab_file.hpp"
     ##include "util/log.hpp"
     ##include "util/overrride_file_reader.hpp"
-    ##include "util/file_reader.hpp"
     ##define std__vector_void std::vector<void*>
 
     struct CreationPackage {
@@ -65,12 +65,8 @@ native/pre do
     ##define new_CreationPackage() new CreationPackage()
     ##define vecget(v, i) v[i]
     ##define vecget_addr(v, i) &((*v)[i])
-    ##define addr(x) &x
 
-    ##define new_OverrideFileReader(v, i, b) new OverrideFileReader((*v)[i], b)
-    ##define const_std__vector_FileReader const std::vector<FileReader>
-    ##define std__vector_FileReader std::vector<FileReader>
-    ##define new_FileReader() new FileReader()
+    ##define new_OverrideFileReader(v, i, b) new OverrideFileReader((*v)[i], b)    
 
     ##define new_std__vector_FileReader(package) new std::vector<FileReader>(package->reader->read_section("objects").get_sections())
     ##define new_PrefabFile(x) new PrefabFile(PrefabFile::from_resource(x))

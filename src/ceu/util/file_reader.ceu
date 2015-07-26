@@ -1,0 +1,17 @@
+#ifndef FILE_READER_CEU
+#define FILE_READER_CEU
+
+native/pre do
+	##include <vector>
+    ##include "util/file_reader.hpp"
+
+    ##define new_FileReader new FileReader
+    ##define const_std__vector_FileReader const std::vector<FileReader>
+    ##define std__vector_FileReader std::vector<FileReader>
+    ##define new_Vector_FileReader new std::vector<FileReader>
+    ##define FileReader__parse FileReader::parse
+end
+
+native @pure _new_FileReader(), _new_Vector_FileReader(), _FileReader__parse();
+
+#endif

@@ -24,12 +24,13 @@ native @pure _abs(),
 
 native/pre do
     ##define PTR2REF(v) v
+    ##define addr(x) &x
     ##define deref(x) *x
     ##define delete_obj(x) delete x;
 end
 
 native @pure _PTR2REF; //convert any pointer (*) to any reference (&?)
-native @pure _deref(), _delete_obj();
+native @pure _addr(), _deref(), _delete_obj();
 
 native @pure _print_message(); //this could be used to write message in log -- with filename and line
 

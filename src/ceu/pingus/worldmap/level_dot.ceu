@@ -5,6 +5,7 @@
 #include "../../sdl.ceu"
 #include "../../string.ceu"
 #include "../../engine/display/sprite.ceu"
+#include "../../util/file_reader.ceu"
 #include "dot.ceu"
 
 native/pre do
@@ -34,7 +35,6 @@ native/pre do
     ##define Fonts__pingus_small Fonts::pingus_small
     ##define ScreenManager__instance() ScreenManager::instance()
     ##define std__make_shared_StoryScreen std::make_shared<StoryScreen>
-    ##define FileReader__parse(x) FileReader::parse(x)
     ##define Pathname__DATA_PATH Pathname::DATA_PATH
 
     ##define PLFResMgr__load_plf PLFResMgr::load_plf
@@ -50,7 +50,7 @@ native/pre do
     ##define Input__STANDARD_POINTER Input::STANDARD_POINTER
 end
 
-native @pure _ScreenManager__instance(), _SavegameManager__instance(), _std__make_shared_StoryScreen(), _FileReader__parse(),
+native @pure _ScreenManager__instance(), _SavegameManager__instance(), _std__make_shared_StoryScreen(),
              _PLFResMgr__load_plf(), _new_PingusLevel(), _std__make_shared_StartScreen, _new_Savegame2(),
              _Input__Controller__current();
 
