@@ -17,7 +17,6 @@
 #include <SDL.h>
 
 #include "pingus/pingus_main.hpp"
-#include "pingus/components/menu_button.hpp"
 #include "engine/gui/component.hpp"
 
 #include "util/log.hpp"

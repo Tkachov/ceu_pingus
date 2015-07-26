@@ -1,3 +1,14 @@
+# Week 10 (27/07--2/08)
+
+## What I was supposed to do the past week?
+
+* port screens and components which left;
+* ScreenManager?
+
+## What I actually did the past week?
+
+## What I'll do this week?
+
 # Week 9 (20/07--26/07)
 
 ## What I was supposed to do the past week?
@@ -6,7 +17,26 @@
 
 ## What I actually did the past week?
 
+* ported screens:
+	* StartScreen;
+	* ResultScreen;
+	* WorldmapScreen;
+	* PingusMenu;
+	* StoryScreen;
+	* Credits.
+
+* ported components:
+	* ButtonPanel;
+	* MenuButton.
+
+* ported worldmap classes (all but structs for graph/path/story representation):
+	* Worldmap (=> PingusWorldmap);
+	* Drawable (=> Dot, LevelDot, Pingus, PathDrawable, SpriteDrawable, StoryDot).
+
 ## What I'll do this week?
+
+* port screens and components which left;
+* ScreenManager?
 
 # Week 8 (13/07--19/07)
 

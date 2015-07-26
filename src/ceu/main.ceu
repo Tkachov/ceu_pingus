@@ -6,7 +6,6 @@ end
 #include "c.ceu"
 #include "sdl.ceu"
 #include "pingus/colliders/pingu_collider.ceu"
-#include "pingus/components/menubutton.ceu"
 #include "pingus/screens/demo_session.ceu"
 #include "pingus/screens/game_session.ceu"
 #include "pingus/screens/start_screen.ceu"
@@ -40,7 +39,6 @@ event _SceneContext* draw;
 event void update;
 event void push_worldmap_tutorial_screen;
 
-input _MenuButton* NEW_MENUBUTTON;
 input _DemoSession* NEW_DEMO_SESSION;
 input _GameSession* NEW_GAME_SESSION;
 input _StartScreen* NEW_START_SCREEN;
@@ -62,12 +60,6 @@ var IWorld* world = null;
 
 par/or do
     await SDL_QUIT;
-/*with
-    every new_menubutton in NEW_MENUBUTTON do
-        spawn MenuButton with
-            this.me = _PTR2REF(new_menubutton);
-        end;
-    end*/
 with
     every new_demo_session in NEW_DEMO_SESSION do
         spawn DemoSession with
