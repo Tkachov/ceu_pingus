@@ -17,49 +17,16 @@
 #ifndef HEADER_PINGUS_PINGUS_SCREENS_LEVEL_MENU_HPP
 #define HEADER_PINGUS_PINGUS_SCREENS_LEVEL_MENU_HPP
 
-#include "engine/display/sprite.hpp"
+#include <vector>
 #include "engine/screen/gui_screen.hpp"
 #include "pingus/levelset.hpp"
 
-namespace GUI {
-class SurfaceButton;
-} // namespace GUI
+void fill_levelsets(std::vector<Levelset*>& levelsets);
 
-class LevelSelector;
-class LevelsetSelector;
-
-class LevelMenu : public GUIScreen
-{
-private:
-  int x_pos;
-  int y_pos;
-
-  Sprite background;
-  Sprite blackboard;
-  Sprite ok_button;
-
-  LevelSelector*    level_selector;
-  LevelsetSelector* levelset_selector;
-
-  GUI::SurfaceButton* abort_button;
-  GUI::SurfaceButton* next_button;
-  GUI::SurfaceButton* prev_button;
-
+class LevelMenu: public GUIScreen {
 public:
   LevelMenu();
   ~LevelMenu();
-  
-  void draw_background(DrawingContext& gc);
-  void on_escape_press();
-  void on_action_up_press();
-  void on_action_down_press();
-    
-  void set_levelset(Levelset* levelset);
-
-  void next_page();
-  void prev_page();
-
-  void resize(const Size& size);
 
 private:
   LevelMenu (const LevelMenu&);

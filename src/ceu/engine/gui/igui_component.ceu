@@ -7,7 +7,10 @@ native/pre do
     ##include "math/vector2i.hpp"
     ##define GUI_Component GUI::Component
     ##define GUI_RectComponent GUI::RectComponent
+    ##define new_GUI__RectComponent new GUI::RectComponent
 end
+
+native @pure _new_GUI__RectComponent();
 
 interface IGUI_Component with
     var _GUI_Component& me;

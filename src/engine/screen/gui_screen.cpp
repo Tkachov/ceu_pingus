@@ -235,6 +235,16 @@ void GUIScreen::on_fast_forward_press() {
   ceu_out_go(&CEUapp, CEU_IN_ON_FAST_FORWARD_PRESS, &self);
 }
 
+void GUIScreen::on_action_up_press() {
+  GUIScreen* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_ON_ACTION_UP_PRESS, &self);
+}
+
+void GUIScreen::on_action_down_press() {
+  GUIScreen* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_ON_ACTION_DOWN_PRESS, &self);
+}
+
 void GUIScreen::on_pause_release() {
   GUIScreen* self = this;
   ceu_out_go(&CEUapp, CEU_IN_ON_PAUSE_RELEASE, &self);

@@ -21,6 +21,8 @@ input _GUIScreen* ON_SINGLE_STEP_PRESS;
 input _GUIScreen* ON_SINGLE_STEP_RELEASE;
 input _GUIScreen* ON_FAST_FORWARD_PRESS;
 input _GUIScreen* ON_FAST_FORWARD_RELEASE;
+input _GUIScreen* ON_ACTION_UP_PRESS;
+input _GUIScreen* ON_ACTION_DOWN_PRESS;
 input _ScreenUpdatePackage* SCREEN_UPDATE;
 input _ScreenUpdateEventPackage* SCREEN_UPDATE_EVENT;
 input _ScreenDrawPackage* SCREEN_DRAW_BACKGROUND;

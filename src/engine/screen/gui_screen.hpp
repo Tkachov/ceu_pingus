@@ -53,8 +53,8 @@ public:
   virtual void on_fast_forward_press();
   virtual void on_armageddon_press();
   virtual void on_escape_press();
-  virtual void on_action_up_press() {}
-  virtual void on_action_down_press() {}
+  virtual void on_action_up_press();
+  virtual void on_action_down_press();
 
   virtual void on_pause_release();
   virtual void on_single_step_release();

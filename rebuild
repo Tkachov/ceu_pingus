@@ -1,1 +1,10 @@
-make ceu && cd build && ./pingus
+make do_ceu && make build/debug
+if [ $? -eq 0 ]; then
+    cat ~/win.wav > /dev/dsp
+    cd build && gdb ./pingus
+else
+    cat ~/fail.wav > /dev/dsp
+fi
+
+#v2: make do_ceu && make build/debug && cd build && gdb ./pingus
+#v1: make ceu && cd build && ./pingus

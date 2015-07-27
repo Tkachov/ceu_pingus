@@ -1,0 +1,577 @@
+#ifndef LEVEL_MENU_CEU
+#define LEVEL_MENU_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../../string.ceu"
+#include "../../engine/gui/igui_component.ceu"
+#include "../../engine/gui/surface_button.ceu"
+#include "../../engine/screen/screen.ceu"
+#include "../../engine/sound/sound.ceu"
+#include "../../math/math.ceu"
+#include "../../math/rect.ceu"
+#include "../iworld.ceu"
+#include "../global_interface.ceu"
+
+native/pre do
+    ##include "engine/display/display.hpp"
+    ##include "engine/display/graphic_context_state.hpp"
+    ##include "engine/gui/gui_manager.hpp"
+    ##include "engine/gui/rect_component.hpp"
+    ##include "engine/gui/surface_button.hpp"
+    ##include "engine/screen/screen_manager.hpp"
+    ##include "engine/sound/sound.hpp"
+    ##include "pingus/fonts.hpp"
+    ##include "pingus/game_time.hpp"
+    ##include "pingus/gettext.h"
+    ##include "pingus/globals.hpp"
+    ##include "pingus/screens/level_menu.hpp"
+    ##include "pingus/screens/start_screen.hpp"
+    ##include "pingus/server.hpp"
+    ##include "pingus/string_format.hpp"
+    ##include "util/log.hpp"
+    ##include "util/string_util.hpp"
+
+    ##include <boost/format.hpp>
+
+    ##define new_GUI_Component() new GUI::Component()
+    ##define ScreenManager__instance() ScreenManager::instance()
+    ##define std__make_shared_StartScreen std::make_shared<StartScreen>
+    ##define Display__get_width() Display::get_width()
+    ##define Display__get_height() Display::get_height()
+    ##define Fonts__chalk_large Fonts::chalk_large
+    ##define Fonts__chalk_normal Fonts::chalk_normal
+    ##define Fonts__chalk_small Fonts::chalk_small
+
+    ##define level_completion(lc) (boost::format("%1% %2%%%") % _("Solved:") % lc).str()
+    ##define levels_count(lc) (boost::format("%1% %2%") % lc % _("levels")).str()
+
+    ##define std__vector_Levelset std::vector<Levelset*>
+    ##define new_Vector_Levelset new std::vector<Levelset*>
+end
+
+native @pure _new_GUI_Component(), _ScreenManager__instance(), _std__make_shared_StartScreen(),
+             _Display__get_width(), _Display__get_height(), _level_completion(), _levels_count(),
+             _new_Vector_Levelset(), _fill_levelsets();
+
+input _LevelMenu* DELETE_LEVEL_MENU;
+
+interface ILevelMenu with
+    function (void) => void close_screen;
+    function (void) => void prev_page;
+    function (void) => void next_page;
+    function @rec (_Levelset* levelset) => void set_levelset;
+end
+
+////////////////////////////////////////////////
+
+class LevelMenuAbortButton with
+    interface IGUI_Component;
+    var ILevelMenu& parent;
+
+    function @rec (int x, int y) => void set_pos;
+do
+    var SurfaceButton sb with
+        this.me = outer.me;
+        this.pos.x = _Display__get_width()/2 - 300;
+        this.pos.y = _Display__get_height()/2 + 200;
+    end;
+
+    call/rec sb.load("core/start/back", "core/start/back_clicked", "core/start/back_hover");
+
+    var PrimaryButtonProxy p with this.gui = outer; end;
+    var PointerProxy pp with this.gui = outer; end;
+    var EventProxy ep with this.gui = outer; end;
+
+    function @rec (int x, int y) => void set_pos do
+        sb.set_pos(x, y);
+    end
+
+    par do
+        every mouse_click do
+            parent.close_screen();
+        end
+    with
+        every mouse_enter do
+            _Sound__PingusSound__play_sound("tick");
+        end
+    with
+        every gc in draw do
+            gc:print_center(_Fonts__chalk_normal, _Vector2i(sb.pos.x + 55, sb.pos.y), __("Back"));
+        end
+    end
+end
+
+class LevelScrollButton with
+    interface IGUI_Component;
+    var ILevelMenu& parent;
+    var Function& callback;
+    var _std__string&? str;
+
+    function @rec (int x, int y) => void set_pos;
+do
+    var SurfaceButton sb with
+        this.me = outer.me;
+    end;
+
+    call/rec sb.load(str.c_str(), _scc2(_deref(str), "_pressed").c_str(), _scc2(_deref(str), "_hover").c_str());
+
+    finalize with _delete_obj(str); end
+
+    var PrimaryButtonProxy p with this.gui = outer; end;
+    var PointerProxy pp with this.gui = outer; end;
+    var EventProxy ep with this.gui = outer; end;
+
+    function @rec (int x, int y) => void set_pos do
+        sb.set_pos(x, y);
+    end
+
+    par do
+        every mouse_click do
+            emit callback.execute;
+        end
+    with
+        every mouse_enter do
+            _Sound__PingusSound__play_sound("tick");
+        end
+    end
+end
+
+////////////////////////////////////////////////
+
+class LevelsetSelector with
+    interface IGUI_Component;
+    var _GUI_RectComponent&? rect;
+    var ILevelMenu& parent;    
+
+    function (void) => void prev_page;
+    function (void) => void next_page;
+    function (_Levelset* levelset_) => void set_levelset;
+do
+    var PrimaryButtonProxy p with this.gui = outer; end;
+    var PointerProxy pp with this.gui = outer; end;
+    var EventProxy ep with this.gui = outer; end;
+
+    var _std__vector_Levelset&? levelsets = _new_Vector_Levelset();
+    var _Levelset* current_levelset = null;    
+    var int page = 0;
+
+    _fill_levelsets(_deref(levelsets));
+    finalize with
+        loop i in levelsets.size() do    
+            _delete_obj(levelsets.at(i));
+        end
+        _delete_obj(levelsets);
+    end
+
+    var int item_height = 95;
+    var int items_per_page = 4;
+    var Rect list_rect;
+    Rect_load_XYWH(list_rect, 30, 70, 680 - 90, 70 + items_per_page * item_height);
+
+    var Sprite marker;
+    call/rec marker.reload_by_name("core/menu/marker");
+
+    function (void) => void prev_page do
+        page = page - 1;
+        if page < 0 then
+            page = 0;
+        end
+    end
+
+    function (void) => void next_page do
+        page = page + 1;
+        if page >= (levelsets.size() - items_per_page) then        
+            page = _Math__max(0, (int)levelsets.size() - items_per_page);
+        end
+    end
+
+    function (int x, int y) => void calculate_current_levelset do
+        x = x - rect.rect.left;
+        y = y - rect.rect.top;
+
+        if not _toRect(list_rect).contains(_Vector2i(x, y)) then
+            current_levelset = null;
+        else
+            x = x - list_rect.left;
+            y = y - list_rect.top;
+
+            if not levelsets.empty() then
+                var int i = y / item_height + page;
+
+                if i >= 0 and i < levelsets.size() then
+                    current_levelset = _PTR2REF(levelsets.at(i));
+                else
+                    current_levelset = null;
+                end
+            end
+        end
+    end
+
+    par do
+        every gc in draw do
+            gc:push_modelview();
+            gc:translate(rect.rect.left, rect.rect.top) finalize with end;
+
+            gc:print_center(_Fonts__chalk_large, _Vector2i(rect.rect.get_width()/2, 10), __("Levelsets"));
+
+            var int y = list_rect.top;
+            var int i = page;
+            loop do
+                if i >= (page + items_per_page) or i >= levelsets.size() then
+                    break;
+                end
+
+                var _Levelset* levelset = _PTR2REF(levelsets.at(i));
+            
+                if levelset == current_levelset then   
+                    gc:draw(_deref(marker.get()), _Vector2i(15, y - 5));
+                end
+
+                gc:draw(levelset:get_image(), _Vector2i(list_rect.left + 10, y));
+
+                gc:print_left(_Fonts__chalk_normal, _Vector2i(list_rect.left + 105, 15 + y), __(levelset:get_title()));
+                gc:print_left(_Fonts__chalk_small,  _Vector2i(list_rect.left + 105, 40 + y), __(levelset:get_description()));
+
+                gc:print_right(_Fonts__chalk_normal, _Vector2i(list_rect.right, 15 + y), _level_completion(levelset:get_completion()));                
+                gc:print_right(_Fonts__chalk_small,  _Vector2i(list_rect.right, 40 + y), _levels_count(levelset:get_level_count()));                
+
+                y = y + item_height;
+                i = i + 1;
+            end
+            gc:pop_modelview();            
+        end
+    with
+        every mouse_leave do
+            current_levelset = null;
+        end
+    with
+        every (x, y) in mouse_move do
+            calculate_current_levelset(x, y);
+        end
+    with
+        every (x, y) in mouse_press do
+            calculate_current_levelset(x, y);
+
+            if current_levelset then    
+                call/rec parent.set_levelset(current_levelset);
+            end    
+        end
+    end
+end
+
+////////////////////////////////////////////////
+
+class LevelSelector with
+    interface IGUI_Component;
+    var _GUI_RectComponent&? rect;
+    var ILevelMenu& parent;    
+
+    function (void) => void prev_page;
+    function (void) => void next_page;
+    function (_Levelset* levelset_) => void set_levelset;
+do
+    var PrimaryButtonProxy p with this.gui = outer; end;
+    var PointerProxy pp with this.gui = outer; end;
+    var EventProxy ep with this.gui = outer; end;
+
+    var _Levelset* levelset = null;
+    var int current_level = -1;
+    var int page = 0;
+
+    var int item_height = 32;
+    var int items_per_page = 10;
+    var Rect list_rect;
+    Rect_load_XYWH(list_rect, 50, 112, 680 - 90, 112 + items_per_page * item_height);
+
+    var Sprite marker;
+    var Sprite m_checkbox_marked;
+    var Sprite m_checkbox_locked;
+    var Sprite m_checkbox;
+    call/rec marker.reload_by_name("core/menu/marker2");
+    call/rec m_checkbox_marked.reload_by_name("core/menu/checkbox_marked_small");
+    call/rec m_checkbox_locked.reload_by_name("core/menu/locked_small");
+    call/rec m_checkbox.reload_by_name("core/menu/checkbox_small");
+
+    function (void) => void prev_page do
+        page = page - 1;
+        if page < 0 then
+            page = 0;
+        end
+    end
+
+    function (void) => void next_page do
+        page = page + 1;
+        if page >= (levelset:get_level_count() - items_per_page) then        
+            page = _Math__max(0, (int)levelset:get_level_count() - items_per_page);
+        end
+    end
+
+    function (_Levelset* levelset_) => void set_levelset do
+        page = 0;
+        levelset = _PTR2REF(levelset_);
+    end
+
+    function (int x, int y) => void calculate_current_level do
+        x = x - rect.rect.left;
+        y = y - rect.rect.top;
+
+        if not _toRect(list_rect).contains(_Vector2i(x, y)) then
+            current_level = -1;
+        else
+            x = x - list_rect.left;
+            y = y - list_rect.top;
+
+            current_level = y / item_height + page;
+
+            if current_level < 0 or current_level >= levelset:get_level_count() then
+                current_level = -1;
+            end
+        end
+    end
+
+    par do
+        every gc in draw do
+            gc:push_modelview();
+            gc:translate(rect.rect.left, rect.rect.top) finalize with end;
+
+            if levelset then                
+                gc:draw(levelset:get_image(), _Vector2i(rect.rect.get_width()/2 - levelset:get_image().get_width()/2 - 275, 15));
+                gc:draw(levelset:get_image(), _Vector2i(rect.rect.get_width()/2 - levelset:get_image().get_width()/2 + 275, 15));
+
+                gc:print_center(_Fonts__chalk_large, _Vector2i(rect.rect.get_width()/2, 10), __(levelset:get_title()));
+                gc:print_center(_Fonts__chalk_normal, _Vector2i(rect.rect.get_width()/2, 62), __(levelset:get_description()));
+
+                levelset:refresh(); // should be better placed in on_startup() or so
+
+                var int y = list_rect.top;
+                var int i = page;
+                loop do
+                    if i >= (page + items_per_page) or i >= levelset:get_level_count() then
+                        break;
+                    end
+
+                    // draw background highlight mark
+                    if levelset:get_level(i):accessible and i == current_level then                    
+                        gc:draw(_deref(marker.get()), _Vector2i(20, y));
+                    end
+
+                    // draw levelname
+                    if _globals__developer_mode then
+                        gc:print_left(_Fonts__chalk_normal, _Vector2i(list_rect.left + 40, y+4), levelset:get_level(i):plf.get_resname());
+                    else
+                        gc:print_left(_Fonts__chalk_normal, _Vector2i(list_rect.left + 40, y+4), __(levelset:get_level(i):plf.get_levelname()));
+                    end
+
+                    // draw icon
+                    if not levelset:get_level(i):accessible then                    
+                        gc:draw(_deref(m_checkbox_locked.get()), _Vector2i(list_rect.left + 0, y));                    
+                    else/if levelset:get_level(i):finished then                    
+                        gc:draw(_deref(m_checkbox_marked.get()), _Vector2i(list_rect.left + 0, y));                    
+                    else                    
+                        gc:draw(_deref(m_checkbox.get()), _Vector2i(list_rect.left + 0, y));
+                    end
+
+                    y = y + item_height;
+                    i = i + 1;
+                end
+                
+            end
+
+            gc:pop_modelview();
+        end
+    with
+        every mouse_leave do
+            current_level = -1;
+        end
+    with
+        every (x, y) in mouse_move do
+            calculate_current_level(x, y);
+        end
+    with
+        every (x, y) in mouse_press do
+            calculate_current_level(x, y);
+
+            if current_level != -1 then    
+                if levelset:get_level(current_level):accessible then      
+                    _ScreenManager__instance():push_screen(
+                        _std__make_shared_StartScreen(levelset:get_level(current_level):plf)
+                    );
+                end
+            end
+        end
+    end
+end
+
+////////////////////////////////////////////////
+
+class FunctionPrevPage with
+    interface Function;
+    var ILevelMenu& parent;
+do
+    every execute do
+        parent.prev_page();
+    end
+end
+
+class FunctionNextPage with
+    interface Function;
+    var ILevelMenu& parent;
+do
+    every execute do
+        parent.next_page();
+    end
+end
+
+////////////////////////////////////////////////
+
+class LevelMenu with
+    interface ILevelMenu;
+    var _LevelMenu* me;
+do
+    var _LevelMenu&? level_menu = _PTR2REF((_LevelMenu*)me);
+
+    var FunctionPrevPage f_prev_page with this.parent = outer; end;
+    var FunctionNextPage f_next_page with this.parent = outer; end;
+
+    var LevelsetSelector levelset_selector with
+        this.rect = _new_GUI__RectComponent();
+        this.me = _PTR2REF(this.rect);
+        this.parent = outer;
+    end;
+
+    var LevelSelector level_selector with
+        this.rect = _new_GUI__RectComponent();
+        this.me = _PTR2REF(this.rect);
+        this.parent = outer;
+    end;
+
+    var LevelScrollButton prev_button with
+        this.me = _new_GUI_Component();
+        this.parent = outer;
+        this.callback = f_prev_page;
+        this.str = _new_String("core/menu/arrow_up");
+    end;
+
+    var LevelScrollButton next_button with
+        this.me = _new_GUI_Component();
+        this.parent = outer;
+        this.callback = f_next_page;
+        this.str = _new_String("core/menu/arrow_down");
+    end;
+
+    var LevelMenuAbortButton abort_button with
+        this.me = _new_GUI_Component();
+        this.parent = outer;
+    end;
+
+    level_menu.gui_manager:add(&levelset_selector.me) finalize with end;
+    level_menu.gui_manager:add(&level_selector.me) finalize with end;
+    level_menu.gui_manager:add(&prev_button.me) finalize with end;
+    level_menu.gui_manager:add(&next_button.me) finalize with end;
+    level_menu.gui_manager:add(&abort_button.me) finalize with end;
+    level_selector.rect.hide();
+
+    var Sprite background;
+    var Sprite blackboard;
+    call/rec background.reload_by_name("core/menu/wood");
+    call/rec blackboard.reload_by_name("core/menu/blackboard");
+
+    function (void) => void close_screen do
+        if level_selector.rect.is_visible() then
+            levelset_selector.rect.show();
+            level_selector.rect.hide();
+        else
+            //_log_debug("OptionMenu: poping screen");
+            _ScreenManager__instance():pop_screen();
+        end
+    end
+
+    function (void) => void next_page do
+        if level_selector.rect.is_visible() then
+            level_selector.next_page();
+        else
+            levelset_selector.next_page();
+        end
+    end
+
+    function (void) => void prev_page do
+        if level_selector.rect.is_visible() then
+            level_selector.prev_page();
+        else
+            levelset_selector.prev_page();
+        end
+    end
+
+    function @rec (_Levelset* levelset) => void set_levelset do
+        if levelset then  
+            level_selector.set_levelset(levelset);
+            levelset_selector.rect.hide();
+            level_selector.rect.show();
+        else
+            levelset_selector.rect.show();
+            level_selector.rect.hide();      
+        end
+    end  
+
+    par/or do
+        every package in SCREEN_DRAW_BACKGROUND do
+            if package:screen != &level_menu then
+                continue;
+            end
+            
+            // Paint the background wood panel
+            var int y = 0;
+            loop do
+                if y >= package:gc.get_height() then break; end
+                var int x = 0;
+                loop do
+                    if x >= package:gc.get_width() then break; end
+                    package:gc.draw(_deref(background.get()), _Vector2i(x, y));
+                    x = x + background.get_width();
+                end
+                y = y + background.get_height();
+            end
+
+            package:gc.draw(_deref(blackboard.get()), _Vector2i(package:gc.get_width()/2, package:gc.get_height()/2));
+        end
+    with
+        every screen in ON_ESCAPE_PRESS do
+            if screen == &level_menu then
+                close_screen();
+            end
+        end
+    with
+        every screen in ON_ACTION_UP_PRESS do
+            if screen == &level_menu then
+                prev_page();
+            end
+        end
+    with
+        every screen in ON_ACTION_DOWN_PRESS do
+            if screen == &level_menu then
+                next_page();
+            end
+        end
+    with
+        every package in SCREEN_RESIZE do
+            if package:screen != &level_menu then
+                continue;
+            end
+
+            var int x_pos = (level_menu.size.width  - _globals__default_screen_width)/2;
+            var int y_pos = (level_menu.size.height - _globals__default_screen_height)/2;
+
+            levelset_selector.rect.set_rect(_Rect(_Vector2i(x_pos + 60, y_pos + 50), _Size(680, 500)));
+            level_selector   .rect.set_rect(_Rect(_Vector2i(x_pos + 60, y_pos + 50), _Size(680, 500)));
+
+            call/rec prev_button.set_pos(level_menu.size.width/2 + 280, level_menu.size.height/2 - 60);
+            call/rec next_button.set_pos(level_menu.size.width/2 + 280, level_menu.size.height/2 + 12);
+            call/rec abort_button.set_pos(level_menu.size.width/2 - 300, level_menu.size.height/2 + 200);
+        end
+    with
+        var _LevelMenu* e = await DELETE_LEVEL_MENU until (e == &level_menu);
+    end
+end 
+
+#endif
