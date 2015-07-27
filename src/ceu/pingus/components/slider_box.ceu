@@ -1,0 +1,94 @@
+#ifndef SLIDER_BOX_CEU
+#define SLIDER_BOX_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../../engine/gui/igui_component.ceu"
+#include "../../proxies/pointerproxy.ceu"
+#include "../../math/vector2i.ceu"
+
+native/pre do
+    ##include "engine/sound/sound.hpp"
+    ##include "pingus/screens/pingus_menu.hpp"
+    ##include "engine/display/drawing_context.hpp"
+    ##include "engine/sound/sound.hpp"
+    ##include "math/vector2i.hpp"
+    ##include "pingus/screens/pingus_menu.hpp"
+    ##include "engine/display/font.hpp"
+    ##include "engine/display/sprite.hpp"
+    ##include "engine/gui/component.hpp"
+    ##include "engine/display/drawing_context.hpp"
+    ##include "pingus/fonts.hpp"
+    ##include "pingus/globals.hpp"
+end
+
+class SliderBox with
+    interface IGUI_Component;
+
+    var IntSlot& slot;
+    var int m_steps;
+    var int value;
+
+    function (int x, int y) => void shift_pos;
+    function (int v) => void set_value;
+do
+    var _GUI_RectComponent&? rect = _PTR2REF((_GUI_RectComponent*)&me);
+    var bool drag_drop = false;
+
+    var PrimaryButtonProxy p with this.gui = outer; end;
+    var PointerProxy pp with this.gui = outer; end;
+    var EventProxy ep with this.gui = outer; end;
+
+    function (int x, int y) => void shift_pos do
+        rect.set_rect(_Rect(_Vector2i(rect.rect.left + x, rect.rect.top + y), rect.rect.get_size()));        
+    end
+
+    function (int v) => void set_value do
+        value = v * m_steps / 100; //original FIXME: rounding errors
+    end
+
+    par do
+        every gc in draw do
+            if _globals__developer_mode then
+                gc:draw_rect(rect.rect, _Color(0, 255, 255)) finalize with end;
+            end
+
+            if value == 0 then  
+                gc:print_center(_Fonts__chalk_normal, _Vector2i(rect.rect.left + rect.rect.get_width()/2, rect.rect.top) finalize with end, "off");
+            else
+                loop i in m_steps do
+                    if i < value then
+                        gc:print_left(_Fonts__chalk_normal, _Vector2i(rect.rect.left + i*(rect.rect.get_width()-12)/m_steps + 6, rect.rect.top) finalize with end, "|");
+                    end
+                end
+            end
+  
+            gc:print_left(_Fonts__chalk_normal, _Vector2i(rect.rect.left, rect.rect.top) finalize with end, "[");
+            gc:print_right(_Fonts__chalk_normal, _Vector2i(rect.rect.right, rect.rect.top) finalize with end, "]");
+        end
+    with
+        every (x, y) in mouse_press do
+            drag_drop = true;
+            emit mouse_move => (x, y);
+        end
+    with
+        every (x, y) in mouse_press do
+            drag_drop = false;
+            emit mouse_move => (x, y);
+        end
+    with
+        every (x, y) in mouse_move do
+            if drag_drop then
+                var int old_value = value;
+                x = x - rect.rect.left;
+                value = m_steps * x / (rect.rect.get_width() - 12);
+                value = _Math__clamp(0, value, m_steps);
+                if value != old_value then
+                    emit slot.signal => value*5; // scale to [0,100]
+                end
+            end
+        end
+    end
+end
+
+#endif

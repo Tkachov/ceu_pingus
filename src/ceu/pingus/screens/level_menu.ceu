@@ -167,7 +167,7 @@ do
     var int item_height = 95;
     var int items_per_page = 4;
     var Rect list_rect;
-    Rect_load_XYWH(list_rect, 30, 70, 680 - 90, 70 + items_per_page * item_height);
+    Rect_load_LTRB(list_rect, 30, 70, 680 - 90, 70 + items_per_page * item_height);
 
     var Sprite marker;
     call/rec marker.reload_by_name("core/menu/marker");
@@ -282,7 +282,7 @@ do
     var int item_height = 32;
     var int items_per_page = 10;
     var Rect list_rect;
-    Rect_load_XYWH(list_rect, 50, 112, 680 - 90, 112 + items_per_page * item_height);
+    Rect_load_LTRB(list_rect, 50, 112, 680 - 90, 112 + items_per_page * item_height);
 
     var Sprite marker;
     var Sprite m_checkbox_marked;

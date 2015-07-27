@@ -115,8 +115,8 @@ end
 class FunctionOptions with
     interface Function;
 do
-    every execute do    
-        _ScreenManager__instance():push_screen(_std__make_shared_OptionMenu());
+    every execute do
+        emit global:push_option_menu;
     end
 end
 

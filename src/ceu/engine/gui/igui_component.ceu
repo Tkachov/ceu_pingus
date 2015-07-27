@@ -1,13 +1,15 @@
 #ifndef IGUI_COMPONENT_CEU
 #define IGUI_COMPONENT_CEU
 
+#include "../../string.ceu"
+
 native/pre do
     ##include "engine/gui/component.hpp"
     ##include "engine/gui/rect_component.hpp"
     ##include "math/vector2i.hpp"
     ##define GUI_Component GUI::Component
     ##define GUI_RectComponent GUI::RectComponent
-    ##define new_GUI__RectComponent new GUI::RectComponent
+    ##define new_GUI__RectComponent new GUI::RectComponent    
 end
 
 native @pure _new_GUI__RectComponent();
@@ -32,6 +34,22 @@ interface IGUI_Component with
     event (int, int) mouse_secondary_release;
     event (int, int) mouse_secondary_click;
     event void mouse_secondary_double_click;
+end
+
+interface VoidSlot with
+    event void signal;
+end
+
+interface BoolSlot with
+    event bool signal;
+end
+
+interface IntSlot with
+    event int signal;
+end
+
+interface StringSlot with
+    event _const_char_string signal;
 end
 
 #endif

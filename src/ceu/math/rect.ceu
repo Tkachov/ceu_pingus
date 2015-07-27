@@ -5,14 +5,15 @@ native/pre do
     ##include "math/rect.hpp"
     ##define toRect(v) Rect(v.left, v.top, v.right, v.bottom)
     //##define makeVector2i(x, y) Vector2i(x, y)
-    //##define readVector2i(dst, src) { Vector2i __s = src; dst.x = __s.x; dst.y = __s.y; }
+    ##define readRect(dst, src) { Rect __s = src; dst.left = __s.left; dst.top = __s.top; dst.right = __s.right; dst.bottom = __s.bottom; }
 end
 
 native @plain _Rect;
-native @pure _toRect();//, _readVector2i();
+native @pure _toRect(), _readRect();
 
 #define Rect_load_Vector2i_Size(r, v, s) r.left = v.x; r.top = v.y; r.right = r.left + s.width; r.bottom = r.top + s.height;
 #define Rect_load_XYWH(r, x, y, w, h) r.left = x; r.top = y; r.right = x + w; r.bottom = y + h;
+#define Rect_load_LTRB(r, l, t, rt, b) r.left = l; r.top = t; r.right = rt; r.bottom = b;
 
 data Rect with
     var int left;

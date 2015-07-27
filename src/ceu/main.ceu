@@ -13,6 +13,7 @@ end
 #include "pingus/screens/result_screen.ceu"
 #include "pingus/screens/pingus_menu.ceu"
 #include "pingus/screens/level_menu.ceu"
+#include "pingus/screens/option_menu.ceu"
 #include "pingus/screens/credits.ceu"
 #include "pingus/worldmap/worldmap_screen.ceu"
 #include "pingus/pingu_holder.ceu"
@@ -23,11 +24,12 @@ end
 #include "proxies/proxyeventlist.ceu"
 
 native/pre do
+    ##define new_OptionMenu new OptionMenu
     ##define new_Pathname new Pathname
     ##define make_std__shared_ptr_Screen(x) std::shared_ptr<Screen>(x)
 end
 
-native @pure _new_Pathname(), _make_std__shared_ptr_Screen();
+native @pure _new_Pathname(), _make_std__shared_ptr_Screen(), _new_OptionMenu();
 
 event void e_PINGU_DIED;
 event void e_PINGU_EXITED;
@@ -38,6 +40,7 @@ event void e_PINGU_UPDATE_ALL;
 //global events
 event _SceneContext* draw;
 event void update;
+event void push_option_menu;
 event void push_worldmap_tutorial_screen;
 
 input _DemoSession* NEW_DEMO_SESSION;
@@ -103,6 +106,15 @@ with
         _ScreenManager__instance():push_screen(_make_std__shared_ptr_Screen(ws:me));
     end
 with
+    every push_option_menu do
+        var OptionMenu* os = null;
+        spawn OptionMenu with
+            this.me = _PTR2REF(_new_OptionMenu());
+            os = &this;
+        end;
+        _ScreenManager__instance():push_screen(_make_std__shared_ptr_Screen(os:me));
+    end
+with
     every new_se in NEW_SERVER_EVENT do
         spawn ServerEvent with
             this.me = _PTR2REF(new_se);
@@ -126,7 +138,5 @@ with
         _printf("[FPS=%d]\n", c);
     end
 end
-
-//I'm not sure about this thingy, as it works with and without it:
 
 escape 0;

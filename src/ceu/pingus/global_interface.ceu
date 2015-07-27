@@ -8,6 +8,7 @@ interface Global with
 	interface GlobalPinguEvents;
     var IWorld* world;
 
+    event void push_option_menu;
     event void push_worldmap_tutorial_screen;
 end
 
