@@ -8,6 +8,7 @@ end
 #include "pingus/colliders/pingu_collider.ceu"
 #include "pingus/screens/demo_session.ceu"
 #include "pingus/screens/game_session.ceu"
+#include "pingus/screens/font_test_screen.ceu"
 #include "pingus/screens/start_screen.ceu"
 #include "pingus/screens/story_screen.ceu"
 #include "pingus/screens/result_screen.ceu"
@@ -52,6 +53,7 @@ input _WorldmapNS__WorldmapScreen* NEW_WORLDMAP_SCREEN;
 input _PingusMenu* NEW_PINGUS_MENU;
 input _Credits* NEW_CREDITS;
 input _LevelMenu* NEW_LEVEL_MENU;
+input _Pathname* PUSH_FONT_TEST_SCREEN;
 
 #define WITH_SCREEN(CClassName, ClassName, Event) with \
     loop do \
@@ -113,6 +115,14 @@ with
             os = &this;
         end;
         _ScreenManager__instance():push_screen(_make_std__shared_ptr_Screen(os:me));
+    end
+with
+    every filename in PUSH_FONT_TEST_SCREEN do
+        spawn FontTestScreen with
+            this.me = _PTR2REF(_new_GUIScreen());
+            this.fontfile = _PTR2REF(filename);
+            _ScreenManager__instance():push_screen(_make_std__shared_ptr_Screen(this.me));
+        end;
     end
 with
     every new_se in NEW_SERVER_EVENT do

@@ -8,11 +8,12 @@
 #include "../../engine/screen/screen.ceu"
 #include "../../engine/sound/sound.ceu"
 #include "../../math/math.ceu"
-#include "../iworld.ceu"
-#include "../global_interface.ceu"
 #include "../components/check_box.ceu"
-#include "../components/slider_box.ceu"
 #include "../components/choice_box.ceu"
+#include "../components/label.ceu"
+#include "../components/slider_box.ceu"
+#include "../global_interface.ceu"
+#include "../iworld.ceu"
 
 native/pre do
     ##include "engine/display/display.hpp"
@@ -24,7 +25,6 @@ native/pre do
     ##include "engine/screen/gui_screen.hpp"
     ##include "engine/screen/screen_manager.hpp"
     ##include "engine/sound/sound.hpp"
-    ##include "pingus/components/label.hpp"
     ##include "pingus/config_manager.hpp"
     ##include "pingus/fonts.hpp"
     ##include "pingus/game_time.hpp"
@@ -62,8 +62,6 @@ native/pre do
     ##define System__get_userdir() System::get_userdir()
     ##define Pathname__SYSTEM_PATH Pathname::SYSTEM_PATH
 
-    ##define new_Label new Label
-
     extern tinygettext::DictionaryManager dictionary_manager;
 
     ##define std__vector_Option std::vector<Option>
@@ -81,7 +79,7 @@ end
 
 native @pure _new_GUI_Component(), _ScreenManager__instance(), _std__make_shared_GameScreen(),
              _Display__get_width(), _Display__get_height(), _System__get_userdir(), _new_Pathname(),
-             _SU2str(), _StringFormat__break_line(), _new_Label(), _new_Vector_Option(), _sscanf(), _copy_language_set(),
+             _SU2str(), _StringFormat__break_line(), _new_Vector_Option(), _sscanf(), _copy_language_set(),
              _new_Display__get_fullscreen_video_modes(), _new_Vector_Language(), _tinygettext__Language__from_name();
 
 interface IOptionMenu with
@@ -262,6 +260,13 @@ end
         this.slot = slotname; \
     end;
 
+#define AddItem(labelname, str, control, type) \
+    var Label labelname with \
+        this.me = _new_GUI__RectComponent(); \
+        this.label = _new_String(__(str)); \
+    end; \
+    add_item((_GUI_RectComponent*)&labelname.me, (_GUI_RectComponent*)&control.me, type);
+
 class OptionMenu with
     interface IOptionMenu;
     var _OptionMenu* me;
@@ -345,7 +350,7 @@ do
         _delete_obj(langs);
     end
 
-    function (_const_char_string label, _GUI_RectComponent* control, int type) => void add_item do
+    function (_GUI_RectComponent* label_component, _GUI_RectComponent* control, int type) => void add_item do
         //type == 1 - CheckBox
         //type == 2, 3 - SliderBox, ChoiceBox
 
@@ -359,22 +364,20 @@ do
         Rect_load_LTRB(left, rect.left, rect.top, rect.right - 180, rect.bottom);
         Rect_load_LTRB(right, rect.left + 140, rect.top, rect.right, rect.bottom);
 
-        var _Label&? label_component = _new_Label(__(label), _Rect());
-
         if type == 3 or type == 2 then
-            label_component.set_rect(_toRect(left));
+            label_component:set_rect(_toRect(left));
             control:set_rect(_toRect(right));
         else/if type == 1 then  
             control:set_rect(_Rect(_Vector2i(rect.left, rect.top), _Size(32, 32)));
-            label_component.set_rect(_Rect(rect.left + 40, rect.top, rect.right, rect.bottom));
+            label_component:set_rect(_Rect(rect.left + 40, rect.top, rect.right, rect.bottom));
         else
             _assert(not "Unhandled control type");
         end
 
-        option_menu.gui_manager:add(&label_component);
+        option_menu.gui_manager:add(label_component);
         option_menu.gui_manager:add(control);
 
-        options.push_back(_Option(&label_component, control));
+        options.push_back(_Option(label_component, control));
 
         y_pos = y_pos + 1;
     end
@@ -407,25 +410,25 @@ do
 
     x_pos = 0;
     y_pos = 0;
-    add_item("Fullscreen", (_GUI_RectComponent*)&fullscreen_box.me, 1);
-    add_item("Mouse Grab", (_GUI_RectComponent*)&mousegrab_box.me, 1);
+    AddItem(fullscreen_label, "Fullscreen", fullscreen_box, 1);
+    AddItem(mousegrab_label, "Mouse Grab", mousegrab_box, 1);
     y_pos = y_pos + 1;
-    add_item("Software Cursor", (_GUI_RectComponent*)&software_cursor_box.me, 1);
-    add_item("Autoscrolling", (_GUI_RectComponent*)&autoscroll_box.me, 1);
-    add_item("Drag&Drop Scrolling", (_GUI_RectComponent*)&dragdrop_scroll_box.me, 1);
+    AddItem(software_cursor_label, "Software Cursor", software_cursor_box, 1);
+    AddItem(autoscroll_label, "Autoscrolling", autoscroll_box, 1);
+    AddItem(dragdrop_scroll_label, "Drag&Drop Scrolling", dragdrop_scroll_box, 1);
     y_pos = y_pos + 1;
-    add_item("Print FPS", (_GUI_RectComponent*)&printfps_box.me, 1);
+    AddItem(printfps_label, "Print FPS", printfps_box, 1);
 
     x_pos = 1;
     y_pos = 0;
-    add_item("Resolution:",    (_GUI_RectComponent*)&resolution_box.me, 3);
-    add_item("Renderer:",      (_GUI_RectComponent*)&renderer_box.me, 3);
+    AddItem(resolution_label, "Resolution:", resolution_box, 3);
+    AddItem(renderer_label, "Renderer:", renderer_box, 3);
     y_pos = y_pos + 1;
-    add_item("Language:",        (_GUI_RectComponent*)&language_box.me, 3);
+    AddItem(language_label, "Language:", language_box, 3);
     y_pos = y_pos + 1;
-    add_item("Master Volume:", (_GUI_RectComponent*)&master_volume_box.me, 2);
-    add_item("Sound Volume:",  (_GUI_RectComponent*)&sound_volume_box.me, 2);
-    add_item("Music Volume:",  (_GUI_RectComponent*)&music_volume_box.me, 2);
+    AddItem(master_volume_label, "Master Volume:", master_volume_box, 2);
+    AddItem(sound_volume_label, "Sound Volume:", sound_volume_box, 2);
+    AddItem(music_volume_label, "Music Volume:", music_volume_box, 2);
   
     mousegrab_box.set_state(_config_manager.get_mouse_grab());
     printfps_box.set_state(_config_manager.get_print_fps());

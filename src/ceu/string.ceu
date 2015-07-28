@@ -7,7 +7,7 @@ native/pre do
 
     ##define new_String new std::string
     ##define std__string std::string
-    ##define make_String(x) std::string(x)
+    ##define make_String std::string
 
     ##define string_set(s, v) *s = v
     ##define string_add(s, v) *s += v

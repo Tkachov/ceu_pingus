@@ -1,0 +1,42 @@
+#ifndef LABEL_CEU
+#define LABEL_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../../engine/gui/igui_component.ceu"
+#include "../../proxies/eventproxy.ceu"
+#include "../../math/vector2i.ceu"
+
+native/pre do
+    ##include "engine/display/drawing_context.hpp"
+    ##include "engine/display/font.hpp"
+    ##include "engine/gui/component.hpp"
+    ##include "math/vector2i.hpp"
+    ##include "pingus/fonts.hpp"
+    ##include "pingus/globals.hpp"
+end
+
+class Label with
+    interface IGUI_Component;
+
+    var _std__string&? label;
+
+    function (int x, int y) => void shift_pos;
+do
+    var _GUI_RectComponent&? rect = _PTR2REF((_GUI_RectComponent*)&me);
+    var EventProxy ep with this.gui = outer; end;
+
+    function (int x, int y) => void shift_pos do
+        rect.set_rect(_Rect(_Vector2i(rect.rect.left + x, rect.rect.top + y), rect.rect.get_size()));        
+    end
+    
+    every gc in draw do
+        if _globals__developer_mode then
+            gc:draw_rect(rect.rect, _Color(0, 255, 255)) finalize with end;
+        end
+
+        gc:print_left(_Fonts__chalk_normal, _Vector2i(rect.rect.left, rect.rect.top) finalize with end, _deref(label));
+    end    
+end
+
+#endif

@@ -18,15 +18,15 @@
 #define HEADER_PINGUS_PINGUS_SCREENS_OPTION_MENU_HPP
 
 #include <map>
+#include "engine/gui/rect_component.hpp"
 #include "engine/screen/gui_screen.hpp"
 #include "tinygettext/language.hpp"
-#include "pingus/components/label.hpp"
 
 struct Option {
-  Label*         label;
+  GUI::RectComponent* label;
   GUI::RectComponent* control;
 
-  Option(Label* label_, GUI::RectComponent* control_) :
+  Option(GUI::RectComponent* label_, GUI::RectComponent* control_):
     label(label_), control(control_)
   {}
 };
@@ -40,7 +40,7 @@ struct LanguageSorter
   }
 };
 
-class OptionMenu : public GUIScreen
+class OptionMenu: public GUIScreen
 {
 private:
   tinygettext::Language m_language;
