@@ -111,12 +111,12 @@ do
                 if not demo_session.pause then
                     if demo_session.fast_forward then
                         loop i in 4 do
-                            demo_session.server:update();
                             emit update_demo;
+                            demo_session.server:update();                            
                         end
                     else
-                        emit server.e_UPDATE;
                         emit update_demo;
+                        emit server.e_UPDATE;                        
                     end
                 end
             end

@@ -19,6 +19,11 @@
 
 #include <string>
 
+struct SetActionPackage {
+  int action;
+  bool result;
+};
+
 namespace ActionName {
 
 /** The order of the actions here are the same as the order of actions

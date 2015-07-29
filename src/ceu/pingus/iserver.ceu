@@ -13,7 +13,8 @@ interface IServer with
     function @rec (void) => int get_time;
     function (void) => _PingusLevel get_plf;
 
-    function @rec (IPingu* pingu, int action) => void send_pingu_action_event;
+    event (IPingu*, int) send_pingu_action_event;
+    event (_ServerEvent*, IPingu*) do_pingu_action_event;
 end
 
 #endif

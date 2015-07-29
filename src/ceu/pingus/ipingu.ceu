@@ -64,7 +64,7 @@ interface IPingu with
     function (float x) => void set_x;
     function (float y) => void set_y;
 
-    function @rec (int req_action) => bool request_set_action;
+    event _SetActionPackage* request_set_action;
 
     function (void) => int get_owner;
     function (void) => _std__string get_owner_str;

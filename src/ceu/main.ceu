@@ -68,7 +68,8 @@ var IWorld* world = null;
 par/or do
     await SDL_QUIT;
 with
-    every new_demo_session in NEW_DEMO_SESSION do
+    loop do
+        var _DemoSession* new_demo_session = await NEW_DEMO_SESSION;
         spawn DemoSession with
             this.me = _PTR2REF(new_demo_session);
         end;

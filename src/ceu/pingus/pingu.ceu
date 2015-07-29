@@ -241,52 +241,58 @@ do
         // Moving the pingu on pixel up, so that the force can take effect
         // original FIXME: this should be handled by a state-machine
         pos_y = pos_y - 1;
-    end
-
-    function @rec (int req_action) => bool request_set_action do
-        var int mode = get_activation_mode(req_action);
-        var bool result = false;
-
-        if mode == PA_INSTANT then
-            if req_action == current_action then
-                _log_debug("Pingu: Already have action");
-            else/if ceu_action:change_allowed(_PTR2REF(req_action)) then
-                _log_debug("setting instant action");
-                result = true;
-                instant_action = req_action;
-                instant_action_set = true;
-            else
-                _log_debug("change from action %1% not allowed", ceu_action:get_name());
-            end
-        else/if mode == PA_WALL_TRIGGERED then
-            if wall_action_set and wall_action == req_action then
-                _log_debug("Not using wall action, we have already");
-            else
-                _log_debug("Setting wall action");
-                wall_action = _PTR2REF(req_action);
-                wall_action_set = true;
-                result = true;
-            end
-        else/if mode == PA_FALL_TRIGGERED then
-            if fall_action_set and fall_action == req_action then
-                _log_debug("Not using fall action, we have already");
-            else
-                _log_debug("Setting fall action");
-                fall_action = _PTR2REF(req_action);
-                fall_action_set = true;
-                result = true;
-            end
-        else
-            _log_debug("unknown action activation_mode");
-            _assert(0);
-        end
-
-        return result;
-    end
+    end    
 
     par do
+        every package in request_set_action do
+            var int mode = get_activation_mode(package:action);
+            var bool result = false;
+
+            if mode == PA_INSTANT then
+                if package:action == current_action then
+                    _printf("Pingu: Already have action\n");
+                    _log_debug("Pingu: Already have action");
+                else/if ceu_action:change_allowed(_PTR2REF(package:action)) then
+                    _printf("setting instant action\n");
+                    _log_debug("setting instant action");
+                    result = true;
+                    //instant_action = package:action;
+                    //instant_action_set = true;
+                    emit e_CHANGE_ACTION => package:action;
+                else
+                    _printf("change from action not allowed\n");
+                    _log_debug("change from action %1% not allowed", ceu_action:get_name());
+                end
+            else/if mode == PA_WALL_TRIGGERED then
+                if wall_action_set and wall_action == package:action then
+                    _log_debug("Not using wall action, we have already");
+                else
+                    _log_debug("Setting wall action");
+                    wall_action = _PTR2REF(package:action);
+                    wall_action_set = true;
+                    result = true;
+                end
+            else/if mode == PA_FALL_TRIGGERED then
+                if fall_action_set and fall_action == package:action then
+                    _log_debug("Not using fall action, we have already");
+                else
+                    _log_debug("Setting fall action");
+                    fall_action = _PTR2REF(package:action);
+                    fall_action_set = true;
+                    result = true;
+                end
+            else
+                _log_debug("unknown action activation_mode");
+                _assert(0);
+            end
+
+            package:result = result;
+        end
+    with
         //pass update() call
         every global:e_PINGU_UPDATE_ALL do
+            _printf("pos@%d: (%f %f)\n", global:world:get_time(), pos_x, pos_y);
+
             if instant_action_set then
                 instant_action_set = false;
                 emit e_CHANGE_ACTION => instant_action;

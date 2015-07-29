@@ -195,7 +195,7 @@ do
                 current_pingu = _PTR2REF(call/rec current_pingu_find(pos.x, pos.y));
 
                 if current_pingu then                    
-                    call/rec server.send_pingu_action_event(current_pingu, session:get_action_name());
+                    emit server.send_pingu_action_event => (current_pingu, session:get_action_name());
                 end
             end
         end

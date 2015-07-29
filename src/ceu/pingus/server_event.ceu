@@ -22,18 +22,6 @@ class ServerEvent with
 do
     var _ServerEvent&? server_event = _PTR2REF((_ServerEvent*)me);
 
-    function @rec (Server* server, IPingu* p) => void do_pingu_action_event do
-        if p then
-            if server_event.pos.x != (call/rec p:get_pos()).x or server_event.pos.y != (call/rec p:get_pos()).y then
-                _log_error("DemoFile inconsistent with world, pingu %1% is at the wrong position", server_event.pingu_id);
-            end
-
-            call/rec server:send_pingu_action_event(p, server_event.pingu_action);
-        else
-            _log_error("DemoFile inconsistent with world, pingu %1% missing", server_event.pingu_id);
-        end
-    end
-
     par/or do
         await FOREVER;
     with
