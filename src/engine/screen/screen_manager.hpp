@@ -103,6 +103,16 @@ private:
   ScreenManager& operator= (const ScreenManager&);
 };
 
+struct ScreenManagerUpdatePackage {
+  ScreenManager* screen_manager;
+  ScreenPtr screen;
+  float delta;
+  const std::vector<Input::Event>& events;
+
+  ScreenManagerUpdatePackage(ScreenManager* sm, ScreenPtr s, float d, const std::vector<Input::Event>& e):
+  screen_manager(sm), screen(s), delta(d), events(e) {};
+};
+
 #endif
 
 /* EOF */
