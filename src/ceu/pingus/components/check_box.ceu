@@ -22,7 +22,7 @@ end
 class CheckBox with
     interface IGUI_Component;
 
-    var BoolSlot& slot;
+    event bool changed;
 
     function (int x, int y) => void shift_pos;
     function (bool v) => void set_state;
@@ -61,7 +61,7 @@ do
     with
         every mouse_press do
             state = not state;
-            emit slot.signal => state;
+            emit changed => state;
         end
     end
 end

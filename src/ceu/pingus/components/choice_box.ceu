@@ -3,6 +3,7 @@
 
 #include "../../c.ceu"
 #include "../../sdl.ceu"
+#include "../../string.ceu"
 #include "../../engine/gui/igui_component.ceu"
 #include "../../proxies/pointerproxy.ceu"
 #include "../../math/vector2i.ceu"
@@ -27,7 +28,7 @@ native @pure _new_Vector_String();
 class ChoiceBox with
     interface IGUI_Component;
 
-    var StringSlot& slot;
+    event _const_char_string changed;
 
     function (int x, int y) => void shift_pos;
     function (_const_char_string str) => void add_choice;
@@ -91,7 +92,7 @@ do
                 end
       
                 if last_current_choice != current_choice then
-                    emit slot.signal => choices.at(current_choice).c_str();
+                    emit changed => choices.at(current_choice).c_str();
                 end
             end
         end

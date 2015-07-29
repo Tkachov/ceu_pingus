@@ -86,124 +86,6 @@ interface IOptionMenu with
     function (void) => void close_screen;
 end
 
-////////////////////////////////////////////////
-
-class SoftwareCursorSlot with
-    interface BoolSlot;
-do
-    every v in signal do
-        _config_manager.set_software_cursor(v);
-    end
-end
-
-class FullscreenSlot with
-    interface BoolSlot;
-do
-    every v in signal do
-        _config_manager.set_fullscreen(v);
-    end
-end
-
-class AutoscrollSlot with
-    interface BoolSlot;
-do
-    every v in signal do
-        _config_manager.set_auto_scrolling(v);
-    end
-end
-
-class DragDropScrollingSlot with
-    interface BoolSlot;
-do
-    every v in signal do
-        _config_manager.set_drag_drop_scrolling(v);
-    end
-end
-
-class MousegrabSlot with
-    interface BoolSlot;
-do
-    every v in signal do
-        _config_manager.set_mouse_grab(v);
-    end
-end
-
-class PrintfpsSlot with
-    interface BoolSlot;
-do
-    every v in signal do
-        _config_manager.set_print_fps(v);
-    end
-end
-
-class MasterVolumeSlot with
-    interface IntSlot;
-do
-    every v in signal do        
-        _config_manager.set_master_volume(v);
-    end
-end
-
-class SoundVolumeSlot with
-    interface IntSlot;
-do
-    every v in signal do
-        _config_manager.set_sound_volume(v);
-    end
-end
-
-class MusicVolumeSlot with
-    interface IntSlot;
-do
-    every v in signal do
-        _config_manager.set_music_volume(v);
-    end
-end
-
-class ResolutionSlot with
-    interface StringSlot;
-do
-    every v in signal do
-        var Size size_;
-        var int refresh_rate;
-        if _sscanf(v, "%dx%d@%d", &size_.width, &size_.height, &refresh_rate) != 3 then
-            _log_error("failed to parse: %1%", v);
-        else
-            /*
-            #ifdef OLD_SDL1
-                //original FIXME: ignoring refresh rate here
-            #endif
-            */
-
-            _config_manager.set_fullscreen_resolution(_toSize(size_)); 
-        end
-    end
-end
-
-class RendererSlot with
-    interface StringSlot;
-do
-    every v in signal do
-        _config_manager.set_renderer(_framebuffer_type_from_string(_PTR2REF(v)));
-    end
-end
-
-class LanguageSlot with
-    interface StringSlot;
-    var _OptionMenu&? option_menu;
-do
-    every v in signal do
-        if option_menu.m_language_map.count(_PTR2REF(v)) then
-            option_menu.m_language = _PTR2REF(option_menu.m_language_map.at(_PTR2REF(v)));
-            _config_manager.set_language(_PTR2REF(option_menu.m_language));
-        else  
-            _log_error("unknown language: %1%", v);        
-        end
-    end
-end
-
-////////////////////////////////////////////////
-
 class OptionMenuCloseButton with
     interface IGUI_Component;
     var IOptionMenu& parent;
@@ -240,24 +122,21 @@ end
 
 ////////////////////////////////////////////////
 
-#define MakeCheckBox(varname, slotname) \
+#define MakeCheckBox(varname) \
     var CheckBox varname with \
         this.me = _new_GUI__RectComponent(); \
-        this.slot = slotname; \
     end;
 
-#define MakeSliderBox(varname, slotname, steps) \
+#define MakeSliderBox(varname, steps) \
     var SliderBox varname with \
         this.me = _new_GUI__RectComponent(); \
-        this.slot = slotname; \
         this.value = steps; \
         this.m_steps = steps; \
     end;
 
-#define MakeChoiceBox(varname, slotname) \
+#define MakeChoiceBox(varname) \
     var ChoiceBox varname with \
         this.me = _new_GUI__RectComponent(); \
-        this.slot = slotname; \
     end;
 
 #define AddItem(labelname, str, control, type) \
@@ -285,13 +164,7 @@ do
     var _std__vector_Option&? options = _new_Vector_Option();
     finalize with _delete_obj(options); end
 
-    var ResolutionSlot resolution_slot;
-    var RendererSlot renderer_slot;
-    var LanguageSlot language_slot with
-        this.option_menu = _PTR2REF(option_menu);
-    end;
-
-    MakeChoiceBox(resolution_box, resolution_slot);
+    MakeChoiceBox(resolution_box);
     do
         var _std__vector_SDL_DisplayMode&? resolutions = _new_Display__get_fullscreen_video_modes();
         var Size fullscreen;
@@ -315,7 +188,7 @@ do
         _delete_obj(str);
     end
 
-    MakeChoiceBox(renderer_box, renderer_slot);
+    MakeChoiceBox(renderer_box);
     renderer_box.add_choice("sdl");
     renderer_box.add_choice("delta");
     renderer_box.add_choice("opengl");
@@ -327,7 +200,7 @@ do
 
     option_menu.m_language = _PTR2REF(_dictionary_manager.get_language());  
     
-    MakeChoiceBox(language_box, language_slot);
+    MakeChoiceBox(language_box);
     do
         var _std__vector_Language&? langs = _new_Vector_Language();
         _copy_language_set(langs);
@@ -382,27 +255,16 @@ do
         y_pos = y_pos + 1;
     end
 
-    var SoftwareCursorSlot software_cursor_slot;
-    var FullscreenSlot fullscreen_slot;
-    var AutoscrollSlot autoscroll_slot;
-    var DragDropScrollingSlot dragdrop_scroll_slot;
-    var MousegrabSlot mousegrab_slot;
-    var PrintfpsSlot printfps_slot;
+    MakeCheckBox(software_cursor_box);   
+    MakeCheckBox(fullscreen_box);
+    MakeCheckBox(autoscroll_box);
+    MakeCheckBox(dragdrop_scroll_box);
+    MakeCheckBox(mousegrab_box);
+    MakeCheckBox(printfps_box);
 
-    var MasterVolumeSlot master_volume_slot;
-    var SoundVolumeSlot sound_volume_slot;
-    var MusicVolumeSlot music_volume_slot;
-
-    MakeCheckBox(software_cursor_box, software_cursor_slot);   
-    MakeCheckBox(fullscreen_box, fullscreen_slot);
-    MakeCheckBox(autoscroll_box, autoscroll_slot);
-    MakeCheckBox(dragdrop_scroll_box, dragdrop_scroll_slot);
-    MakeCheckBox(mousegrab_box, mousegrab_slot);
-    MakeCheckBox(printfps_box, printfps_slot);
-
-    MakeSliderBox(master_volume_box, master_volume_slot, 25);
-    MakeSliderBox(sound_volume_box, sound_volume_slot, 25);
-    MakeSliderBox(music_volume_box, music_volume_slot, 25);
+    MakeSliderBox(master_volume_box, 25);
+    MakeSliderBox(sound_volume_box, 25);
+    MakeSliderBox(music_volume_box, 25);
 
     master_volume_box.set_value(_config_manager.get_master_volume());
     sound_volume_box.set_value(_config_manager.get_sound_volume());
@@ -454,6 +316,71 @@ do
     call/rec blackboard.reload_by_name("core/menu/blackboard");
 
     par do
+        //// *.changed ////
+        every v in software_cursor_box.changed do
+            _config_manager.set_software_cursor(v);
+        end
+    with
+        every v in fullscreen_box.changed do
+            _config_manager.set_fullscreen(v);
+        end
+    with
+        every v in autoscroll_box.changed do
+            _config_manager.set_auto_scrolling(v);
+        end
+    with
+        every v in dragdrop_scroll_box.changed do
+            _config_manager.set_drag_drop_scrolling(v);
+        end
+    with
+        every v in mousegrab_box.changed do
+            _config_manager.set_mouse_grab(v);
+        end
+    with
+        every v in printfps_box.changed do
+            _config_manager.set_print_fps(v);
+        end
+    with
+        every v in master_volume_box.changed do        
+            _config_manager.set_master_volume(v);
+        end
+    with
+        every v in sound_volume_box.changed do
+            _config_manager.set_sound_volume(v);
+        end
+    with
+        every v in music_volume_box.changed do
+            _config_manager.set_music_volume(v);
+        end
+    with
+        every v in resolution_box.changed do
+            var Size size_;
+            var int refresh_rate;
+            if _sscanf(v, "%dx%d@%d", &size_.width, &size_.height, &refresh_rate) != 3 then
+                _log_error("failed to parse: %1%", v);
+            else
+                #ifdef OLD_SDL1
+                    //original FIXME: ignoring refresh rate here
+                #endif
+
+                _config_manager.set_fullscreen_resolution(_toSize(size_)); 
+            end
+        end
+    with
+        every v in renderer_box.changed do
+            _config_manager.set_renderer(_framebuffer_type_from_string(_PTR2REF(v)));
+        end
+    with
+        every v in language_box.changed do
+            if option_menu.m_language_map.count(_PTR2REF(v)) then
+                option_menu.m_language = _PTR2REF(option_menu.m_language_map.at(_PTR2REF(v)));
+                _config_manager.set_language(_PTR2REF(option_menu.m_language));
+            else  
+                _log_error("unknown language: %1%", v);        
+            end
+        end
+        ///////////////////
+    with
         every package in SCREEN_DRAW_BACKGROUND do
             if package:screen != &option_menu then
                 continue;

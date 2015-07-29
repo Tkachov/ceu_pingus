@@ -25,7 +25,8 @@ end
 class SliderBox with
     interface IGUI_Component;
 
-    var IntSlot& slot;
+    event int changed;
+
     var int m_steps;
     var int value;
 
@@ -84,7 +85,7 @@ do
                 value = m_steps * x / (rect.rect.get_width() - 12);
                 value = _Math__clamp(0, value, m_steps);
                 if value != old_value then
-                    emit slot.signal => value*5; // scale to [0,100]
+                    emit changed => value*5; // scale to [0,100]
                 end
             end
         end
