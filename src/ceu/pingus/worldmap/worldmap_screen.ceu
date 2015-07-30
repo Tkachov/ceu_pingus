@@ -184,52 +184,11 @@ do
     var PointerProxy pp with this.gui = outer; end;
     var EventProxy ep with this.gui = outer; end;
 
-    par do
-        every package in is_at do
-            package:result = true;
-        end
-    with
-        loop do
-            par/or do
-                every delta in update do
-                    emit parent.get_ceu_worldmap():update => delta;
-                end
-            with
-                await fast_forward_press;
-            end
-
-            par/or do
-                every delta in update do
-                    loop i in _globals__fast_forward_time_scale do
-                        emit parent.get_ceu_worldmap():update => delta;
-                    end
-                end
-            with
-                await fast_forward_release;
-            end
-        end
-    with
         every gc in draw do
             _printf("A | &this == %d; parent == %d\n", &this, &parent);
             var Rect cliprect = parent.get_trans_rect();
             _printf("B\n");
         end
-    with
-        every (x, y) in mouse_press do
-            var Rect cliprect = parent.get_trans_rect();
-            emit parent.get_ceu_worldmap():mouse_press => (x - cliprect.left, y - cliprect.top);
-        end
-    with
-        every (x, y) in mouse_secondary_press do
-            var Rect cliprect = parent.get_trans_rect();
-            emit parent.get_ceu_worldmap():mouse_secondary_press => (x - cliprect.left, y - cliprect.top);
-        end
-    with
-        every (x, y) in mouse_move do
-            var Rect cliprect = parent.get_trans_rect();
-            emit parent.get_ceu_worldmap():mouse_move => (x - cliprect.left, y - cliprect.top);
-        end
-    end
 end
 
 ////////////////////////////////////////////////
@@ -244,7 +203,6 @@ do
     end;
 
     var Worldmap*? worldmap = null;
-    var bool exit_worldmap = false;
 
     _printf("WorldmapScreen == %d\n", &this);
 
@@ -300,27 +258,12 @@ do
             worldmap = spawn Worldmap with                
                 this.pingus_worldmap = pingus_worldmap;
             end;
-
-            var bool credits_unlocked = false;
-            //originally commented out:
-            //StatManager::instance()->get_bool(worldmap:me:get_short_name() + "-endstory-seen", credits_unlocked);
-            if credits_unlocked then
-                credits_button = spawn WorldmapScreenCreditsButton with
-                    this.me = _new_GUI_Component();
-                    this.me.ceu = &this;
-                    this.parent = outer;
-                end;                
-                gui_manager.add(&credits_button:me);
-            end
         end
     with
         every screen in ON_STARTUP do
             if screen != &worldmap_screen then
                 continue;
             end
-
-            exit_worldmap = false;
-            _Sound__PingusSound__stop_music();
 
             if worldmap then
                 emit worldmap:startup;
@@ -345,12 +288,6 @@ do
         every package in SCREEN_UPDATE_EVENT do
             if package:screen == &worldmap_screen then
                 emit gui_manager.update_event => _addr(package:event);
-            end
-        end
-    with
-        every screen in ON_ESCAPE_PRESS do
-            if screen == &worldmap_screen then
-                exit_worldmap = true;
             end
         end
     with
