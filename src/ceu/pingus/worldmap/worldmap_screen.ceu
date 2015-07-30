@@ -87,40 +87,17 @@ class WorldmapScreenCloseButton with
 
     function @rec (int x, int y) => void set_pos;
 do
-    var SurfaceButton sb with
-        this.me = outer.me;
-        this.pos.x = 0;
-        this.pos.y = _Display__get_height() - 37;
-    end;
-
     function @rec (Vector2i pos) => bool is_at_func do
         return false; //TODO
     end
 
-    call/rec sb.load("core/worldmap/leave_button_normal",
-                     "core/worldmap/leave_button_pressed",
-                     "core/worldmap/leave_button_hover");
-
-    var PrimaryButtonProxy p with this.gui = outer; end;
-    var PointerProxy pp with this.gui = outer; end;
     var EventProxy ep with this.gui = outer; end;
 
     function @rec (int x, int y) => void set_pos do
-        sb.set_pos(x, y);
     end
 
-    par do
-        every mouse_click do
-            _ScreenManager__instance():pop_screen();
-        end
-    with
-        every mouse_enter do
-            _Sound__PingusSound__play_sound("tick");
-        end
-    with
-        every gc in draw do
-            gc:print_center(_Fonts__chalk_small, _Vector2i(44, _Display__get_height() - 25), __("Leave?"));
-        end
+    every gc in draw do
+        gc:print_center(_Fonts__chalk_small, _Vector2i(44, _Display__get_height() - 25), __("Leave?"));
     end
 end
 
@@ -130,9 +107,6 @@ class WorldmapScreenComponent with
     interface IGUI_Component;
     var IWorldmapScreen& parent;
 do
-    var _SceneContext&? scene_context = _new_SceneContextE();
-    finalize with _delete_obj(scene_context); end
-
     function @rec (Vector2i pos) => bool is_at_func do
         return false; //TODO
     end
@@ -229,20 +203,6 @@ do
             if package:screen == &worldmap_screen then
                 _printf("WorldmapScreen/draw_background\n");
                 emit gui_manager.draw => _addr(package:gc);
-            end
-        end
-    with
-        every package in SCREEN_UPDATE do
-            if package:screen != &worldmap_screen then
-                continue;
-            end
-
-            emit gui_manager.update => package:delta;
-        end
-    with
-        every package in SCREEN_UPDATE_EVENT do
-            if package:screen == &worldmap_screen then
-                emit gui_manager.update_event => _addr(package:event);
             end
         end
     end
