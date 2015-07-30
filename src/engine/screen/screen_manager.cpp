@@ -155,17 +155,11 @@ ScreenManager::ScreenManager(Input::Manager& arg_input_manager,
 
   cursor = Sprite("core/cursors/animcross");
   fps_counter = std::unique_ptr<FPSCounter>(new FPSCounter());
-
-  ScreenManager* self = this;
-  ceu_out_go(&CEUapp, CEU_IN_NEW_SCREEN_MANAGER, &self);
 }
 
 ScreenManager::~ScreenManager()
 {
   instance_ = 0;
-
-  ScreenManager* self = this;
-  ceu_out_go(&CEUapp, CEU_IN_DELETE_SCREEN_MANAGER, &self);
 }
 
 void
@@ -247,9 +241,63 @@ ScreenManager::display()
 void
 ScreenManager::update(float delta, const std::vector<Input::Event>& events)
 {
-  ScreenManagerUpdatePackage package(this, get_current_screen(), delta, events);
-  ScreenManagerUpdatePackage* pp = &package;
-  ceu_out_go(&CEUapp, CEU_IN_SCREEN_MANAGER_UPDATE, &pp);  
+  ScreenPtr last_screen = get_current_screen();
+
+  // Will be triggered when pop_all_screens() is called by pressing window close button
+  if (!last_screen)
+    return;
+
+  for(std::vector<Input::Event>::const_iterator i = events.begin(); i != events.end(); ++i)
+  {
+    if (i->type == Input::POINTER_EVENT_TYPE && i->pointer.name == Input::STANDARD_POINTER)
+      mouse_pos = Vector2i(static_cast<int>(i->pointer.x),
+                           static_cast<int>(i->pointer.y)); 
+
+    last_screen->update(*i);
+
+    if (last_screen != get_current_screen())
+    {
+      fade_over(last_screen, get_current_screen());
+      return;
+    }
+  }
+
+  last_screen->update(delta);
+  if (last_screen != get_current_screen())
+  {
+    fade_over(last_screen, get_current_screen());
+    return;
+  }
+
+  // Draw screen to DrawingContext
+  get_current_screen()->draw(*display_gc);
+  
+  // Render the DrawingContext to the screen
+  display_gc->render(*Display::get_framebuffer(), Rect(Vector2i(0,0), Size(Display::get_width(),
+                                                                           Display::get_height())));
+  display_gc->clear();
+  
+  // Draw the mouse pointer
+  if (globals::software_cursor)
+    cursor.render(mouse_pos.x, mouse_pos.y, *Display::get_framebuffer());
+  
+  // Draw FPS Counter
+  if (globals::print_fps)
+  {
+    fps_counter->draw();
+    if (globals::developer_mode)
+    {
+      Fonts::pingus_small.render(origin_center, Display::get_width()/2, 60, 
+                                 "Developer Mode", *Display::get_framebuffer());
+    }
+  }
+  else if (globals::developer_mode)
+  {
+    Fonts::pingus_small.render(origin_center, Display::get_width()/2, 35, 
+                               "Developer Mode", *Display::get_framebuffer());
+  }
+
+  Display::flip_display();
 }
 
 ScreenPtr
