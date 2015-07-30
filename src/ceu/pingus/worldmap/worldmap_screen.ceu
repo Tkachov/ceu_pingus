@@ -76,46 +76,7 @@ end
 ////////////////////////////////////////////////
 
 class WorldmapScreenCreditsButton with
-    interface IGUI_Component;
-    var IWorldmapScreen& parent;
-
-    function @rec (int x, int y) => void set_pos;
 do
-    var SurfaceButton sb with
-        this.me = outer.me;
-        this.pos.x = _Display__get_width() - 150;
-        this.pos.y = 0;
-    end;
-
-    function @rec (Vector2i pos) => bool is_at_func do
-        return false; //TODO
-    end
-
-    call/rec sb.load("core/worldmap/credits_button_normal",
-                     "core/worldmap/credits_button_pressed",
-                     "core/worldmap/credits_button_hover");
-
-    var PrimaryButtonProxy p with this.gui = outer; end;
-    var PointerProxy pp with this.gui = outer; end;
-    var EventProxy ep with this.gui = outer; end;
-
-    function @rec (int x, int y) => void set_pos do
-        sb.set_pos(x, y);
-    end
-
-    par do
-        every mouse_click do
-            parent.show_end_story();
-        end
-    with
-        every mouse_enter do
-            _Sound__PingusSound__play_sound("tick");
-        end
-    with
-        every gc in draw do
-            gc:print_center(_Fonts__chalk_small, _Vector2i( _Display__get_width() - 83, 2), __("Show Ending?"));
-        end
-    end
 end
 
 ////////////////////////////////////////////////
@@ -168,9 +129,6 @@ end
 class WorldmapScreenComponent with
     interface IGUI_Component;
     var IWorldmapScreen& parent;
-
-    event void fast_forward_press;
-    event void fast_forward_release;
 do
     var _SceneContext&? scene_context = _new_SceneContextE();
     finalize with _delete_obj(scene_context); end
@@ -179,16 +137,13 @@ do
         return false; //TODO
     end
 
-    var PrimaryButtonProxy p with this.gui = outer; end;
-    var SecondaryButtonProxy sbp with this.gui = outer; end;
-    var PointerProxy pp with this.gui = outer; end;
     var EventProxy ep with this.gui = outer; end;
 
-        every gc in draw do
-            _printf("A | &this == %d; parent == %d\n", &this, &parent);
-            var Rect cliprect = parent.get_trans_rect();
-            _printf("B\n");
-        end
+    every gc in draw do
+        _printf("A | &this == %d; parent == %d\n", &this, &parent);
+        var Rect cliprect = parent.get_trans_rect();
+        _printf("B\n");
+    end
 end
 
 ////////////////////////////////////////////////
@@ -289,34 +244,6 @@ do
             if package:screen == &worldmap_screen then
                 emit gui_manager.update_event => _addr(package:event);
             end
-        end
-    with
-        every screen in ON_FAST_FORWARD_PRESS do
-            if screen == &worldmap_screen then
-                emit comp.fast_forward_press;
-            end
-        end
-    with
-        every screen in ON_FAST_FORWARD_RELEASE do
-            if screen == &worldmap_screen then
-                emit comp.fast_forward_release;
-            end
-        end
-    with
-        every package in SCREEN_RESIZE do
-            if package:screen != &worldmap_screen then
-                continue;
-            end
-
-            call/rec close_button.set_pos(0, worldmap_screen.size.height - 37);
-            if credits_button then
-                call/rec credits_button:set_pos(worldmap_screen.size.width - 150, 0);
-            end
-        end
-    with
-        var _GUIScreen* e = await DELETE_WORLDMAP_SCREEN until (e == &worldmap_screen);
-        if worldmap then
-            emit worldmap:delete;
         end
     end
 end
