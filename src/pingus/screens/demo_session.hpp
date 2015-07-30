@@ -78,6 +78,9 @@ public:
   DemoSession(const Pathname& pathname);
   ~DemoSession();
 
+  /** Pass a delta to the screen */
+  void update(float delta);
+
   void on_pause_press ();
   void on_fast_forward_press ();  
 

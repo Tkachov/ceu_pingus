@@ -3,7 +3,6 @@
 
 #include "../../c.ceu"
 #include "../../sdl.ceu"
-#include "screen.ceu"
 
 native/pre do
     ##include "engine/screen/screen_manager.hpp"
@@ -24,11 +23,9 @@ native/pre do
     ##define Input__POINTER_EVENT_TYPE Input::POINTER_EVENT_TYPE
     ##define Input__STANDARD_POINTER Input::STANDARD_POINTER
     ##define Fonts__pingus_small Fonts::pingus_small
-    ##define new_FPSCounter new FPSCounter
 end
 
-native @pure _Display__get_framebuffer(), _Display__flip_display(), _Display__get_width(), _Display__get_height(),
-             _new_FPSCounter();
+native @pure _Display__get_framebuffer(), _Display__flip_display(), _Display__get_width(), _Display__get_height();
 
 input _ScreenManagerUpdatePackage* SCREEN_MANAGER_UPDATE;
 input _ScreenManager* DELETE_SCREEN_MANAGER;
@@ -38,10 +35,6 @@ class ScreenManager with
     var _ScreenManager* me;
 do
     var _ScreenManager&? screen_manager = _PTR2REF((_ScreenManager*)me);
-
-    var _FPSCounter&? fps_counter = _new_FPSCounter();
-    var Vector2i mouse_pos;
-    finalize with _delete_obj(fps_counter); end
 
     par/or do
         every package in SCREEN_MANAGER_UPDATE do
@@ -55,20 +48,13 @@ do
             end
 
             var bool fade_over = false;
-            var Screen*? screen;
 
             loop i in package:events.size() do
                 if package:events.at(i).type == _Input__POINTER_EVENT_TYPE and package:events.at(i).pointer.name == _Input__STANDARD_POINTER then
-                    mouse_pos.x = package:events.at(i).pointer.x;
-                    mouse_pos.y = package:events.at(i).pointer.y;
+                    finalize screen_manager.mouse_pos = _Vector2i(package:events.at(i).pointer.x, package:events.at(i).pointer.y); with end
                 end
 
-                screen = _PTR2REF((Screen*)package:screen:ceu);
-                if screen then
-                    emit screen:call_update_event => _addr(package:events.at(i));
-                else
-                    package:screen:update(package:events.at(i));
-                end
+                package:screen:update(package:events.at(i));
 
                 if package:screen != screen_manager.get_current_screen() then
                     fade_over = true;
@@ -77,29 +63,19 @@ do
             end
 
             if fade_over then
-                ///screen_manager.fade_over(package:screen, screen_manager.get_current_screen()) finalize with end;
+                screen_manager.fade_over(package:screen, screen_manager.get_current_screen()) finalize with end;
                 continue;
             end
 
-            screen = _PTR2REF((Screen*)package:screen:ceu);
-            if screen then
-                emit screen:call_update => package:delta;
-            else
-                package:screen:update(package:delta) finalize with end;
-            end
+            package:screen:update(package:delta) finalize with end;
 
             if package:screen != screen_manager.get_current_screen() then
-                ///screen_manager.fade_over(package:screen, screen_manager.get_current_screen()) finalize with end;
+                screen_manager.fade_over(package:screen, screen_manager.get_current_screen()) finalize with end;
                 continue;
             end
 
             // Draw screen to DrawingContext
-            screen = _PTR2REF((Screen*)screen_manager.get_current_screen():ceu);
-            if screen then
-                emit screen:call_draw => screen_manager.display_gc.get();
-            else
-                screen_manager.get_current_screen():draw(*screen_manager.display_gc) finalize with end;
-            end
+            screen_manager.get_current_screen():draw(*screen_manager.display_gc) finalize with end;
   
             // Render the DrawingContext to the screen
             screen_manager.display_gc:render(*_Display__get_framebuffer(), _Rect(_Vector2i(0, 0), _Size(_Display__get_width(), _Display__get_height())));
@@ -107,12 +83,12 @@ do
 
             // Draw the mouse pointer
             if _globals__software_cursor then
-                screen_manager.cursor.render(mouse_pos.x, mouse_pos.y, *_Display__get_framebuffer());
+                screen_manager.cursor.render(screen_manager.mouse_pos.x, screen_manager.mouse_pos.y, *_Display__get_framebuffer()) finalize with end;
             end
 
             // Draw FPS Counter
             if _globals__print_fps then            
-                fps_counter.draw();
+                screen_manager.fps_counter:draw();
                 if _globals__developer_mode then
                   _Fonts__pingus_small.render(_origin_center, _Display__get_width()/2, 60, 
                                              "Developer Mode", *_Display__get_framebuffer());

@@ -23,6 +23,7 @@
 #include "engine/display/framebuffer.hpp"
 #include "engine/input/manager.hpp"
 #include "engine/screen/screen.hpp"
+#include "pingus/fps_counter.hpp"
 #include "pingus/fonts.hpp"
 #include "pingus/globals.hpp"
 
@@ -142,8 +143,10 @@ ScreenManager::ScreenManager(Input::Manager& arg_input_manager,
   input_manager(arg_input_manager),
   input_controller(arg_input_controller),
   display_gc(new DrawingContext()),
+  fps_counter(),
   cursor(),
   screens(),
+  mouse_pos(),
   record_input(false),
   playback_input(false)
 {
@@ -151,6 +154,7 @@ ScreenManager::ScreenManager(Input::Manager& arg_input_manager,
   instance_ = this;
 
   cursor = Sprite("core/cursors/animcross");
+  fps_counter = std::unique_ptr<FPSCounter>(new FPSCounter());
 
   ScreenManager* self = this;
   ceu_out_go(&CEUapp, CEU_IN_NEW_SCREEN_MANAGER, &self);
