@@ -24,20 +24,22 @@ class DrawingContext;
 
 namespace GUI {
 
-class GroupComponent;
+class RectComponent;
 
 /** A component represents an area which recivies events in the GUI,
     some people might call it a widget */
 class Component
 {
+public:
+  void* ceu;
 private:
-  GroupComponent* parent;
+  RectComponent* parent;
   bool focus;
   bool mouse_over;
   bool visible;
 
 public:
-  Component () : parent(0), focus(false), mouse_over(false), visible(true) { }
+  Component () : ceu(0), parent(0), focus(false), mouse_over(false), visible(true) { }
   virtual ~Component() {}
 
   virtual void set_focus(bool val) { focus = val; }
@@ -90,11 +92,11 @@ public:
 
   virtual void on_text_input(const Input::TextInputEvent& ev) {}
 
-  GroupComponent* get_parent() const;
-  void set_parent(GroupComponent* p);
+  RectComponent* get_parent() const;
+  void set_parent(RectComponent* p);
 
-  void grab();
-  void ungrab();
+  virtual void grab();
+  virtual void ungrab();
 
 private:
   Component (const Component&);

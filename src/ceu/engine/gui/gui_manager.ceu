@@ -1,0 +1,449 @@
+#ifndef GUI_MANAGER_CEU
+#define GUI_MANAGER_CEU
+
+#include "../../c.ceu"
+#include "../../sdl.ceu"
+#include "../../math/vector2i.ceu"
+#include "../display/sprite.ceu"
+#include "igui_component.ceu"
+
+native/pre do
+    ##include "engine/display/sprite.hpp"
+    ##include "engine/gui/component.hpp"
+    ##include "engine/display/drawing_context.hpp"
+    ##include <vector>
+
+    ##define std__vector_Component std::vector<GUI::Component*>
+    ##define new_Vector_Component new std::vector<GUI::Component*>
+    ##define const_Input__Event const Input::Event
+end
+
+native @pure _new_Vector_Component();
+
+/*
+  
+  void on_primary_button_click(int x, int y) {}
+  void on_secondary_button_click(int x, int y) {}
+
+  void on_key_pressed(const Input::KeyboardEvent& ev);
+
+  void on_text_input(const Input::TextInputEvent& ev);
+  void on_pointer_leave();
+
+  void on_pointer_move(int x, int y);
+
+  void add(Component* comp);
+
+  template<typename C, typename ...Args>
+  C* create(Args&&... args)
+  {
+    C* c = new C(std::forward<Args>(args)...);
+    add(c);
+    return c;
+  }
+
+  void update_layout();
+
+  bool is_at(int x, int y);
+
+  // Causes all input directed to comp
+  void grab(Component* comp);
+  void ungrab(Component* comp);
+
+  Component* component_at (const Vector2i& pos);
+
+  */
+
+/*
+GUIManager() == drawing_context(Rect(0, 0, Display::get_width(), Display::get_height()), false)
+GUIManager(rect) == drawing_context(rect, true)
+
+anyways that rect is also passed into _GUI_RectComponent()
+*/
+
+class GUIManager with
+    interface IGUI_Component;
+
+    var _DrawingContext&? drawing_context;
+
+    function (_GUI__Component* comp) => void add;
+
+    event _const_Input__Event* update_event;
+do
+    var Vector2i mouse_pos;
+    mouse_pos.x = 400;
+    mouse_pos.y = 300;
+
+    var _std__vector_Component&? children = _new_Vector_Component();
+    var _GUI__Component* mouse_over_comp = null;
+    var _GUI__Component* focused_comp = null;
+    var _GUI__Component* grabbed_comp = null;
+    var _GUI__Component* primary_pressed_comp = null;
+    var _GUI__Component* secondary_pressed_comp = null;
+
+    finalize with   
+        loop i in children.size() do
+            _delete_obj(children.at(i));
+        end
+
+        _delete_obj(drawing_context);
+        _delete_obj(children);
+    end
+
+    function (_GUI__Component* comp) => void add do
+        comp:set_parent((_GUI__RectComponent*)&me);
+        children.push_back(comp);
+    end
+
+    var PrimaryButtonProxy p with this.gui = outer; end;
+    var PointerProxy pp with this.gui = outer; end;
+    var EventProxy ep with this.gui = outer; end;
+
+    par do
+        every package in is_at do
+            ///package:result = (package:mouse_pos.x > pos.x and package:mouse_pos.x < pos.x + (int)button_surface.get_width() and package:mouse_pos.y > pos.y and package:mouse_pos.y < pos.y + (int)button_surface.get_height());
+            ///return (RectComponent::is_at(x,y) || component_at(drawing_context.screen_to_world(Vector2i(x, y))));
+        end
+    with
+        every parent_gc in draw do
+            drawing_context.clear();
+
+            loop i in children.size() do
+                if children.at(i):is_visible() then
+                    if children.at(i):ceu == null then
+                        _printf("draw/ceu==null\n");
+                        children.at(i):draw(_deref(drawing_context));
+                    else
+                        emit ((IGUI_Component*)children.at(i):ceu):draw => &drawing_context;
+                    end
+                end
+            end
+          
+            parent_gc:draw(_deref(drawing_context));
+        end
+    with
+        every delta in update do
+            loop i in children.size() do
+                if children.at(i):is_visible() then
+                    if children.at(i):ceu == null then
+                        _printf("update/ceu==null\n");
+                        children.at(i):update(delta);
+                    else
+                        emit ((IGUI_Component*)children.at(i):ceu):update => delta;
+                    end
+                end
+            end
+        end
+    with
+        every ev in update_event do
+        /*
+  switch (event.type)
+  {
+    case Input::POINTER_EVENT_TYPE:
+      mouse_pos.x = int(event.pointer.x);
+      mouse_pos.y = int(event.pointer.y);
+      on_pointer_move(mouse_pos.x, mouse_pos.y);
+      break;
+
+    case Input::BUTTON_EVENT_TYPE:
+      if (event.button.name == PRIMARY_BUTTON)
+      {
+        if (event.button.state == Input::BUTTON_PRESSED)
+          on_primary_button_press(mouse_pos.x, mouse_pos.y);
+        else if (event.button.state == Input::BUTTON_RELEASED)
+          on_primary_button_release(mouse_pos.x, mouse_pos.y);
+      }
+      else if (event.button.name == SECONDARY_BUTTON)
+      {
+        if (event.button.state == Input::BUTTON_PRESSED)
+          on_secondary_button_press(mouse_pos.x, mouse_pos.y);
+        else if (event.button.state == Input::BUTTON_RELEASED)
+          on_secondary_button_release(mouse_pos.x, mouse_pos.y);
+      }
+      break;
+
+    case Input::AXIS_EVENT_TYPE:
+      // AxisEvents can be ignored in the GUI, they are handled elsewhere
+      log_debug("GUIManager: AxisEvent: %1%", event.axis.dir);
+      break;
+
+    case Input::TEXT_INPUT_EVENT_TYPE:
+      on_text_input(event.text);
+      break;
+        
+    case Input::KEYBOARD_EVENT_TYPE:
+      if (event.keyboard.state)
+      {
+        on_key_pressed(event.keyboard);
+      }
+      else
+      {
+        //FIXME: implement this on_key_release(event.keyboard);
+      }
+      break;
+
+    case Input::SCROLLER_EVENT_TYPE:
+      on_scroller_move(event.scroll.x_delta, event.scroll.y_delta);
+      break;
+
+    default:
+      log_warn("unhandled event type %1%", event.type);
+      break;
+  }
+  */
+        end
+    with
+        every (x, y) in mouse_press do
+/*
+  Vector2i mouse_pos = drawing_context.screen_to_world(Vector2i(x, y));
+
+  if (grabbed_comp)
+  {
+    grabbed_comp->on_primary_button_press(mouse_pos.x, mouse_pos.y);
+  }
+  else 
+  {
+    Component* comp = component_at(mouse_pos);
+    if (comp)
+    {
+      comp->on_primary_button_press(mouse_pos.x, mouse_pos.y);
+      
+      if (focused_comp)
+        focused_comp->set_focus(false);
+
+      focused_comp = comp;
+
+      if (focused_comp)
+        focused_comp->set_focus(true);
+    }
+
+    primary_pressed_comp = comp;
+  }
+*/
+        end
+    with
+        every (x, y) in mouse_release do
+        /*
+          Vector2i mouse_pos = drawing_context.screen_to_world(Vector2i(x, y));
+
+  if (grabbed_comp)
+  {
+    grabbed_comp->on_primary_button_release(mouse_pos.x, mouse_pos.y);
+  }
+  else 
+  {
+    Component* comp = component_at(mouse_pos);
+      
+    if (primary_pressed_comp)
+    {
+      primary_pressed_comp->on_primary_button_release(mouse_pos.x, mouse_pos.y);
+
+      if(comp == primary_pressed_comp) {
+        primary_pressed_comp->on_primary_button_click(mouse_pos.x, mouse_pos.y);
+      }
+
+      primary_pressed_comp = 0;
+    }
+    else
+    {
+      if(comp) {
+        comp->on_primary_button_release(mouse_pos.x, mouse_pos.y);
+      }
+    }
+  }
+        */
+        end
+    with
+        every (x, y) in mouse_secondary_press do
+        /*
+          Vector2i mouse_pos = drawing_context.screen_to_world(Vector2i(x, y));
+
+  if (grabbed_comp)
+  {
+    grabbed_comp->on_secondary_button_press(mouse_pos.x, mouse_pos.y);
+  }
+  else 
+  {
+    Component* comp = component_at(mouse_pos);
+    if(comp) {
+      comp->on_secondary_button_press(mouse_pos.x, mouse_pos.y);
+    }
+
+    if (!primary_pressed_comp)
+      secondary_pressed_comp = comp;
+  }
+        */
+        end
+    with
+        every (x, y) in mouse_secondary_release do
+        /*
+        Vector2i mouse_pos = drawing_context.screen_to_world(Vector2i(x, y));
+
+  Component* comp = component_at(mouse_pos);
+  
+  if (grabbed_comp)
+  {
+    grabbed_comp->on_secondary_button_release(mouse_pos.x, mouse_pos.y);
+  }
+  else if (secondary_pressed_comp)
+  {
+    secondary_pressed_comp->on_secondary_button_release(mouse_pos.x, mouse_pos.y);
+      
+    if(comp == secondary_pressed_comp) {
+      secondary_pressed_comp->on_secondary_button_click(mouse_pos.x, mouse_pos.y);
+    }
+      
+    secondary_pressed_comp = 0;
+  }
+  else
+  {
+    if(comp) {
+      comp->on_secondary_button_release(mouse_pos.x, mouse_pos.y);
+    }
+  }
+        */
+        end
+    end
+end
+
+/*
+
+void
+GroupComponent::on_key_pressed(const Input::KeyboardEvent& ev)
+{
+  //TODO: Ceu ON_KEY_PRESSED
+  if (grabbed_comp)
+    grabbed_comp->on_key_pressed(ev);
+  else if (focused_comp)
+    focused_comp->on_key_pressed(ev);
+  else if (mouse_over_comp)
+    mouse_over_comp->on_key_pressed(ev);
+}
+
+void
+GroupComponent::on_text_input(const Input::TextInputEvent& ev)
+{
+  //TODO: Ceu ON_TEXT_INPUT
+  if (grabbed_comp)
+    grabbed_comp->on_text_input(ev);
+  else if (focused_comp)
+    focused_comp->on_text_input(ev);
+  else if (mouse_over_comp)
+    mouse_over_comp->on_text_input(ev); 
+}
+
+void
+GroupComponent::on_pointer_move(int x, int y)
+{
+  Vector2i mouse_pos = drawing_context.screen_to_world(Vector2i(x, y));
+  PositionPackage package(0, mouse_pos); //make sure you update the pointer!
+  PositionPackage* pp = &package;  
+
+  if (grabbed_comp)
+  {
+    grabbed_comp->on_pointer_move(mouse_pos.x, mouse_pos.y);
+
+    //Ceu ON_POINTER_MOVE
+    package.component = grabbed_comp;
+    ceu_out_go(&CEUapp, CEU_IN_ON_POINTER_MOVE, &pp);
+  }
+  else if (primary_pressed_comp)
+  {
+    primary_pressed_comp->on_pointer_move(mouse_pos.x, mouse_pos.y);
+    
+    //Ceu ON_POINTER_MOVE
+    package.component = primary_pressed_comp;
+    ceu_out_go(&CEUapp, CEU_IN_ON_POINTER_MOVE, &pp);
+  }
+  else if (secondary_pressed_comp)
+  {
+    secondary_pressed_comp->on_pointer_move(mouse_pos.x, mouse_pos.y);
+    
+    //Ceu ON_POINTER_MOVE
+    package.component = secondary_pressed_comp;
+    ceu_out_go(&CEUapp, CEU_IN_ON_POINTER_MOVE, &pp);
+  }
+  else
+  {
+    Component* comp = component_at(mouse_pos);
+    if (comp)
+    {
+      comp->on_pointer_move(mouse_pos.x, mouse_pos.y); 
+      
+      //Ceu ON_POINTER_MOVE
+      package.component = comp;
+      ceu_out_go(&CEUapp, CEU_IN_ON_POINTER_MOVE, &pp);
+    }
+
+    if (comp != mouse_over_comp)
+    {
+      if (mouse_over_comp)
+      {
+        mouse_over_comp->set_mouse_over(false);
+        mouse_over_comp->on_pointer_leave();
+        //Ceu ON_POINTER_LEAVE
+        ceu_sys_go(&CEUapp, CEU_IN_ON_POINTER_LEAVE, &mouse_over_comp);
+      }
+      
+      if (comp)
+      {
+        comp->set_mouse_over(true);
+        comp->on_pointer_enter();
+        //Ceu ON_POINTER_ENTER        
+        ceu_sys_go(&CEUapp, CEU_IN_ON_POINTER_ENTER, &comp);
+      }
+    }
+
+    mouse_over_comp = comp;
+  }
+}
+
+Component*
+GroupComponent::component_at (const Vector2i& pos)
+{
+  for(Components::reverse_iterator i = children.rbegin(); i != children.rend(); ++i)
+  {
+    if ((*i)->is_visible() && (*i)->is_at(pos.x, pos.y))
+      return *i;
+  }
+  return 0;
+}
+
+void
+GroupComponent::update_layout()
+{
+  drawing_context.set_rect(rect);
+}
+
+void
+GroupComponent::on_pointer_leave()
+{
+  if (!grabbed_comp)
+  {
+    if (mouse_over_comp)
+    {
+      mouse_over_comp->set_mouse_over(false);
+      mouse_over_comp->on_pointer_leave();
+      //Ceu ON_POINTER_LEAVE
+      ceu_sys_go(&CEUapp, CEU_IN_ON_POINTER_LEAVE, &mouse_over_comp);
+    }
+    mouse_over_comp = 0; 
+  }
+}
+
+void
+GroupComponent::grab(Component* comp)
+{
+  grabbed_comp = comp;
+  Component::grab();
+}
+
+void
+GroupComponent::ungrab(Component* comp)
+{
+  grabbed_comp = 0;
+  Component::ungrab();
+}
+*/
+
+#endif

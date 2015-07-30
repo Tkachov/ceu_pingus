@@ -85,8 +85,8 @@ public:
   bool is_at(int x, int y);
 
   // Causes all input directed to comp
-  void grab(Component* comp);
-  void ungrab(Component* comp);
+  void parent_grab(Component* comp);
+  void parent_ungrab(Component* comp);
 
   Component* component_at (const Vector2i& pos);
 private:

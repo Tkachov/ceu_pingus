@@ -4,6 +4,7 @@
 #include "../../c.ceu"
 #include "../../sdl.ceu"
 #include "../../engine/gui/igui_component.ceu"
+#include "../../engine/gui/gui_manager.ceu"
 #include "../../engine/gui/surface_button.ceu"
 #include "../../engine/screen/screen.ceu"
 #include "../../engine/sound/sound.ceu"
@@ -75,12 +76,14 @@ native/pre do
     ##define copy_language_set(v) { std::set<tinygettext::Language> st = dictionary_manager.get_languages(); v->insert(v->begin(), st.begin(), st.end()); }
     ##define std__vector_Language std::vector<tinygettext::Language>
     ##define tinygettext__Language__from_name tinygettext::Language::from_name
+    ##define new_DrawingContext new DrawingContext
 end
 
 native @pure _new_GUI_Component(), _ScreenManager__instance(), _std__make_shared_GameScreen(),
              _Display__get_width(), _Display__get_height(), _System__get_userdir(), _new_Pathname(),
              _SU2str(), _StringFormat__break_line(), _new_Vector_Option(), _sscanf(), _copy_language_set(),
-             _new_Display__get_fullscreen_video_modes(), _new_Vector_Language(), _tinygettext__Language__from_name();
+             _new_Display__get_fullscreen_video_modes(), _new_Vector_Language(), _tinygettext__Language__from_name(),
+             _new_DrawingContext();
 
 interface IOptionMenu with
     function (void) => void close_screen;
@@ -125,11 +128,13 @@ end
 #define MakeCheckBox(varname) \
     var CheckBox varname with \
         this.me = _new_GUI__RectComponent(); \
+        this.me.ceu = &this; \
     end;
 
 #define MakeSliderBox(varname, steps) \
     var SliderBox varname with \
         this.me = _new_GUI__RectComponent(); \
+        this.me.ceu = &this; \
         this.value = steps; \
         this.m_steps = steps; \
     end;
@@ -137,11 +142,13 @@ end
 #define MakeChoiceBox(varname) \
     var ChoiceBox varname with \
         this.me = _new_GUI__RectComponent(); \
+        this.me.ceu = &this; \
     end;
 
 #define AddItem(labelname, str, control, type) \
     var Label labelname with \
         this.me = _new_GUI__RectComponent(); \
+        this.me.ceu = &this; \
         this.label = _new_String(__(str)); \
     end; \
     add_item((_GUI_RectComponent*)&labelname.me, (_GUI_RectComponent*)&control.me, type);
@@ -151,12 +158,17 @@ class OptionMenu with
     var _OptionMenu* me;
 do
     var _OptionMenu&? option_menu = _PTR2REF((_OptionMenu*)me);
+    var GUIManager gui_manager with
+        this.me = _new_GUI__RectComponent(_Rect(0, 0, _Display__get_width(), _Display__get_height()));
+        this.drawing_context = _new_DrawingContext(_Rect(0, 0, _Display__get_width(), _Display__get_height()), false);
+    end;
 
     var OptionMenuCloseButton ok_button with
         this.me = _new_GUI_Component();
-        this.parent = outer;
+        this.me.ceu = &this;
+        this.parent = outer;        
     end;
-    option_menu.gui_manager:add(&ok_button.me) finalize with end;
+    gui_manager.add(&ok_button.me);
 
     var int x_pos = 0;
     var int y_pos = 0;
@@ -247,8 +259,8 @@ do
             _assert(not "Unhandled control type");
         end
 
-        option_menu.gui_manager:add(label_component);
-        option_menu.gui_manager:add(control);
+        gui_manager.add(label_component);
+        gui_manager.add(control);
 
         options.push_back(_Option(label_component, control));
 
@@ -407,6 +419,14 @@ do
 
             package:gc.print_left(_Fonts__chalk_normal, _Vector2i(package:gc.get_width()/2 - 320, package:gc.get_height()/2 + 200),
                         __("Some options require a restart of the game to take effect."));
+
+            emit gui_manager.draw => _addr(package:gc);
+        end
+    with
+        every package in SCREEN_UPDATE do
+            if package:screen == &option_menu then
+                emit gui_manager.update => package:delta;
+            end
         end
     with
         every screen in ON_ESCAPE_PRESS do

@@ -7,6 +7,8 @@ native/pre do
     ##include "math/vector2i.hpp"
     ##define GUI_Component GUI::Component
     ##define GUI_RectComponent GUI::RectComponent
+    ##define GUI__Component GUI::Component
+    ##define GUI__RectComponent GUI::RectComponent
     ##define new_GUI__RectComponent new GUI::RectComponent
 end
 
