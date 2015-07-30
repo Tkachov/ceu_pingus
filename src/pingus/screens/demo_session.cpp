@@ -92,17 +92,6 @@ DemoSession::~DemoSession()
   ceu_out_go(&CEUapp, CEU_IN_DELETE_DEMO_SESSION, &self);
 }
 
-/** Pass a delta to the screen */
-void
-DemoSession::update(float delta)
-{
-  GUIScreen::update(delta);
-
-  ComponentUpdatePackage package((GUI::Component*)this, delta);
-  ComponentUpdatePackage* pp = &package;
-  ceu_out_go(&CEUapp, CEU_IN_DEMO_SESSION_UPDATE_SERVER, &pp);
-}
-
 void DemoSession::on_pause_press() {
   pause = !pause;
 }
