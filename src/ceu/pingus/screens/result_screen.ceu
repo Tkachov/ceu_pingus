@@ -64,6 +64,10 @@ do
         this.pos.y = _Display__get_height()/2 + 150;
     end;
 
+    function @rec (Vector2i pos) => bool is_at_func do
+        return false; //TODO
+    end
+
     call/rec sb.load("core/start/ok", "core/start/ok_clicked", "core/start/ok_hover");
 
     var PrimaryButtonProxy p with this.gui = outer; end;
@@ -98,6 +102,10 @@ do
         this.pos.x = _Display__get_width()/2 - 300;
         this.pos.y = _Display__get_height()/2 + 200;
     end;
+
+    function @rec (Vector2i pos) => bool is_at_func do
+        return false; //TODO
+    end
 
     call/rec sb.load("core/start/back", "core/start/back_clicked", "core/start/back_hover");
 
@@ -138,6 +146,10 @@ do
         this.pos.y = _Display__get_height()/2 + 150;
     end;
 
+    function @rec (Vector2i pos) => bool is_at_func do
+        return false; //TODO
+    end
+
     call/rec sb.load("core/start/ok", "core/start/ok_clicked", "core/start/ok_hover");
 
     var PrimaryButtonProxy p with this.gui = outer; end;
@@ -177,6 +189,10 @@ do
     var PrimaryButtonProxy p with this.gui = outer; end;
     var PointerProxy pp with this.gui = outer; end;
     var EventProxy ep with this.gui = outer; end;
+
+    function @rec (Vector2i pos) => bool is_at_func do
+        return false; //TODO
+    end
 
     var Sprite background;
     var Sprite blackboard;

@@ -17,6 +17,8 @@ native @pure _new_GUI__RectComponent();
 interface IGUI_Component with
     var _GUI_Component& me;
 
+    function @rec (Vector2i pos) => bool is_at_func;
+
     event _DrawingContext* draw;
     event float update;
     event _ComponentIsAtPackage* is_at;

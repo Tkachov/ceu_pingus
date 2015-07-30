@@ -77,6 +77,10 @@ do
         this.pos.y = _Display__get_height()/2 + 200;
     end;
 
+    function @rec (Vector2i pos) => bool is_at_func do
+        return false; //TODO
+    end
+
     call/rec sb.load("core/start/back", "core/start/back_clicked", "core/start/back_hover");
 
     var PrimaryButtonProxy p with this.gui = outer; end;
@@ -102,6 +106,8 @@ do
     end
 end
 
+////////////////////////////////////////////////
+
 class LevelScrollButton with
     interface IGUI_Component;
     var ILevelMenu& parent;
@@ -113,6 +119,10 @@ do
     var SurfaceButton sb with
         this.me = outer.me;
     end;
+
+    function @rec (Vector2i pos) => bool is_at_func do
+        return false; //TODO
+    end
 
     call/rec sb.load(str.c_str(), _scc2(_deref(str), "_pressed").c_str(), _scc2(_deref(str), "_hover").c_str());
 
@@ -151,6 +161,10 @@ do
     var PrimaryButtonProxy p with this.gui = outer; end;
     var PointerProxy pp with this.gui = outer; end;
     var EventProxy ep with this.gui = outer; end;
+
+    function @rec (Vector2i pos) => bool is_at_func do
+        return false; //TODO
+    end
 
     var _std__vector_Levelset&? levelsets = _new_Vector_Levelset();
     var _Levelset* current_levelset = null;    
@@ -274,6 +288,10 @@ do
     var PrimaryButtonProxy p with this.gui = outer; end;
     var PointerProxy pp with this.gui = outer; end;
     var EventProxy ep with this.gui = outer; end;
+
+    function @rec (Vector2i pos) => bool is_at_func do
+        return false; //TODO
+    end
 
     var _Levelset* levelset = null;
     var int current_level = -1;

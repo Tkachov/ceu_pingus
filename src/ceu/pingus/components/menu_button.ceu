@@ -34,6 +34,10 @@ do
         _delete_obj(desc);
         _delete_obj(text);
     end
+
+    function @rec (Vector2i pos) => bool is_at_func do
+        return false; //TODO
+    end
     
     var PrimaryButtonProxy p with this.gui = outer; end;
     var PointerProxy pp with this.gui = outer; end;

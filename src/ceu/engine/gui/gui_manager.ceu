@@ -99,13 +99,48 @@ do
     var PointerProxy pp with this.gui = outer; end;
     var EventProxy ep with this.gui = outer; end;
 
+    function @rec (Vector2i pos) => bool is_at_func do
+        //TODO
+        ///package:result = (package:mouse_pos.x > pos.x and package:mouse_pos.x < pos.x + (int)button_surface.get_width() and package:mouse_pos.y > pos.y and package:mouse_pos.y < pos.y + (int)button_surface.get_height());
+        ///return (RectComponent::is_at(x,y) or call/rec component_at(drawing_context.screen_to_world(_Vector2i(package:mouse_pos.x, package:mouse_pos.y))));
+        return false;
+    end
+
+    function @rec (Vector2i pos) => _GUI_Component* component_at do
+        var int i = children.size()-1;
+        loop do
+            if i < 0 then
+                break;
+            end
+
+            var bool at = false;
+
+            if children.at(i):ceu == null then
+                at = children.at(i):is_at(pos.x, pos.y);
+            else
+                at = call/rec ((IGUI_Component*)children.at(i):ceu):is_at_func(pos);
+            end
+
+            if children.at(i):is_visible() and at then
+                return children.at(i);
+            end
+
+            i = i - 1;
+        end
+
+        return null;
+    end
+
     par do
         every package in is_at do
-            ///package:result = (package:mouse_pos.x > pos.x and package:mouse_pos.x < pos.x + (int)button_surface.get_width() and package:mouse_pos.y > pos.y and package:mouse_pos.y < pos.y + (int)button_surface.get_height());
-            ///return (RectComponent::is_at(x,y) || component_at(drawing_context.screen_to_world(Vector2i(x, y))));
+            var Vector2i iap;
+            iap.x = package:mouse_pos.x;
+            iap.y = package:mouse_pos.y;
+            package:result = call/rec is_at_func(iap);            
         end
     with
         every parent_gc in draw do
+            _printf("GUIManager/draw\n");
             drawing_context.clear();
 
             loop i in children.size() do
@@ -114,6 +149,7 @@ do
                         _printf("draw/ceu==null\n");
                         children.at(i):draw(_deref(drawing_context));
                     else
+                        _printf("draw/ceu==%d\n", children.at(i):ceu);
                         emit ((IGUI_Component*)children.at(i):ceu):draw => &drawing_context;
                     end
                 end
@@ -135,33 +171,27 @@ do
             end
         end
     with
-        every ev in update_event do
-        /*
-  switch (event.type)
-  {
-    case Input::POINTER_EVENT_TYPE:
-      mouse_pos.x = int(event.pointer.x);
-      mouse_pos.y = int(event.pointer.y);
-      on_pointer_move(mouse_pos.x, mouse_pos.y);
-      break;
-
-    case Input::BUTTON_EVENT_TYPE:
-      if (event.button.name == PRIMARY_BUTTON)
-      {
-        if (event.button.state == Input::BUTTON_PRESSED)
-          on_primary_button_press(mouse_pos.x, mouse_pos.y);
-        else if (event.button.state == Input::BUTTON_RELEASED)
-          on_primary_button_release(mouse_pos.x, mouse_pos.y);
-      }
-      else if (event.button.name == SECONDARY_BUTTON)
-      {
-        if (event.button.state == Input::BUTTON_PRESSED)
-          on_secondary_button_press(mouse_pos.x, mouse_pos.y);
-        else if (event.button.state == Input::BUTTON_RELEASED)
-          on_secondary_button_release(mouse_pos.x, mouse_pos.y);
-      }
-      break;
-
+        every ev in update_event do        
+            if ev:type == {Input::POINTER_EVENT_TYPE} then
+                mouse_pos.x = ev:pointer.x;
+                mouse_pos.y = ev:pointer.y;
+                emit mouse_move => (mouse_pos.x, mouse_pos.y);
+            else/if ev:type == {Input::BUTTON_EVENT_TYPE} then
+                if ev:button.name == {Input::PRIMARY_BUTTON} then
+                    if ev:button.state == {Input::BUTTON_PRESSED} then
+                        emit mouse_press => (mouse_pos.x, mouse_pos.y);
+                    else/if ev:button.state == {Input::BUTTON_RELEASED} then
+                        emit mouse_release => (mouse_pos.x, mouse_pos.y);
+                    end                
+                else/if ev:button.name == {Input::SECONDARY_BUTTON} then                  
+                    if ev:button.state == {Input::BUTTON_PRESSED} then
+                        emit mouse_secondary_press => (mouse_pos.x, mouse_pos.y);
+                    else/if ev:button.state == {Input::BUTTON_RELEASED} then
+                        emit mouse_secondary_release => (mouse_pos.x, mouse_pos.y);
+                    end
+                end
+            end
+/*
     case Input::AXIS_EVENT_TYPE:
       // AxisEvents can be ignored in the GUI, they are handled elsewhere
       log_debug("GUIManager: AxisEvent: %1%", event.axis.dir);
@@ -194,114 +224,217 @@ do
         end
     with
         every (x, y) in mouse_press do
-/*
-  Vector2i mouse_pos = drawing_context.screen_to_world(Vector2i(x, y));
+            var Vector2i mouse_pos;
+            _readVector2i(mouse_pos, drawing_context.screen_to_world(_Vector2i(x, y)));
 
-  if (grabbed_comp)
-  {
-    grabbed_comp->on_primary_button_press(mouse_pos.x, mouse_pos.y);
-  }
-  else 
-  {
-    Component* comp = component_at(mouse_pos);
-    if (comp)
-    {
-      comp->on_primary_button_press(mouse_pos.x, mouse_pos.y);
-      
-      if (focused_comp)
-        focused_comp->set_focus(false);
+            if grabbed_comp then
+                if grabbed_comp:ceu == null then
+                    _log_error("/ceu==null");
+                    grabbed_comp:on_primary_button_press(mouse_pos.x, mouse_pos.y);
+                else
+                    emit ((IGUI_Component*)grabbed_comp:ceu):mouse_press => (mouse_pos.x, mouse_pos.y);
+                end
+            else
+                var _GUI_Component* comp = _PTR2REF(call/rec component_at(mouse_pos));
+                if comp then
+                    if comp:ceu == null then
+                        _log_error("/ceu==null");
+                        comp:on_primary_button_press(mouse_pos.x, mouse_pos.y);
+                    else
+                        emit ((IGUI_Component*)comp:ceu):mouse_press => (mouse_pos.x, mouse_pos.y);
+                    end
 
-      focused_comp = comp;
+                    if focused_comp then
+                        focused_comp:set_focus(false);
+                    end
 
-      if (focused_comp)
-        focused_comp->set_focus(true);
-    }
+                    focused_comp = _PTR2REF(comp);
 
-    primary_pressed_comp = comp;
-  }
-*/
+                    if focused_comp then
+                        focused_comp:set_focus(true);
+                    end
+                end
+
+                primary_pressed_comp = _PTR2REF(comp);
+            end
         end
     with
         every (x, y) in mouse_release do
-        /*
-          Vector2i mouse_pos = drawing_context.screen_to_world(Vector2i(x, y));
+            var Vector2i mouse_pos;
+            _readVector2i(mouse_pos, drawing_context.screen_to_world(_Vector2i(x, y)));
 
-  if (grabbed_comp)
-  {
-    grabbed_comp->on_primary_button_release(mouse_pos.x, mouse_pos.y);
-  }
-  else 
-  {
-    Component* comp = component_at(mouse_pos);
+            if grabbed_comp then
+                if grabbed_comp:ceu == null then
+                    _log_error("/ceu==null");
+                    grabbed_comp:on_primary_button_release(mouse_pos.x, mouse_pos.y);
+                else
+                    emit ((IGUI_Component*)grabbed_comp:ceu):mouse_release => (mouse_pos.x, mouse_pos.y);
+                end
+            else
+                var _GUI_Component* comp = _PTR2REF(call/rec component_at(mouse_pos));
       
-    if (primary_pressed_comp)
-    {
-      primary_pressed_comp->on_primary_button_release(mouse_pos.x, mouse_pos.y);
+                if primary_pressed_comp then
+                    if primary_pressed_comp:ceu == null then
+                        _log_error("/ceu==null");
+                        primary_pressed_comp:on_primary_button_release(mouse_pos.x, mouse_pos.y);
+                    else
+                        emit ((IGUI_Component*)primary_pressed_comp:ceu):mouse_release => (mouse_pos.x, mouse_pos.y);
+                    end
 
-      if(comp == primary_pressed_comp) {
-        primary_pressed_comp->on_primary_button_click(mouse_pos.x, mouse_pos.y);
-      }
+                    if comp == primary_pressed_comp then
+                        if primary_pressed_comp:ceu == null then
+                            _log_error("/ceu==null");
+                            primary_pressed_comp:on_primary_button_click(mouse_pos.x, mouse_pos.y);
+                        else
+                            emit ((IGUI_Component*)primary_pressed_comp:ceu):mouse_click => (mouse_pos.x, mouse_pos.y);
+                        end
+                    end
 
-      primary_pressed_comp = 0;
-    }
-    else
-    {
-      if(comp) {
-        comp->on_primary_button_release(mouse_pos.x, mouse_pos.y);
-      }
-    }
-  }
-        */
+                    primary_pressed_comp = null;
+                else
+                    if comp then
+                        if comp:ceu == null then
+                            _log_error("/ceu==null");
+                            comp:on_primary_button_release(mouse_pos.x, mouse_pos.y);
+                        else
+                            emit ((IGUI_Component*)comp:ceu):mouse_release => (mouse_pos.x, mouse_pos.y);
+                        end
+                    end
+                end
+            end
         end
     with
         every (x, y) in mouse_secondary_press do
-        /*
-          Vector2i mouse_pos = drawing_context.screen_to_world(Vector2i(x, y));
+            var Vector2i mouse_pos;
+            _readVector2i(mouse_pos, drawing_context.screen_to_world(_Vector2i(x, y)));
 
-  if (grabbed_comp)
-  {
-    grabbed_comp->on_secondary_button_press(mouse_pos.x, mouse_pos.y);
-  }
-  else 
-  {
-    Component* comp = component_at(mouse_pos);
-    if(comp) {
-      comp->on_secondary_button_press(mouse_pos.x, mouse_pos.y);
-    }
+            if grabbed_comp then
+                if grabbed_comp:ceu == null then
+                    _log_error("/ceu==null");
+                    grabbed_comp:on_secondary_button_press(mouse_pos.x, mouse_pos.y);
+                else
+                    emit ((IGUI_Component*)grabbed_comp:ceu):mouse_secondary_press => (mouse_pos.x, mouse_pos.y);
+                end
+            else            
+                var _GUI_Component* comp = _PTR2REF(call/rec component_at(mouse_pos));
+                if comp then
+                    if comp:ceu == null then
+                        _log_error("/ceu==null");
+                        comp:on_secondary_button_press(mouse_pos.x, mouse_pos.y);
+                    else
+                        emit ((IGUI_Component*)comp:ceu):mouse_secondary_press => (mouse_pos.x, mouse_pos.y);
+                    end
+                end
 
-    if (!primary_pressed_comp)
-      secondary_pressed_comp = comp;
-  }
-        */
+                if not primary_pressed_comp then
+                    secondary_pressed_comp = _PTR2REF(comp);
+                end
+            end
         end
     with
         every (x, y) in mouse_secondary_release do
-        /*
-        Vector2i mouse_pos = drawing_context.screen_to_world(Vector2i(x, y));
+            var Vector2i mouse_pos;
+            _readVector2i(mouse_pos, drawing_context.screen_to_world(_Vector2i(x, y)));
 
-  Component* comp = component_at(mouse_pos);
-  
-  if (grabbed_comp)
-  {
-    grabbed_comp->on_secondary_button_release(mouse_pos.x, mouse_pos.y);
-  }
-  else if (secondary_pressed_comp)
-  {
-    secondary_pressed_comp->on_secondary_button_release(mouse_pos.x, mouse_pos.y);
-      
-    if(comp == secondary_pressed_comp) {
-      secondary_pressed_comp->on_secondary_button_click(mouse_pos.x, mouse_pos.y);
-    }
-      
-    secondary_pressed_comp = 0;
-  }
-  else
-  {
-    if(comp) {
-      comp->on_secondary_button_release(mouse_pos.x, mouse_pos.y);
-    }
-  }
-        */
+            var _GUI_Component* comp = _PTR2REF(call/rec component_at(mouse_pos));
+              
+            if grabbed_comp then
+                if grabbed_comp:ceu == null then
+                    _log_error("/ceu==null");
+                    grabbed_comp:on_secondary_button_release(mouse_pos.x, mouse_pos.y);
+                else
+                    emit ((IGUI_Component*)grabbed_comp:ceu):mouse_release => (mouse_pos.x, mouse_pos.y);
+                end
+            else/if secondary_pressed_comp then
+                if secondary_pressed_comp:ceu == null then
+                    _log_error("/ceu==null");
+                    secondary_pressed_comp:on_secondary_button_release(mouse_pos.x, mouse_pos.y);
+                else
+                    emit ((IGUI_Component*)secondary_pressed_comp:ceu):mouse_release => (mouse_pos.x, mouse_pos.y);
+                end
+                  
+                if comp == secondary_pressed_comp then
+                    if secondary_pressed_comp:ceu == null then
+                        _log_error("/ceu==null");
+                        secondary_pressed_comp:on_secondary_button_click(mouse_pos.x, mouse_pos.y);
+                    else
+                        emit ((IGUI_Component*)secondary_pressed_comp:ceu):mouse_click => (mouse_pos.x, mouse_pos.y);
+                    end
+                end
+                  
+                secondary_pressed_comp = null;
+            else
+                if comp then
+                    if comp:ceu == null then
+                        _log_error("/ceu==null");
+                        comp:on_secondary_button_release(mouse_pos.x, mouse_pos.y);
+                    else
+                        emit ((IGUI_Component*)comp:ceu):mouse_release => (mouse_pos.x, mouse_pos.y);
+                    end
+                end
+            end
+        end
+    with
+        every (x, y) in mouse_move do
+            var Vector2i mouse_pos;            
+            _readVector2i(mouse_pos, drawing_context.screen_to_world(_Vector2i(x, y)));
+
+            if grabbed_comp then  
+                if grabbed_comp:ceu == null then
+                    _log_error("/ceu==null");
+                    grabbed_comp:on_pointer_move(mouse_pos.x, mouse_pos.y);
+                else
+                    emit ((IGUI_Component*)grabbed_comp:ceu):mouse_move => (mouse_pos.x, mouse_pos.y);
+                end
+            else/if primary_pressed_comp then  
+                if primary_pressed_comp:ceu == null then
+                    _log_error("/ceu==null");
+                    primary_pressed_comp:on_pointer_move(mouse_pos.x, mouse_pos.y);
+                else
+                    emit ((IGUI_Component*)primary_pressed_comp:ceu):mouse_move => (mouse_pos.x, mouse_pos.y);
+                end
+            else/if secondary_pressed_comp then  
+                if secondary_pressed_comp:ceu == null then
+                    _log_error("/ceu==null");
+                    secondary_pressed_comp:on_pointer_move(mouse_pos.x, mouse_pos.y);
+                else
+                    emit ((IGUI_Component*)secondary_pressed_comp:ceu):mouse_move => (mouse_pos.x, mouse_pos.y);
+                end
+            else  
+                var _GUI_Component* comp = _PTR2REF(call/rec component_at(mouse_pos));
+                if comp then
+                    if comp:ceu == null then
+                        _log_error("/ceu==null");
+                        comp:on_pointer_move(mouse_pos.x, mouse_pos.y);
+                    else
+                        emit ((IGUI_Component*)comp:ceu):mouse_move => (mouse_pos.x, mouse_pos.y);
+                    end
+                end
+
+                if comp != mouse_over_comp then
+                    if mouse_over_comp then
+                        mouse_over_comp:set_mouse_over(false);
+                        if mouse_over_comp:ceu == null then
+                            _log_error("/ceu==null");
+                            mouse_over_comp:on_pointer_leave();
+                        else
+                            emit ((IGUI_Component*)mouse_over_comp:ceu):mouse_leave;
+                        end
+                    end
+                  
+                    if comp then
+                        comp:set_mouse_over(true);
+                        if comp:ceu == null then
+                            _log_error("/ceu==null");
+                            comp:on_pointer_enter();
+                        else
+                            emit ((IGUI_Component*)comp:ceu):mouse_enter;
+                        end
+                    end
+                end
+
+                mouse_over_comp = _PTR2REF(comp);
+            end
         end
     end
 end
@@ -330,83 +463,6 @@ GroupComponent::on_text_input(const Input::TextInputEvent& ev)
     focused_comp->on_text_input(ev);
   else if (mouse_over_comp)
     mouse_over_comp->on_text_input(ev); 
-}
-
-void
-GroupComponent::on_pointer_move(int x, int y)
-{
-  Vector2i mouse_pos = drawing_context.screen_to_world(Vector2i(x, y));
-  PositionPackage package(0, mouse_pos); //make sure you update the pointer!
-  PositionPackage* pp = &package;  
-
-  if (grabbed_comp)
-  {
-    grabbed_comp->on_pointer_move(mouse_pos.x, mouse_pos.y);
-
-    //Ceu ON_POINTER_MOVE
-    package.component = grabbed_comp;
-    ceu_out_go(&CEUapp, CEU_IN_ON_POINTER_MOVE, &pp);
-  }
-  else if (primary_pressed_comp)
-  {
-    primary_pressed_comp->on_pointer_move(mouse_pos.x, mouse_pos.y);
-    
-    //Ceu ON_POINTER_MOVE
-    package.component = primary_pressed_comp;
-    ceu_out_go(&CEUapp, CEU_IN_ON_POINTER_MOVE, &pp);
-  }
-  else if (secondary_pressed_comp)
-  {
-    secondary_pressed_comp->on_pointer_move(mouse_pos.x, mouse_pos.y);
-    
-    //Ceu ON_POINTER_MOVE
-    package.component = secondary_pressed_comp;
-    ceu_out_go(&CEUapp, CEU_IN_ON_POINTER_MOVE, &pp);
-  }
-  else
-  {
-    Component* comp = component_at(mouse_pos);
-    if (comp)
-    {
-      comp->on_pointer_move(mouse_pos.x, mouse_pos.y); 
-      
-      //Ceu ON_POINTER_MOVE
-      package.component = comp;
-      ceu_out_go(&CEUapp, CEU_IN_ON_POINTER_MOVE, &pp);
-    }
-
-    if (comp != mouse_over_comp)
-    {
-      if (mouse_over_comp)
-      {
-        mouse_over_comp->set_mouse_over(false);
-        mouse_over_comp->on_pointer_leave();
-        //Ceu ON_POINTER_LEAVE
-        ceu_sys_go(&CEUapp, CEU_IN_ON_POINTER_LEAVE, &mouse_over_comp);
-      }
-      
-      if (comp)
-      {
-        comp->set_mouse_over(true);
-        comp->on_pointer_enter();
-        //Ceu ON_POINTER_ENTER        
-        ceu_sys_go(&CEUapp, CEU_IN_ON_POINTER_ENTER, &comp);
-      }
-    }
-
-    mouse_over_comp = comp;
-  }
-}
-
-Component*
-GroupComponent::component_at (const Vector2i& pos)
-{
-  for(Components::reverse_iterator i = children.rbegin(); i != children.rend(); ++i)
-  {
-    if ((*i)->is_visible() && (*i)->is_at(pos.x, pos.y))
-      return *i;
-  }
-  return 0;
 }
 
 void

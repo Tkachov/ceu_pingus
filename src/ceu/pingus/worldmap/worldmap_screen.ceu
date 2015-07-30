@@ -87,6 +87,10 @@ do
         this.pos.y = 0;
     end;
 
+    function @rec (Vector2i pos) => bool is_at_func do
+        return false; //TODO
+    end
+
     call/rec sb.load("core/worldmap/credits_button_normal",
                      "core/worldmap/credits_button_pressed",
                      "core/worldmap/credits_button_hover");
@@ -128,6 +132,10 @@ do
         this.pos.y = _Display__get_height() - 37;
     end;
 
+    function @rec (Vector2i pos) => bool is_at_func do
+        return false; //TODO
+    end
+
     call/rec sb.load("core/worldmap/leave_button_normal",
                      "core/worldmap/leave_button_pressed",
                      "core/worldmap/leave_button_hover");
@@ -167,6 +175,10 @@ do
     var _SceneContext&? scene_context = _new_SceneContextE();
     finalize with _delete_obj(scene_context); end
 
+    function @rec (Vector2i pos) => bool is_at_func do
+        return false; //TODO
+    end
+
     var PrimaryButtonProxy p with this.gui = outer; end;
     var SecondaryButtonProxy sbp with this.gui = outer; end;
     var PointerProxy pp with this.gui = outer; end;
@@ -198,12 +210,21 @@ do
         end
     with
         every gc in draw do
-            var Rect cliprect = parent.get_trans_rect();
-            scene_context.set_rect(_toRect(cliprect));
-            scene_context.clear();
+            _printf("WorldmapScreenComponent/draw (&this == %d); parent == %d\n", &this, &parent);
 
+            var Rect cliprect = parent.get_trans_rect();
+            _printf("rect?\n");
+            scene_context.set_rect(_toRect(cliprect));
+            _printf("set_rect?\n");
+            scene_context.clear();
+            _printf("clear?\n");
+
+            _printf("before push_modelview()\n");
             scene_context.push_modelview();
-            emit parent.get_ceu_worldmap():draw => _addr(scene_context.color());
+            _printf("after push_modelview()\n");
+            if parent.get_ceu_worldmap() then
+                emit parent.get_ceu_worldmap():draw => _addr(scene_context.color());
+            end
             gc:draw(_new_SceneContextDrawingRequest(&scene_context, _Vector2i(0, 0), -1000));
             scene_context.pop_modelview();
 
@@ -243,23 +264,33 @@ class WorldmapScreen with
     interface IWorldmapScreen;
 do
     var _GUIScreen&? worldmap_screen = _PTR2REF((_GUIScreen*)me);
+    var GUIManager gui_manager with
+        this.me = _new_GUI__RectComponent(_Rect(0, 0, _Display__get_width(), _Display__get_height()));
+        this.drawing_context = _new_DrawingContext(_Rect(0, 0, _Display__get_width(), _Display__get_height()), false);
+    end;
+
     var Worldmap*? worldmap = null;
     var bool exit_worldmap = false;
 
+    _printf("WorldmapScreen == %d\n", &this);
+
     var WorldmapScreenComponent comp with
         this.me = _new_GUI_Component();
+        this.me.ceu = &this;        
         this.parent = outer;
+        _printf("CONSTRUCTOR/outer == %d\n", &outer);
     end;
 
     var WorldmapScreenCloseButton close_button with
         this.me = _new_GUI_Component();
+        this.me.ceu = &this;
         this.parent = outer;
     end;
 
     var WorldmapScreenCreditsButton*? credits_button = null;
 
-    worldmap_screen.gui_manager:add(&comp.me) finalize with end;
-    worldmap_screen.gui_manager:add(&close_button.me) finalize with end;
+    gui_manager.add(&comp.me);
+    gui_manager.add(&close_button.me);
 
     function (void) => void show_intro_story do
         _ScreenManager__instance():push_screen(_std__make_shared_StoryScreen(
@@ -278,14 +309,25 @@ do
     end
 
     function (void) => Rect get_trans_rect do
+        _printf("rect\n");
         var Rect r;
-        Rect_load_XYWH(
-            r,
-            _Math__max((_Display__get_width()  - worldmap:get_width())/2,  0),
-            _Math__max((_Display__get_height() - worldmap:get_height())/2, 0),
-            _Math__min(_Display__get_width(),  worldmap:get_width()),
-            _Math__min(_Display__get_height(), worldmap:get_height())
-        );
+        if worldmap then
+            Rect_load_XYWH(
+                r,
+                _Math__max((_Display__get_width()  - worldmap:get_width())/2,  0),
+                _Math__max((_Display__get_height() - worldmap:get_height())/2, 0),
+                _Math__min(_Display__get_width(),  worldmap:get_width()),
+                _Math__min(_Display__get_height(), worldmap:get_height())
+            );
+        else
+            Rect_load_XYWH(
+                r,
+                _Math__max((_Display__get_width()  - 800)/2,  0),
+                _Math__max((_Display__get_height() - 600)/2, 0),
+                _Math__min(_Display__get_width(),  800),
+                _Math__min(_Display__get_height(), 600)
+            );
+        end
         return r;
     end
 
@@ -314,9 +356,10 @@ do
             if credits_unlocked then
                 credits_button = spawn WorldmapScreenCreditsButton with
                     this.me = _new_GUI_Component();
+                    this.me.ceu = &this;
                     this.parent = outer;
-                end;
-                worldmap_screen.gui_manager:add(&credits_button:me) finalize with end;
+                end;                
+                gui_manager.add(&credits_button:me);
             end
         end
     with
@@ -333,14 +376,29 @@ do
             end
         end
     with
+        every package in SCREEN_DRAW_BACKGROUND do
+            if package:screen == &worldmap_screen then
+                _printf("WorldmapScreen/draw_background\n");
+                emit gui_manager.draw => _addr(package:gc);
+            end
+        end
+    with
         every package in SCREEN_UPDATE do
             if package:screen != &worldmap_screen then
                 continue;
             end
 
+            emit gui_manager.update => package:delta;
+
             //Exit the world
             if exit_worldmap then
                 _ScreenManager__instance():pop_screen();
+            end
+        end
+    with
+        every package in SCREEN_UPDATE_EVENT do
+            if package:screen == &worldmap_screen then
+                emit gui_manager.update_event => _addr(package:event);
             end
         end
     with

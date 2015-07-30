@@ -68,6 +68,10 @@ do
         this.pos.y = _Display__get_height() - 26;
     end;
 
+    function @rec (Vector2i pos) => bool is_at_func do
+        return false; //TODO
+    end
+
     ///call/rec sb.load("", "", ""), //original FIXME: Little fugly way to do a text button
 
     var PrimaryButtonProxy p with this.gui = outer; end;
@@ -116,6 +120,10 @@ do
         this.pos.y = _Display__get_height()/2 + 212;
     end;
 
+    function @rec (Vector2i pos) => bool is_at_func do
+        return false; //TODO
+    end
+
     call/rec sb.load("core/misc/next", "core/misc/next", "core/misc/next_hover");
 
     var PrimaryButtonProxy p with this.gui = outer; end;
@@ -148,6 +156,10 @@ do
     var PrimaryButtonProxy p with this.gui = outer; end;
     var PointerProxy pp with this.gui = outer; end;
     var EventProxy ep with this.gui = outer; end;
+
+    function @rec (Vector2i pos) => bool is_at_func do
+        return false; //TODO
+    end
 
     var Sprite background;
     var Sprite blackboard;

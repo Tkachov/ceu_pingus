@@ -61,6 +61,10 @@ class ButtonPanel with
 do
     var _GUI_RectComponent&? button_panel = _PTR2REF((_GUI_RectComponent*)&me);
 
+    function @rec (Vector2i pos) => bool is_at_func do
+        return false; //TODO
+    end
+
     var Sprite background;
     var Sprite highlight;
     call/rec background.reload_by_name("core/buttons/buttonbackground");    

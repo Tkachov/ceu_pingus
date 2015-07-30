@@ -54,6 +54,10 @@ do
         _delete_obj(state);
     end;
 
+    function @rec (Vector2i pos) => bool is_at_func do
+        return false; //TODO
+    end
+
     state.set_limit(
         _Rect(
             _Vector2i(0, 0),
