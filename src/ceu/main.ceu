@@ -27,14 +27,11 @@ end
 #include "pingus/global_interface.ceu"
 #include "pingus/worldmap/path_graph.ceu"
 #include "pingus/worldmap/sprite_drawable.ceu"
-//#include "pingus/worldmap/iworldmap.ceu"
 #include "pingus/worldmap/pingus_worldmap.ceu"
 
-class Worldmap with
-do
-    await FOREVER;
-end
-
+class DGF with do end
+class WSCrB with do end
+class WSClB with do end
 
 #include "math/math.ceu"
 #include "math/rect.ceu"
@@ -61,24 +58,6 @@ input _GUIScreen* DELETE_WORLDMAP_SCREEN;
 
 interface IWorldmapScreen with
     function (void) => void get_trans_rect;
-end
-
-////////////////////////////////////////////////
-
-class WorldmapScreenCreditsButton with
-do
-end
-
-////////////////////////////////////////////////
-
-class WorldmapScreenCloseButton with
-    interface IGUI_Component;
-do
-    function @rec (Vector2i pos) => bool is_at_func do
-        return false; //TODO
-    end
-
-    await FOREVER;
 end
 
 ////////////////////////////////////////////////
@@ -113,12 +92,6 @@ do
         this.me.ceu = &this;        
         this.parent = outer;
     end;
-
-    var WorldmapScreenCloseButton close_button with
-        this.me = _new_GUI_Component();
-    end;
-
-    var WorldmapScreenCreditsButton*? credits_button = null;
 
     function (void) => void get_trans_rect do
     end
