@@ -16,7 +16,209 @@ end
 #include "pingus/screens/level_menu.ceu"
 #include "pingus/screens/option_menu.ceu"
 #include "pingus/screens/credits.ceu"
-#include "pingus/worldmap/worldmap_screen.ceu"
+
+
+#ifndef WORLDMAP_SCREEN_CEU
+#define WORLDMAP_SCREEN_CEU
+
+#include "c.ceu"
+#include "sdl.ceu"
+#include "engine/gui/igui_component.ceu"
+#include "engine/gui/surface_button.ceu"
+#include "engine/screen/screen.ceu"
+#include "engine/sound/sound.ceu"
+#include "math/math.ceu"
+#include "math/rect.ceu"
+#include "util/file_reader.ceu"
+#include "pingus/iworld.ceu"
+#include "pingus/global_interface.ceu"
+#include "pingus/worldmap/worldmap.ceu"
+#include "pingus/worldmap/pingus_worldmap.ceu"
+
+native/pre do
+    ##include "engine/display/display.hpp"
+    ##include "engine/display/graphic_context_state.hpp"
+    ##include "engine/gui/gui_manager.hpp"
+    ##include "engine/gui/rect_component.hpp"
+    ##include "engine/gui/surface_button.hpp"
+    ##include "engine/screen/screen_manager.hpp"
+    ##include "engine/sound/sound.hpp"
+    ##include "pingus/fonts.hpp"
+    ##include "pingus/game_time.hpp"
+    ##include "pingus/gettext.h"
+    ##include "pingus/globals.hpp"
+    ##include "pingus/savegame_manager.hpp"
+    ##include "pingus/screens/game_session.hpp"
+    ##include "pingus/screens/result_screen.hpp"
+    ##include "pingus/screens/story_screen.hpp"
+    ##include "pingus/server.hpp"
+    ##include "pingus/string_format.hpp"
+    ##include "pingus/worldmap/worldmap_screen.hpp"
+    ##include "util/log.hpp"
+    ##include "util/string_util.hpp"
+
+    ##define new_GUI_Component() new GUI::Component()
+    ##define ScreenManager__instance() ScreenManager::instance()
+    ##define std__make_shared_GameSession std::make_shared<GameSession>
+    ##define std__make_shared_StoryScreen std::make_shared<StoryScreen>
+    ##define Display__get_width() Display::get_width()
+    ##define Display__get_height() Display::get_height()
+    ##define SU2str(x) StringUtil::to_string(x)
+    ##define Fonts__chalk_large Fonts::chalk_large
+    ##define Fonts__chalk_normal Fonts::chalk_normal
+    ##define Fonts__chalk_small Fonts::chalk_small
+    ##define StringFormat__break_line StringFormat::break_line
+
+    ##define new_SceneContextE() new SceneContext()
+
+    ##define WorldmapNS__WorldmapScreen WorldmapNS::WorldmapScreen    
+end
+
+native @pure _new_GUI_Component(), _ScreenManager__instance(), _std__make_shared_GameScreen(), _std__make_shared_StoryScreen(),
+             _Display__get_width(), _Display__get_height(),
+             _SU2str(), _StringFormat__break_line(), _new_SceneContextE();
+
+input _WorldmapScreenLoadPackage* LOAD_WORLDMAP_SCREEN;
+input _ScreenUpdatePackage* WORLDMAP_SCREEN_UPDATE;
+input _GUIScreen* DELETE_WORLDMAP_SCREEN;
+
+interface IWorldmapScreen with
+    function (void) => void show_intro_story;
+    function (void) => void show_end_story;    
+    function (void) => Worldmap*? get_ceu_worldmap;
+    function (void) => Rect get_trans_rect;
+
+    var _GUIScreen* me;
+
+    event _Pathname* load;
+end
+
+////////////////////////////////////////////////
+
+class WorldmapScreenCreditsButton with
+do
+end
+
+////////////////////////////////////////////////
+
+class WorldmapScreenCloseButton with
+    interface IGUI_Component;
+do
+    function @rec (Vector2i pos) => bool is_at_func do
+        return false; //TODO
+    end
+
+    await FOREVER;
+end
+
+////////////////////////////////////////////////
+
+class WorldmapScreenComponent with
+    interface IGUI_Component;
+    var IWorldmapScreen& parent;
+do
+    function @rec (Vector2i pos) => bool is_at_func do
+        return false; //TODO
+    end
+
+    var EventProxy ep with this.gui = outer; end;
+
+    every gc in draw do
+        _printf("A | &this == %d; parent == %d\n", &this, &parent);
+        var Rect cliprect = parent.get_trans_rect();
+        _printf("B\n");
+    end
+end
+
+////////////////////////////////////////////////
+
+class WorldmapScreen with
+    interface IWorldmapScreen;
+do
+    var _GUIScreen&? worldmap_screen = _PTR2REF((_GUIScreen*)me);
+    var GUIManager gui_manager with
+        this.me = _new_GUI__RectComponent(_Rect(0, 0, _Display__get_width(), _Display__get_height()));
+        this.drawing_context = _new_DrawingContext(_Rect(0, 0, _Display__get_width(), _Display__get_height()), false);
+    end;
+
+    var Worldmap*? worldmap = null;
+
+    _printf("WorldmapScreen == %d\n", &this);
+
+    var WorldmapScreenComponent comp with
+        this.me = _new_GUI_Component();
+        this.me.ceu = &this;        
+        this.parent = outer;
+        _printf("CONSTRUCTOR/outer == %d\n", &outer);
+    end;
+
+    var WorldmapScreenCloseButton close_button with
+        this.me = _new_GUI_Component();
+    end;
+
+    var WorldmapScreenCreditsButton*? credits_button = null;
+
+    gui_manager.add(&comp.me);
+    gui_manager.add(&close_button.me);
+
+    function (void) => void show_intro_story do
+    end
+
+    function (void) => void show_end_story do
+    end
+
+    function (void) => Worldmap*? get_ceu_worldmap do
+        return worldmap;
+    end
+
+    function (void) => Rect get_trans_rect do
+        _printf("rect\n");
+        var Rect r;
+        return r;
+    end
+
+    par/or do
+        every package in LOAD_WORLDMAP_SCREEN do
+            if package:screen != &worldmap_screen then
+                continue;
+            end
+
+            emit load => (_Pathname*)&package:filename;
+        end
+    with
+        every filename in load do
+            var PingusWorldmap*? pingus_worldmap = spawn PingusWorldmap;
+            var _FileReader&? fr = _new_FileReader(_FileReader__parse(_deref(filename)));
+            call/rec pingus_worldmap:parse_file(&fr);
+            _delete_obj(fr);
+
+            worldmap = spawn Worldmap with                
+                this.pingus_worldmap = pingus_worldmap;
+            end;
+        end
+    with
+        every screen in ON_STARTUP do
+            if screen != &worldmap_screen then
+                continue;
+            end
+
+            if worldmap then
+                emit worldmap:startup;
+            end
+        end
+    with
+        every package in SCREEN_DRAW_BACKGROUND do
+            if package:screen == &worldmap_screen then
+                _printf("WorldmapScreen/draw_background\n");
+                emit gui_manager.draw => _addr(package:gc);
+            end
+        end
+    end
+end
+
+#endif
+
+
 #include "pingus/pingu_holder.ceu"
 #include "pingus/pingu_events.ceu"
 #include "pingus/global_interface.ceu"
