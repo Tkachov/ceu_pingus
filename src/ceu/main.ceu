@@ -74,8 +74,6 @@ input _ScreenUpdatePackage* WORLDMAP_SCREEN_UPDATE;
 input _GUIScreen* DELETE_WORLDMAP_SCREEN;
 
 interface IWorldmapScreen with
-    function (void) => void show_intro_story;
-    function (void) => void show_end_story;    
     function (void) => Worldmap*? get_ceu_worldmap;
     function (void) => Rect get_trans_rect;
 
@@ -152,12 +150,6 @@ do
     gui_manager.add(&comp.me);
     gui_manager.add(&close_button.me);
 
-    function (void) => void show_intro_story do
-    end
-
-    function (void) => void show_end_story do
-    end
-
     function (void) => Worldmap*? get_ceu_worldmap do
         return worldmap;
     end
@@ -201,7 +193,9 @@ do
         every package in SCREEN_DRAW_BACKGROUND do
             if package:screen == &worldmap_screen then
                 _printf("WorldmapScreen/draw_background\n");
-                emit gui_manager.draw => _addr(package:gc);
+                ///emit gui_manager.draw => _addr(package:gc);
+                emit comp.draw => _addr(package:gc);
+                //emit ((IGUI_Component*)children.at(i):ceu):draw => &drawing_context;
             end
         end
     end
@@ -244,14 +238,6 @@ input _PingusMenu* NEW_PINGUS_MENU;
 input _Credits* NEW_CREDITS;
 input _LevelMenu* NEW_LEVEL_MENU;
 input _Pathname* PUSH_FONT_TEST_SCREEN;
-
-#define WITH_SCREEN(CClassName, ClassName, Event) with \
-    loop do \
-        var CClassName* p = await Event; \
-        spawn ClassName with \
-            this.me = _PTR2REF(p); \
-        end; \
-    end
 
 var IWorld* world = null;
 
