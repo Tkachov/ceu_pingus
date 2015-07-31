@@ -16,6 +16,8 @@ end
 #include "pingus/screens/level_menu.ceu"
 #include "pingus/screens/option_menu.ceu"
 #include "pingus/screens/credits.ceu"
+#include "pingus/worldmap/worldmap.ceu"
+#include "pingus/worldmap/pingus_worldmap.ceu"
 
 
 #include "math/math.ceu"
@@ -23,8 +25,6 @@ end
 #include "util/file_reader.ceu"
 #include "pingus/iworld.ceu"
 #include "pingus/global_interface.ceu"
-#include "pingus/worldmap/worldmap.ceu"
-#include "pingus/worldmap/pingus_worldmap.ceu"
 
 native/pre do
     ##include "engine/display/display.hpp"
@@ -32,13 +32,6 @@ native/pre do
     ##include "engine/gui/gui_manager.hpp"
     ##include "engine/gui/rect_component.hpp"
     ##include "engine/gui/surface_button.hpp"
-    ##include "engine/screen/screen_manager.hpp"
-    ##include "engine/sound/sound.hpp"
-    ##include "pingus/fonts.hpp"
-    ##include "pingus/game_time.hpp"
-    ##include "pingus/gettext.h"
-    ##include "pingus/globals.hpp"
-    ##include "pingus/savegame_manager.hpp"
 
     ##define new_GUI_Component() new GUI::Component()
     ##define Display__get_width() Display::get_width()
@@ -51,7 +44,6 @@ input _ScreenUpdatePackage* WORLDMAP_SCREEN_UPDATE;
 input _GUIScreen* DELETE_WORLDMAP_SCREEN;
 
 interface IWorldmapScreen with
-    function (void) => void get_ceu_worldmap;
     function (void) => void get_trans_rect;
 end
 
@@ -98,8 +90,6 @@ class WorldmapScreen with
     interface IWorldmapScreen;
     event void draw;
 do
-    var Worldmap*? worldmap = null;
-
     _printf("WorldmapScreen == %d\n", &this);
 
     var WorldmapScreenComponent comp with
@@ -114,11 +104,7 @@ do
 
     var WorldmapScreenCreditsButton*? credits_button = null;
 
-    function (void) => void get_ceu_worldmap do        
-    end
-
     function (void) => void get_trans_rect do
-        _printf("rect\n");
     end
 
     every draw do
