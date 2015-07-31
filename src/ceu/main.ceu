@@ -18,15 +18,6 @@ end
 #include "pingus/screens/credits.ceu"
 
 
-#ifndef WORLDMAP_SCREEN_CEU
-#define WORLDMAP_SCREEN_CEU
-
-#include "c.ceu"
-#include "sdl.ceu"
-#include "engine/gui/igui_component.ceu"
-#include "engine/gui/surface_button.ceu"
-#include "engine/screen/screen.ceu"
-#include "engine/sound/sound.ceu"
 #include "math/math.ceu"
 #include "math/rect.ceu"
 #include "util/file_reader.ceu"
@@ -216,9 +207,6 @@ do
     end
 end
 
-#endif
-
-
 #include "pingus/pingu_holder.ceu"
 #include "pingus/pingu_events.ceu"
 #include "pingus/global_interface.ceu"
@@ -267,89 +255,21 @@ input _Pathname* PUSH_FONT_TEST_SCREEN;
 
 var IWorld* world = null;
 
-par/or do
-    await SDL_QUIT;
-with
-    loop do
-        var _DemoSession* new_demo_session = await NEW_DEMO_SESSION;
-        spawn DemoSession with
-            this.me = _PTR2REF(new_demo_session);
-        end;
-    end
-with
-    loop do
-        //`every` hangs the program
-        var _GameSession* new_game_session = await NEW_GAME_SESSION;        
-        spawn GameSession with
-            this.me = _PTR2REF(new_game_session);
-        end;
-    end
-WITH_SCREEN(_StartScreen, StartScreen, NEW_START_SCREEN)
-WITH_SCREEN(_StoryScreen, StoryScreen, NEW_STORY_SCREEN)
-WITH_SCREEN(_ResultScreen, ResultScreen, NEW_RESULT_SCREEN)
-WITH_SCREEN(_WorldmapNS__WorldmapScreen, WorldmapScreen, NEW_WORLDMAP_SCREEN)
-WITH_SCREEN(_PingusMenu, PingusMenu, NEW_PINGUS_MENU)
-WITH_SCREEN(_Credits, Credits, NEW_CREDITS)
-WITH_SCREEN(_LevelMenu, LevelMenu, NEW_LEVEL_MENU)
-with
-    every push_worldmap_tutorial_screen do
-        /*
-        std::shared_ptr<WorldmapNS::WorldmapScreen> worldmap_screen = std::make_shared<WorldmapNS::WorldmapScreen>();
-        worldmap_screen->load(Pathname("worldmaps/tutorial.worldmap", Pathname::DATA_PATH)); //hardcoded tutorial pathname
-        ScreenManager::instance()->push_screen(worldmap_screen);
-        */
-        var WorldmapScreen* ws = null;
-        spawn WorldmapScreen with
-            this.me = _PTR2REF(_new_GUIScreen());
-            ws = &this;
-        end;
+await NEW_PINGUS_MENU;
+await 100ms;
+do
+    var WorldmapScreen* ws = null;
+    spawn WorldmapScreen with
+        this.me = _PTR2REF(_new_GUIScreen());
+        ws = &this;
+    end;
 
-        var _Pathname&? filename = _new_Pathname("worldmaps/tutorial.worldmap", _Pathname__DATA_PATH); //hardcoded tutorial pathname
-        emit ws:load => &filename;
-        _delete_obj(filename);
+    var _Pathname&? filename = _new_Pathname("worldmaps/tutorial.worldmap", _Pathname__DATA_PATH); //hardcoded tutorial pathname
+    emit ws:load => &filename;
+    _delete_obj(filename);
 
-        _ScreenManager__instance():push_screen(_make_std__shared_ptr_Screen(ws:me));
-    end
-with
-    every push_option_menu do
-        var OptionMenu* os = null;
-        spawn OptionMenu with
-            this.me = _PTR2REF(_new_OptionMenu());
-            os = &this;
-        end;
-        _ScreenManager__instance():push_screen(_make_std__shared_ptr_Screen(os:me));
-    end
-with
-    every filename in PUSH_FONT_TEST_SCREEN do
-        spawn FontTestScreen with
-            this.me = _PTR2REF(_new_GUIScreen());
-            this.fontfile = _PTR2REF(filename);
-            _ScreenManager__instance():push_screen(_make_std__shared_ptr_Screen(this.me));
-        end;
-    end
-with
-    every new_se in NEW_SERVER_EVENT do
-        spawn ServerEvent with
-            this.me = _PTR2REF(new_se);
-        end;
-    end
-with
-    loop do
-        await SDL_REDRAW;
-    end
-with
-    //FPS
-    loop do
-        var int c = 0;
-        par/or do
-            every SDL_REDRAW do
-                c = c + 1;
-            end
-        with
-            await 1s;
-        end
-        _printf("[FPS=%d]\n", c);
-    end
+    _ScreenManager__instance():push_screen(_make_std__shared_ptr_Screen(ws:me));
 end
+await SDL_QUIT;
 
 escape 0;
