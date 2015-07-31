@@ -102,6 +102,7 @@ end
 
 class WorldmapScreen with
     interface IWorldmapScreen;
+    event void draw;
 do
     var _GUIScreen&? worldmap_screen = _PTR2REF((_GUIScreen*)me);
 
@@ -132,11 +133,9 @@ do
     end
 
 
-    every package in SCREEN_DRAW_BACKGROUND do
-        if package:screen == &worldmap_screen then
+    every draw do
             _printf("WorldmapScreen/draw_background\n");
-            emit comp.draw => _addr(package:gc);
-        end
+            emit comp.draw => null;
     end
 end
 
@@ -180,6 +179,9 @@ do
         this.me = _PTR2REF(_new_GUIScreen());
         ws = &this;
     end;
+
+    _printf("go go draw\n");
+    emit ws:draw;
 
     _ScreenManager__instance():push_screen(_make_std__shared_ptr_Screen(ws:me));
 end
