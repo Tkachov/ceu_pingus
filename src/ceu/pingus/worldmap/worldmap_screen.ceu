@@ -83,22 +83,12 @@ end
 
 class WorldmapScreenCloseButton with
     interface IGUI_Component;
-    var IWorldmapScreen& parent;
-
-    function @rec (int x, int y) => void set_pos;
 do
     function @rec (Vector2i pos) => bool is_at_func do
         return false; //TODO
     end
 
-    var EventProxy ep with this.gui = outer; end;
-
-    function @rec (int x, int y) => void set_pos do
-    end
-
-    every gc in draw do
-        gc:print_center(_Fonts__chalk_small, _Vector2i(44, _Display__get_height() - 25), __("Leave?"));
-    end
+    await FOREVER;
 end
 
 ////////////////////////////////////////////////
@@ -144,8 +134,6 @@ do
 
     var WorldmapScreenCloseButton close_button with
         this.me = _new_GUI_Component();
-        this.me.ceu = &this;
-        this.parent = outer;
     end;
 
     var WorldmapScreenCreditsButton*? credits_button = null;
