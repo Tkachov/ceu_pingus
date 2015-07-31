@@ -39,35 +39,17 @@ native/pre do
     ##include "pingus/gettext.h"
     ##include "pingus/globals.hpp"
     ##include "pingus/savegame_manager.hpp"
-    ##include "pingus/screens/game_session.hpp"
-    ##include "pingus/screens/result_screen.hpp"
-    ##include "pingus/screens/story_screen.hpp"
-    ##include "pingus/server.hpp"
-    ##include "pingus/string_format.hpp"
-    ##include "pingus/worldmap/worldmap_screen.hpp"
-    ##include "util/log.hpp"
-    ##include "util/string_util.hpp"
 
     ##define new_GUI_Component() new GUI::Component()
-    ##define ScreenManager__instance() ScreenManager::instance()
-    ##define std__make_shared_GameSession std::make_shared<GameSession>
-    ##define std__make_shared_StoryScreen std::make_shared<StoryScreen>
     ##define Display__get_width() Display::get_width()
-    ##define Display__get_height() Display::get_height()
-    ##define SU2str(x) StringUtil::to_string(x)
+    ##define Display__get_height() Display::get_height()    
     ##define Fonts__chalk_large Fonts::chalk_large
     ##define Fonts__chalk_normal Fonts::chalk_normal
-    ##define Fonts__chalk_small Fonts::chalk_small
-    ##define StringFormat__break_line StringFormat::break_line
-
-    ##define new_SceneContextE() new SceneContext()
-
-    ##define WorldmapNS__WorldmapScreen WorldmapNS::WorldmapScreen    
+    ##define Fonts__chalk_small Fonts::chalk_small  
 end
 
-native @pure _new_GUI_Component(), _ScreenManager__instance(), _std__make_shared_GameScreen(), _std__make_shared_StoryScreen(),
-             _Display__get_width(), _Display__get_height(),
-             _SU2str(), _StringFormat__break_line(), _new_SceneContextE();
+native @pure _new_GUI_Component(), _ScreenManager__instance(),
+             _Display__get_width(), _Display__get_height();
 
 input _WorldmapScreenLoadPackage* LOAD_WORLDMAP_SCREEN;
 input _ScreenUpdatePackage* WORLDMAP_SCREEN_UPDATE;
@@ -125,10 +107,6 @@ class WorldmapScreen with
     interface IWorldmapScreen;
 do
     var _GUIScreen&? worldmap_screen = _PTR2REF((_GUIScreen*)me);
-    var GUIManager gui_manager with
-        this.me = _new_GUI__RectComponent(_Rect(0, 0, _Display__get_width(), _Display__get_height()));
-        this.drawing_context = _new_DrawingContext(_Rect(0, 0, _Display__get_width(), _Display__get_height()), false);
-    end;
 
     var Worldmap*? worldmap = null;
 
@@ -138,7 +116,6 @@ do
         this.me = _new_GUI_Component();
         this.me.ceu = &this;        
         this.parent = outer;
-        _printf("CONSTRUCTOR/outer == %d\n", &outer);
     end;
 
     var WorldmapScreenCloseButton close_button with
@@ -146,9 +123,6 @@ do
     end;
 
     var WorldmapScreenCreditsButton*? credits_button = null;
-
-    gui_manager.add(&comp.me);
-    gui_manager.add(&close_button.me);
 
     function (void) => Worldmap*? get_ceu_worldmap do
         return worldmap;
@@ -193,7 +167,6 @@ do
         every package in SCREEN_DRAW_BACKGROUND do
             if package:screen == &worldmap_screen then
                 _printf("WorldmapScreen/draw_background\n");
-                ///emit gui_manager.draw => _addr(package:gc);
                 emit comp.draw => _addr(package:gc);
                 //emit ((IGUI_Component*)children.at(i):ceu):draw => &drawing_context;
             end
