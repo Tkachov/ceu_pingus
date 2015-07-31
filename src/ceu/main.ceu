@@ -3,10 +3,10 @@ native/pre do
     ##define protected public
 end
 
-#include "c.ceu"
-#include "sdl.ceu"
-#include "engine/gui/igui_component.ceu"
-#include "proxies/proxyeventlist.ceu"
+#include "c.ceu" //nothing
+#include "sdl.ceu" //3 data
+#include "engine/gui/igui_component.ceu" //data, interface
+#include "proxies/proxyeventlist.ceu" //nothing
 
 input _GUI_RectComponent* RECT_COMPONENT_UPDATE_LAYOUT;
 
@@ -135,7 +135,10 @@ class Class121 with do end
 class Class122 with do end
 class Class123 with do end
 class Class124 with do end
+//^ works fine
+//v crashes already
 class Class125 with do end
+/*
 class Class126 with do end
 class Class127 with do end
 class Class128 with do end
@@ -160,6 +163,7 @@ class Class146 with do end
 class Class147 with do end
 class Class148 with do end
 class Class149 with do end
+*/
 
 native/pre do
     ##define new_GUI_Component() new GUI::Component()
