@@ -17,7 +17,6 @@ end
 #include "pingus/screens/option_menu.ceu"
 #include "pingus/screens/credits.ceu"
 #include "pingus/worldmap/worldmap.ceu"
-#include "pingus/worldmap/pingus_worldmap.ceu"
 
 
 #include "math/math.ceu"
