@@ -569,9 +569,6 @@ PingusMain::start_game ()
     }
     else if (StringUtil::has_suffix(cmd_options.rest.get(), ".font"))
     {
-      Pathname filename(cmd_options.rest.get(), Pathname::SYSTEM_PATH);
-      Pathname* p = &filename;
-      ceu_out_go(&CEUapp, CEU_IN_PUSH_FONT_TEST_SCREEN, &p);
     }
     else if (StringUtil::has_suffix(cmd_options.rest.get(), ".credits"))
     {

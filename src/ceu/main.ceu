@@ -42,21 +42,17 @@ native/pre do
 
     ##define new_GUI_Component() new GUI::Component()
     ##define Display__get_width() Display::get_width()
-    ##define Display__get_height() Display::get_height()    
-    ##define Fonts__chalk_large Fonts::chalk_large
-    ##define Fonts__chalk_normal Fonts::chalk_normal
-    ##define Fonts__chalk_small Fonts::chalk_small  
+    ##define Display__get_height() Display::get_height()
 end
 
-native @pure _new_GUI_Component(), _ScreenManager__instance(),
-             _Display__get_width(), _Display__get_height();
+native @pure _new_GUI_Component(), _Display__get_width(), _Display__get_height();
 
 input _ScreenUpdatePackage* WORLDMAP_SCREEN_UPDATE;
 input _GUIScreen* DELETE_WORLDMAP_SCREEN;
 
 interface IWorldmapScreen with
-    function (void) => Worldmap*? get_ceu_worldmap;
-    function (void) => Rect get_trans_rect;
+    function (void) => void get_ceu_worldmap;
+    function (void) => void get_trans_rect;
 end
 
 ////////////////////////////////////////////////
@@ -91,7 +87,7 @@ do
 
     every gc in draw do
         _printf("A | &this == %d; parent == %d\n", &this, &parent);
-        var Rect cliprect = parent.get_trans_rect();
+        parent.get_trans_rect();
         _printf("B\n");
     end
 end
@@ -118,14 +114,11 @@ do
 
     var WorldmapScreenCreditsButton*? credits_button = null;
 
-    function (void) => Worldmap*? get_ceu_worldmap do
-        return worldmap;
+    function (void) => void get_ceu_worldmap do        
     end
 
-    function (void) => Rect get_trans_rect do
+    function (void) => void get_trans_rect do
         _printf("rect\n");
-        var Rect r;
-        return r;
     end
 
     every draw do
@@ -154,7 +147,6 @@ event void push_option_menu;
 event void push_worldmap_tutorial_screen;
 
 input void NEW_PINGUS_MENU;
-input _Pathname* PUSH_FONT_TEST_SCREEN;
 
 var IWorld* world = null;
 
@@ -162,7 +154,6 @@ await NEW_PINGUS_MENU;
 await 100ms;
 
 var WorldmapScreen ws;
-_printf("go go draw\n");
 emit ws.draw;
 
 await SDL_QUIT;
