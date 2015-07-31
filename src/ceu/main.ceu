@@ -51,7 +51,6 @@ end
 native @pure _new_GUI_Component(), _ScreenManager__instance(),
              _Display__get_width(), _Display__get_height();
 
-input _WorldmapScreenLoadPackage* LOAD_WORLDMAP_SCREEN;
 input _ScreenUpdatePackage* WORLDMAP_SCREEN_UPDATE;
 input _GUIScreen* DELETE_WORLDMAP_SCREEN;
 
@@ -60,8 +59,6 @@ interface IWorldmapScreen with
     function (void) => Rect get_trans_rect;
 
     var _GUIScreen* me;
-
-    event _Pathname* load;
 end
 
 ////////////////////////////////////////////////
@@ -134,42 +131,11 @@ do
         return r;
     end
 
-    par/or do
-        every package in LOAD_WORLDMAP_SCREEN do
-            if package:screen != &worldmap_screen then
-                continue;
-            end
 
-            emit load => (_Pathname*)&package:filename;
-        end
-    with
-        every filename in load do
-            var PingusWorldmap*? pingus_worldmap = spawn PingusWorldmap;
-            var _FileReader&? fr = _new_FileReader(_FileReader__parse(_deref(filename)));
-            call/rec pingus_worldmap:parse_file(&fr);
-            _delete_obj(fr);
-
-            worldmap = spawn Worldmap with                
-                this.pingus_worldmap = pingus_worldmap;
-            end;
-        end
-    with
-        every screen in ON_STARTUP do
-            if screen != &worldmap_screen then
-                continue;
-            end
-
-            if worldmap then
-                emit worldmap:startup;
-            end
-        end
-    with
-        every package in SCREEN_DRAW_BACKGROUND do
-            if package:screen == &worldmap_screen then
-                _printf("WorldmapScreen/draw_background\n");
-                emit comp.draw => _addr(package:gc);
-                //emit ((IGUI_Component*)children.at(i):ceu):draw => &drawing_context;
-            end
+    every package in SCREEN_DRAW_BACKGROUND do
+        if package:screen == &worldmap_screen then
+            _printf("WorldmapScreen/draw_background\n");
+            emit comp.draw => _addr(package:gc);
         end
     end
 end
@@ -214,10 +180,6 @@ do
         this.me = _PTR2REF(_new_GUIScreen());
         ws = &this;
     end;
-
-    var _Pathname&? filename = _new_Pathname("worldmaps/tutorial.worldmap", _Pathname__DATA_PATH); //hardcoded tutorial pathname
-    emit ws:load => &filename;
-    _delete_obj(filename);
 
     _ScreenManager__instance():push_screen(_make_std__shared_ptr_Screen(ws:me));
 end

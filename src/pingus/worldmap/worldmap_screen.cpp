@@ -27,9 +27,6 @@ WorldmapScreen::~WorldmapScreen() {
 }
 
 void WorldmapScreen::load(const Pathname& filename) {
-  WorldmapScreenLoadPackage package(this, filename);
-  WorldmapScreenLoadPackage* pp = &package;
-  ceu_out_go(&CEUapp, CEU_IN_LOAD_WORLDMAP_SCREEN, &pp);
 }
 
 } // namespace WorldmapNS
