@@ -1,6 +1,8 @@
 #ifndef IGUI_COMPONENT_CEU
 #define IGUI_COMPONENT_CEU
 
+#include "../../math/vector2i.ceu"
+
 native/pre do
     ##include "engine/gui/component.hpp"
     ##include "engine/gui/rect_component.hpp"

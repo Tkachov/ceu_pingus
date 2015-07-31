@@ -5,56 +5,167 @@ end
 
 #include "c.ceu"
 #include "sdl.ceu"
-#include "pingus/colliders/pingu_collider.ceu"
-#include "pingus/screens/demo_session.ceu"
-#include "pingus/screens/game_session.ceu"
-#include "pingus/screens/font_test_screen.ceu"
-#include "pingus/screens/start_screen.ceu"
-#include "pingus/screens/story_screen.ceu"
-#include "pingus/screens/result_screen.ceu"
-#include "pingus/screens/pingus_menu.ceu"
-#include "pingus/screens/level_menu.ceu"
-#include "pingus/screens/option_menu.ceu"
-#include "pingus/screens/credits.ceu"
-
 #include "engine/gui/igui_component.ceu"
-#include "engine/gui/surface_button.ceu"
-#include "engine/screen/screen.ceu"
-#include "engine/sound/sound.ceu"
-#include "math/math.ceu"
-#include "math/rect.ceu"
-#include "pingus/iworld.ceu"
-#include "pingus/global_interface.ceu"
-#include "pingus/worldmap/path_graph.ceu"
-#include "pingus/worldmap/sprite_drawable.ceu"
-#include "pingus/worldmap/pingus_worldmap.ceu"
+#include "proxies/proxyeventlist.ceu"
 
-class DGF with do end
-class WSCrB with do end
-class WSClB with do end
+input _GUI_RectComponent* RECT_COMPONENT_UPDATE_LAYOUT;
 
-#include "math/math.ceu"
-#include "math/rect.ceu"
-#include "util/file_reader.ceu"
-#include "pingus/iworld.ceu"
-#include "pingus/global_interface.ceu"
+class Class0 with do end
+class Class1 with do end
+class Class2 with do end
+class Class3 with do end
+class Class4 with do end
+class Class5 with do end
+class Class6 with do end
+class Class7 with do end
+class Class8 with do end
+class Class9 with do end
+class Class10 with do end
+class Class11 with do end
+class Class12 with do end
+class Class13 with do end
+class Class14 with do end
+class Class15 with do end
+class Class16 with do end
+class Class17 with do end
+class Class18 with do end
+class Class19 with do end
+class Class20 with do end
+class Class21 with do end
+class Class22 with do end
+class Class23 with do end
+class Class24 with do end
+class Class25 with do end
+class Class26 with do end
+class Class27 with do end
+class Class28 with do end
+class Class29 with do end
+class Class30 with do end
+class Class31 with do end
+class Class32 with do end
+class Class33 with do end
+class Class34 with do end
+class Class35 with do end
+class Class36 with do end
+class Class37 with do end
+class Class38 with do end
+class Class39 with do end
+class Class40 with do end
+class Class41 with do end
+class Class42 with do end
+class Class43 with do end
+class Class44 with do end
+class Class45 with do end
+class Class46 with do end
+class Class47 with do end
+class Class48 with do end
+class Class49 with do end
+class Class50 with do end
+class Class51 with do end
+class Class52 with do end
+class Class53 with do end
+class Class54 with do end
+class Class55 with do end
+class Class56 with do end
+class Class57 with do end
+class Class58 with do end
+class Class59 with do end
+class Class60 with do end
+class Class61 with do end
+class Class62 with do end
+class Class63 with do end
+class Class64 with do end
+class Class65 with do end
+class Class66 with do end
+class Class67 with do end
+class Class68 with do end
+class Class69 with do end
+class Class70 with do end
+class Class71 with do end
+class Class72 with do end
+class Class73 with do end
+class Class74 with do end
+class Class75 with do end
+class Class76 with do end
+class Class77 with do end
+class Class78 with do end
+class Class79 with do end
+class Class80 with do end
+class Class81 with do end
+class Class82 with do end
+class Class83 with do end
+class Class84 with do end
+class Class85 with do end
+class Class86 with do end
+class Class87 with do end
+class Class88 with do end
+class Class89 with do end
+class Class90 with do end
+class Class91 with do end
+class Class92 with do end
+class Class93 with do end
+class Class94 with do end
+class Class95 with do end
+class Class96 with do end
+class Class97 with do end
+class Class98 with do end
+class Class99 with do end
+class Class100 with do end
+class Class101 with do end
+class Class102 with do end
+class Class103 with do end
+class Class104 with do end
+class Class105 with do end
+class Class106 with do end
+class Class107 with do end
+class Class108 with do end
+class Class109 with do end
+class Class110 with do end
+class Class111 with do end
+class Class112 with do end
+class Class113 with do end
+class Class114 with do end
+class Class115 with do end
+class Class116 with do end
+class Class117 with do end
+class Class118 with do end
+class Class119 with do end
+class Class120 with do end
+class Class121 with do end
+class Class122 with do end
+class Class123 with do end
+class Class124 with do end
+class Class125 with do end
+class Class126 with do end
+class Class127 with do end
+class Class128 with do end
+class Class129 with do end
+class Class130 with do end
+class Class131 with do end
+class Class132 with do end
+class Class133 with do end
+class Class134 with do end
+class Class135 with do end
+class Class136 with do end
+class Class137 with do end
+class Class138 with do end
+class Class139 with do end
+class Class140 with do end
+class Class141 with do end
+class Class142 with do end
+class Class143 with do end
+class Class144 with do end
+class Class145 with do end
+class Class146 with do end
+class Class147 with do end
+class Class148 with do end
+class Class149 with do end
 
 native/pre do
-    ##include "engine/display/display.hpp"
-    ##include "engine/display/graphic_context_state.hpp"
-    ##include "engine/gui/gui_manager.hpp"
-    ##include "engine/gui/rect_component.hpp"
-    ##include "engine/gui/surface_button.hpp"
-
     ##define new_GUI_Component() new GUI::Component()
-    ##define Display__get_width() Display::get_width()
-    ##define Display__get_height() Display::get_height()
 end
 
-native @pure _new_GUI_Component(), _Display__get_width(), _Display__get_height();
-
-input _ScreenUpdatePackage* WORLDMAP_SCREEN_UPDATE;
-input _GUIScreen* DELETE_WORLDMAP_SCREEN;
+native @pure _new_GUI_Component();
 
 interface IWorldmapScreen with
     function (void) => void get_trans_rect;
@@ -69,8 +180,6 @@ do
     function @rec (Vector2i pos) => bool is_at_func do
         return false; //TODO
     end
-
-    var EventProxy ep with this.gui = outer; end;
 
     every gc in draw do
         _printf("A | &this == %d; parent == %d\n", &this, &parent);
@@ -102,28 +211,7 @@ do
     end
 end
 
-#include "pingus/pingu_holder.ceu"
-#include "pingus/pingu_events.ceu"
-#include "pingus/global_interface.ceu"
-#include "pingus/server_event.ceu"
-#include "pingus/iworld.ceu"
-#include "proxies/proxyeventlist.ceu"
-
-event void e_PINGU_DIED;
-event void e_PINGU_EXITED;
-event _SceneContext* e_PINGU_DRAW_WALKER;
-event _SceneContext* e_PINGU_DRAW_OTHERS;
-event void e_PINGU_UPDATE_ALL;
-
-//global events
-event _SceneContext* draw;
-event void update;
-event void push_option_menu;
-event void push_worldmap_tutorial_screen;
-
 input void NEW_PINGUS_MENU;
-
-var IWorld* world = null;
 
 await NEW_PINGUS_MENU;
 await 100ms;

@@ -20,8 +20,7 @@
 GameSession::GameSession(const PingusLevel& arg_plf, bool arg_show_result_screen) :
   plf(arg_plf),
   show_result_screen(arg_show_result_screen)  
-{  
-  log_debug("GameSession");
+{ 
 
 }
 

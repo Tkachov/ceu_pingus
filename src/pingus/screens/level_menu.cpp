@@ -60,9 +60,7 @@ void fill_levelsets(std::vector<Levelset*>& levelsets) {
   std::sort(levelsets.begin(), levelsets.end(), LevelsetPrioritySorter());
 }
 
-LevelMenu::LevelMenu() { 
-
-  resize(Display::get_size());
+LevelMenu::LevelMenu() {
 }
 
 LevelMenu::~LevelMenu() {

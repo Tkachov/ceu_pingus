@@ -18,7 +18,6 @@
 #include "ceuvars.h"
 
 StoryScreen::StoryScreen(const FileReader& reader, bool credits):
-  story(new WorldmapNS::WorldmapStory(reader)),
   m_credits(credits)
 {
 }

@@ -30,14 +30,9 @@ ServerEvent::ServerEvent() :
   pos(),
   pingu_action(ActionName::WALKER)
 {
-  ServerEvent* self = this;
-  ceu_out_go(&CEUapp, CEU_IN_NEW_SERVER_EVENT, &self);
 }
 
 ServerEvent::~ServerEvent() {
-  //TODO: port completely or somehow solve that
-  //ServerEvent* self = this;
-  //ceu_out_go(&CEUapp, CEU_IN_DELETE_SERVER_EVENT, &self);
 }
 
 ServerEvent::ServerEvent(const FileReader& reader) :
@@ -85,9 +80,6 @@ ServerEvent::ServerEvent(const FileReader& reader) :
   {
     raise_exception(std::runtime_error, "ServerEvent: Parse error: Unknown event: " << reader.get_name());
   }
-
-  ServerEvent* self = this;
-  ceu_out_go(&CEUapp, CEU_IN_NEW_SERVER_EVENT, &self);
 }
 
 void
