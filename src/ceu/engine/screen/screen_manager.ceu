@@ -77,7 +77,7 @@ do
             end
 
             if fade_over then
-                ///screen_manager.fade_over(package:screen, screen_manager.get_current_screen()) finalize with end;
+                screen_manager.fade_over(package:screen, screen_manager.get_current_screen()) finalize with end;
                 continue;
             end
 
@@ -89,7 +89,7 @@ do
             end
 
             if package:screen != screen_manager.get_current_screen() then
-                ///screen_manager.fade_over(package:screen, screen_manager.get_current_screen()) finalize with end;
+                screen_manager.fade_over(package:screen, screen_manager.get_current_screen()) finalize with end;
                 continue;
             end
 
