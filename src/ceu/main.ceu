@@ -104,8 +104,6 @@ class WorldmapScreen with
     interface IWorldmapScreen;
     event void draw;
 do
-    var _GUIScreen&? worldmap_screen = _PTR2REF((_GUIScreen*)me);
-
     var Worldmap*? worldmap = null;
 
     _printf("WorldmapScreen == %d\n", &this);
@@ -134,8 +132,8 @@ do
 
 
     every draw do
-            _printf("WorldmapScreen/draw_background\n");
-            emit comp.draw => null;
+        _printf("WorldmapScreen/draw_background\n");
+        emit comp.draw => null;
     end
 end
 
@@ -145,14 +143,6 @@ end
 #include "pingus/server_event.ceu"
 #include "pingus/iworld.ceu"
 #include "proxies/proxyeventlist.ceu"
-
-native/pre do
-    ##define new_OptionMenu new OptionMenu
-    ##define new_Pathname new Pathname
-    ##define make_std__shared_ptr_Screen(x) std::shared_ptr<Screen>(x)
-end
-
-native @pure _new_Pathname(), _make_std__shared_ptr_Screen(), _new_OptionMenu();
 
 event void e_PINGU_DIED;
 event void e_PINGU_EXITED;
@@ -173,18 +163,16 @@ var IWorld* world = null;
 
 await NEW_PINGUS_MENU;
 await 100ms;
-do
-    var WorldmapScreen* ws = null;
-    spawn WorldmapScreen with
-        this.me = _PTR2REF(_new_GUIScreen());
-        ws = &this;
-    end;
 
-    _printf("go go draw\n");
-    emit ws:draw;
+var WorldmapScreen* ws = null;
+spawn WorldmapScreen with
+    this.me = _PTR2REF(null);
+    ws = &this;
+end;
 
-    _ScreenManager__instance():push_screen(_make_std__shared_ptr_Screen(ws:me));
-end
+_printf("go go draw\n");
+emit ws:draw;
+
 await SDL_QUIT;
 
 escape 0;
