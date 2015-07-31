@@ -57,8 +57,6 @@ input _GUIScreen* DELETE_WORLDMAP_SCREEN;
 interface IWorldmapScreen with
     function (void) => Worldmap*? get_ceu_worldmap;
     function (void) => Rect get_trans_rect;
-
-    var _GUIScreen* me;
 end
 
 ////////////////////////////////////////////////
@@ -130,7 +128,6 @@ do
         return r;
     end
 
-
     every draw do
         _printf("WorldmapScreen/draw_background\n");
         emit comp.draw => null;
@@ -164,14 +161,9 @@ var IWorld* world = null;
 await NEW_PINGUS_MENU;
 await 100ms;
 
-var WorldmapScreen* ws = null;
-spawn WorldmapScreen with
-    this.me = _PTR2REF(null);
-    ws = &this;
-end;
-
+var WorldmapScreen ws;
 _printf("go go draw\n");
-emit ws:draw;
+emit ws.draw;
 
 await SDL_QUIT;
 
