@@ -36,10 +36,6 @@ extern tinygettext::DictionaryManager dictionary_manager;
 void OptionMenu::resize(const Size& size_) {
   old_size = size;
   GUIScreen::resize(size_);
-
-  ScreenResizePackage package(this, size_);
-  ScreenResizePackage* pp = &package;
-  ceu_out_go(&CEUapp, CEU_IN_SCREEN_RESIZE, &pp);
 }
 
 /* EOF */

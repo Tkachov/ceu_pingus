@@ -23,20 +23,13 @@ GameSession::GameSession(const PingusLevel& arg_plf, bool arg_show_result_screen
 {  
   log_debug("GameSession");
 
-  GameSession* self = this;
-  ceu_out_go(&CEUapp, CEU_IN_NEW_GAME_SESSION, &self);
 }
 
 GameSession::~GameSession()
 {
-  GameSession* self = this;
-  ceu_out_go(&CEUapp, CEU_IN_DELETE_GAME_SESSION, &self);
 }
 
 void GameSession::update(float delta) {
-  ScreenUpdatePackage package(this, delta);
-  ScreenUpdatePackage* pp = &package;
-  ceu_out_go(&CEUapp, CEU_IN_GAME_SESSION_UPDATE, &pp);
 }
 
 /* EOF */

@@ -33,19 +33,12 @@ void couldnt_open(const Pathname& filename, std::vector<std::string>& credits) {
 }
 
 Credits::Credits(const Pathname& fn): filename(fn) {
-  Credits* self = this;
-  ceu_out_go(&CEUapp, CEU_IN_NEW_CREDITS, &self);
 }
 
 Credits::~Credits() {
-  Credits* self = this;
-  ceu_out_go(&CEUapp, CEU_IN_DELETE_CREDITS, &self);
 }
 
 void Credits::update(float delta) {
-  ScreenUpdatePackage package(this, delta);
-  ScreenUpdatePackage* pp = &package;
-  ceu_out_go(&CEUapp, CEU_IN_CREDITS_UPDATE, &pp);
 }
 
 /* EOF */

@@ -21,13 +21,9 @@ StoryScreen::StoryScreen(const FileReader& reader, bool credits):
   story(new WorldmapNS::WorldmapStory(reader)),
   m_credits(credits)
 {
-  StoryScreen* self = this;
-  ceu_out_go(&CEUapp, CEU_IN_NEW_STORY_SCREEN, &self);
 }
 
 StoryScreen::~StoryScreen() {
-  StoryScreen* self = this;
-  ceu_out_go(&CEUapp, CEU_IN_DELETE_STORY_SCREEN, &self);
 }
 
 /* EOF */

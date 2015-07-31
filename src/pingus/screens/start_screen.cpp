@@ -21,14 +21,10 @@
 StartScreen::StartScreen(const PingusLevel& arg_plf) :
   plf(arg_plf)
 {
-  StartScreen* self = this;
-  ceu_out_go(&CEUapp, CEU_IN_NEW_START_SCREEN, &self);
 }
 
 StartScreen::~StartScreen()
 {
-  StartScreen* self = this;
-  ceu_out_go(&CEUapp, CEU_IN_DELETE_START_SCREEN, &self);
 }
 
 /* EOF */

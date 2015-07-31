@@ -60,16 +60,12 @@ void fill_levelsets(std::vector<Levelset*>& levelsets) {
   std::sort(levelsets.begin(), levelsets.end(), LevelsetPrioritySorter());
 }
 
-LevelMenu::LevelMenu() {
-  LevelMenu* self = this;
-  ceu_out_go(&CEUapp, CEU_IN_NEW_LEVEL_MENU, &self);  
+LevelMenu::LevelMenu() { 
 
   resize(Display::get_size());
 }
 
 LevelMenu::~LevelMenu() {
-  LevelMenu* self = this;
-  ceu_out_go(&CEUapp, CEU_IN_DELETE_LEVEL_MENU, &self);
 }
 
 /* EOF */

@@ -21,14 +21,10 @@
 ResultScreen::ResultScreen(Result arg_result) :
   result(arg_result)
 {
-  ResultScreen* self = this;
-  ceu_out_go(&CEUapp, CEU_IN_NEW_RESULT_SCREEN, &self);
 }
 
 ResultScreen::~ResultScreen()
 {
-  ResultScreen* self = this;
-  ceu_out_go(&CEUapp, CEU_IN_DELETE_RESULT_SCREEN, &self);
 }
 
 /* EOF */

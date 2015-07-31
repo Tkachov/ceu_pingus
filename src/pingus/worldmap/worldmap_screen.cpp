@@ -21,13 +21,9 @@
 namespace WorldmapNS {
 
 WorldmapScreen::WorldmapScreen() {
-  WorldmapScreen* self = this;
-  ceu_out_go(&CEUapp, CEU_IN_NEW_WORLDMAP_SCREEN, &self);
 }
 
 WorldmapScreen::~WorldmapScreen() {
-  WorldmapScreen* self = this;
-  ceu_out_go(&CEUapp, CEU_IN_DELETE_WORLDMAP_SCREEN, &self);
 }
 
 void WorldmapScreen::load(const Pathname& filename) {

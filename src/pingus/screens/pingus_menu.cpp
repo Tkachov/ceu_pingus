@@ -17,20 +17,14 @@
 #include "pingus/screens/pingus_menu.hpp"
 #include "ceuvars.h"
 
-PingusMenu::PingusMenu() {
-  PingusMenu* self = this;
-  ceu_out_go(&CEUapp, CEU_IN_NEW_PINGUS_MENU, &self);
+PingusMenu::PingusMenu() {  
+  ceu_out_go(&CEUapp, CEU_IN_NEW_PINGUS_MENU, 0);
 }
 
 PingusMenu::~PingusMenu() {
-  PingusMenu* self = this;
-  ceu_out_go(&CEUapp, CEU_IN_DELETE_PINGUS_MENU, &self);
 }
 
 void PingusMenu::update(float delta) {
-  ScreenUpdatePackage package(this, delta);
-  ScreenUpdatePackage* pp = &package;
-  ceu_out_go(&CEUapp, CEU_IN_PINGUS_MENU_UPDATE, &pp);
 }
 
 /* EOF */

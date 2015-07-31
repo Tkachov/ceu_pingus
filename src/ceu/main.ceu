@@ -201,15 +201,7 @@ event void update;
 event void push_option_menu;
 event void push_worldmap_tutorial_screen;
 
-input _DemoSession* NEW_DEMO_SESSION;
-input _GameSession* NEW_GAME_SESSION;
-input _StartScreen* NEW_START_SCREEN;
-input _StoryScreen* NEW_STORY_SCREEN;
-input _ResultScreen* NEW_RESULT_SCREEN;
-input _WorldmapNS__WorldmapScreen* NEW_WORLDMAP_SCREEN;
-input _PingusMenu* NEW_PINGUS_MENU;
-input _Credits* NEW_CREDITS;
-input _LevelMenu* NEW_LEVEL_MENU;
+input void NEW_PINGUS_MENU;
 input _Pathname* PUSH_FONT_TEST_SCREEN;
 
 var IWorld* world = null;

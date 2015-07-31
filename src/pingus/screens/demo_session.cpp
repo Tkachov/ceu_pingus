@@ -72,10 +72,6 @@ DemoSession::DemoSession(const Pathname& pathname_) :
              demo->get_checksum(), plf.get_checksum());
   }  
 
-  // Create GUI
-  DemoSession* self = this;
-  ceu_out_go(&CEUapp, CEU_IN_NEW_DEMO_SESSION, &self);
-
   gui_manager->add(fastforward_button= new BButton(32+50, 32, "core/demo/fastforward",
                                                    std::bind(&DemoSession::on_fast_forward_press, this),
                                                    std::bind(&DemoSession::is_fast_forward, this)));
@@ -88,8 +84,6 @@ DemoSession::DemoSession(const Pathname& pathname_) :
 
 DemoSession::~DemoSession()
 {
-  DemoSession* self = this;
-  ceu_out_go(&CEUapp, CEU_IN_DELETE_DEMO_SESSION, &self);
 }
 
 /** Pass a delta to the screen */
@@ -98,9 +92,6 @@ DemoSession::update(float delta)
 {
   GUIScreen::update(delta);
 
-  ComponentUpdatePackage package((GUI::Component*)this, delta);
-  ComponentUpdatePackage* pp = &package;
-  ceu_out_go(&CEUapp, CEU_IN_DEMO_SESSION_UPDATE_SERVER, &pp);
 }
 
 void DemoSession::on_pause_press() {
@@ -112,9 +103,6 @@ void DemoSession::on_fast_forward_press() {
 }
 
 void DemoSession::on_scroller_move(float x, float y) {
-  Vector2i package(x, y);
-  Vector2i* pp = &package;
-  ceu_out_go(&CEUapp, CEU_IN_DEMO_SESSION_ON_SCROLLER_MOVE, &pp);
 }
 
 void
