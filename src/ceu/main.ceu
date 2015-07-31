@@ -165,6 +165,8 @@ class Class148 with do end
 class Class149 with do end
 */
 
+////////////////////////////////////////////////
+
 native/pre do
     ##define new_GUI_Component() new GUI::Component()
 end
@@ -178,14 +180,10 @@ end
 ////////////////////////////////////////////////
 
 class WorldmapScreenComponent with
-    interface IGUI_Component;
+    event void draw;
     var IWorldmapScreen& parent;
 do
-    function @rec (Vector2i pos) => bool is_at_func do
-        return false; //TODO
-    end
-
-    every gc in draw do
+    every draw do
         _printf("A | &this == %d; parent == %d\n", &this, &parent);
         parent.get_trans_rect();
         _printf("B\n");
@@ -200,9 +198,7 @@ class WorldmapScreen with
 do
     _printf("WorldmapScreen == %d\n", &this);
 
-    var WorldmapScreenComponent comp with
-        this.me = _new_GUI_Component();
-        this.me.ceu = &this;        
+    var WorldmapScreenComponent comp with     
         this.parent = outer;
     end;
 
@@ -211,7 +207,7 @@ do
 
     every draw do
         _printf("WorldmapScreen/draw_background\n");
-        emit comp.draw => null;
+        emit comp.draw;
     end
 end
 
