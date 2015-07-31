@@ -16,7 +16,24 @@ end
 #include "pingus/screens/level_menu.ceu"
 #include "pingus/screens/option_menu.ceu"
 #include "pingus/screens/credits.ceu"
-#include "pingus/worldmap/worldmap.ceu"
+
+#include "engine/gui/igui_component.ceu"
+#include "engine/gui/surface_button.ceu"
+#include "engine/screen/screen.ceu"
+#include "engine/sound/sound.ceu"
+#include "math/math.ceu"
+#include "math/rect.ceu"
+#include "pingus/iworld.ceu"
+#include "pingus/global_interface.ceu"
+#include "pingus/worldmap/path_graph.ceu"
+#include "pingus/worldmap/sprite_drawable.ceu"
+//#include "pingus/worldmap/iworldmap.ceu"
+#include "pingus/worldmap/pingus_worldmap.ceu"
+
+class Worldmap with
+do
+    await FOREVER;
+end
 
 
 #include "math/math.ceu"
