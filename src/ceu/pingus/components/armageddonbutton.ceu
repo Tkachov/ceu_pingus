@@ -33,6 +33,10 @@ do
     //freed in GroupComponent
     //finalize with _delete_obj(me_); end
 
+    function @rec (Vector2i pos) => bool is_at_func do
+        return false; //TODO
+    end
+
     par do
         every mouse_double_click do
             emit server.e_ARMAGEDDON;

@@ -32,6 +32,10 @@ do
     var Sprite2 infinity_symbol;
     infinity_symbol.reload_by_name("core/misc/infinity");
 
+    function @rec (Vector2i pos) => bool is_at_func do
+        return false; //TODO
+    end
+
     var _Font* font = _Fonts__pingus_small_fixnum;
 
     var EventProxy p with this.gui = outer; end;

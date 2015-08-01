@@ -32,9 +32,10 @@ class Screen
 {
 protected:
   Size size;
+  void* ceu;
 
 public:
-  Screen (const Size& size_) : size(size_) { }
+  Screen (const Size& size_) : size(size_), ceu(0) { }
   virtual ~Screen () {}
 
   /** Draw this screen */

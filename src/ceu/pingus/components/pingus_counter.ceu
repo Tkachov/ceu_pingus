@@ -33,6 +33,10 @@ do
     var Sprite background;
     call/rec background.reload_by_name("core/buttons/info");
 
+    function @rec (Vector2i pos) => bool is_at_func do
+        return false; //TODO
+    end
+
     var EventProxy p with this.gui = outer; end;
 
     var _Font* font = _Fonts__pingus_small_fixnum;

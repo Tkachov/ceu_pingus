@@ -38,6 +38,9 @@ public:
   
   virtual bool is_at (int x, int y) { return rect.contains(Vector2i(x, y)); }
   virtual void update_layout();
+
+  virtual void parent_grab(Component* comp) {};
+  virtual void parent_ungrab(Component* comp) {};
   
   void set_rect(const Rect& rect_) 
   {

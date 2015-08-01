@@ -320,14 +320,14 @@ GroupComponent::on_pointer_leave()
 }
 
 void
-GroupComponent::grab(Component* comp)
+GroupComponent::parent_grab(Component* comp)
 {
   grabbed_comp = comp;
   Component::grab();
 }
 
 void
-GroupComponent::ungrab(Component* comp)
+GroupComponent::parent_ungrab(Component* comp)
 {
   grabbed_comp = 0;
   Component::ungrab();

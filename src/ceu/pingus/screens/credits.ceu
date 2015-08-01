@@ -91,6 +91,10 @@ do
 
     call/rec sb.load("core/start/ok", "core/start/ok_clicked", "core/start/ok_hover");
 
+    function @rec (Vector2i pos) => bool is_at_func do
+        return false; //TODO
+    end
+
     var PrimaryButtonProxy p with this.gui = outer; end;
     var PointerProxy pp with this.gui = outer; end;
     var EventProxy ep with this.gui = outer; end;

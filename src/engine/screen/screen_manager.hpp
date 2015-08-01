@@ -30,7 +30,6 @@ struct Event;
 class Controller;
 }
 
-class FPSCounter;
 class Size;
 class DrawingContext;
 class Screen;
@@ -48,15 +47,12 @@ private:
 
   std::unique_ptr<DrawingContext> display_gc;
   
-  std::unique_ptr<FPSCounter> fps_counter;
   Sprite cursor;
 
   /** Screen stack (first is the screen, second is delete_screen,
       which tells if the screen should be deleted onces it got poped
       or replaced) */
   std::vector<ScreenPtr> screens;
-
-  Vector2i mouse_pos;
 
   bool record_input;
   bool playback_input;
@@ -101,6 +97,16 @@ public:
 private:
   ScreenManager (const ScreenManager&);
   ScreenManager& operator= (const ScreenManager&);
+};
+
+struct ScreenManagerUpdatePackage {
+  ScreenManager* screen_manager;
+  ScreenPtr screen;
+  float delta;
+  const std::vector<Input::Event>& events;
+
+  ScreenManagerUpdatePackage(ScreenManager* sm, ScreenPtr s, float d, const std::vector<Input::Event>& e):
+  screen_manager(sm), screen(s), delta(d), events(e) {};
 };
 
 #endif

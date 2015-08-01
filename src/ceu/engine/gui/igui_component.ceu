@@ -7,13 +7,20 @@ native/pre do
     ##include "math/vector2i.hpp"
     ##define GUI_Component GUI::Component
     ##define GUI_RectComponent GUI::RectComponent
+    ##define GUI__Component GUI::Component
+    ##define GUI__RectComponent GUI::RectComponent
     ##define new_GUI__RectComponent new GUI::RectComponent
+
+    ##define const_Input__KeyboardEvent const Input::KeyboardEvent
+    ##define const_Input__TextInputEvent const Input::TextInputEvent
 end
 
 native @pure _new_GUI__RectComponent();
 
 interface IGUI_Component with
     var _GUI_Component& me;
+
+    function @rec (Vector2i pos) => bool is_at_func;
 
     event _DrawingContext* draw;
     event float update;
@@ -32,6 +39,9 @@ interface IGUI_Component with
     event (int, int) mouse_secondary_release;
     event (int, int) mouse_secondary_click;
     event void mouse_secondary_double_click;
+
+    event _const_Input__KeyboardEvent* key_pressed;
+    event _const_Input__TextInputEvent* text_input;
 end
 
 #endif

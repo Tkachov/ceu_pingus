@@ -196,6 +196,12 @@ void GUIScreen::draw_background(DrawingContext& gc) {
   ceu_out_go(&CEUapp, CEU_IN_SCREEN_DRAW_BACKGROUND, &pp);
 }
 
+void GUIScreen::draw_foreground(DrawingContext& gc) {
+  ScreenDrawPackage package(this, gc);
+  ScreenDrawPackage* pp = &package;
+  ceu_out_go(&CEUapp, CEU_IN_SCREEN_DRAW_FOREGROUND, &pp);
+}
+
 void GUIScreen::resize(const Size& size_) {
   Screen::resize(size_);
   gui_manager->set_rect(Rect(Vector2i(0, 0), size));

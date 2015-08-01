@@ -1,11 +1,14 @@
 #ifndef ISCREEN_CEU
 #define ISCREEN_CEU
 
+#include "../gui/igui_manager.ceu"
+
 native/pre do
     ##include "engine/screen/gui_screen.hpp"
     ##include "engine/screen/screen.hpp"
 
     ##define new_GUIScreen() new GUIScreen()
+    ##define const_Input__Event const Input::Event
 end
 
 native @pure _new_GUIScreen();
@@ -26,7 +29,97 @@ input _GUIScreen* ON_ACTION_DOWN_PRESS;
 input _ScreenUpdatePackage* SCREEN_UPDATE;
 input _ScreenUpdateEventPackage* SCREEN_UPDATE_EVENT;
 input _ScreenDrawPackage* SCREEN_DRAW_BACKGROUND;
+input _ScreenDrawPackage* SCREEN_DRAW_FOREGROUND;
 input _ScreenResizePackage* SCREEN_RESIZE;
 input _ScreenAxisMovePackage* ON_ACTION_AXIS_MOVE;
+
+interface Screen with
+    var _GUIScreen&? me;    
+
+    event _DrawingContext* call_draw;
+    event float call_update;
+    event _const_Input__Event* call_update_event;
+
+    event _DrawingContext* draw_background;
+    event _DrawingContext* draw_foreground;
+    event float update;
+    event _const_Input__Event* update_event;
+end
+
+class ScreenFramework with
+    var Screen& screen;
+    var IGUIManager* gui_manager = null;
+do
+    par do
+        every gc in screen.call_draw do
+            emit screen.draw_background => gc;            
+            if gui_manager then
+                emit gui_manager:draw => gc;
+            end
+            emit screen.draw_foreground => gc;
+        end
+    with
+        every delta in screen.call_update do
+            if gui_manager then
+                emit gui_manager:update => delta;
+            end
+            emit screen.update => delta;
+        end
+    with
+        every e in screen.call_update_event do
+            // Dispatch the recieved input events
+            if gui_manager then
+                emit gui_manager:update_event => e;
+            end
+/*
+  if event.type == Input::BUTTON_EVENT_TYPE:
+    {
+      process_button_event (event.button);
+    }
+else if event.type == Input::AXIS_EVENT_TYPE:
+    {
+      if (event.axis.name == Input::ACTION_AXIS)
+      {
+        on_action_axis_move(event.axis.dir);
+      }
+    }
+*/
+            emit screen.update_event => e;
+        end
+    with
+        every package in SCREEN_DRAW_BACKGROUND do
+            if package:screen == &screen.me then
+                emit screen.draw_background => &package:gc;
+                if gui_manager then
+                    emit gui_manager:draw => &package:gc;
+                end
+            end
+        end
+    with
+        every package in SCREEN_DRAW_FOREGROUND do
+            if package:screen == &screen.me then
+                emit screen.draw_foreground => &package:gc;
+            end
+        end
+    with
+        every package in SCREEN_UPDATE do
+            if package:screen == &screen.me then
+                if gui_manager then
+                    emit gui_manager:update => package:delta;
+                end
+                emit screen.update => package:delta;
+            end
+        end
+    with
+        every package in SCREEN_UPDATE_EVENT do
+            if package:screen == &screen.me then
+                if gui_manager then
+                    emit gui_manager:update_event => &package:event;
+                end
+                emit screen.update_event => &package:event;
+            end
+        end
+    end
+end
 
 #endif

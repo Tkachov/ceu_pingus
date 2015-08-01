@@ -14,7 +14,7 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#include "engine/gui/group_component.hpp"
+#include "engine/gui/rect_component.hpp"
 
 #include "ceuvars.h"
 
@@ -80,14 +80,14 @@ void Component::on_secondary_button_click(int x, int y) {
   ceu_out_go(&CEUapp, CEU_IN_ON_SECONDARY_BUTTON_CLICK, &pp);
 }
 
-GroupComponent*
+RectComponent*
 Component::get_parent() const
 {
   return parent; 
 }
 
 void
-Component::set_parent(GroupComponent* p)
+Component::set_parent(RectComponent* p)
 {
   assert(parent == 0);
   parent = p; 
@@ -97,14 +97,14 @@ void
 Component::grab()
 {
   if (parent) 
-    parent->grab(this); 
+    parent->parent_grab(this); 
 }
 
 void
 Component::ungrab()
 {
   if (parent)
-    parent->ungrab(this); 
+    parent->parent_ungrab(this); 
 }
 
 } // namespace GUI
