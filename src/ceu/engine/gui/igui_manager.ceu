@@ -1,0 +1,22 @@
+#ifndef IGUI_MANAGER_CEU
+#define IGUI_MANAGER_CEU
+
+#include "igui_component.ceu"
+
+native/pre do    
+    ##include "engine/gui/component.hpp"
+    ##include "engine/display/drawing_context.hpp"
+    ##define const_Input__Event const Input::Event
+end
+
+interface IGUIManager with
+    interface IGUI_Component;
+
+    var _DrawingContext&? drawing_context;
+
+    function (_GUI__Component* comp) => void add;
+
+    event _const_Input__Event* update_event;
+end
+
+#endif

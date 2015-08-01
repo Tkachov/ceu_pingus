@@ -5,17 +5,14 @@
 #include "../../sdl.ceu"
 #include "../../math/vector2i.ceu"
 #include "../display/sprite.ceu"
-#include "igui_component.ceu"
+#include "igui_manager.ceu"
 
 native/pre do
     ##include "engine/display/sprite.hpp"
-    ##include "engine/gui/component.hpp"
-    ##include "engine/display/drawing_context.hpp"
     ##include <vector>
 
     ##define std__vector_Component std::vector<GUI::Component*>
     ##define new_Vector_Component new std::vector<GUI::Component*>
-    ##define const_Input__Event const Input::Event
 end
 
 native @pure _new_Vector_Component();
@@ -55,13 +52,7 @@ anyways that rect is also passed into _GUI_RectComponent()
 */
 
 class GUIManager with
-    interface IGUI_Component;
-
-    var _DrawingContext&? drawing_context;
-
-    function (_GUI__Component* comp) => void add;
-
-    event _const_Input__Event* update_event;
+    interface IGUIManager;
 do
     var Vector2i mouse_pos;
     mouse_pos.x = 400;

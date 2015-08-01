@@ -1,6 +1,8 @@
 #ifndef ISCREEN_CEU
 #define ISCREEN_CEU
 
+#include "../gui/igui_manager.ceu"
+
 native/pre do
     ##include "engine/screen/gui_screen.hpp"
     ##include "engine/screen/screen.hpp"
@@ -32,7 +34,7 @@ input _ScreenResizePackage* SCREEN_RESIZE;
 input _ScreenAxisMovePackage* ON_ACTION_AXIS_MOVE;
 
 interface Screen with
-    var _GUIScreen&? me;
+    var _GUIScreen&? me;    
 
     event _DrawingContext* call_draw;
     event float call_update;
@@ -46,39 +48,41 @@ end
 
 class ScreenFramework with
     var Screen& screen;
+    var IGUIManager* gui_manager = null;
 do
     par do
         every gc in screen.call_draw do
-            emit screen.draw_background => gc;
-            ///screen.me.gui_manager:draw(_deref(gc));
+            emit screen.draw_background => gc;            
+            if gui_manager then
+                emit gui_manager:draw => gc;
+            end
             emit screen.draw_foreground => gc;
         end
     with
         every delta in screen.call_update do
-            ///screen.me.gui_manager:update(delta);
+            if gui_manager then
+                emit gui_manager:update => delta;
+            end
             emit screen.update => delta;
         end
     with
         every e in screen.call_update_event do
             // Dispatch the recieved input events
-            ///screen.me.gui_manager:update(_deref(e));
+            if gui_manager then
+                emit gui_manager:update_event => e;
+            end
 /*
-  switch (event.type)
-
-    case Input::BUTTON_EVENT_TYPE:
+  if event.type == Input::BUTTON_EVENT_TYPE:
     {
       process_button_event (event.button);
     }
-    break;
-
-    case Input::AXIS_EVENT_TYPE:
+else if event.type == Input::AXIS_EVENT_TYPE:
     {
       if (event.axis.name == Input::ACTION_AXIS)
       {
         on_action_axis_move(event.axis.dir);
       }
     }
-    break;
 */
             emit screen.update_event => e;
         end
@@ -86,6 +90,9 @@ do
         every package in SCREEN_DRAW_BACKGROUND do
             if package:screen == &screen.me then
                 emit screen.draw_background => &package:gc;
+                if gui_manager then
+                    emit gui_manager:draw => &package:gc;
+                end
             end
         end
     with
@@ -97,12 +104,18 @@ do
     with
         every package in SCREEN_UPDATE do
             if package:screen == &screen.me then
+                if gui_manager then
+                    emit gui_manager:update => package:delta;
+                end
                 emit screen.update => package:delta;
             end
         end
     with
         every package in SCREEN_UPDATE_EVENT do
             if package:screen == &screen.me then
+                if gui_manager then
+                    emit gui_manager:update_event => &package:event;
+                end
                 emit screen.update_event => &package:event;
             end
         end

@@ -474,19 +474,15 @@ do
             gc:print_left(_Fonts__chalk_normal, _Vector2i(gc:get_width()/2 - 320, gc:get_height()/2 + 200),
                         __("Some options require a restart of the game to take effect."));
 
-            emit gui_manager.draw => _addr(package:gc);
+            emit gui_manager.draw => gc;
         end
     with
-        every package in SCREEN_UPDATE do
-            if package:screen == &option_menu then
-                emit gui_manager.update => package:delta;
-            end
+        every delta in update do
+            emit gui_manager.update => delta;            
         end
     with
-        every package in SCREEN_UPDATE_EVENT do
-            if package:screen == &option_menu then
-                emit gui_manager.update_event => _addr(package:event);
-            end
+        every ev in update_event do
+            emit gui_manager.update_event => ev;            
         end
     with
         every screen in ON_ESCAPE_PRESS do

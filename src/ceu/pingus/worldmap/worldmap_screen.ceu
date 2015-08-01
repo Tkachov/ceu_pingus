@@ -353,17 +353,18 @@ end
 class WorldmapScreen with
     interface IWorldmapScreen;
 do
+    var _GUIScreen&? worldmap_screen = _PTR2REF((_GUIScreen*)&me);
     var GUIManager gui_manager with
         this.me = _new_GUI__RectComponent(_Rect(0, 0, _Display__get_width(), _Display__get_height()));
         this.drawing_context = _new_DrawingContext(_Rect(0, 0, _Display__get_width(), _Display__get_height()), false);
     end;
 
-    var _GUIScreen&? worldmap_screen = _PTR2REF((_GUIScreen*)&me);
     var Worldmap*? worldmap = null;
     var bool exit_worldmap = false;
 
     var ScreenFramework sf with
         this.screen = outer;
+        this.gui_manager = &gui_manager;
     end;
 
     var WorldmapScreenComponent comp with
@@ -466,25 +467,10 @@ do
             end
         end
     with
-        every package in SCREEN_DRAW_BACKGROUND do
-            if package:screen == &worldmap_screen then                
-                emit gui_manager.draw => _addr(package:gc);
-            end
-        end
-    with
-
-            emit gui_manager.update => package:delta;
-
         every delta in update do
             //Exit the world
             if exit_worldmap then
                 _ScreenManager__instance():pop_screen();
-            end
-        end
-    with
-        every package in SCREEN_UPDATE_EVENT do
-            if package:screen == &worldmap_screen then
-                emit gui_manager.update_event => _addr(package:event);
             end
         end
     with
