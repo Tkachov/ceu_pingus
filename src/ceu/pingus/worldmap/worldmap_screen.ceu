@@ -88,14 +88,14 @@ do
     end;
 
     function @rec (Vector2i pos) => bool is_at_func do
-        return false; //TODO
+        return call/rec sb.is_at_func(pos);
     end
 
     call/rec sb.load("core/worldmap/credits_button_normal",
                      "core/worldmap/credits_button_pressed",
                      "core/worldmap/credits_button_hover");
 
-    var PrimaryButtonProxy p with this.gui = outer; end;
+    var PrimaryButtonProxy pbp with this.gui = outer; end;
     var PointerProxy pp with this.gui = outer; end;
     var EventProxy ep with this.gui = outer; end;
 
@@ -104,16 +104,63 @@ do
     end
 
     par do
-        every mouse_click do
+        every (x, y) in mouse_click do
+            emit sb.mouse_click => (x, y);
             parent.show_end_story();
         end
     with
         every mouse_enter do
+            emit sb.mouse_enter;
             _Sound__PingusSound__play_sound("tick");
         end
     with
         every gc in draw do
+            emit sb.draw => gc;
             gc:print_center(_Fonts__chalk_small, _Vector2i( _Display__get_width() - 83, 2), __("Show Ending?"));
+        end
+     with
+        every d in update do
+            emit sb.update => d;
+        end
+    with
+        every p in is_at do
+            emit sb.is_at => p;
+        end
+    with
+        every mouse_leave do
+            emit sb.mouse_leave;
+        end
+    with
+        every (x, y) in mouse_move do
+            emit sb.mouse_move => (x, y);
+        end
+    with
+        every (x, y) in mouse_press do
+            emit sb.mouse_press => (x, y);
+        end
+    with
+        every (x, y) in mouse_release do
+            emit sb.mouse_release => (x, y);
+        end
+    with
+        every mouse_double_click do
+            emit sb.mouse_double_click;
+        end
+    with
+        every (x, y) in mouse_secondary_press do
+            emit sb.mouse_secondary_press => (x, y);
+        end
+    with
+        every (x, y) in mouse_secondary_release do
+            emit sb.mouse_secondary_release => (x, y);
+        end
+    with
+        every (x, y) in mouse_secondary_click do
+            emit sb.mouse_secondary_click => (x, y);
+        end
+    with
+        every mouse_secondary_double_click do
+            emit sb.mouse_secondary_double_click;
         end
     end
 end
@@ -133,14 +180,14 @@ do
     end;
 
     function @rec (Vector2i pos) => bool is_at_func do
-        return false; //TODO
+        return call/rec sb.is_at_func(pos);
     end
 
     call/rec sb.load("core/worldmap/leave_button_normal",
                      "core/worldmap/leave_button_pressed",
                      "core/worldmap/leave_button_hover");
 
-    var PrimaryButtonProxy p with this.gui = outer; end;
+    var PrimaryButtonProxy pbp with this.gui = outer; end;
     var PointerProxy pp with this.gui = outer; end;
     var EventProxy ep with this.gui = outer; end;
 
@@ -149,16 +196,63 @@ do
     end
 
     par do
-        every mouse_click do
+        every (x, y) in mouse_click do
+            emit sb.mouse_click => (x, y);
             _ScreenManager__instance():pop_screen();
         end
     with
         every mouse_enter do
+            emit sb.mouse_enter;
             _Sound__PingusSound__play_sound("tick");
         end
     with
         every gc in draw do
+            emit sb.draw => gc;
             gc:print_center(_Fonts__chalk_small, _Vector2i(44, _Display__get_height() - 25), __("Leave?"));
+        end
+    with
+        every d in update do
+            emit sb.update => d;
+        end
+    with
+        every p in is_at do
+            emit sb.is_at => p;
+        end
+    with
+        every mouse_leave do
+            emit sb.mouse_leave;
+        end
+    with
+        every (x, y) in mouse_move do
+            emit sb.mouse_move => (x, y);
+        end
+    with
+        every (x, y) in mouse_press do
+            emit sb.mouse_press => (x, y);
+        end
+    with
+        every (x, y) in mouse_release do
+            emit sb.mouse_release => (x, y);
+        end
+    with
+        every mouse_double_click do
+            emit sb.mouse_double_click;
+        end
+    with
+        every (x, y) in mouse_secondary_press do
+            emit sb.mouse_secondary_press => (x, y);
+        end
+    with
+        every (x, y) in mouse_secondary_release do
+            emit sb.mouse_secondary_release => (x, y);
+        end
+    with
+        every (x, y) in mouse_secondary_click do
+            emit sb.mouse_secondary_click => (x, y);
+        end
+    with
+        every mouse_secondary_double_click do
+            emit sb.mouse_secondary_double_click;
         end
     end
 end
@@ -176,7 +270,7 @@ do
     finalize with _delete_obj(scene_context); end
 
     function @rec (Vector2i pos) => bool is_at_func do
-        return false; //TODO
+        return true;
     end
 
     var PrimaryButtonProxy p with this.gui = outer; end;
@@ -186,7 +280,10 @@ do
 
     par do
         every package in is_at do
-            package:result = true;
+            var Vector2i pos;
+            pos.x = package:mouse_pos.x;
+            pos.y = package:mouse_pos.y;
+            package:result = call/rec is_at_func(pos);
         end
     with
         loop do
@@ -210,18 +307,11 @@ do
         end
     with
         every gc in draw do
-            _printf("WorldmapScreenComponent/draw (&this == %d); parent == %d\n", &this, &parent);
-
             var Rect cliprect = parent.get_trans_rect();
-            _printf("rect?\n");
             scene_context.set_rect(_toRect(cliprect));
-            _printf("set_rect?\n");
             scene_context.clear();
-            _printf("clear?\n");
 
-            _printf("before push_modelview()\n");
             scene_context.push_modelview();
-            _printf("after push_modelview()\n");
             if parent.get_ceu_worldmap() then
                 emit parent.get_ceu_worldmap():draw => _addr(scene_context.color());
             end
@@ -272,13 +362,10 @@ do
     var Worldmap*? worldmap = null;
     var bool exit_worldmap = false;
 
-    _printf("WorldmapScreen == %d\n", &this);
-
     var WorldmapScreenComponent comp with
         this.me = _new_GUI_Component();
         this.me.ceu = &this;        
         this.parent = outer;
-        _printf("CONSTRUCTOR/outer == %d\n", &outer);
     end;
 
     var WorldmapScreenCloseButton close_button with
@@ -309,7 +396,6 @@ do
     end
 
     function (void) => Rect get_trans_rect do
-        _printf("rect\n");
         var Rect r;
         if worldmap then
             Rect_load_XYWH(
@@ -377,8 +463,7 @@ do
         end
     with
         every package in SCREEN_DRAW_BACKGROUND do
-            if package:screen == &worldmap_screen then
-                _printf("WorldmapScreen/draw_background\n");
+            if package:screen == &worldmap_screen then                
                 emit gui_manager.draw => _addr(package:gc);
             end
         end

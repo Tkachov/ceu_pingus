@@ -21,13 +21,6 @@ end
 native @pure _new_Vector_Component();
 
 /*
-  
-  void on_primary_button_click(int x, int y) {}
-  void on_secondary_button_click(int x, int y) {}
-
-  void on_key_pressed(const Input::KeyboardEvent& ev);
-
-  void on_text_input(const Input::TextInputEvent& ev);
   void on_pointer_leave();
 
   void on_pointer_move(int x, int y);
@@ -140,7 +133,6 @@ do
         end
     with
         every parent_gc in draw do
-            _printf("GUIManager/draw\n");
             drawing_context.clear();
 
             loop i in children.size() do
@@ -149,7 +141,6 @@ do
                         _printf("draw/ceu==null\n");
                         children.at(i):draw(_deref(drawing_context));
                     else
-                        _printf("draw/ceu==%d\n", children.at(i):ceu);
                         emit ((IGUI_Component*)children.at(i):ceu):draw => &drawing_context;
                     end
                 end
@@ -190,37 +181,18 @@ do
                         emit mouse_secondary_release => (mouse_pos.x, mouse_pos.y);
                     end
                 end
-            end
-/*
-    case Input::AXIS_EVENT_TYPE:
-      // AxisEvents can be ignored in the GUI, they are handled elsewhere
-      log_debug("GUIManager: AxisEvent: %1%", event.axis.dir);
-      break;
-
-    case Input::TEXT_INPUT_EVENT_TYPE:
-      on_text_input(event.text);
-      break;
-        
-    case Input::KEYBOARD_EVENT_TYPE:
-      if (event.keyboard.state)
-      {
-        on_key_pressed(event.keyboard);
-      }
-      else
-      {
-        //FIXME: implement this on_key_release(event.keyboard);
-      }
-      break;
-
-    case Input::SCROLLER_EVENT_TYPE:
-      on_scroller_move(event.scroll.x_delta, event.scroll.y_delta);
-      break;
-
-    default:
-      log_warn("unhandled event type %1%", event.type);
-      break;
-  }
-  */
+            else/if ev:type == {Input::TEXT_INPUT_EVENT_TYPE} then
+                emit text_input => _addr(ev:text);
+            else/if ev:type == {Input::KEYBOARD_EVENT_TYPE} then
+                if ev:keyboard.state then                
+                    emit key_pressed => _addr(ev:keyboard);
+                else                
+                    //original FIXME: implement this on_key_release(event.keyboard);
+                end
+            else/if ev:type == {Input::SCROLLER_EVENT_TYPE} then
+                //there's no on_scroller_move in GUIManager
+                ///emit on_scroller_move => (ev:scroll.x_delta, ev:scroll.y_delta);
+            end  
         end
     with
         every (x, y) in mouse_press do
@@ -436,35 +408,54 @@ do
                 mouse_over_comp = _PTR2REF(comp);
             end
         end
+    with
+        every kev in key_pressed do
+            if grabbed_comp then
+                if grabbed_comp:ceu == null then
+                    grabbed_comp:on_key_pressed(_deref(kev));
+                else
+                    emit ((IGUI_Component*)grabbed_comp:ceu):key_pressed => kev;
+                end
+            else/if focused_comp then
+                if focused_comp:ceu == null then
+                    focused_comp:on_key_pressed(_deref(kev));
+                else
+                    emit ((IGUI_Component*)focused_comp:ceu):key_pressed => kev;
+                end
+            else/if mouse_over_comp then
+                if mouse_over_comp:ceu == null then
+                    mouse_over_comp:on_key_pressed(_deref(kev));
+                else
+                    emit ((IGUI_Component*)mouse_over_comp:ceu):key_pressed => kev;
+                end
+            end
+        end
+    with
+        every tev in text_input do
+            if grabbed_comp then
+                if grabbed_comp:ceu == null then
+                    grabbed_comp:on_text_input(_deref(tev));
+                else
+                    emit ((IGUI_Component*)grabbed_comp:ceu):text_input => tev;
+                end
+            else/if focused_comp then
+                if focused_comp:ceu == null then
+                    focused_comp:on_text_input(_deref(tev));
+                else
+                    emit ((IGUI_Component*)focused_comp:ceu):text_input => tev;
+                end
+            else/if mouse_over_comp then
+                if mouse_over_comp:ceu == null then
+                    mouse_over_comp:on_text_input(_deref(tev));
+                else
+                    emit ((IGUI_Component*)mouse_over_comp:ceu):text_input => tev; 
+                end
+            end
+        end
     end
 end
 
 /*
-
-void
-GroupComponent::on_key_pressed(const Input::KeyboardEvent& ev)
-{
-  //TODO: Ceu ON_KEY_PRESSED
-  if (grabbed_comp)
-    grabbed_comp->on_key_pressed(ev);
-  else if (focused_comp)
-    focused_comp->on_key_pressed(ev);
-  else if (mouse_over_comp)
-    mouse_over_comp->on_key_pressed(ev);
-}
-
-void
-GroupComponent::on_text_input(const Input::TextInputEvent& ev)
-{
-  //TODO: Ceu ON_TEXT_INPUT
-  if (grabbed_comp)
-    grabbed_comp->on_text_input(ev);
-  else if (focused_comp)
-    focused_comp->on_text_input(ev);
-  else if (mouse_over_comp)
-    mouse_over_comp->on_text_input(ev); 
-}
-
 void
 GroupComponent::update_layout()
 {
