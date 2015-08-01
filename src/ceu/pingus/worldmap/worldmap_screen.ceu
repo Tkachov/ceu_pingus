@@ -63,12 +63,12 @@ input _ScreenUpdatePackage* WORLDMAP_SCREEN_UPDATE;
 input _GUIScreen* DELETE_WORLDMAP_SCREEN;
 
 interface IWorldmapScreen with
+    interface Screen;
+
     function (void) => void show_intro_story;
     function (void) => void show_end_story;    
     function (void) => Worldmap*? get_ceu_worldmap;
-    function (void) => Rect get_trans_rect;
-
-    var _GUIScreen* me;
+    function (void) => Rect get_trans_rect;    
 
     event _Pathname* load;
 end
@@ -353,14 +353,18 @@ end
 class WorldmapScreen with
     interface IWorldmapScreen;
 do
-    var _GUIScreen&? worldmap_screen = _PTR2REF((_GUIScreen*)me);
     var GUIManager gui_manager with
         this.me = _new_GUI__RectComponent(_Rect(0, 0, _Display__get_width(), _Display__get_height()));
         this.drawing_context = _new_DrawingContext(_Rect(0, 0, _Display__get_width(), _Display__get_height()), false);
     end;
 
+    var _GUIScreen&? worldmap_screen = _PTR2REF((_GUIScreen*)&me);
     var Worldmap*? worldmap = null;
     var bool exit_worldmap = false;
+
+    var ScreenFramework sf with
+        this.screen = outer;
+    end;
 
     var WorldmapScreenComponent comp with
         this.me = _new_GUI_Component();
@@ -468,13 +472,10 @@ do
             end
         end
     with
-        every package in SCREEN_UPDATE do
-            if package:screen != &worldmap_screen then
-                continue;
-            end
 
             emit gui_manager.update => package:delta;
 
+        every delta in update do
             //Exit the world
             if exit_worldmap then
                 _ScreenManager__instance():pop_screen();

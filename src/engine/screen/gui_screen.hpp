@@ -39,7 +39,7 @@ public:
   virtual ~GUIScreen ();
 
   /** Draw this screen */
-  virtual void draw_foreground (DrawingContext&) {}
+  virtual void draw_foreground (DrawingContext&);
   virtual void draw_background (DrawingContext&);
   virtual void draw(DrawingContext& gc);
 

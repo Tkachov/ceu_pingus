@@ -86,6 +86,7 @@ native @pure _new_GUI_Component(), _ScreenManager__instance(), _std__make_shared
              _new_DrawingContext();
 
 interface IOptionMenu with
+    interface Screen;
     function (void) => void close_screen;
 end
 
@@ -209,13 +210,12 @@ end
 
 class OptionMenu with
     interface IOptionMenu;
-    var _OptionMenu* me;
 do
-    var _OptionMenu&? option_menu = _PTR2REF((_OptionMenu*)me);
     var GUIManager gui_manager with
         this.me = _new_GUI__RectComponent(_Rect(0, 0, _Display__get_width(), _Display__get_height()));
         this.drawing_context = _new_DrawingContext(_Rect(0, 0, _Display__get_width(), _Display__get_height()), false);
     end;
+    var _OptionMenu&? option_menu = _PTR2REF((_OptionMenu*)&me);
 
     var OptionMenuCloseButton ok_button with
         this.me = _new_GUI_Component();
@@ -381,6 +381,10 @@ do
     call/rec background.reload_by_name("core/menu/wood");
     call/rec blackboard.reload_by_name("core/menu/blackboard");
 
+    var ScreenFramework sf with
+        this.screen = outer;
+    end;
+
     par do
         //// *.changed ////
         every v in software_cursor_box.changed do
@@ -447,31 +451,27 @@ do
         end
         ///////////////////
     with
-        every package in SCREEN_DRAW_BACKGROUND do
-            if package:screen != &option_menu then
-                continue;
-            end
-            
+        every gc in draw_background do
             // Paint the background wood panel
             var int y = 0;
             loop do
-                if y >= package:gc.get_height() then break; end
+                if y >= gc:get_height() then break; end
                 var int x = 0;
                 loop do
-                    if x >= package:gc.get_width() then break; end
-                    package:gc.draw(_deref(background.get()), _Vector2i(x, y));
+                    if x >= gc:get_width() then break; end
+                    gc:draw(_deref(background.get()), _Vector2i(x, y));
                     x = x + background.get_width();
                 end
                 y = y + background.get_height();
             end
 
-            package:gc.draw(_deref(blackboard.get()), _Vector2i(package:gc.get_width()/2, package:gc.get_height()/2));
+            gc:draw(_deref(blackboard.get()), _Vector2i(gc:get_width()/2, gc:get_height()/2));
     
-            package:gc.print_center(_Fonts__chalk_large, _Vector2i(package:gc.get_width()/2, package:gc.get_height()/2 - 240), __("Option Menu"));
+            gc:print_center(_Fonts__chalk_large, _Vector2i(gc:get_width()/2, gc:get_height()/2 - 240), __("Option Menu"));
 
-            package:gc.print_center(_Fonts__chalk_normal, _Vector2i(package:gc.get_width()/2 + 245 + 30, package:gc.get_height()/2 + 150 - 20), __("Close"));
+            gc:print_center(_Fonts__chalk_normal, _Vector2i(gc:get_width()/2 + 245 + 30, gc:get_height()/2 + 150 - 20), __("Close"));
 
-            package:gc.print_left(_Fonts__chalk_normal, _Vector2i(package:gc.get_width()/2 - 320, package:gc.get_height()/2 + 200),
+            gc:print_left(_Fonts__chalk_normal, _Vector2i(gc:get_width()/2 - 320, gc:get_height()/2 + 200),
                         __("Some options require a restart of the game to take effect."));
 
             emit gui_manager.draw => _addr(package:gc);

@@ -39,10 +39,14 @@ input _DemoSession* DELETE_DEMO_SESSION;
 input _Vector2i* DEMO_SESSION_ON_SCROLLER_MOVE;
 
 class DemoSession with
-    var _DemoSession* me;
+    interface Screen;
     event void update_demo;
 do
-    var _DemoSession&? demo_session = _PTR2REF((_DemoSession*)me);
+    var _DemoSession&? demo_session = _PTR2REF((_DemoSession*)&me);
+
+    var ScreenFramework sf with
+        this.screen = outer;
+    end;
 
     var Server server with
         this.me = _new_Server(demo_session.plf);
@@ -99,11 +103,7 @@ do
     demo_session.gui_manager:add(&small_map.rect) finalize with end;
 
     par/or do
-        every package in DEMO_SESSION_UPDATE_SERVER do
-            if (_DemoSession*)package:component != &demo_session then
-                continue;
-            end
-
+        every delta in update do
             if call/rec server.is_finished() then
                 _ScreenManager__instance():pop_screen();
             else
@@ -138,29 +138,19 @@ do
             end
         end
     with
-        every s in DEMO_SESSION_UPDATE do
-            if s != &demo_session then
-                continue;
-            end
-        end
-    with
-        every package in SCREEN_DRAW_BACKGROUND do
+        every gc in draw_background do
             var _GUI_RectComponent* rect = (_GUI_RectComponent*)&playfield.me;
 
-            if package:screen != &demo_session then
-                continue;
-            end
-
-            if rect:get_rect() != _Rect(_Vector2i(0,0), _Size(package:gc.get_width(), package:gc.get_height())) then
+            if rect:get_rect() != _Rect(_Vector2i(0,0), _Size(gc:get_width(), gc:get_height())) then
                 // Draw a black border around the playfield when the playfield is smaller then the screen                
                 // top
-                package:gc.draw_fillrect(_Rect(0, 0, package:gc.get_width(), rect:get_rect().top), _Color(0, 0, 0));
+                gc:draw_fillrect(_Rect(0, 0, gc:get_width(), rect:get_rect().top), _Color(0, 0, 0));
                 // bottom
-                package:gc.draw_fillrect(_Rect(0, rect:get_rect().bottom, package:gc.get_width(), package:gc.get_height()), _Color(0, 0, 0));
+                gc:draw_fillrect(_Rect(0, rect:get_rect().bottom, gc:get_width(), gc:get_height()), _Color(0, 0, 0));
                 // left
-                package:gc.draw_fillrect(_Rect(0, rect:get_rect().top, rect:get_rect().left, rect:get_rect().bottom), _Color(0, 0, 0));
+                gc:draw_fillrect(_Rect(0, rect:get_rect().top, rect:get_rect().left, rect:get_rect().bottom), _Color(0, 0, 0));
                 // right
-                package:gc.draw_fillrect(_Rect(rect:get_rect().right, rect:get_rect().top, package:gc.get_width(), rect:get_rect().bottom), _Color(0, 0, 0));
+                gc:draw_fillrect(_Rect(rect:get_rect().right, rect:get_rect().top, gc:get_width(), rect:get_rect().bottom), _Color(0, 0, 0));
             end
         end 
     with

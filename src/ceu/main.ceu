@@ -23,6 +23,7 @@ end
 #include "pingus/server_event.ceu"
 #include "pingus/iworld.ceu"
 #include "proxies/proxyeventlist.ceu"
+#include "engine/screen/screen_manager.ceu"
 
 native/pre do
     ##define new_OptionMenu new OptionMenu
@@ -54,6 +55,7 @@ input _PingusMenu* NEW_PINGUS_MENU;
 input _Credits* NEW_CREDITS;
 input _LevelMenu* NEW_LEVEL_MENU;
 input _Pathname* PUSH_FONT_TEST_SCREEN;
+input _ScreenManager* NEW_SCREEN_MANAGER;
 
 #define WITH_SCREEN(CClassName, ClassName, Event) with \
     loop do \
@@ -99,6 +101,7 @@ with
         var WorldmapScreen* ws = null;
         spawn WorldmapScreen with
             this.me = _PTR2REF(_new_GUIScreen());
+            this.me.ceu = &this;
             ws = &this;
         end;
 
@@ -113,6 +116,7 @@ with
         var OptionMenu* os = null;
         spawn OptionMenu with
             this.me = _PTR2REF(_new_OptionMenu());
+            this.me.ceu = &this;
             os = &this;
         end;
         _ScreenManager__instance():push_screen(_make_std__shared_ptr_Screen(os:me));
@@ -129,6 +133,12 @@ with
     every new_se in NEW_SERVER_EVENT do
         spawn ServerEvent with
             this.me = _PTR2REF(new_se);
+        end;
+    end
+with
+    every new_sm in NEW_SCREEN_MANAGER do
+        spawn ScreenManager with
+            this.me = _PTR2REF(new_sm);
         end;
     end
 with
