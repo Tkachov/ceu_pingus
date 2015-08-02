@@ -65,6 +65,15 @@ input _ScreenManager* NEW_SCREEN_MANAGER;
         end; \
     end
 
+#define WITH_SCREEN_CEU(CClassName, ClassName, Event) with \
+    loop do \
+        var CClassName* p = await Event; \
+        spawn ClassName with \
+            this.me = _PTR2REF(p); \
+            this.me.ceu = &this; \
+        end; \
+    end
+
 var IWorld* world = null;
 
 par/or do
@@ -88,7 +97,7 @@ WITH_SCREEN(_StartScreen, StartScreen, NEW_START_SCREEN)
 WITH_SCREEN(_StoryScreen, StoryScreen, NEW_STORY_SCREEN)
 WITH_SCREEN(_ResultScreen, ResultScreen, NEW_RESULT_SCREEN)
 WITH_SCREEN(_WorldmapNS__WorldmapScreen, WorldmapScreen, NEW_WORLDMAP_SCREEN)
-WITH_SCREEN(_PingusMenu, PingusMenu, NEW_PINGUS_MENU)
+WITH_SCREEN_CEU(_PingusMenu, PingusMenu, NEW_PINGUS_MENU)
 WITH_SCREEN(_Credits, Credits, NEW_CREDITS)
 WITH_SCREEN(_LevelMenu, LevelMenu, NEW_LEVEL_MENU)
 with

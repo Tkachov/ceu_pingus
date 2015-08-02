@@ -34,10 +34,6 @@ do
         _delete_obj(desc);
         _delete_obj(text);
     end
-
-    function @rec (Vector2i pos) => bool is_at_func do
-        return false; //TODO
-    end
     
     var PrimaryButtonProxy p with this.gui = outer; end;
     var PointerProxy pp with this.gui = outer; end;
@@ -47,6 +43,11 @@ do
     var Sprite highlight;
     call/rec surface_p.reload_by_name("core/menu/menuitem");
     call/rec highlight.reload_by_name("core/menu/menuitem_highlight");
+
+    function @rec (Vector2i pos) => bool is_at_func do
+        return (pos.x > x_pos - (int)surface_p.get_width()/2 and pos.x < x_pos + (int)surface_p.get_width()/2
+            and pos.y > y_pos - (int)surface_p.get_height()/2 and pos.y < y_pos + (int)surface_p.get_height()/2);
+    end
 
     function (int x, int y) => void set_pos do
         x_pos = x;
@@ -83,8 +84,10 @@ do
         end
     with
         every package in is_at do
-            package:result = (package:mouse_pos.x > x_pos - (int)surface_p.get_width()/2 and package:mouse_pos.x < x_pos + (int)surface_p.get_width()/2
-                          and package:mouse_pos.y > y_pos - (int)surface_p.get_height()/2 and package:mouse_pos.y < y_pos + (int)surface_p.get_height()/2);
+            var Vector2i pos;
+            pos.x = package:mouse_pos.x;
+            pos.y = package:mouse_pos.y;
+            package:result = call/rec is_at_func(pos);
         end
     end
 end

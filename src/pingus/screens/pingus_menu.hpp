@@ -24,8 +24,6 @@ public:
   PingusMenu();
   ~PingusMenu();
 
-  void update(float delta);
-
 private:
   PingusMenu (const PingusMenu&);
   PingusMenu& operator= (const PingusMenu&);

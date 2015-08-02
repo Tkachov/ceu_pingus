@@ -4,8 +4,10 @@
 #include "../../c.ceu"
 #include "../../sdl.ceu"
 #include "../../string.ceu"
+#include "../../engine/screen/screen.ceu"
 
 interface IPingusMenu with
+	interface Screen;
     function (_const_char_string) => void set_hint;
 end
 

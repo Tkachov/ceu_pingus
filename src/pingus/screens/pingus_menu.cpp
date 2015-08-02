@@ -27,10 +27,4 @@ PingusMenu::~PingusMenu() {
   ceu_out_go(&CEUapp, CEU_IN_DELETE_PINGUS_MENU, &self);
 }
 
-void PingusMenu::update(float delta) {
-  ScreenUpdatePackage package(this, delta);
-  ScreenUpdatePackage* pp = &package;
-  ceu_out_go(&CEUapp, CEU_IN_PINGUS_MENU_UPDATE, &pp);
-}
-
 /* EOF */

@@ -32,14 +32,14 @@ native @pure _new_SpriteDescription(), _Resource__load_sprite_desc(), _to_RM(), 
 class Sprite2 with
     function (_const_char_string filename) => void reload_by_name;
     function (_ResDescriptor* desc) => void reload_by_desc;
+    function (_Surface* surface) => void reload_by_surface;
 
   /*
-  Sprite(const Surface& surface);
-
   void set_hotspot(Origin origin, int x, int y);
   */
 
     function (_SceneContext* gc, Vector3f pos) => void draw;
+    function (_DrawingContext* gc, Vector3f pos) => void draw_dc;
 
     event float update;
     event void default_update;
@@ -124,6 +124,25 @@ do
         try_desc(desc, res_desc:modifier);
     end
 
+    function (_Surface* surface) => void reload_by_surface do
+        //filename(),
+        core.framebuffer_surface = _PTR2REF(_Display__get_framebuffer():create_surface(_deref(surface)));
+        offset.x = 0;
+        offset.y = 0;
+        frame_pos.x = 0;
+        frame_pos.y = 0;
+        frame_size.width = surface:get_width();
+        frame_size.height = surface:get_height();
+        frame_delay = 0;
+        array.width = 1;
+        array.height = 1;
+        play_loop = true;
+        loop_last_cycle = false;
+        finished_ = false;
+        frame = 0;
+        tick_count = 0;
+    end
+
     function (_SceneContext* gc, Vector3f pos) => void draw do
         var Vector2i draw_pos;
         draw_pos.x = pos.x - offset.x;
@@ -140,6 +159,23 @@ do
             pos.z
         );
     end
+
+    function (_DrawingContext* gc, Vector3f pos) => void draw_dc do
+        var Vector2i draw_pos;
+        draw_pos.x = pos.x - offset.x;
+        draw_pos.y = pos.y - offset.y;
+
+        var Vector2i rect_pos;
+        rect_pos.x = frame_pos.x + frame_size.width  * (frame%array.width);
+        rect_pos.y = frame_pos.y + frame_size.height * (frame/array.width);
+
+        gc:draw(
+            core.framebuffer_surface,
+            _Rect(_toVector2i(rect_pos), _toSize(frame_size)),
+            _toVector2i(draw_pos),
+            pos.z
+        );
+    end 
 
     function (void) => void restart do
         finished_ = false;

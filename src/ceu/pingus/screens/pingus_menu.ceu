@@ -14,6 +14,7 @@
 #include "../global_interface.ceu"
 #include "ipingus_menu.ceu"
 #include "../components/menu_button.ceu"
+#include "../layer_manager.ceu"
 
 native/pre do
     ##include "editor/editor_screen.hpp"
@@ -30,7 +31,6 @@ native/pre do
     ##include "pingus/game_time.hpp"
     ##include "pingus/gettext.h"
     ##include "pingus/globals.hpp"
-    ##include "pingus/layer_manager.hpp"
     ##include "pingus/plf_res_mgr.hpp"
     ##include "pingus/resource.hpp"
     ##include "pingus/savegame_manager.hpp"
@@ -140,11 +140,18 @@ end
 
 class PingusMenu with
     interface IPingusMenu;
-    var _PingusMenu* me;
 
-    function (int width, int height) => void create_background;
+    event (int, int) create_background;
 do
-    var _PingusMenu&? pingus_menu = _PTR2REF((_PingusMenu*)me);
+    var _PingusMenu&? pingus_menu = _PTR2REF((_PingusMenu*)&me);
+    var GUIManager gui_manager with
+        this.me = _new_GUI__RectComponent(_Rect(0, 0, _Display__get_width(), _Display__get_height()));
+        this.drawing_context = _new_DrawingContext(_Rect(0, 0, _Display__get_width(), _Display__get_height()), false);
+    end;
+    var ScreenFramework sf with
+        this.screen = outer;
+        this.gui_manager = &gui_manager;
+    end;
 
     var FunctionStart do_start;
     var FunctionEdit do_edit;
@@ -154,6 +161,7 @@ do
 
     var MenuButton start_button with
         this.me = _new_GUI_Component();
+        this.me.ceu = &this;
         this.menu = outer;
         this.func = do_start;
         this.x_pos = _Display__get_width()/2 - 125;
@@ -164,6 +172,7 @@ do
 
     var MenuButton editor_button with
         this.me = _new_GUI_Component();
+        this.me.ceu = &this;
         this.menu = outer;
         this.func = do_edit;
         this.x_pos = _Display__get_width()/2 + 125;
@@ -174,6 +183,7 @@ do
 
     var MenuButton options_button with
         this.me = _new_GUI_Component();
+        this.me.ceu = &this;
         this.menu = outer;
         this.func = do_options;
         this.x_pos = _Display__get_width()/2 + 125;
@@ -184,6 +194,7 @@ do
 
     var MenuButton contrib_button with
         this.me = _new_GUI_Component();
+        this.me.ceu = &this;
         this.menu = outer;
         this.func = do_contrib;
         this.x_pos = _Display__get_width()/2 - 125;
@@ -194,6 +205,7 @@ do
 
     var MenuButton quit_button with
         this.me = _new_GUI_Component();
+        this.me.ceu = &this;
         this.menu = outer;
         this.func = do_quit;
         this.x_pos = _Display__get_width()/2;
@@ -202,15 +214,15 @@ do
         this.desc = _new_String(__("..:: Bye, bye ::.."));
     end;
 
-    pingus_menu.gui_manager:add(_PTR2REF(&quit_button.me));
-    pingus_menu.gui_manager:add(_PTR2REF(&options_button.me));
-    pingus_menu.gui_manager:add(_PTR2REF(&contrib_button.me));
-    pingus_menu.gui_manager:add(_PTR2REF(&start_button.me));
-    pingus_menu.gui_manager:add(_PTR2REF(&editor_button.me));
+    gui_manager.add(&quit_button.me);
+    gui_manager.add(&options_button.me);
+    gui_manager.add(&contrib_button.me);
+    gui_manager.add(&start_button.me);
+    gui_manager.add(&editor_button.me);
 
     var _std__string&? hint = _new_String();
     var _std__string&? help = _new_String();
-    var _LayerManager* background = null;
+    var LayerManager*? background = null;
 
     var Sprite logo;
     call/rec logo.reload_by_name("core/misc/logo");
@@ -218,10 +230,7 @@ do
     finalize with
         _delete_obj(hint);
         _delete_obj(help);
-        _delete_obj(background);
     end
-
-    create_background(_Display__get_width(), _Display__get_height());
 
     help = _PTR2REF(__("..:: Ctrl-g: mouse grab   ::   F10: fps counter   ::   F11: fullscreen   ::   F12: screenshot ::.."));
 
@@ -231,78 +240,71 @@ do
         hint = _PTR2REF(str);
     end
 
-    function (int width, int height) => void create_background do
-        // Recreate the layer manager in the new size
-        _delete_obj(background);
-        background = _PTR2REF(_new_LayerManager());
-
-        var _Surface&? layer1 = _new_Surface(_Resource__load_surface("core/menu/layer1"));
-        var _Surface&? layer2 = _new_Surface(_Resource__load_surface("core/menu/layer2"));
-        var _Surface&? layer3 = _new_Surface(_Resource__load_surface("core/menu/layer3"));
-        var _Surface&? layer4 = _new_Surface(_Resource__load_surface("core/menu/layer4"));
-        var _Surface&? layer5 = _new_Surface(_Resource__load_surface("core/menu/layer5"));
-
-        // We only need to scale the background main menu images if the screen 
-        // resolution is not default
-        if width != _globals__default_screen_width or height != _globals__default_screen_height then
-            layer1 = _PTR2REF(layer1.scale(width, 185 * height / _globals__default_screen_height));
-            layer2 = _PTR2REF(layer2.scale(width, 362 * height / _globals__default_screen_height));
-            layer3 = _PTR2REF(layer3.scale(width, 306 * height / _globals__default_screen_height));
-            layer4 = _PTR2REF(layer4.scale(width, 171 * height / _globals__default_screen_height));
-            layer5 = _PTR2REF(layer5.scale(302 * width / _globals__default_screen_width, 104 * height / _globals__default_screen_height));
-              
-            background:add_layer(_make_Sprite2(_deref(layer1)), 0, 0, 12, 0);
-            background:add_layer(_make_Sprite2(_deref(layer2)), 0, 150 * ((float)height) / ((float)_globals__default_screen_height), 25, 0);
-            background:add_layer(_make_Sprite2(_deref(layer3)), 0, 200 * ((float)height) / ((float)_globals__default_screen_height), 50, 0);
-            background:add_layer(_make_Sprite2(_deref(layer4)), 0, 429 * ((float)height) / ((float)_globals__default_screen_height), 100, 0);
-            background:add_layer(_make_Sprite2(_deref(layer5)), 0, 500 * ((float)height) / ((float)_globals__default_screen_height), 200, 0);
-        else
-            background:add_layer(_make_Sprite2(_deref(layer1)), 0, 0, 12, 0);
-            background:add_layer(_make_Sprite2(_deref(layer2)), 0, 150, 25, 0);
-            background:add_layer(_make_Sprite2(_deref(layer3)), 0, 200, 50, 0);
-            background:add_layer(_make_Sprite2(_deref(layer4)), 0, 429, 100, 0);
-            background:add_layer(_make_Sprite2(_deref(layer5)), 0, 500, 200, 0);
-        end
-
-        _delete_obj(layer1);
-        _delete_obj(layer2);
-        _delete_obj(layer3);
-        _delete_obj(layer4);
-        _delete_obj(layer5);
-    end
-
     par/or do
-        every package in SCREEN_DRAW_BACKGROUND do
-            if package:screen != &pingus_menu then
-                continue;
+        every on_startup do
+            emit create_background => (_Display__get_width(), _Display__get_height());
+        end
+    with
+        every (width, height) in create_background do
+            // Recreate the layer manager in the new size
+            background = spawn LayerManager;
+
+            var _Surface&? layer1 = _new_Surface(_Resource__load_surface("core/menu/layer1"));
+            var _Surface&? layer2 = _new_Surface(_Resource__load_surface("core/menu/layer2"));
+            var _Surface&? layer3 = _new_Surface(_Resource__load_surface("core/menu/layer3"));
+            var _Surface&? layer4 = _new_Surface(_Resource__load_surface("core/menu/layer4"));
+            var _Surface&? layer5 = _new_Surface(_Resource__load_surface("core/menu/layer5"));
+
+            // We only need to scale the background main menu images if the screen 
+            // resolution is not default
+            if width != _globals__default_screen_width or height != _globals__default_screen_height then
+                layer1 = _PTR2REF(layer1.scale(width, 185 * height / _globals__default_screen_height));
+                layer2 = _PTR2REF(layer2.scale(width, 362 * height / _globals__default_screen_height));
+                layer3 = _PTR2REF(layer3.scale(width, 306 * height / _globals__default_screen_height));
+                layer4 = _PTR2REF(layer4.scale(width, 171 * height / _globals__default_screen_height));
+                layer5 = _PTR2REF(layer5.scale(302 * width / _globals__default_screen_width, 104 * height / _globals__default_screen_height));
+                  
+                emit background:add_layer => (&layer1, 0, 0, 12, 0);
+                emit background:add_layer => (&layer2, 0, 150 * ((float)height) / ((float)_globals__default_screen_height), 25, 0);
+                emit background:add_layer => (&layer3, 0, 200 * ((float)height) / ((float)_globals__default_screen_height), 50, 0);
+                emit background:add_layer => (&layer4, 0, 429 * ((float)height) / ((float)_globals__default_screen_height), 100, 0);
+                emit background:add_layer => (&layer5, 0, 500 * ((float)height) / ((float)_globals__default_screen_height), 200, 0);
+            else
+                emit background:add_layer => (&layer1, 0, 0, 12, 0);
+                emit background:add_layer => (&layer2, 0, 150, 25, 0);
+                emit background:add_layer => (&layer3, 0, 200, 50, 0);
+                emit background:add_layer => (&layer4, 0, 429, 100, 0);
+                emit background:add_layer => (&layer5, 0, 500, 200, 0);
             end
 
-            background:draw(_PTR2REF(package:gc));
-            package:gc.draw(_deref(logo.get()), _Vector2i(package:gc.get_width()/2 - logo.get_width()/2, package:gc.get_height()/2 - 280));
-            package:gc.print_left(_Fonts__pingus_small, _Vector2i(package:gc.get_width()/2 - 400 + 25, package:gc.get_height()-140),
+            _delete_obj(layer1);
+            _delete_obj(layer2);
+            _delete_obj(layer3);
+            _delete_obj(layer4);
+            _delete_obj(layer5);
+        end
+    with
+        every gc in draw_background do
+            emit background:draw => gc;
+            gc:draw(_deref(logo.get()), _Vector2i(gc:get_width()/2 - logo.get_width()/2, gc:get_height()/2 - 280));
+            gc:print_left(_Fonts__pingus_small, _Vector2i(gc:get_width()/2 - 400 + 25, gc:get_height()-140),
                                   _make_String("Pingus ") + _VERSION + _make_String(" - Copyright (C) 1998-2011 Ingo Ruhnke <grumbel@gmail.com>\nSee the file AUTHORS for a complete list of contributors.\nPingus comes with ABSOLUTELY NO WARRANTY. This is free software, and you are\nwelcome to redistribute it under certain conditions; see the file COPYING for details.\n"));
-            package:gc.draw_fillrect(_Rect(0, _Display__get_height()-26, _Display__get_width(), _Display__get_height()), _Color(0, 0, 0, 255));
-            package:gc.print_center(_Fonts__pingus_small, _Vector2i(package:gc.get_width()/2, package:gc.get_height() - _Fonts__pingus_small.get_height() - 8), _deref(help));
+            gc:draw_fillrect(_Rect(0, _Display__get_height()-26, _Display__get_width(), _Display__get_height()), _Color(0, 0, 0, 255));
+            gc:print_center(_Fonts__pingus_small, _Vector2i(gc:get_width()/2, gc:get_height() - _Fonts__pingus_small.get_height() - 8), _deref(help));
 
             if 0 then // display hint  
-                package:gc.print_center(_Fonts__pingus_small, 
-                    _Vector2i(package:gc.get_width()/2, package:gc.get_height() - _Fonts__pingus_small.get_height()),
+                gc:print_center(_Fonts__pingus_small, 
+                    _Vector2i(gc:get_width()/2, gc:get_height() - _Fonts__pingus_small.get_height()),
                     _deref(hint));
             end
         end
     with        
-        every package in PINGUS_MENU_UPDATE do
-            if package:screen != &pingus_menu then
-                continue;
-            end
-
-            background:update(_PTR2REF(package:delta));
+        every delta in update do
+            emit background:update => delta;
         end
     with
-        every screen in ON_ESCAPE_PRESS do
-            if screen == &pingus_menu then
-                //original FIXME: get_manager()->show_exit_menu ();
-            end
+        every on_escape_press do            
+            //original FIXME: get_manager()->show_exit_menu ();            
         end
     with
         every package in SCREEN_RESIZE do
@@ -310,7 +312,7 @@ do
                 continue;
             end
 
-            create_background(pingus_menu.size.width, pingus_menu.size.height);
+            emit create_background => (pingus_menu.size.width, pingus_menu.size.height);
 
             start_button.set_pos(pingus_menu.size.width/2 - 125, pingus_menu.size.height/2 - 20);
             editor_button.set_pos(pingus_menu.size.width/2 + 125, pingus_menu.size.height/2 - 20);

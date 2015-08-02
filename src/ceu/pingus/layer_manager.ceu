@@ -1,0 +1,77 @@
+#ifndef LAYER_MANAGER_CEU
+#define LAYER_MANAGER_CEU
+
+#include "../engine/display/sprite2.ceu"
+#include "../math/math.ceu"
+#include "../math/vector3f.ceu"
+
+native/pre do
+    ##include "engine/display/display.hpp"
+    ##include "engine/display/drawing_context.hpp"
+    ##include "pingus/globals.hpp"
+end
+
+interface ILayerManager with
+    event _DrawingContext* draw;
+    event float update;
+end;
+
+class Layer with
+    var ILayerManager& parent;
+
+    var float x_pos = 0;
+    var float y_pos = 0;
+
+    var float x_update = 0;
+    var float y_update = 0;
+
+    var float x_offset = 0;
+    var float y_offset = 0;
+
+    function (_Surface* s) => void load;
+do
+    var Sprite2 sur;
+
+    function (_Surface* s) => void load do
+        sur.reload_by_surface(s);
+    end
+    
+    par do
+        every gc in parent.draw do
+            var Vector3f v;
+            v.x = x_pos + x_offset;
+            v.y = y_pos + y_offset;
+            v.z = 0;
+            sur.draw_dc(gc, v);
+            v.x = x_pos + x_offset - (float)gc:get_width();
+            sur.draw_dc(gc, v);
+        end
+    with
+        every delta in parent.update do
+            if not _globals__static_graphics then
+                x_pos = _Math__mod((x_pos + x_update * delta), (float)_Display__get_width());
+                y_pos = _Math__mod((y_pos + y_update * delta), (float)_Display__get_height());
+            end
+        end
+    end
+end
+
+class LayerManager with
+    interface ILayerManager;
+    pool Layer[] layers;
+
+    event (_Surface*, float, float, float, float) add_layer;
+do
+    every (sprite, x_o, y_o, x_u, y_u) in add_layer do
+        var Layer*? l = spawn Layer in layers with            
+            this.x_update = x_u;
+            this.y_update = y_u;
+            this.x_offset = x_o;
+            this.y_offset = y_o;
+            this.parent = outer;
+        end;
+        l:load(sprite);
+    end
+end
+
+#endif

@@ -28,7 +28,6 @@ native/pre do
     ##include "pingus/game_time.hpp"
     ##include "pingus/gettext.h"
     ##include "pingus/globals.hpp"
-    ##include "pingus/layer_manager.hpp"
     ##include "pingus/plf_res_mgr.hpp"
     ##include "pingus/resource.hpp"
     ##include "pingus/savegame_manager.hpp"
