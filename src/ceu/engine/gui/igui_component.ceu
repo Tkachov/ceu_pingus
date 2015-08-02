@@ -44,4 +44,67 @@ interface IGUI_Component with
     event _const_Input__TextInputEvent* text_input;
 end
 
+class Relay with
+    var IGUI_Component& src;
+    var IGUI_Component& dst;
+do
+    par do
+        every gc in src.draw do
+            emit dst.draw => gc;
+        end
+    with
+        every d in src.update do
+            emit dst.update => d;
+        end
+    with
+        every p in src.is_at do
+            emit dst.is_at => p;
+        end
+    with
+        every src.mouse_enter do
+            emit dst.mouse_enter;
+        end
+    with
+        every src.mouse_leave do
+            emit dst.mouse_leave;
+        end
+    with
+        every (x, y) in src.mouse_move do
+            emit dst.mouse_move => (x, y);
+        end
+    with
+        every (x, y) in src.mouse_press do
+            emit dst.mouse_press => (x, y);
+        end
+    with
+        every (x, y) in src.mouse_release do
+            emit dst.mouse_release => (x, y);
+        end
+    with
+        every (x, y) in src.mouse_click do
+            emit dst.mouse_click => (x, y);
+        end
+    with
+        every src.mouse_double_click do
+            emit dst.mouse_double_click;
+        end
+    with
+        every (x, y) in src.mouse_secondary_press do
+            emit dst.mouse_secondary_press => (x, y);
+        end
+    with
+        every (x, y) in src.mouse_secondary_release do
+            emit dst.mouse_secondary_release => (x, y);
+        end
+    with
+        every (x, y) in src.mouse_secondary_click do
+            emit dst.mouse_secondary_click => (x, y);
+        end
+    with
+        every src.mouse_secondary_double_click do
+            emit dst.mouse_secondary_double_click;
+        end
+    end
+end
+
 #endif

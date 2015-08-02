@@ -454,11 +454,7 @@ do
             end
         end
     with
-        every screen in ON_STARTUP do
-            if screen != &worldmap_screen then
-                continue;
-            end
-
+        every on_startup do
             exit_worldmap = false;
             _Sound__PingusSound__stop_music();
 
@@ -474,22 +470,16 @@ do
             end
         end
     with
-        every screen in ON_ESCAPE_PRESS do
-            if screen == &worldmap_screen then
-                exit_worldmap = true;
-            end
+        every on_escape_press do
+            exit_worldmap = true;            
         end
     with
-        every screen in ON_FAST_FORWARD_PRESS do
-            if screen == &worldmap_screen then
-                emit comp.fast_forward_press;
-            end
+        every on_fast_forward_press do
+            emit comp.fast_forward_press;
         end
     with
-        every screen in ON_FAST_FORWARD_RELEASE do
-            if screen == &worldmap_screen then
-                emit comp.fast_forward_release;
-            end
+        every on_fast_forward_release do
+            emit comp.fast_forward_release;
         end
     with
         every package in SCREEN_RESIZE do

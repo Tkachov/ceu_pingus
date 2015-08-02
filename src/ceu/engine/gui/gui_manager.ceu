@@ -13,9 +13,11 @@ native/pre do
 
     ##define std__vector_Component std::vector<GUI::Component*>
     ##define new_Vector_Component new std::vector<GUI::Component*>
+
+    ##define new_DrawingContext new DrawingContext
 end
 
-native @pure _new_Vector_Component();
+native @pure _new_Vector_Component(), _new_DrawingContext();
 
 /*
   void on_pointer_leave();

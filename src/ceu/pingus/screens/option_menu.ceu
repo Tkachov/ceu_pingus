@@ -75,15 +75,13 @@ native/pre do
     ##define new_Vector_Language new std::vector<tinygettext::Language>
     ##define copy_language_set(v) { std::set<tinygettext::Language> st = dictionary_manager.get_languages(); v->insert(v->begin(), st.begin(), st.end()); }
     ##define std__vector_Language std::vector<tinygettext::Language>
-    ##define tinygettext__Language__from_name tinygettext::Language::from_name
-    ##define new_DrawingContext new DrawingContext
+    ##define tinygettext__Language__from_name tinygettext::Language::from_name    
 end
 
 native @pure _new_GUI_Component(), _ScreenManager__instance(), _std__make_shared_GameScreen(),
              _Display__get_width(), _Display__get_height(), _System__get_userdir(), _new_Pathname(),
              _SU2str(), _StringFormat__break_line(), _new_Vector_Option(), _sscanf(), _copy_language_set(),
-             _new_Display__get_fullscreen_video_modes(), _new_Vector_Language(), _tinygettext__Language__from_name(),
-             _new_DrawingContext();
+             _new_Display__get_fullscreen_video_modes(), _new_Vector_Language(), _tinygettext__Language__from_name();
 
 interface IOptionMenu with
     interface Screen;
@@ -383,6 +381,7 @@ do
 
     var ScreenFramework sf with
         this.screen = outer;
+        this.gui_manager = &gui_manager;
     end;
 
     par do
@@ -473,22 +472,10 @@ do
 
             gc:print_left(_Fonts__chalk_normal, _Vector2i(gc:get_width()/2 - 320, gc:get_height()/2 + 200),
                         __("Some options require a restart of the game to take effect."));
-
-            emit gui_manager.draw => gc;
         end
     with
-        every delta in update do
-            emit gui_manager.update => delta;            
-        end
-    with
-        every ev in update_event do
-            emit gui_manager.update_event => ev;            
-        end
-    with
-        every screen in ON_ESCAPE_PRESS do
-            if screen == &option_menu then
-                close_screen();
-            end
+        every on_escape_press do            
+            close_screen();            
         end
     with
         every package in SCREEN_RESIZE do

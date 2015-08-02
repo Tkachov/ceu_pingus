@@ -4,6 +4,7 @@
 #include "../../c.ceu"
 #include "../../sdl.ceu"
 #include "screen.ceu"
+#include "../../pingus/fps_counter.ceu"
 
 native/pre do
     ##include "engine/screen/screen_manager.hpp"
@@ -12,7 +13,6 @@ native/pre do
     ##include "engine/display/framebuffer.hpp"
     ##include "engine/input/manager.hpp"
     ##include "engine/screen/screen.hpp"
-    ##include "pingus/fps_counter.hpp"
     ##include "pingus/fonts.hpp"
     ##include "pingus/globals.hpp"
 
@@ -24,11 +24,9 @@ native/pre do
     ##define Input__POINTER_EVENT_TYPE Input::POINTER_EVENT_TYPE
     ##define Input__STANDARD_POINTER Input::STANDARD_POINTER
     ##define Fonts__pingus_small Fonts::pingus_small
-    ##define new_FPSCounter new FPSCounter
 end
 
-native @pure _Display__get_framebuffer(), _Display__flip_display(), _Display__get_width(), _Display__get_height(),
-             _new_FPSCounter();
+native @pure _Display__get_framebuffer(), _Display__flip_display(), _Display__get_width(), _Display__get_height();
 
 input _ScreenManagerUpdatePackage* SCREEN_MANAGER_UPDATE;
 input _ScreenManager* DELETE_SCREEN_MANAGER;
@@ -39,9 +37,8 @@ class ScreenManager with
 do
     var _ScreenManager&? screen_manager = _PTR2REF((_ScreenManager*)me);
 
-    var _FPSCounter&? fps_counter = _new_FPSCounter();
+    var FPSCounter fps_counter;
     var Vector2i mouse_pos;
-    finalize with _delete_obj(fps_counter); end
 
     par/or do
         every package in SCREEN_MANAGER_UPDATE do
@@ -111,15 +108,15 @@ do
             end
 
             // Draw FPS Counter
+            var int y_pos = 35;
             if _globals__print_fps then            
                 fps_counter.draw();
-                if _globals__developer_mode then
-                  _Fonts__pingus_small.render(_origin_center, _Display__get_width()/2, 60, 
-                                             "Developer Mode", *_Display__get_framebuffer());
-                end            
-            else/if _globals__developer_mode then
-                _Fonts__pingus_small.render(_origin_center, _Display__get_width()/2, 35, 
-                                           "Developer Mode", *_Display__get_framebuffer());
+                y_pos = 60;
+            end
+
+            if _globals__developer_mode then
+              _Fonts__pingus_small.render(_origin_center, _Display__get_width()/2, y_pos, 
+                                         "Developer Mode", *_Display__get_framebuffer());
             end
 
             _Display__flip_display();

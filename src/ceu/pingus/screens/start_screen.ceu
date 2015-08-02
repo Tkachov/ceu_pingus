@@ -4,6 +4,7 @@
 #include "../../c.ceu"
 #include "../../sdl.ceu"
 #include "../../engine/gui/igui_component.ceu"
+#include "../../engine/gui/gui_manager.ceu"
 #include "../../engine/gui/surface_button.ceu"
 #include "../../engine/screen/screen.ceu"
 #include "../../engine/sound/sound.ceu"
@@ -52,6 +53,8 @@ native @pure _new_GUI_Component(), _ScreenManager__instance(), _std__make_shared
 input _StartScreen* DELETE_START_SCREEN;
 
 interface IStartScreen with
+    interface Screen;
+
     function (void) => void start_game;
     function (void) => void cancel_game;
     function (void) => _PingusLevel* get_plf;
@@ -71,8 +74,14 @@ do
         this.pos.y = _Display__get_height()/2 + 150;
     end;
 
+    var Relay r with
+        this.src = outer;
+        this.dst = sb;
+    end;
+
     function @rec (Vector2i pos) => bool is_at_func do
-        return false; //TODO
+        return (pos.x > sb.pos.x and pos.x < sb.pos.x + (call/rec sb.get_width())
+            and pos.y > sb.pos.y - 20 and pos.y < sb.pos.y + (call/rec sb.get_height()));
     end
 
     call/rec sb.load("core/start/ok", "core/start/ok_clicked", "core/start/ok_hover");
@@ -96,8 +105,10 @@ do
         end
     with
         every package in is_at do
-            package:result = (package:mouse_pos.x > sb.pos.x and package:mouse_pos.x < sb.pos.x + (call/rec sb.get_width())
-                          and package:mouse_pos.y > sb.pos.y - 20 and package:mouse_pos.y < sb.pos.y + (call/rec sb.get_height()));
+            var Vector2i pos;
+            pos.x = package:mouse_pos.x;
+            pos.y = package:mouse_pos.y;
+            package:result = call/rec is_at_func(pos);
         end
     with
         every gc in draw do
@@ -120,8 +131,13 @@ do
         this.pos.y = _Display__get_height()/2 + 200;
     end;
 
+    var Relay r with
+        this.src = outer;
+        this.dst = sb;
+    end;
+
     function @rec (Vector2i pos) => bool is_at_func do
-        return false; //TODO
+        return call/rec sb.is_at_func(pos);
     end
 
     call/rec sb.load("core/start/back", "core/start/back_clicked", "core/start/back_hover");
@@ -160,7 +176,7 @@ do
     var EventProxy ep with this.gui = outer; end;
 
     function @rec (Vector2i pos) => bool is_at_func do
-        return false; //TODO
+        return false;
     end
 
     var Sprite background;
@@ -222,28 +238,38 @@ end
 
 class StartScreen with
     interface IStartScreen;
-    var _StartScreen* me;
 do
-    var _StartScreen&? start_screen = _PTR2REF((_StartScreen*)me);
+    var _StartScreen&? start_screen = _PTR2REF((_StartScreen*)&me);
+    var GUIManager gui_manager with
+        this.me = _new_GUI__RectComponent(_Rect(0, 0, _Display__get_width(), _Display__get_height()));
+        this.drawing_context = _new_DrawingContext(_Rect(0, 0, _Display__get_width(), _Display__get_height()), false);
+    end;
+    var ScreenFramework sf with
+        this.screen = outer;
+        this.gui_manager = &gui_manager;
+    end;
 
     var StartScreenComponent comp with
         this.me = _new_GUI_Component();
+        this.me.ceu = &this;
         this.parent = outer;
     end;
 
     var StartScreenOkButton ok_button with
         this.me = _new_GUI_Component();
+        this.me.ceu = &this;
         this.parent = outer;
     end;
 
     var StartScreenAbortButton abort_button with
         this.me = _new_GUI_Component();
+        this.me.ceu = &this;
         this.parent = outer;
     end;
 
-    start_screen.gui_manager:add(&comp.me) finalize with end;
-    start_screen.gui_manager:add(&ok_button.me) finalize with end;
-    start_screen.gui_manager:add(&abort_button.me) finalize with end;
+    gui_manager.add(&comp.me);
+    gui_manager.add(&ok_button.me);
+    gui_manager.add(&abort_button.me);
 
     function (void) => void start_game do
         _ScreenManager__instance():replace_screen(_std__make_shared_GameSession(start_screen.plf, true));
@@ -258,22 +284,16 @@ do
     end
 
     par/or do
-        every screen in ON_ESCAPE_PRESS do
-            if screen == &start_screen then
-                cancel_game();
-            end
+        every on_escape_press do            
+            cancel_game();            
         end
     with
-        every screen in ON_PAUSE_PRESS do
-            if screen == &start_screen then
-                start_game();
-            end
+        every on_pause_press do
+            start_game();            
         end
     with
-        every screen in ON_FAST_FORWARD_PRESS do
-            if screen == &start_screen then
-                start_game();
-            end
+        every on_fast_forward_press do            
+            start_game();            
         end
     with
         every package in SCREEN_RESIZE do

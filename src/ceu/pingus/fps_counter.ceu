@@ -1,0 +1,63 @@
+#ifndef FPS_COUNTER_CEU
+#define FPS_COUNTER_CEU
+
+#include "../c.ceu"
+#include "../sdl.ceu"
+#include "../string.ceu"
+
+native/pre do
+    ##include "engine/display/font.hpp"
+    ##include "engine/display/sprite.hpp"
+    ##include "engine/gui/component.hpp"
+    ##include "engine/display/drawing_context.hpp"
+    ##include "engine/display/display.hpp"
+    ##include "pingus/fonts.hpp"
+    ##include "util/string_util.hpp"    
+    ##define Fonts__pingus_small Fonts::pingus_small
+    ##define Display__get_width() Display::get_width()
+    ##define Display__get_framebuffer() Display::get_framebuffer()
+    ##define SU2str(x) StringUtil::to_string(x)
+end
+
+class FPSCounter with
+    function (void) => void draw;
+do      
+    var bool odd_frame = false;
+    var _std__string&? fps_string = _new_String();
+    var int fps_count = 0;
+    var uint start_time = _SDL_GetTicks();
+
+    finalize with _delete_obj(fps_string); end
+
+    function (void) => void update_fps_counter do
+        var uint current_time = _SDL_GetTicks();
+        var int current_fps;
+
+        fps_count = fps_count + 1;
+
+        if start_time + 1000 < current_time then
+            current_fps = fps_count * 1000 / (current_time - start_time);
+                
+            fps_count = 0;
+            start_time = _SDL_GetTicks();
+
+            fps_string = _SU2str(current_fps) + _make_String(" fps");
+        end
+    end
+
+    function (void) => void draw do
+        update_fps_counter();
+
+        if odd_frame then  
+            _Fonts__pingus_small.render(_origin_center, _Display__get_width()/2, 35, _deref(fps_string), _deref(_Display__get_framebuffer()));            
+        else
+            _Fonts__pingus_small.render(_origin_center, _Display__get_width()/2, 35, _make_String("+ ") + fps_string + _make_String(" +"), _deref(_Display__get_framebuffer()));
+        end
+
+        odd_frame = not odd_frame;
+    end
+
+    await FOREVER;
+end
+
+#endif

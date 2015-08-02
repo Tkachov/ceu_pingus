@@ -9,9 +9,10 @@ native/pre do
 
     ##define new_GUIScreen() new GUIScreen()
     ##define const_Input__Event const Input::Event
+    ##define const_Input__ButtonEvent const Input::ButtonEvent
 end
 
-native @pure _new_GUIScreen();
+native @pure _new_GUIScreen(), _log_debug(), _log_error();
 
 input _GUIScreen* ON_STARTUP;
 input _GUIScreen* ON_ARMAGEDDON_PRESS;
@@ -30,7 +31,7 @@ input _ScreenUpdatePackage* SCREEN_UPDATE;
 input _ScreenUpdateEventPackage* SCREEN_UPDATE_EVENT;
 input _ScreenDrawPackage* SCREEN_DRAW_BACKGROUND;
 input _ScreenDrawPackage* SCREEN_DRAW_FOREGROUND;
-input _ScreenResizePackage* SCREEN_RESIZE;
+input _ScreenResizePackage* SCREEN_RESIZE; //TODO
 input _ScreenAxisMovePackage* ON_ACTION_AXIS_MOVE;
 
 interface Screen with
@@ -44,11 +45,30 @@ interface Screen with
     event _DrawingContext* draw_foreground;
     event float update;
     event _const_Input__Event* update_event;
+
+    event void on_startup;
+    event void on_armageddon_press;
+    event void on_armageddon_release;
+    event void on_escape_press;
+    event void on_escape_release;
+    event void on_pause_press;
+    event void on_pause_release;
+    event void on_single_step_press;
+    event void on_single_step_release;
+    event void on_fast_forward_press;
+    event void on_fast_forward_release;
+    event void on_action_up_press;
+    event void on_action_up_release; //TODO C++
+    event void on_action_down_press;
+    event void on_action_down_release; //TODO C++
+    event float on_action_axis_move;
 end
 
 class ScreenFramework with
     var Screen& screen;
     var IGUIManager* gui_manager = null;
+
+    event _const_Input__ButtonEvent* process_button_event;
 do
     par do
         every gc in screen.call_draw do
@@ -71,20 +91,62 @@ do
             if gui_manager then
                 emit gui_manager:update_event => e;
             end
-/*
-  if event.type == Input::BUTTON_EVENT_TYPE:
-    {
-      process_button_event (event.button);
-    }
-else if event.type == Input::AXIS_EVENT_TYPE:
-    {
-      if (event.axis.name == Input::ACTION_AXIS)
-      {
-        on_action_axis_move(event.axis.dir);
-      }
-    }
-*/
+
+            if e:type == {Input::BUTTON_EVENT_TYPE} then    
+                emit process_button_event => _addr(e:button);
+            else/if e:type == {Input::AXIS_EVENT_TYPE} then
+                if e:axis.name == {Input::ACTION_AXIS} then      
+                    emit screen.on_action_axis_move => e:axis.dir;
+                end
+            end
+
             emit screen.update_event => e;
+        end
+    with
+        every e in process_button_event do
+            if e:state == {Input::BUTTON_PRESSED} then
+                if e:name == {Input::PRIMARY_BUTTON} or e:name == {Input::SECONDARY_BUTTON} then
+                    // ignoring, handled in the gui_manager                       
+                else/if e:name == {Input::PAUSE_BUTTON} then
+                    emit screen.on_pause_press;
+                else/if e:name == {Input::SINGLE_STEP_BUTTON} then
+                    emit screen.on_single_step_press;
+                else/if e:name == {Input::FAST_FORWARD_BUTTON} then
+                    emit screen.on_fast_forward_press;
+                else/if e:name == {Input::ARMAGEDDON_BUTTON} then
+                    emit screen.on_armageddon_press;
+                else/if e:name == {Input::ESCAPE_BUTTON} then
+                    emit screen.on_escape_press;
+                else/if e:name == {Input::ACTION_UP_BUTTON} then
+                    emit screen.on_action_up_press;
+                else/if e:name == {Input::ACTION_DOWN_BUTTON} then
+                    emit screen.on_action_down_press;
+                else
+                    _log_debug("unhandled event: %1%", e:name);                        
+                end
+            else/if e:state == {Input::BUTTON_RELEASED} then
+                if e:name == {Input::PRIMARY_BUTTON} or e:name == {Input::SECONDARY_BUTTON} then
+                    // ignoring, handled in the gui_manager                       
+                else/if e:name == {Input::PAUSE_BUTTON} then
+                    emit screen.on_pause_release;
+                else/if e:name == {Input::SINGLE_STEP_BUTTON} then
+                    emit screen.on_single_step_release;
+                else/if e:name == {Input::FAST_FORWARD_BUTTON} then
+                    emit screen.on_fast_forward_release;
+                else/if e:name == {Input::ARMAGEDDON_BUTTON} then
+                    emit screen.on_armageddon_release;
+                else/if e:name == {Input::ESCAPE_BUTTON} then
+                    emit screen.on_escape_release;
+                else/if e:name == {Input::ACTION_UP_BUTTON} then
+                    emit screen.on_action_up_release;
+                else/if e:name == {Input::ACTION_DOWN_BUTTON} then
+                    emit screen.on_action_down_release;
+                else
+                    _log_debug("unhandled event: %1%", e:name);                        
+                end
+            else
+                _log_error("got unknown event.state: %1%", e:state);
+            end
         end
     with
         every package in SCREEN_DRAW_BACKGROUND do
@@ -117,6 +179,90 @@ else if event.type == Input::AXIS_EVENT_TYPE:
                     emit gui_manager:update_event => &package:event;
                 end
                 emit screen.update_event => &package:event;
+            end
+        end
+    with
+        every screen_ptr in ON_STARTUP do
+            if screen_ptr == &screen.me then
+                emit screen.on_startup;
+            end
+        end
+    with
+        every screen_ptr in ON_ARMAGEDDON_PRESS do
+            if screen_ptr == &screen.me then
+                emit screen.on_armageddon_press;
+            end
+        end
+    with
+        every screen_ptr in ON_ARMAGEDDON_RELEASE do
+            if screen_ptr == &screen.me then
+                emit screen.on_armageddon_release;
+            end
+        end
+    with
+        every screen_ptr in ON_ESCAPE_PRESS do
+            if screen_ptr == &screen.me then
+                emit screen.on_escape_press;
+            end
+        end
+    with
+        every screen_ptr in ON_ESCAPE_RELEASE do
+            if screen_ptr == &screen.me then
+                emit screen.on_escape_release;
+            end
+        end
+    with
+        every screen_ptr in ON_PAUSE_PRESS do
+            if screen_ptr == &screen.me then
+                emit screen.on_pause_press;
+            end
+        end
+    with
+        every screen_ptr in ON_PAUSE_RELEASE do
+            if screen_ptr == &screen.me then
+                emit screen.on_pause_release;
+            end
+        end
+    with
+        every screen_ptr in ON_SINGLE_STEP_PRESS do
+            if screen_ptr == &screen.me then
+                emit screen.on_single_step_press;
+            end
+        end
+    with
+        every screen_ptr in ON_SINGLE_STEP_RELEASE do
+            if screen_ptr == &screen.me then
+                emit screen.on_single_step_release;
+            end
+        end
+    with
+        every screen_ptr in ON_FAST_FORWARD_PRESS do
+            if screen_ptr == &screen.me then
+                emit screen.on_fast_forward_press;
+            end
+        end
+    with
+        every screen_ptr in ON_FAST_FORWARD_RELEASE do
+            if screen_ptr == &screen.me then
+                emit screen.on_fast_forward_release;
+            end
+        end
+    with
+        every screen_ptr in ON_ACTION_UP_PRESS do
+            if screen_ptr == &screen.me then
+                emit screen.on_action_up_press;
+            end
+        end
+    with
+        every screen_ptr in ON_ACTION_DOWN_PRESS do
+            if screen_ptr == &screen.me then
+                emit screen.on_action_down_press;
+            end
+        end
+    with
+        every package in ON_ACTION_AXIS_MOVE do
+            if package:screen == &screen.me then
+                emit screen.on_action_axis_move => package:move;
             end
         end
     end
