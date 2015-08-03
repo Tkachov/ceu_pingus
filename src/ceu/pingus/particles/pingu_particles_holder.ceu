@@ -64,7 +64,7 @@ do
             end
         end
     with
-        every e_UPDATE do
+        every global:world:update do
             var float x_collision_decrease = 0.3;
             var float y_collision_decrease = 0.6;
 

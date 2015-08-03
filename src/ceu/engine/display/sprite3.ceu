@@ -192,7 +192,7 @@ do
             end
         end
     with
-        every global:update do
+        every global:world:update do
             if active then
                 emit default_update;
             end

@@ -65,7 +65,7 @@ do
             end
         end
     with
-        every e_UPDATE do
+        every global:world:update do
             loop j in particles.size() do
                 var _RainParticle&? it = _get_particle(particles, j);
 

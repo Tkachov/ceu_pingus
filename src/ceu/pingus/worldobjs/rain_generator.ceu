@@ -42,7 +42,7 @@ do
             end
         end
     with
-        every e_UPDATE do
+        every global:world:update do
             if waiter_count<0 and _rand()%150 == 0 then
                 _log_info("Doing thunder");
                 do_thunder = true;

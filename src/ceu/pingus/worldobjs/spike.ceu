@@ -22,7 +22,7 @@ do
     par/or do
         loop do
             //not killing
-            every e_UPDATE do
+            every global:world:update do
                 var bool stop = false;
                 loop pingu in global:world:get_pingus():all_pingus do            
                     if pingu:get_x() > pos.x+16-5 and pingu:get_x() < pos.x+16+5 and
@@ -41,7 +41,7 @@ do
                 end;
                 surface.reload_by_name("traps/spike");
 
-                every e_UPDATE do
+                every global:world:update do
                     loop pingu in global:world:get_pingus():all_pingus do            
                         if surface.get_current_frame() == 3 and
                            pingu:get_x() > pos.x+16-12 and pingu:get_x() < pos.x+16+12 and

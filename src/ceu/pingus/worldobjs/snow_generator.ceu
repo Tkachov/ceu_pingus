@@ -38,7 +38,7 @@ do
             */
         end
     with
-        every e_UPDATE do
+        every global:world:update do
             loop/5000 i in _Math__floor(intensity) do
                 if _rand()%3 != 0 then
                     call/rec global:world:get_snow_particles_holder():add_particle(_rand()%global:world:get_width(), -_globals__tile_size, false);

@@ -57,7 +57,7 @@ do
             end
         end
     with
-        every e_UPDATE do
+        every global:world:update do
             // update all contained particles
             loop j in particles.size() do
                 var _SmokeParticle&? it = _get_particle(particles, j);

@@ -72,7 +72,7 @@ do
             call/rec smallmap:draw_sprite(smallmap_symbol.get(), _toVector3f(pos));
         end
     with
-        every e_UPDATE do
+        every global:world:update do
             loop pingu in global:world:get_pingus():all_pingus do
                 // Make sure this particular exit is allowed for this pingu
                 if pingu:get_owner() != owner_id then

@@ -42,7 +42,7 @@ do
         await sprite.finished;
         escape _A_EXITED;
     with
-        await global:e_PINGU_UPDATE_ALL;
+        await global:world:update;
         _Sound_PingusSound_play_sound("yipee");
     end
 end

@@ -82,7 +82,7 @@ do
             end
         end
     with
-        every e_UPDATE do
+        every global:world:update do
             if current_door_height>0 and is_opening then
                 // Open the door
                 current_door_height = current_door_height - 1;

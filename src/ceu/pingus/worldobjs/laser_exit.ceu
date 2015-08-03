@@ -29,7 +29,7 @@ do
         loop do
             //not killing
             surface.active = false;
-            every e_UPDATE do
+            every global:world:update do
                 loop pingu in global:world:get_pingus():all_pingus do
                     if pingu:get_x() <= pos.x+34 or pingu:get_x() >= pos.x+34+10 or
                        pingu:get_y() <= pos.y+43 or pingu:get_y() >= pos.y+43+20 then

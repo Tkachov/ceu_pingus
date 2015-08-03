@@ -290,7 +290,7 @@ do
         end
     with
         //pass update() call
-        every global:e_PINGU_UPDATE_ALL do
+        every global:world:update do
             //_printf("pos@%d: (%f %f)\n", global:world:get_time(), pos_x, pos_y);
 
             if instant_action_set then
@@ -356,7 +356,7 @@ do
                     await FOREVER;
                 end
 
-                await global:e_PINGU_UPDATE_ALL; //hack
+                await global:world:update; //hack
             end
         end
     end

@@ -20,6 +20,8 @@ class Groundpiece with
     interface IWorldObj;
     var _ResDescriptor&? desc;
     var int gptype;
+
+    event void stop;
 do
     call/rec global:world:add_object(&this);
 
@@ -30,20 +32,24 @@ do
 
     finalize with _delete_obj(desc); end
 
-    every e_STARTUP do
-        //original FIXME: using a CollisionMask is kind of unneeded here
-        var _CollisionMask* mask = _new_CollisionMask(_deref(desc));
+    par/or do
+        every e_STARTUP do
+            //original FIXME: using a CollisionMask is kind of unneeded here
+            var _CollisionMask* mask = _new_CollisionMask(_deref(desc));
 
-        //original FIXME: overdrawing of bridges and similar things aren't handled here
-        if gptype == _GT_REMOVE then
-            global:world:remove(mask, pos.x, pos.y);
-        else
-            global:world:put(mask, pos.x, pos.y, gptype);
+            //original FIXME: overdrawing of bridges and similar things aren't handled here
+            if gptype == _GT_REMOVE then
+                global:world:remove(mask, pos.x, pos.y);
+            else
+                global:world:put(mask, pos.x, pos.y, gptype);
+            end
+
+            _delete_obj(mask);
+
+            emit stop;
         end
-
-        _delete_obj(mask);
-
-        break;
+    with
+        await stop;
     end
 
     global:world:remove_object(&this);

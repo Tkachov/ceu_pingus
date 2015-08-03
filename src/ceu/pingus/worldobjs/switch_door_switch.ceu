@@ -45,7 +45,7 @@ do
             end
         end
     with
-        every e_UPDATE do
+        every global:world:update do
             if is_triggered or not m_door then
                 continue;
             end

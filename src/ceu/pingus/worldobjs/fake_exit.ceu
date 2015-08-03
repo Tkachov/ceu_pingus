@@ -37,7 +37,7 @@ do
         loop do
             //not smashing
             sprite.active = false;            
-            every e_UPDATE do
+            every global:world:update do
                 loop pingu in global:world:get_pingus():all_pingus do
                     if pingu:get_x() > pos.x+31 and pingu:get_x() < pos.x+31+15 and
                        pingu:get_y() > pos.y+56 and pingu:get_y() < pos.y+56+56 then
@@ -57,7 +57,7 @@ do
 
             //smashing            
             par/or do
-                every e_UPDATE do
+                every global:world:update do
                     if sprite.get_current_frame() == 4 then
                         loop pingu in global:world:get_pingus():all_pingus do
                             if pingu:get_x() > pos.x+31 and pingu:get_x() < pos.x+31+15 and

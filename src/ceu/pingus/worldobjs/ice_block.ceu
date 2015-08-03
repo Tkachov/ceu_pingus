@@ -40,7 +40,7 @@ do
             block_sur.reload_by_name("worldobjs/iceblock");
 
             loop do
-                await e_UPDATE;
+                await global:world:update;
                 
                 loop pingu in global:world:get_pingus():all_pingus do
                     if pingu:get_x() > pos.x and pingu:get_x() < pos.x+(float)block_sur.get_width() and

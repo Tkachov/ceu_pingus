@@ -32,7 +32,7 @@ do
                 sprite_idle.reload_by_name("traps/guillotineidle");
                 sprite_idle.set_play_loop(true);
                 
-                every e_UPDATE do
+                every global:world:update do
                     var bool stop = false;
 
                     loop pingu in global:world:get_pingus():all_pingus do
@@ -63,7 +63,7 @@ do
                 sprite_kill.set_play_loop(false);
 
                 par/or do
-                    every global:update do
+                    every global:world:update do
                         // original FIXME: Should be a different sound
                         if sprite_kill.get_current_frame() == 7 then
                             global:world:play_sound("splash", pos, 0.5);

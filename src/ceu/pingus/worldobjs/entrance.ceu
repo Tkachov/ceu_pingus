@@ -49,7 +49,7 @@ do
             call/rec smallmap:draw_sprite(smallmap_symbol.get(), _toVector3f(pos));
         end
     with
-        every e_UPDATE do
+        every global:world:update do
             var bool pr = call/rec pingu_ready();
             if pr and not global:world:check_armageddon() then
                 emit global:world:get_pingus():e_MAKE_PINGU => (&this, owner_id, go_left);

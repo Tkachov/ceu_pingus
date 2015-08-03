@@ -109,7 +109,7 @@ do
             end
         end
     with
-        every e_UPDATE do
+        every global:world:update do
             sprite.update();
 
             if not sprite or _globals__static_graphics then

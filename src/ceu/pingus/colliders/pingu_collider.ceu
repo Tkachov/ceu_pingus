@@ -28,7 +28,7 @@ do
         if (int)(new_pos.x) != (int)(current_pos.x) then        
             var float top_of_pingu = new_pos.y - (float)(height);
             
-            loop do
+            loop/1000 do
                 if new_pos.y < top_of_pingu then
                     break;
                 end

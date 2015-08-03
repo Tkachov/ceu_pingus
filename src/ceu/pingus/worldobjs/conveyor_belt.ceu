@@ -64,7 +64,7 @@ do
             _delete_obj(mask);
         end
     with
-        every e_UPDATE do
+        every global:world:update do
             left_sur.update();
             middle_sur.update();
             right_sur.update();

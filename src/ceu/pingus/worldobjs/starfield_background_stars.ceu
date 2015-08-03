@@ -34,7 +34,7 @@ do
             _gc_color_draw2(gc, &sprite, _Vector3f(x_pos, y_pos, -10)); //original FIXME: make z editable via xml
         end
     with
-        every global:update do
+        every global:world:update do
             x_pos = x_pos + x_add;
             y_pos = y_pos + y_add;
 

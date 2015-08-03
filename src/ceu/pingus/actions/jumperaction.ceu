@@ -37,7 +37,7 @@ do
         this.right_name = _new_String(_concat2(pingu.get_owner_str(), "/jumper/right"));
     end;
 
-    await global:e_PINGU_UPDATE_ALL;
+    await global:world:update;
 
     // if climber, do a wall-jump, else just jump forward
     if pingu.get_previous_action() == _A_CLIMBER then

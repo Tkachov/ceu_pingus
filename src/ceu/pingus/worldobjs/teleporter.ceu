@@ -45,7 +45,7 @@ do
             end
         end
     with
-        every e_UPDATE do
+        every global:world:update do
             if target != null then
                 loop pingu in global:world:get_pingus():all_pingus do
                     if pingu:get_x() > pos.x-3 and pingu:get_x() < pos.x+3 and

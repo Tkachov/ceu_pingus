@@ -52,10 +52,6 @@ do
             emit global:e_PINGU_DRAW_OTHERS => gc;
         end
     with
-        every e_UPDATE do
-            emit global:e_PINGU_UPDATE_ALL;
-        end
-    with
         every (entrance, owner_id, turn_left) in e_MAKE_PINGU do
             if number_of_allowed > pingus_emitted then
                 // We use all_pingus.size() as pingu_id, so that id == array index                

@@ -145,7 +145,7 @@ do
                 this.right_name = _new_String(_concat2(pingu.get_owner_str(), "/bridger/right"));
             end;
 
-            await global:e_PINGU_UPDATE_ALL until (build_sprite.get_current():get_current_frame () >= 7);
+            await global:world:update until (build_sprite.get_current():get_current_frame () >= 7);
 
             if bricks > 0 then
                 if call/rec brick_placement_allowed() then

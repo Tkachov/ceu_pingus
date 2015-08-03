@@ -47,7 +47,7 @@ do
     end;
 
     loop do
-        await global:e_PINGU_UPDATE_ALL;
+        await global:world:update;
         
         if (call/rec pingu.rel_getpixel(0,-1)) == _GT_NOTHING then
             escape _A_FALLER;

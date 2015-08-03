@@ -94,12 +94,12 @@ do
     end;
 
     par do
-        every global:e_PINGU_UPDATE_ALL do
+        every global:world:update do
             odd_frame = not odd_frame;
         end
     with
         loop do
-            await global:e_PINGU_UPDATE_ALL;
+            await global:world:update;
 
             /// WALK_FORWARD ///
             //Basher turns into a Faller if it goes down more than <max_steps_down>
@@ -161,8 +161,8 @@ do
                 end
             end
 
-            await global:e_PINGU_UPDATE_ALL;
-            await global:e_PINGU_UPDATE_ALL;
+            await global:world:update;
+            await global:world:update;
         end
     end
 end

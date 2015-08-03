@@ -340,11 +340,11 @@ do
             loop i in objs.size() do
                 ///_printf("update object = %d\n", objs.get(i));
                 if objs.get(i) != null then
-                    emit ((IWorldObj*)objs.get(i)):e_UPDATE;
+                    emit ((IWorldObj*)objs.get(i)):e_UPDATE; //TODO: remove this
                 end
             end
 
-            emit global:update;
+            emit update;
         end
     with
         every e_ARMAGEDDON do

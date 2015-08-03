@@ -68,6 +68,8 @@ interface IWorld with
     event void e_UPDATE;
     event void e_ARMAGEDDON;
     event void e_DELETE;
+
+    event void update;
 end
 
 #endif

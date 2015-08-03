@@ -54,7 +54,7 @@ do
             end
         end
     with
-        every e_UPDATE do
+        every global:world:update do
             sprite.update(0.033);
         end
     with

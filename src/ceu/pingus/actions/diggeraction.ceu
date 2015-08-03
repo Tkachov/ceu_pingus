@@ -75,7 +75,7 @@ do
     sprite.reload_by_name(_scc3("pingus/player", pingu.get_owner_str(), "/digger/left").c_str());
 
     loop do
-        await global:e_PINGU_UPDATE_ALL;
+        await global:world:update;
         delay_count = delay_count + 1;
 
         if (call/rec pingu.rel_getpixel(0, -1)) == _GT_WATER or (call/rec pingu.rel_getpixel(0, -1)) == _GT_LAVA then
