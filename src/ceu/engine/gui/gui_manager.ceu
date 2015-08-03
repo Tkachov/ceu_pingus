@@ -5,6 +5,7 @@
 #include "../../sdl.ceu"
 #include "../../math/vector2i.ceu"
 #include "../display/sprite.ceu"
+#include "../../pingus/global_interface.ceu"
 #include "igui_manager.ceu"
 
 native/pre do
@@ -142,7 +143,7 @@ do
             parent_gc:draw(_deref(drawing_context));
         end
     with
-        every delta in update do
+        every delta in global:update do
             loop i in children.size() do
                 if children.at(i):is_visible() then
                     if children.at(i):ceu == null then

@@ -87,6 +87,11 @@ do
         this.pos.y = 0;
     end;
 
+    var Relay relay with
+        this.src = outer;
+        this.dst = sb;
+    end;
+
     function @rec (Vector2i pos) => bool is_at_func do
         return call/rec sb.is_at_func(pos);
     end
@@ -118,50 +123,6 @@ do
             emit sb.draw => gc;
             gc:print_center(_Fonts__chalk_small, _Vector2i( _Display__get_width() - 83, 2), __("Show Ending?"));
         end
-     with
-        every d in update do
-            emit sb.update => d;
-        end
-    with
-        every p in is_at do
-            emit sb.is_at => p;
-        end
-    with
-        every mouse_leave do
-            emit sb.mouse_leave;
-        end
-    with
-        every (x, y) in mouse_move do
-            emit sb.mouse_move => (x, y);
-        end
-    with
-        every (x, y) in mouse_press do
-            emit sb.mouse_press => (x, y);
-        end
-    with
-        every (x, y) in mouse_release do
-            emit sb.mouse_release => (x, y);
-        end
-    with
-        every mouse_double_click do
-            emit sb.mouse_double_click;
-        end
-    with
-        every (x, y) in mouse_secondary_press do
-            emit sb.mouse_secondary_press => (x, y);
-        end
-    with
-        every (x, y) in mouse_secondary_release do
-            emit sb.mouse_secondary_release => (x, y);
-        end
-    with
-        every (x, y) in mouse_secondary_click do
-            emit sb.mouse_secondary_click => (x, y);
-        end
-    with
-        every mouse_secondary_double_click do
-            emit sb.mouse_secondary_double_click;
-        end
     end
 end
 
@@ -177,6 +138,11 @@ do
         this.me = outer.me;
         this.pos.x = 0;
         this.pos.y = _Display__get_height() - 37;
+    end;
+
+    var Relay relay with
+        this.src = outer;
+        this.dst = sb;
     end;
 
     function @rec (Vector2i pos) => bool is_at_func do
@@ -209,50 +175,6 @@ do
         every gc in draw do
             emit sb.draw => gc;
             gc:print_center(_Fonts__chalk_small, _Vector2i(44, _Display__get_height() - 25), __("Leave?"));
-        end
-    with
-        every d in update do
-            emit sb.update => d;
-        end
-    with
-        every p in is_at do
-            emit sb.is_at => p;
-        end
-    with
-        every mouse_leave do
-            emit sb.mouse_leave;
-        end
-    with
-        every (x, y) in mouse_move do
-            emit sb.mouse_move => (x, y);
-        end
-    with
-        every (x, y) in mouse_press do
-            emit sb.mouse_press => (x, y);
-        end
-    with
-        every (x, y) in mouse_release do
-            emit sb.mouse_release => (x, y);
-        end
-    with
-        every mouse_double_click do
-            emit sb.mouse_double_click;
-        end
-    with
-        every (x, y) in mouse_secondary_press do
-            emit sb.mouse_secondary_press => (x, y);
-        end
-    with
-        every (x, y) in mouse_secondary_release do
-            emit sb.mouse_secondary_release => (x, y);
-        end
-    with
-        every (x, y) in mouse_secondary_click do
-            emit sb.mouse_secondary_click => (x, y);
-        end
-    with
-        every mouse_secondary_double_click do
-            emit sb.mouse_secondary_double_click;
         end
     end
 end
@@ -463,7 +385,7 @@ do
             end
         end
     with
-        every delta in update do
+        every delta in global:update do
             //Exit the world
             if exit_worldmap then
                 _ScreenManager__instance():pop_screen();

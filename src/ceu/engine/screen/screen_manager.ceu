@@ -80,7 +80,7 @@ do
 
             screen = _PTR2REF((Screen*)package:screen:ceu);
             if screen then
-                emit screen:call_update => package:delta;
+                emit global:update => package:delta;
             else
                 package:screen:update(package:delta) finalize with end;
             end

@@ -103,7 +103,7 @@ do
     demo_session.gui_manager:add(&small_map.rect) finalize with end;
 
     par/or do
-        every delta in update do
+        every delta in global:update do
             if call/rec server.is_finished() then
                 _ScreenManager__instance():pop_screen();
             else
@@ -154,12 +154,10 @@ do
             end
         end 
     with
-        every screen in ON_ESCAPE_PRESS do
-            if screen == &demo_session then
-                _log_info("Escape Pressed");
-                emit server.e_FINISH_EVENT;
-                _ScreenManager__instance():pop_screen();
-            end
+        every on_escape_press do            
+            _log_info("Escape Pressed");
+            emit server.e_FINISH_EVENT;
+            _ScreenManager__instance():pop_screen();            
         end
     with
         every pos in DEMO_SESSION_ON_SCROLLER_MOVE do

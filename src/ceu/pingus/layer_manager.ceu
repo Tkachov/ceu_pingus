@@ -4,6 +4,7 @@
 #include "../engine/display/sprite2.ceu"
 #include "../math/math.ceu"
 #include "../math/vector3f.ceu"
+#include "global_interface.ceu"
 
 native/pre do
     ##include "engine/display/display.hpp"
@@ -13,7 +14,6 @@ end
 
 interface ILayerManager with
     event _DrawingContext* draw;
-    event float update;
 end;
 
 class Layer with
@@ -47,7 +47,7 @@ do
             sur.draw_dc(gc, v);
         end
     with
-        every delta in parent.update do
+        every delta in global:update do
             if not _globals__static_graphics then
                 x_pos = _Math__mod((x_pos + x_update * delta), (float)_Display__get_width());
                 y_pos = _Math__mod((y_pos + y_update * delta), (float)_Display__get_height());

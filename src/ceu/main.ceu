@@ -37,11 +37,10 @@ event void e_PINGU_DIED;
 event void e_PINGU_EXITED;
 event _SceneContext* e_PINGU_DRAW_WALKER;
 event _SceneContext* e_PINGU_DRAW_OTHERS;
-event void e_PINGU_UPDATE_ALL;
 
 //global events
 event _SceneContext* draw;
-event void update;
+event float update;
 event void push_option_menu;
 event void push_worldmap_tutorial_screen;
 
@@ -107,11 +106,9 @@ with
         worldmap_screen->load(Pathname("worldmaps/tutorial.worldmap", Pathname::DATA_PATH)); //hardcoded tutorial pathname
         ScreenManager::instance()->push_screen(worldmap_screen);
         */
-        var WorldmapScreen* ws = null;
-        spawn WorldmapScreen with
+        var WorldmapScreen*? ws = spawn WorldmapScreen with
             this.me = _PTR2REF(_new_GUIScreen());
-            this.me.ceu = &this;
-            ws = &this;
+            this.me.ceu = &this;            
         end;
 
         var _Pathname&? filename = _new_Pathname("worldmaps/tutorial.worldmap", _Pathname__DATA_PATH); //hardcoded tutorial pathname
@@ -122,11 +119,9 @@ with
     end
 with
     every push_option_menu do
-        var OptionMenu* os = null;
-        spawn OptionMenu with
+        var OptionMenu*? os = spawn OptionMenu with
             this.me = _PTR2REF(_new_OptionMenu());
             this.me.ceu = &this;
-            os = &this;
         end;
         _ScreenManager__instance():push_screen(_make_std__shared_ptr_Screen(os:me));
     end

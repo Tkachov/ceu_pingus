@@ -27,7 +27,6 @@ input _GUIScreen* ON_FAST_FORWARD_PRESS;
 input _GUIScreen* ON_FAST_FORWARD_RELEASE;
 input _GUIScreen* ON_ACTION_UP_PRESS;
 input _GUIScreen* ON_ACTION_DOWN_PRESS;
-input _ScreenUpdatePackage* SCREEN_UPDATE;
 input _ScreenUpdateEventPackage* SCREEN_UPDATE_EVENT;
 input _ScreenDrawPackage* SCREEN_DRAW_BACKGROUND;
 input _ScreenDrawPackage* SCREEN_DRAW_FOREGROUND;
@@ -38,12 +37,10 @@ interface Screen with
     var _GUIScreen&? me;    
 
     event _DrawingContext* call_draw;
-    event float call_update;
     event _const_Input__Event* call_update_event;
 
     event _DrawingContext* draw_background;
     event _DrawingContext* draw_foreground;
-    event float update;
     event _const_Input__Event* update_event;
 
     event void on_startup;
@@ -77,13 +74,6 @@ do
                 emit gui_manager:draw => gc;
             end
             emit screen.draw_foreground => gc;
-        end
-    with
-        every delta in screen.call_update do
-            if gui_manager then
-                emit gui_manager:update => delta;
-            end
-            emit screen.update => delta;
         end
     with
         every e in screen.call_update_event do
@@ -161,15 +151,6 @@ do
         every package in SCREEN_DRAW_FOREGROUND do
             if package:screen == &screen.me then
                 emit screen.draw_foreground => &package:gc;
-            end
-        end
-    with
-        every package in SCREEN_UPDATE do
-            if package:screen == &screen.me then
-                if gui_manager then
-                    emit gui_manager:update => package:delta;
-                end
-                emit screen.update => package:delta;
             end
         end
     with

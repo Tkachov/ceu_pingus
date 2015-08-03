@@ -46,10 +46,6 @@ void
 GUIScreen::update(float delta)
 {
   gui_manager->update(delta);
-
-  ScreenUpdatePackage package(this, delta);
-  ScreenUpdatePackage* pp = &package;
-  ceu_out_go(&CEUapp, CEU_IN_SCREEN_UPDATE, &pp);
 }
 
 void

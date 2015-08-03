@@ -10,11 +10,9 @@ interface GlobalPinguEvents with
     event void e_PINGU_EXITED;
     event _SceneContext* e_PINGU_DRAW_WALKER;
     event _SceneContext* e_PINGU_DRAW_OTHERS;
-    event void e_PINGU_UPDATE_ALL;
 
     //global events
-    event _SceneContext* draw;
-    event void update;
+    event _SceneContext* draw;    
 end
 
 #endif

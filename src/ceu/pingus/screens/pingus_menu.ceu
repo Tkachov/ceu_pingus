@@ -298,10 +298,6 @@ do
                     _deref(hint));
             end
         end
-    with        
-        every delta in update do
-            emit background:update => delta;
-        end
     with
         every on_escape_press do            
             //original FIXME: get_manager()->show_exit_menu ();            
