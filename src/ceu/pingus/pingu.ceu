@@ -291,7 +291,7 @@ do
     with
         //pass update() call
         every global:e_PINGU_UPDATE_ALL do
-            _printf("pos@%d: (%f %f)\n", global:world:get_time(), pos_x, pos_y);
+            //_printf("pos@%d: (%f %f)\n", global:world:get_time(), pos_x, pos_y);
 
             if instant_action_set then
                 instant_action_set = false;

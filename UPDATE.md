@@ -1,3 +1,17 @@
+# Week 11 (3/08--9/08)
+
+## What I was supposed to do the past week?
+
+Add `GUIManager` support in other screens;
+Remove proxies and corresponding external events;
+Join some global internal events;
+Do something about demo session?
+Work on removing warnings and unsafe code.
+
+## What I actually did the past week?
+
+## What I'll do this week?
+
 # Week 10 (27/07--2/08)
 
 ## What I was supposed to do the past week?
@@ -7,7 +21,18 @@
 
 ## What I actually did the past week?
 
+Ported all components and screens (but one: `DemoSession`);
+Worked on `ScreenManager` and `GUIManager`;
+Found an interface/classId segfault bug;
+Added `GUIManager` support in `WorldmapScreen` and `OptionMenu`.
+
 ## What I'll do this week?
+
+Add `GUIManager` support in other screens;
+Remove proxies and corresponding external events;
+Join some global internal events;
+Do something about demo session?
+Work on removing warnings and unsafe code.
 
 # Week 9 (20/07--26/07)
 
