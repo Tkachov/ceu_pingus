@@ -12,6 +12,18 @@
 #include "../right_left_sprite.ceu"
 #include "../worldobj.ceu"
 
+native/pre do
+    ##include <string>
+    
+    ##define DIR_LEFT Direction::LEFT
+    ##define DIR_RIGHT Direction::RIGHT
+    ##define make_sprite(a, b, c) Sprite(a+b+c)
+    ##define make_player_sprite(a, b) Sprite("pingus/player"+a+b)
+    ##define concat(a, b) a "" b
+    ##define concat2(a, b) std::string("pingus/player"+a+b).c_str()
+    ##define const_char_string const char*
+end
+
 class BasherAction with
     interface IAction;
     interface IPinguAction;

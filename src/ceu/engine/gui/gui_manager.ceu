@@ -309,14 +309,14 @@ do
                     _log_error("/ceu==null");
                     grabbed_comp:on_secondary_button_release(mpos.x, mpos.y);
                 else
-                    emit ((IGUI_Component*)grabbed_comp:ceu):mouse_release => (mpos.x, mpos.y);
+                    emit ((IGUI_Component*)grabbed_comp:ceu):mouse_secondary_release => (mpos.x, mpos.y);
                 end
             else/if secondary_pressed_comp then
                 if secondary_pressed_comp:ceu == null then
                     _log_error("/ceu==null");
                     secondary_pressed_comp:on_secondary_button_release(mpos.x, mpos.y);
                 else
-                    emit ((IGUI_Component*)secondary_pressed_comp:ceu):mouse_release => (mpos.x, mpos.y);
+                    emit ((IGUI_Component*)secondary_pressed_comp:ceu):mouse_secondary_release => (mpos.x, mpos.y);
                 end
                   
                 if comp == secondary_pressed_comp then
@@ -324,7 +324,7 @@ do
                         _log_error("/ceu==null");
                         secondary_pressed_comp:on_secondary_button_click(mpos.x, mpos.y);
                     else
-                        emit ((IGUI_Component*)secondary_pressed_comp:ceu):mouse_click => (mpos.x, mpos.y);
+                        emit ((IGUI_Component*)secondary_pressed_comp:ceu):mouse_secondary_click => (mpos.x, mpos.y);
                     end
                 end
                   
@@ -335,7 +335,7 @@ do
                         _log_error("/ceu==null");
                         comp:on_secondary_button_release(mpos.x, mpos.y);
                     else
-                        emit ((IGUI_Component*)comp:ceu):mouse_release => (mpos.x, mpos.y);
+                        emit ((IGUI_Component*)comp:ceu):mouse_secondary_release => (mpos.x, mpos.y);
                     end
                 end
             end

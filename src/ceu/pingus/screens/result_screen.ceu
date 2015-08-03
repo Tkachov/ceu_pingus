@@ -45,6 +45,8 @@ native @pure _new_GUI_Component(), _ScreenManager__instance(), _std__make_shared
 input _ResultScreen* DELETE_RESULT_SCREEN;
 
 interface IResultScreen with
+    interface Screen;
+
     function (void) => void retry_level;
     function (void) => void close_screen;
     function (void) => _Result* get_result;
@@ -64,8 +66,13 @@ do
         this.pos.y = _Display__get_height()/2 + 150;
     end;
 
+    var Relay r with
+        this.src = outer;
+        this.dst = sb;
+    end;
+
     function @rec (Vector2i pos) => bool is_at_func do
-        return false; //TODO
+        return call/rec sb.is_at_func(pos);
     end
 
     call/rec sb.load("core/start/ok", "core/start/ok_clicked", "core/start/ok_hover");
@@ -103,8 +110,13 @@ do
         this.pos.y = _Display__get_height()/2 + 200;
     end;
 
+    var Relay r with
+        this.src = outer;
+        this.dst = sb;
+    end;
+
     function @rec (Vector2i pos) => bool is_at_func do
-        return false; //TODO
+        return call/rec sb.is_at_func(pos);
     end
 
     call/rec sb.load("core/start/back", "core/start/back_clicked", "core/start/back_hover");
@@ -146,8 +158,13 @@ do
         this.pos.y = _Display__get_height()/2 + 150;
     end;
 
+    var Relay r with
+        this.src = outer;
+        this.dst = sb;
+    end;
+
     function @rec (Vector2i pos) => bool is_at_func do
-        return false; //TODO
+        return call/rec sb.is_at_func(pos);
     end
 
     call/rec sb.load("core/start/ok", "core/start/ok_clicked", "core/start/ok_hover");
@@ -190,9 +207,7 @@ do
     var PointerProxy pp with this.gui = outer; end;
     var EventProxy ep with this.gui = outer; end;
 
-    function @rec (Vector2i pos) => bool is_at_func do
-        return false; //TODO
-    end
+    RECT_IS_AT(&me);
 
     var Sprite background;
     var Sprite blackboard;
@@ -287,17 +302,25 @@ end
 ////////////////////////////////////////////////
 
 class ResultScreen with
-    interface IResultScreen;
-    var _ResultScreen* me;
+    interface IResultScreen;    
 do
-    var _ResultScreen&? result_screen = _PTR2REF((_ResultScreen*)me);
+    var _ResultScreen&? result_screen = _PTR2REF((_ResultScreen*)&me);
+    var GUIManager gui_manager with
+        this.me = _new_GUI__RectComponent(_Rect(0, 0, _Display__get_width(), _Display__get_height()));
+        this.drawing_context = _new_DrawingContext(_Rect(0, 0, _Display__get_width(), _Display__get_height()), false);
+    end;
+    var ScreenFramework sf with
+        this.screen = outer;
+        this.gui_manager = &gui_manager;
+    end;
 
     var ResultScreenComponent comp with
         this.me = _new_GUI_Component();
+        this.me.ceu = &this;
         this.parent = outer;
     end;
 
-    result_screen.gui_manager:add(&comp.me) finalize with end;
+    gui_manager.add(&comp.me);
 
     var ResultScreenOkButton*? ok_button = null;
     var ResultScreenAbortButton*? abort_button = null;
@@ -306,22 +329,25 @@ do
     if result_screen.result.success() then
         ok_button = spawn ResultScreenOkButton with
             this.me = _new_GUI_Component();
+            this.me.ceu = &this;
             this.parent = outer;
         end;
-        result_screen.gui_manager:add(&ok_button:me) finalize with end;
+        gui_manager.add(&ok_button:me);
     else
         abort_button = spawn ResultScreenAbortButton with
             this.me = _new_GUI_Component();
+            this.me.ceu = &this;
             this.parent = outer;
         end;
 
         retry_button = spawn ResultScreenRetryButton with
             this.me = _new_GUI_Component();
+            this.me.ceu = &this;
             this.parent = outer;
         end;
 
-        result_screen.gui_manager:add(&abort_button:me) finalize with end;
-        result_screen.gui_manager:add(&retry_button:me) finalize with end;
+        gui_manager.add(&abort_button:me);
+        gui_manager.add(&retry_button:me);
     end
 
     function (void) => void retry_level do
@@ -337,41 +363,33 @@ do
     end
 
     par/or do
-        every screen in ON_STARTUP do
-            if screen == &result_screen then
-                if result_screen.result.success() then
-                    _Sound__PingusSound__play_music("success_1.wav", 1, false);
-                else
-                    _Sound__PingusSound__play_music("pingus-2.wav", 1, false);
-                end
+        every on_startup do            
+            if result_screen.result.success() then
+                _Sound__PingusSound__play_music("success_1.wav", 1, false);
+            else
+                _Sound__PingusSound__play_music("pingus-2.wav", 1, false);
             end
         end
     with
-        every screen in ON_ESCAPE_PRESS do
-            if screen == &result_screen then
+        every on_escape_press do            
+            close_screen();            
+        end
+    with
+        every on_pause_press do            
+            //same as fast_forward_press
+            if result_screen.result.success() then
                 close_screen();
-            end
+            else
+                retry_level();
+            end            
         end
     with
-        every screen in ON_PAUSE_PRESS do
-            if screen == &result_screen then
-                //same as fast_forward_press
-                if result_screen.result.success() then
-                    close_screen();
-                else
-                    retry_level();
-                end
-            end
-        end
-    with
-        every screen in ON_FAST_FORWARD_PRESS do
-            if screen == &result_screen then
-                //same as pause_press
-                if result_screen.result.success() then
-                    close_screen();
-                else
-                    retry_level();
-                end
+        every on_fast_forward_press do
+            //same as pause_press
+            if result_screen.result.success() then
+                close_screen();
+            else
+                retry_level();
             end
         end
     with

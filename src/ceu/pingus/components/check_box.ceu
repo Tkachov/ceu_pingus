@@ -38,9 +38,7 @@ do
     var PointerProxy pp with this.gui = outer; end;
     var EventProxy ep with this.gui = outer; end;
 
-    function @rec (Vector2i pos) => bool is_at_func do
-        return rect.is_at(pos.x, pos.y);
-    end
+    RECT_IS_AT(&rect);
 
     function (int x, int y) => void shift_pos do
         rect.set_rect(_Rect(_Vector2i(rect.rect.left + x, rect.rect.top + y), rect.rect.get_size()));        

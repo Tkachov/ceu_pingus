@@ -30,9 +30,7 @@ do
     var PointerProxy pp with this.gui = outer; end;
     var PrimaryButtonProxy pbp with this.gui = outer; end;
 
-    function @rec (Vector2i pos) => bool is_at_func do
-        return false; //TODO
-    end
+    RECT_IS_AT(&rect);
 
     function @rec (_Sprite* sprite, _Vector3f pos) => void draw_sprite do
         if global:world == null then

@@ -30,9 +30,7 @@ do
         rect.set_rect(_Rect(_Vector2i(rect.rect.left + x, rect.rect.top + y), rect.rect.get_size()));        
     end
 
-    function @rec (Vector2i pos) => bool is_at_func do
-        return false; //TODO
-    end
+    RECT_IS_AT(&rect);
     
     every gc in draw do
         if _globals__developer_mode then

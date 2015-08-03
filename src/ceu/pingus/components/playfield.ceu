@@ -54,9 +54,7 @@ do
         _delete_obj(state);
     end;
 
-    function @rec (Vector2i pos) => bool is_at_func do
-        return false; //TODO
-    end
+    RECT_IS_AT(&playfield);
 
     state.set_limit(
         _Rect(

@@ -82,6 +82,7 @@ with
         var _DemoSession* new_demo_session = await NEW_DEMO_SESSION;
         spawn DemoSession with
             this.me = _PTR2REF(new_demo_session);
+            this.me.ceu = &this;
         end;
     end
 with
@@ -90,15 +91,16 @@ with
         var _GameSession* new_game_session = await NEW_GAME_SESSION;        
         spawn GameSession with
             this.me = _PTR2REF(new_game_session);
+            this.me.ceu = &this;
         end;
     end
-WITH_SCREEN(_StartScreen, StartScreen, NEW_START_SCREEN)
-WITH_SCREEN(_StoryScreen, StoryScreen, NEW_STORY_SCREEN)
-WITH_SCREEN(_ResultScreen, ResultScreen, NEW_RESULT_SCREEN)
-WITH_SCREEN(_WorldmapNS__WorldmapScreen, WorldmapScreen, NEW_WORLDMAP_SCREEN)
+WITH_SCREEN_CEU(_StartScreen, StartScreen, NEW_START_SCREEN)
+WITH_SCREEN_CEU(_StoryScreen, StoryScreen, NEW_STORY_SCREEN)
+WITH_SCREEN_CEU(_ResultScreen, ResultScreen, NEW_RESULT_SCREEN)
+WITH_SCREEN_CEU(_WorldmapNS__WorldmapScreen, WorldmapScreen, NEW_WORLDMAP_SCREEN)
 WITH_SCREEN_CEU(_PingusMenu, PingusMenu, NEW_PINGUS_MENU)
-WITH_SCREEN(_Credits, Credits, NEW_CREDITS)
-WITH_SCREEN(_LevelMenu, LevelMenu, NEW_LEVEL_MENU)
+WITH_SCREEN_CEU(_Credits, Credits, NEW_CREDITS)
+WITH_SCREEN_CEU(_LevelMenu, LevelMenu, NEW_LEVEL_MENU)
 with
     every push_worldmap_tutorial_screen do
         /*

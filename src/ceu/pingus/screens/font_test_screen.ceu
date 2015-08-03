@@ -34,9 +34,18 @@ end
 native @pure _new_Font();
 
 class FontTestScreen with
-    var _GUIScreen* me;
+    interface Screen;
     var _Pathname* fontfile;
 do
+    var GUIManager gui_manager with
+        this.me = _new_GUI__RectComponent(_Rect(0, 0, _Display__get_width(), _Display__get_height()));
+        this.drawing_context = _new_DrawingContext(_Rect(0, 0, _Display__get_width(), _Display__get_height()), false);
+    end;
+    var ScreenFramework sf with
+        this.screen = outer;
+        this.gui_manager = &gui_manager;
+    end;
+
     var Vector2i scroll;
     var bool dark = true;    
 
@@ -50,11 +59,7 @@ do
     end
 
     par do
-        every package in SCREEN_DRAW_BACKGROUND do
-            if package:screen != me then
-                continue;
-            end
-            
+        every gc in draw_background do            
             var int checker = 40;
             var int odd_color = 50;
             var int even_color = 0;
@@ -63,15 +68,15 @@ do
                 even_color = 200;
             end
 
-            loop y in package:gc.get_height()/checker do
-                loop x in package:gc.get_width()/checker do                
+            loop y in gc:get_height()/checker do
+                loop x in gc:get_width()/checker do                
                     if (x+y)%2 != 0 then
-                        package:gc.draw_fillrect(
+                        gc:draw_fillrect(
                             _Rect(x*checker, y*checker, x*checker + checker, y*checker + checker),
                             _Color(odd_color, odd_color, odd_color)
                         );
                     else
-                        package:gc.draw_fillrect(
+                        gc:draw_fillrect(
                             _Rect(x*checker, y*checker, x*checker + checker, y*checker + checker),
                             _Color(even_color, even_color, even_color)
                         );
@@ -79,48 +84,44 @@ do
                 end
             end
 
-            package:gc.print_left(_Fonts__chalk_large, _Vector2i(10, 10), "Pingus - Font Test");
+            gc:print_left(_Fonts__chalk_large, _Vector2i(10, 10), "Pingus - Font Test");
 
-            package:gc.push_modelview();
-            package:gc.translate(scroll.x, scroll.y);
+            gc:push_modelview();
+            gc:translate(scroll.x, scroll.y);
 
             loop i in 256 do                    
                 var int x = 64 + (i%20)*(font.get_height() + 24);
                 var int y = 64 + (i/20)*(font.get_height() + reference.get_height()*3);
 
                 // print the actual character
-                package:gc.print_left(_deref(reference),
+                gc:print_left(_deref(reference),
                                       _Vector2i(x, y - reference.get_height()),
                                       _make_String(1, i));
                 // print the index number
-                package:gc.print_left(_deref(reference),
+                gc:print_left(_deref(reference),
                                       _Vector2i(x, y + font.get_height()),
                                       _SU2str(i));
                   
                 if font.get_width(_make_String(1, i)) then
-                    package:gc.draw_rect(_Rect(x, y, x+font.get_height(), y+font.get_height()), _Color(0, 0, 255));
-                    package:gc.draw_rect(_Rect(x, y, x + (int)(font.get_width(_make_String(1, i))), y + font.get_height()), _Color(255, 0, 255));
-                    package:gc.print_left(_deref(font), _Vector2i(x, y), _make_String(1, i));
+                    gc:draw_rect(_Rect(x, y, x+font.get_height(), y+font.get_height()), _Color(0, 0, 255));
+                    gc:draw_rect(_Rect(x, y, x + (int)(font.get_width(_make_String(1, i))), y + font.get_height()), _Color(255, 0, 255));
+                    gc:print_left(_deref(font), _Vector2i(x, y), _make_String(1, i));
                 else
-                    package:gc.draw_rect(_Rect(x, y, x+font.get_height(), y+font.get_height()), _Color(255, 0, 0));
+                    gc:draw_rect(_Rect(x, y, x+font.get_height(), y+font.get_height()), _Color(255, 0, 0));
                 end
             end
 
-            package:gc.pop_modelview();
+            gc:pop_modelview();
         end
     with
-        every package in SCREEN_UPDATE_EVENT do
-            if package:screen != me then
-                continue;
-            end
-
-            if package:event.type == _Input__BUTTON_EVENT_TYPE then
-                if package:event.button.state == _Input__BUTTON_PRESSED and package:event.button.name == _Input__PRIMARY_BUTTON then
+        every ev in update_event do
+            if ev:type == _Input__BUTTON_EVENT_TYPE then
+                if ev:button.state == _Input__BUTTON_PRESSED and ev:button.name == _Input__PRIMARY_BUTTON then
                     dark = not dark;
                 end
-            else/if package:event.type == _Input__SCROLLER_EVENT_TYPE then
-                scroll.x = scroll.x + (int)(package:event.scroll.x_delta);
-                scroll.y = scroll.y + (int)(package:event.scroll.y_delta);                
+            else/if ev:type == _Input__SCROLLER_EVENT_TYPE then
+                scroll.x = scroll.x + (int)(ev:scroll.x_delta);
+                scroll.y = scroll.y + (int)(ev:scroll.y_delta);                
             end
         end
     end

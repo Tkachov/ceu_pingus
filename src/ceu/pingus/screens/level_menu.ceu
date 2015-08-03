@@ -57,6 +57,8 @@ native @pure _new_GUI_Component(), _ScreenManager__instance(), _std__make_shared
 input _LevelMenu* DELETE_LEVEL_MENU;
 
 interface ILevelMenu with
+    interface Screen;
+
     function (void) => void close_screen;
     function (void) => void prev_page;
     function (void) => void next_page;
@@ -77,8 +79,13 @@ do
         this.pos.y = _Display__get_height()/2 + 200;
     end;
 
+    var Relay r with
+        this.src = outer;
+        this.dst = sb;
+    end;
+
     function @rec (Vector2i pos) => bool is_at_func do
-        return false; //TODO
+        return call/rec sb.is_at_func(pos);
     end
 
     call/rec sb.load("core/start/back", "core/start/back_clicked", "core/start/back_hover");
@@ -120,8 +127,13 @@ do
         this.me = outer.me;
     end;
 
+    var Relay r with
+        this.src = outer;
+        this.dst = sb;
+    end;
+
     function @rec (Vector2i pos) => bool is_at_func do
-        return false; //TODO
+        return call/rec sb.is_at_func(pos);
     end
 
     call/rec sb.load(str.c_str(), _scc2(_deref(str), "_pressed").c_str(), _scc2(_deref(str), "_hover").c_str());
@@ -162,9 +174,7 @@ do
     var PointerProxy pp with this.gui = outer; end;
     var EventProxy ep with this.gui = outer; end;
 
-    function @rec (Vector2i pos) => bool is_at_func do
-        return false; //TODO
-    end
+    RECT_IS_AT(&rect);
 
     var _std__vector_Levelset&? levelsets = _new_Vector_Levelset();
     var _Levelset* current_levelset = null;    
@@ -289,9 +299,7 @@ do
     var PointerProxy pp with this.gui = outer; end;
     var EventProxy ep with this.gui = outer; end;
 
-    function @rec (Vector2i pos) => bool is_at_func do
-        return false; //TODO
-    end
+    RECT_IS_AT(&rect);
 
     var _Levelset* levelset = null;
     var int current_level = -1;
@@ -444,10 +452,17 @@ end
 ////////////////////////////////////////////////
 
 class LevelMenu with
-    interface ILevelMenu;
-    var _LevelMenu* me;
+    interface ILevelMenu;    
 do
-    var _LevelMenu&? level_menu = _PTR2REF((_LevelMenu*)me);
+    var _LevelMenu&? level_menu = _PTR2REF((_LevelMenu*)&me);
+    var GUIManager gui_manager with
+        this.me = _new_GUI__RectComponent(_Rect(0, 0, _Display__get_width(), _Display__get_height()));
+        this.drawing_context = _new_DrawingContext(_Rect(0, 0, _Display__get_width(), _Display__get_height()), false);
+    end;
+    var ScreenFramework sf with
+        this.screen = outer;
+        this.gui_manager = &gui_manager;
+    end;
 
     var FunctionPrevPage f_prev_page with this.parent = outer; end;
     var FunctionNextPage f_next_page with this.parent = outer; end;
@@ -455,17 +470,20 @@ do
     var LevelsetSelector levelset_selector with
         this.rect = _new_GUI__RectComponent();
         this.me = _PTR2REF(this.rect);
+        this.me.ceu = &this;
         this.parent = outer;
     end;
 
     var LevelSelector level_selector with
         this.rect = _new_GUI__RectComponent();
         this.me = _PTR2REF(this.rect);
+        this.me.ceu = &this;
         this.parent = outer;
     end;
 
     var LevelScrollButton prev_button with
         this.me = _new_GUI_Component();
+        this.me.ceu = &this;
         this.parent = outer;
         this.callback = f_prev_page;
         this.str = _new_String("core/menu/arrow_up");
@@ -473,6 +491,7 @@ do
 
     var LevelScrollButton next_button with
         this.me = _new_GUI_Component();
+        this.me.ceu = &this;
         this.parent = outer;
         this.callback = f_next_page;
         this.str = _new_String("core/menu/arrow_down");
@@ -480,14 +499,15 @@ do
 
     var LevelMenuAbortButton abort_button with
         this.me = _new_GUI_Component();
+        this.me.ceu = &this;
         this.parent = outer;
     end;
 
-    level_menu.gui_manager:add(&levelset_selector.me) finalize with end;
-    level_menu.gui_manager:add(&level_selector.me) finalize with end;
-    level_menu.gui_manager:add(&prev_button.me) finalize with end;
-    level_menu.gui_manager:add(&next_button.me) finalize with end;
-    level_menu.gui_manager:add(&abort_button.me) finalize with end;
+    gui_manager.add(&levelset_selector.me);
+    gui_manager.add(&level_selector.me);
+    gui_manager.add(&prev_button.me);
+    gui_manager.add(&next_button.me);
+    gui_manager.add(&abort_button.me);
     level_selector.rect.hide();
 
     var Sprite background;
@@ -533,43 +553,33 @@ do
     end  
 
     par/or do
-        every package in SCREEN_DRAW_BACKGROUND do
-            if package:screen != &level_menu then
-                continue;
-            end
-            
+        every gc in draw_background do
             // Paint the background wood panel
             var int y = 0;
             loop do
-                if y >= package:gc.get_height() then break; end
+                if y >= gc:get_height() then break; end
                 var int x = 0;
                 loop do
-                    if x >= package:gc.get_width() then break; end
-                    package:gc.draw(_deref(background.get()), _Vector2i(x, y));
+                    if x >= gc:get_width() then break; end
+                    gc:draw(_deref(background.get()), _Vector2i(x, y));
                     x = x + background.get_width();
                 end
                 y = y + background.get_height();
             end
 
-            package:gc.draw(_deref(blackboard.get()), _Vector2i(package:gc.get_width()/2, package:gc.get_height()/2));
+            gc:draw(_deref(blackboard.get()), _Vector2i(gc:get_width()/2, gc:get_height()/2));
         end
     with
-        every screen in ON_ESCAPE_PRESS do
-            if screen == &level_menu then
-                close_screen();
-            end
+        every on_escape_press do            
+            close_screen();            
         end
     with
-        every screen in ON_ACTION_UP_PRESS do
-            if screen == &level_menu then
-                prev_page();
-            end
+        every on_action_up_press do
+            prev_page();
         end
     with
-        every screen in ON_ACTION_DOWN_PRESS do
-            if screen == &level_menu then
-                next_page();
-            end
+        every on_action_down_press do
+            next_page();
         end
     with
         every package in SCREEN_RESIZE do

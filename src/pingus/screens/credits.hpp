@@ -37,8 +37,6 @@ public:
   Credits(const Pathname& filename);
   virtual ~Credits();
 
-  void update(float);
-
 private:
   Credits(const Credits&);
   Credits& operator=(const Credits&);

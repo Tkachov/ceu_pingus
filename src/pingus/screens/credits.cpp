@@ -42,10 +42,4 @@ Credits::~Credits() {
   ceu_out_go(&CEUapp, CEU_IN_DELETE_CREDITS, &self);
 }
 
-void Credits::update(float delta) {
-  ScreenUpdatePackage package(this, delta);
-  ScreenUpdatePackage* pp = &package;
-  ceu_out_go(&CEUapp, CEU_IN_CREDITS_UPDATE, &pp);
-}
-
 /* EOF */

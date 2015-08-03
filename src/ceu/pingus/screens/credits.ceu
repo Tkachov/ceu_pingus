@@ -52,7 +52,7 @@ native/pre do
 
     ##define std__make_shared_StoryScreen std::make_shared<StoryScreen>
     ##define Pathname__DATA_PATH Pathname::DATA_PATH
-    ##define StatManager__instance StatManager::instance
+    ##define StatManager__instance() StatManager::instance()
 
     ##define std__vector_std__string std::vector<std::string>
     ##define new_Vector_String new std::vector<std::string>
@@ -67,10 +67,11 @@ native @pure _new_GUI_Component(), _ScreenManager__instance(), _couldnt_open(),
              _Display__get_width(), _Display__get_height(), _read_file(), _new_std__ifstream(),
              _StringFormat__break_line(), _new_Vector_String(), _new_SceneContext(), _new_SceneContextDrawingRequest();
 
-input _ScreenUpdatePackage* CREDITS_UPDATE;
 input _Credits* DELETE_CREDITS;
 
 interface ICredits with
+    interface Screen;
+
     function (void) => void close;
 end
 
@@ -88,10 +89,15 @@ do
         this.pos.y = _Display__get_height()/2 + 170;
     end;
 
+    var Relay r with
+        this.src = outer;
+        this.dst = sb;
+    end;
+
     call/rec sb.load("core/start/ok", "core/start/ok_clicked", "core/start/ok_hover");
 
     function @rec (Vector2i pos) => bool is_at_func do
-        return false; //TODO
+        return call/rec sb.is_at_func(pos);
     end
 
     var PrimaryButtonProxy p with this.gui = outer; end;
@@ -118,9 +124,16 @@ end
 
 class Credits with
     interface ICredits;
-    var _Credits* me;
 do
-    var _Credits&? credits_screen = _PTR2REF((_Credits*)me);
+    var _Credits&? credits_screen = _PTR2REF((_Credits*)&me);
+    var GUIManager gui_manager with
+        this.me = _new_GUI__RectComponent(_Rect(0, 0, _Display__get_width(), _Display__get_height()));
+        this.drawing_context = _new_DrawingContext(_Rect(0, 0, _Display__get_width(), _Display__get_height()), false);
+    end;
+    var ScreenFramework sf with
+        this.screen = outer;
+        this.gui_manager = &gui_manager;
+    end;
 
     var Sprite background;
     var Sprite blackboard;
@@ -136,10 +149,11 @@ do
 
     var CreditsOkButton button with
         this.me = _new_GUI_Component();
+        this.me.ceu = &this;
         this.parent = outer;
     end;
 
-    credits_screen.gui_manager:add(_PTR2REF(&button.me));
+    gui_manager.add(&button.me);
 
     // The credits vector holds the strings to display. The first
     // character of each string is a special character, which indicates
@@ -188,24 +202,20 @@ do
     end
 
     par/or do
-        every screen in ON_STARTUP do
+        every on_startup do
             offset = (float)_Display__get_height() - 50;
         end
     with
-        every package in SCREEN_DRAW_BACKGROUND do
-            if package:screen != &credits_screen then
-                continue;
-            end
-
+        every gc in draw_background do
             do
                 // Paint the background wood panel
                 var int y = 0;
                 loop do
-                    if y >= package:gc.get_height() then break; end
+                    if y >= gc:get_height() then break; end
                     var int x = 0;
                     loop do
-                        if x >= package:gc.get_width() then break; end
-                        package:gc.draw(_deref(background.get()), _Vector2i(x, y));
+                        if x >= gc:get_width() then break; end
+                        gc:draw(_deref(background.get()), _Vector2i(x, y));
                         x = x + background.get_width();
                     end
                     y = y + background.get_height();
@@ -216,13 +226,13 @@ do
             var int y = offset;
             var int yof = 0;
 
-            package:gc.draw(_deref(blackboard.get()), _Vector2i(package:gc.get_width()/2, package:gc.get_height()/2));
-            package:gc.draw(_deref(pingu.get()), _Vector2i(package:gc.get_width()/2, package:gc.get_height()/2 - 20));
+            gc:draw(_deref(blackboard.get()), _Vector2i(gc:get_width()/2, gc:get_height()/2));
+            gc:draw(_deref(pingu.get()), _Vector2i(gc:get_width()/2, gc:get_height()/2 - 20));
 
             scene_context.clear();
             scene_context.set_cliprect(
-                _Rect(package:gc.get_width()/2 - 685/2, package:gc.get_height()/2 - 250,
-                      package:gc.get_width()/2 + 685/2, package:gc.get_height()/2 + 250)
+                _Rect(gc:get_width()/2 - 685/2, gc:get_height()/2 - 250,
+                      gc:get_width()/2 + 685/2, gc:get_height()/2 + 250)
             );
 
             loop i in credits.size() do
@@ -239,37 +249,35 @@ do
                 end
             end
 
-            package:gc.draw(_new_SceneContextDrawingRequest(scene_context, _Vector2i(0, 0), 100));
+            gc:draw(_new_SceneContextDrawingRequest(scene_context, _Vector2i(0, 0), 100));
         end
     with
         loop do
             //usual update
             par/or do
-                every package in CREDITS_UPDATE do
-                    if package:screen == &credits_screen and offset >= end_offset then
-                        offset = offset - 35.0 * package:delta;
+                every delta in global:update do
+                    if offset >= end_offset then
+                        offset = offset - 35.0 * delta;
                     end
                 end
             with
-                var _GUIScreen* e = await ON_FAST_FORWARD_PRESS until (e == &credits_screen);
+                await on_fast_forward_press;
             end
 
             //after fast-forward pressed
             par/or do
-                every package in CREDITS_UPDATE do
-                    if package:screen == &credits_screen and offset >= end_offset then
-                        offset = offset - 450.0 * package:delta;
+                every delta in global:update do
+                    if offset >= end_offset then
+                        offset = offset - 450.0 * delta;
                     end
                 end
             with
-                var _GUIScreen* e = await ON_FAST_FORWARD_PRESS until (e == &credits_screen);
+                await on_fast_forward_press;
             end
         end
     with
-        every screen in ON_ESCAPE_PRESS do
-            if screen == &credits_screen then
-                close();
-            end
+        every on_escape_press do
+            close();            
         end
     with
         var _Credits* e = await DELETE_CREDITS until (e == &credits_screen);

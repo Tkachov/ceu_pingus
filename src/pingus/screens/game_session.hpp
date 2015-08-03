@@ -30,8 +30,6 @@ private:
 public:
   GameSession(const PingusLevel& arg_plf, bool arg_show_result_screen);
   ~GameSession ();
-  
-  void update (float delta);
 
 private:
   GameSession (const GameSession&);
