@@ -38,9 +38,12 @@ do
         this.right_name = _new_String(_concat2(pingu.get_owner_str(), "/walker/right"));
     end;
 
-    var StateSprite floaterlayer;
-    floaterlayer.load_file(_DIR_LEFT,  "other/floaterlayer/left");
-    floaterlayer.load_file(_DIR_RIGHT, "other/floaterlayer/right");
+    var RightLeftSprite floaterlayer with
+        this.pingu = pingu;
+        this.pos_giver = pingu;
+        this.left_name = _new_String("other/floaterlayer/left");
+        this.right_name = _new_String("other/floaterlayer/right");
+    end;
 
     var int max_steps = 5;
 
@@ -53,14 +56,9 @@ do
 
     par do
         every gc in global:draw do
-            //visibility control is not yet implemented in either Sprite3 or RightLeftSprite
-            if pingu.has_fall_action() and pingu.get_fall_action() == _A_FLOATER then
-                _gc_color_draw2(gc, floaterlayer.get(pingu.direction().value), _toVector3f((call/rec pingu.get_pos())));
+            if floaterlayer.get_current() then
+                floaterlayer.get_current():visible = (pingu.has_fall_action() and pingu.get_fall_action() == _A_FLOATER);
             end
-        end
-    with
-        every global:world:update do
-            floaterlayer.get(pingu.direction().value):update(0.033);
         end
     with
         loop do

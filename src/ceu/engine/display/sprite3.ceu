@@ -11,6 +11,7 @@
 class Sprite3 with
     var IPosGiver& pos_giver;
     var bool active = true;
+    var bool visible = true;
 
     function (_const_char_string filename) => void reload_by_name;
     function (_ResDescriptor* desc) => void reload_by_desc;
@@ -203,7 +204,9 @@ do
         end
     with
         every gc in global:draw do
-            draw(gc, call/rec pos_giver.get_pos());
+            if visible then
+                draw(gc, call/rec pos_giver.get_pos());
+            end
         end
     with
         every finish do

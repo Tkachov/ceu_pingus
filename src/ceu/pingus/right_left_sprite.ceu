@@ -11,7 +11,7 @@ class RightLeftSprite with
     var IPingu& pingu;
     var IPosGiver& pos_giver;
     var _std__string* right_name = null;
-    var _std__string* left_name = null;
+    var _std__string* left_name = null;    
 
     function (void) => Sprite3* get_current;
 

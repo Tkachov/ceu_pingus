@@ -9,7 +9,6 @@
 #include "../collision_mask.ceu"
 #include "../iaction.ceu"
 #include "../ipingu.ceu"
-#include "../state_sprite.ceu"
 #include "../worldobj.ceu"
 
 class DiggerAction with
