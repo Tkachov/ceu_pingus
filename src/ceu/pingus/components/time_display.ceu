@@ -33,12 +33,10 @@ do
     infinity_symbol.reload_by_name("core/misc/infinity");
 
     function @rec (Vector2i pos) => bool is_at_func do
-        return false; //TODO
+        return false;
     end
 
     var _Font* font = _Fonts__pingus_small_fixnum;
-
-    var EventProxy p with this.gui = outer; end;
 
     every gc in draw do
         if server.get_plf().get_time() != -1 or _globals__developer_mode then

@@ -100,7 +100,7 @@ do
     do
     var _std__vector_FileReader&? childs = _new_Vector_FileReader(worldmap.pingus_worldmap:get_graph():read_section("nodes").get_sections());
     loop i in childs.size() do
-        var Drawable*? dot = null;
+        var Drawable* dot = null;
 
         //DotFactory:
         if childs.at(i).get_name() == "storydot" then            

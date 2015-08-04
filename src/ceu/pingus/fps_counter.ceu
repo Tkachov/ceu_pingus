@@ -51,7 +51,7 @@ do
         if odd_frame then  
             _Fonts__pingus_small.render(_origin_center, _Display__get_width()/2, 35, _deref(fps_string), _deref(_Display__get_framebuffer()));            
         else
-            _Fonts__pingus_small.render(_origin_center, _Display__get_width()/2, 35, _make_String("+ ") + fps_string + _make_String(" +"), _deref(_Display__get_framebuffer()));
+            _Fonts__pingus_small.render(_origin_center, _Display__get_width()/2, 35, _make_String("+ ") + _deref(fps_string) + _make_String(" +"), _deref(_Display__get_framebuffer()));
         end
 
         odd_frame = not odd_frame;

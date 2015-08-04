@@ -29,7 +29,7 @@ do
 
     par/or do
         every e_STARTUP do
-            global:world:put(&block_sur_cmap, pos.x, pos.y, _GT_GROUND);
+            global:world:put(_addr(block_sur_cmap), pos.x, pos.y, _GT_GROUND);
         end
     with
         //not finished
@@ -60,7 +60,7 @@ do
         end
 
         //finished
-        global:world:remove(&block_sur_cmap, pos.x, pos.y);
+        global:world:remove(_addr(block_sur_cmap), pos.x, pos.y);
         await FOREVER;
     with
         await e_DELETE;

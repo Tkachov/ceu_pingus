@@ -29,7 +29,7 @@ do
         this.pos_giver = outer;
     end;
     call/rec smallmap_symbol.reload_by_name("core/misc/smallmap_exit");
-    sprite.reload_by_desc(&desc);
+    sprite.reload_by_desc(_addr(desc));
 
     function (_FileReader* reader) => void construct do
         //Unfortunately, we can't make `desc`/`sprite`/etc "private"

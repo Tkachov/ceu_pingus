@@ -109,7 +109,7 @@ do
         PRE_CONDITION_AWAIT(global:world:update, sprite.get_current():get_current_frame() >= 13);
 
         global:world:remove(
-            &bomber_radius,
+            _addr(bomber_radius),
             (int)((int)pingu.get_x() - (bomber_radius.get_width()/2)),
             (int)((int)pingu.get_y() - 16 - (bomber_radius.get_width()/2))
         );

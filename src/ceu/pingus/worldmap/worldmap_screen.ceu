@@ -67,7 +67,7 @@ interface IWorldmapScreen with
 
     function (void) => void show_intro_story;
     function (void) => void show_end_story;    
-    function (void) => Worldmap*? get_ceu_worldmap;
+    function (void) => Worldmap* get_ceu_worldmap;
     function (void) => Rect get_trans_rect;    
 
     event _Pathname* load;
@@ -281,7 +281,7 @@ do
         this.drawing_context = _new_DrawingContext(_Rect(0, 0, _Display__get_width(), _Display__get_height()), false);
     end;
 
-    var Worldmap*? worldmap = null;
+    var Worldmap* worldmap = null;
     var bool exit_worldmap = false;
 
     var ScreenFramework sf with
@@ -301,7 +301,7 @@ do
         this.parent = outer;
     end;
 
-    var WorldmapScreenCreditsButton*? credits_button = null;
+    var WorldmapScreenCreditsButton* credits_button = null;
 
     gui_manager.add(&comp.me);
     gui_manager.add(&close_button.me);
@@ -318,7 +318,7 @@ do
         ));
     end
 
-    function (void) => Worldmap*? get_ceu_worldmap do
+    function (void) => Worldmap* get_ceu_worldmap do
         return worldmap;
     end
 
@@ -354,12 +354,16 @@ do
         end
     with
         every filename in load do
-            var PingusWorldmap*? pingus_worldmap = spawn PingusWorldmap;
+            var PingusWorldmap* pingus_worldmap;
+            spawn PingusWorldmap with
+                pingus_worldmap = &this;
+            end;
             var _FileReader&? fr = _new_FileReader(_FileReader__parse(_deref(filename)));
-            call/rec pingus_worldmap:parse_file(&fr);
+            call/rec pingus_worldmap:parse_file(_addr(fr));
             _delete_obj(fr);
 
-            worldmap = spawn Worldmap with                
+            spawn Worldmap with
+                worldmap = &this;
                 this.pingus_worldmap = pingus_worldmap;
             end;
 
@@ -367,10 +371,11 @@ do
             //originally commented out:
             //StatManager::instance()->get_bool(worldmap:me:get_short_name() + "-endstory-seen", credits_unlocked);
             if credits_unlocked then
-                credits_button = spawn WorldmapScreenCreditsButton with
+                spawn WorldmapScreenCreditsButton with
                     this.me = _new_GUI_Component();
                     this.me.ceu = &this;
                     this.parent = outer;
+                    credits_button = &this;
                 end;                
                 gui_manager.add(&credits_button:me);
             end
@@ -415,7 +420,7 @@ do
             end
         end
     with
-        var _GUIScreen* e = await DELETE_WORLDMAP_SCREEN until (e == &worldmap_screen);
+        var _GUIScreen* e = await DELETE_WORLDMAP_SCREEN until (e == _addr(worldmap_screen));
         if worldmap then
             emit worldmap:delete;
         end

@@ -27,12 +27,8 @@ do
     call/rec surface.reload_by_name("core/buttons/pause");
 
     var _GUI_RectComponent&? me_ = _PTR2REF((_GUI_RectComponent*)&this.me);
-    var PrimaryButtonProxy p with this.gui = outer; end;
-    var EventProxy ep with this.gui = outer; end;
 
-    function @rec (Vector2i pos) => bool is_at_func do
-        return false; //TODO
-    end
+    RECT_IS_AT(me_);
 
     //freed in GroupComponent
     //finalize with _delete_obj(me_); end

@@ -17,6 +17,11 @@ end
 
 native @pure _new_GUI__RectComponent();
 
+#define RECT_IS_AT(comp) \
+function @rec (Vector2i pos) => bool is_at_func do \
+    return comp.is_at(pos.x, pos.y); \
+end
+
 interface IGUI_Component with
     var _GUI_Component& me;
 

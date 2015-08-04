@@ -82,6 +82,7 @@ with
         var _DemoSession* new_demo_session = await NEW_DEMO_SESSION;
         spawn DemoSession with
             this.me = _PTR2REF(new_demo_session);
+            this.me.ceu = &this;
         end;
     end
 with
@@ -90,15 +91,16 @@ with
         var _GameSession* new_game_session = await NEW_GAME_SESSION;        
         spawn GameSession with
             this.me = _PTR2REF(new_game_session);
+            this.me.ceu = &this;
         end;
     end
-WITH_SCREEN(_StartScreen, StartScreen, NEW_START_SCREEN)
-WITH_SCREEN(_StoryScreen, StoryScreen, NEW_STORY_SCREEN)
-WITH_SCREEN(_ResultScreen, ResultScreen, NEW_RESULT_SCREEN)
-WITH_SCREEN(_WorldmapNS__WorldmapScreen, WorldmapScreen, NEW_WORLDMAP_SCREEN)
+WITH_SCREEN_CEU(_StartScreen, StartScreen, NEW_START_SCREEN)
+WITH_SCREEN_CEU(_StoryScreen, StoryScreen, NEW_STORY_SCREEN)
+WITH_SCREEN_CEU(_ResultScreen, ResultScreen, NEW_RESULT_SCREEN)
+WITH_SCREEN_CEU(_WorldmapNS__WorldmapScreen, WorldmapScreen, NEW_WORLDMAP_SCREEN)
 WITH_SCREEN_CEU(_PingusMenu, PingusMenu, NEW_PINGUS_MENU)
-WITH_SCREEN(_Credits, Credits, NEW_CREDITS)
-WITH_SCREEN(_LevelMenu, LevelMenu, NEW_LEVEL_MENU)
+WITH_SCREEN_CEU(_Credits, Credits, NEW_CREDITS)
+WITH_SCREEN_CEU(_LevelMenu, LevelMenu, NEW_LEVEL_MENU)
 with
     every push_worldmap_tutorial_screen do
         /*
@@ -106,22 +108,26 @@ with
         worldmap_screen->load(Pathname("worldmaps/tutorial.worldmap", Pathname::DATA_PATH)); //hardcoded tutorial pathname
         ScreenManager::instance()->push_screen(worldmap_screen);
         */
-        var WorldmapScreen*? ws = spawn WorldmapScreen with
+        var WorldmapScreen* ws = null;
+        spawn WorldmapScreen with
             this.me = _PTR2REF(_new_GUIScreen());
-            this.me.ceu = &this;            
+            this.me.ceu = &this;
+            ws = &this;
         end;
 
         var _Pathname&? filename = _new_Pathname("worldmaps/tutorial.worldmap", _Pathname__DATA_PATH); //hardcoded tutorial pathname
-        emit ws:load => &filename;
+        emit ws:load => _addr(filename);
         _delete_obj(filename);
 
         _ScreenManager__instance():push_screen(_make_std__shared_ptr_Screen(ws:me));
     end
 with
     every push_option_menu do
-        var OptionMenu*? os = spawn OptionMenu with
+        var OptionMenu* os = null;
+        spawn OptionMenu with
             this.me = _PTR2REF(_new_OptionMenu());
             this.me.ceu = &this;
+            os = &this;
         end;
         _ScreenManager__instance():push_screen(_make_std__shared_ptr_Screen(os:me));
     end

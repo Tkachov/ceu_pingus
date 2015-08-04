@@ -54,9 +54,7 @@ do
         _delete_obj(state);
     end;
 
-    function @rec (Vector2i pos) => bool is_at_func do
-        return false; //TODO
-    end
+    RECT_IS_AT(playfield);
 
     state.set_limit(
         _Rect(
@@ -67,11 +65,6 @@ do
 
     //original FIXME: Temporary workaround till start-pos is integrated a bit more properly
     state.set_pos(global:world:get_start_pos(0));
-
-    var EventProxy ep with this.gui = outer; end;
-    var PointerProxy pp with this.gui = outer; end;
-    var PrimaryButtonProxy pbp with this.gui = outer; end;
-    var SecondaryButtonProxy sbp with this.gui = outer; end;
 
     var CaptureRectangle capture_rectangle with
         this.session = session;
@@ -133,10 +126,10 @@ do
             state.push(_deref(scene_context));
 
             call/rec capture_rectangle.set_pingu(get_current_pingu()); //another no-"access across `await`"-hack
-            emit capture_rectangle.draw => &scene_context;
+            emit capture_rectangle.draw => _addr(scene_context);
 
             if global:world != null then
-                emit global:world:e_DRAW => &scene_context;
+                emit global:world:e_DRAW => _addr(scene_context);
             end
 
             state.pop(_deref(scene_context));
@@ -223,7 +216,7 @@ do
         end
     with
         every component in RECT_COMPONENT_UPDATE_LAYOUT do
-            if component != &playfield then
+            if component != _addr(playfield) then
                 continue;
             end
 

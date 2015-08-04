@@ -25,7 +25,7 @@ do
     par/or do
         await FOREVER;
     with
-        var _ServerEvent* e = await DELETE_SERVER_EVENT until (e == &server_event);
+        var _ServerEvent* e = await DELETE_SERVER_EVENT until (e == _addr(server_event));
     end
 end
 

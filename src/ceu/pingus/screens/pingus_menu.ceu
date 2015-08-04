@@ -222,7 +222,7 @@ do
 
     var _std__string&? hint = _new_String();
     var _std__string&? help = _new_String();
-    var LayerManager*? background = null;
+    var LayerManager* background = null;
 
     var Sprite logo;
     call/rec logo.reload_by_name("core/misc/logo");
@@ -247,7 +247,9 @@ do
     with
         every (width, height) in create_background do
             // Recreate the layer manager in the new size
-            background = spawn LayerManager;
+            spawn LayerManager with
+                background = _PTR2REF(&this);
+            end;
 
             var _Surface&? layer1 = _new_Surface(_Resource__load_surface("core/menu/layer1"));
             var _Surface&? layer2 = _new_Surface(_Resource__load_surface("core/menu/layer2"));
@@ -264,17 +266,17 @@ do
                 layer4 = _PTR2REF(layer4.scale(width, 171 * height / _globals__default_screen_height));
                 layer5 = _PTR2REF(layer5.scale(302 * width / _globals__default_screen_width, 104 * height / _globals__default_screen_height));
                   
-                emit background:add_layer => (&layer1, 0, 0, 12, 0);
-                emit background:add_layer => (&layer2, 0, 150 * ((float)height) / ((float)_globals__default_screen_height), 25, 0);
-                emit background:add_layer => (&layer3, 0, 200 * ((float)height) / ((float)_globals__default_screen_height), 50, 0);
-                emit background:add_layer => (&layer4, 0, 429 * ((float)height) / ((float)_globals__default_screen_height), 100, 0);
-                emit background:add_layer => (&layer5, 0, 500 * ((float)height) / ((float)_globals__default_screen_height), 200, 0);
+                emit background:add_layer => (_addr(layer1), 0, 0, 12, 0);
+                emit background:add_layer => (_addr(layer2), 0, 150 * ((float)height) / ((float)_globals__default_screen_height), 25, 0);
+                emit background:add_layer => (_addr(layer3), 0, 200 * ((float)height) / ((float)_globals__default_screen_height), 50, 0);
+                emit background:add_layer => (_addr(layer4), 0, 429 * ((float)height) / ((float)_globals__default_screen_height), 100, 0);
+                emit background:add_layer => (_addr(layer5), 0, 500 * ((float)height) / ((float)_globals__default_screen_height), 200, 0);
             else
-                emit background:add_layer => (&layer1, 0, 0, 12, 0);
-                emit background:add_layer => (&layer2, 0, 150, 25, 0);
-                emit background:add_layer => (&layer3, 0, 200, 50, 0);
-                emit background:add_layer => (&layer4, 0, 429, 100, 0);
-                emit background:add_layer => (&layer5, 0, 500, 200, 0);
+                emit background:add_layer => (_addr(layer1), 0, 0, 12, 0);
+                emit background:add_layer => (_addr(layer2), 0, 150, 25, 0);
+                emit background:add_layer => (_addr(layer3), 0, 200, 50, 0);
+                emit background:add_layer => (_addr(layer4), 0, 429, 100, 0);
+                emit background:add_layer => (_addr(layer5), 0, 500, 200, 0);
             end
 
             _delete_obj(layer1);
@@ -317,7 +319,7 @@ do
             quit_button.set_pos(pingus_menu.size.width/2, pingus_menu.size.height/2 + 120);
         end
     with
-        var _PingusMenu* e = await DELETE_PINGUS_MENU until (e == &pingus_menu);
+        var _PingusMenu* e = await DELETE_PINGUS_MENU until (e == _addr(pingus_menu));
     end
 end
 

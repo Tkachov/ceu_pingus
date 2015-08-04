@@ -153,12 +153,8 @@ class StoryScreenComponent with
     var _WorldmapNS__WorldmapStory* story;
     var bool m_credits;
 do
-    var PrimaryButtonProxy p with this.gui = outer; end;
-    var PointerProxy pp with this.gui = outer; end;
-    var EventProxy ep with this.gui = outer; end;
-
     function @rec (Vector2i pos) => bool is_at_func do
-        return false; //TODO
+        return false;
     end
 
     var Sprite background;
@@ -263,50 +259,58 @@ end
 ////////////////////////////////////////////////
 
 class StoryScreen with
-    var _StoryScreen* me;
+    interface Screen;
 do
-    var _StoryScreen&? story_screen = _PTR2REF((_StoryScreen*)me);
+    var _StoryScreen&? story_screen = _PTR2REF((_StoryScreen*)&me);
+    var GUIManager gui_manager with
+        this.me = _new_GUI__RectComponent(_Rect(0, 0, _Display__get_width(), _Display__get_height()));
+        this.drawing_context = _new_DrawingContext(_Rect(0, 0, _Display__get_width(), _Display__get_height()), false);
+    end;
+    var ScreenFramework sf with
+        this.screen = outer;
+        this.gui_manager = &gui_manager;
+    end;
 
     var StoryScreenComponent story_comp with
         this.me = _new_GUI_Component();
+        this.me.ceu = &this;
         this.story = _PTR2REF(story_screen.story.get());
         this.m_credits = story_screen.m_credits;
     end;
 
     var StoryScreenContinueButton continue_button with
         this.me = _new_GUI_Component();
+        this.me.ceu = &this;
         this.story_comp = story_comp;
     end;
 
-    story_screen.gui_manager:add(&story_comp.me) finalize with end;
-    story_screen.gui_manager:add(&continue_button.me) finalize with end;
+    gui_manager.add(&story_comp.me);
+    gui_manager.add(&continue_button.me);
 
-    var StoryScreenSkipButton*? skip_button = null;
+    var StoryScreenSkipButton* skip_button = null;
 
     if _globals__developer_mode then
-        skip_button = spawn StoryScreenSkipButton with
+        spawn StoryScreenSkipButton with
             this.me = _new_GUI_Component();
+            this.me.ceu = &this;            
             this.story_comp = _PTR2REF(story_comp);
+            skip_button = _PTR2REF(&this);
         end;
-        story_screen.gui_manager:add(&skip_button:me) finalize with end;
+        gui_manager.add(&skip_button:me);
     end
 
     par/or do
-        every screen in ON_STARTUP do
+        every on_startup do
             //original FIXME: Load the song from the WorldmapStory
             _Sound__PingusSound__play_music(story_comp.get_story():get_music(), 0.7);
         end
     with
-        every screen in ON_ESCAPE_PRESS do
-            if screen == &story_screen then
-                _ScreenManager__instance():pop_screen();
-            end
+        every on_escape_press do
+            _ScreenManager__instance():pop_screen();            
         end
     with
-        every screen in ON_FAST_FORWARD_PRESS do
-            if screen == &story_screen then
-                call/rec story_comp.next_text();
-            end
+        every on_fast_forward_press do            
+            call/rec story_comp.next_text();            
         end
     with
         every package in SCREEN_RESIZE do
@@ -320,7 +324,7 @@ do
             end
         end
     with
-        var _StoryScreen* e = await DELETE_STORY_SCREEN until (e == &story_screen);
+        var _StoryScreen* e = await DELETE_STORY_SCREEN until (e == _addr(story_screen));
     end
 end
 

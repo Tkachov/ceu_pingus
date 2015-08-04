@@ -151,7 +151,7 @@ do
         //TODO: remove (used because `update()` is also called from C++ DemoSession which is not ported yet)
         every s in SERVER_UPDATE do
             ////_printf("C++ update()\n");
-            if s != &server then
+            if s != _addr(server) then
                 continue;
             end
 

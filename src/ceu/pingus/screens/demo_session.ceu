@@ -191,7 +191,7 @@ do
             small_map.rect.set_rect(_Rect(_Vector2i(5, demo_session.size.height - 105), _Size(175, 100)));
         end
     with
-        var _DemoSession* e = await DELETE_DEMO_SESSION until (e == &demo_session);
+        var _DemoSession* e = await DELETE_DEMO_SESSION until (e == _addr(demo_session));
         emit server.e_DELETE;
     end
 end

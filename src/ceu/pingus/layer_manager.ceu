@@ -63,12 +63,14 @@ class LayerManager with
     event (_Surface*, float, float, float, float) add_layer;
 do
     every (sprite, x_o, y_o, x_u, y_u) in add_layer do
-        var Layer*? l = spawn Layer in layers with            
+        var Layer* l = null;
+        spawn Layer in layers with            
             this.x_update = x_u;
             this.y_update = y_u;
             this.x_offset = x_o;
             this.y_offset = y_o;
             this.parent = outer;
+            l = _PTR2REF(&this);
         end;
         l:load(sprite);
     end

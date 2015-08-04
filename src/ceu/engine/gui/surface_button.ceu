@@ -25,10 +25,6 @@ do
     var bool pressed = false;
     var bool mouse_over = false;
 
-    var PrimaryButtonProxy pbp with this.gui = outer; end;
-    var PointerProxy pp with this.gui = outer; end;
-    var EventProxy ep with this.gui = outer; end;
-
     var Sprite button_surface;
     var Sprite button_pressed_surface;
     var Sprite button_mouse_over_surface;
@@ -71,13 +67,6 @@ do
 
             await mouse_release;
             pressed = false;
-        end
-    with
-        every package in is_at do
-            var Vector2i p;
-            p.x = package:mouse_pos.x;
-            p.y = package:mouse_pos.y;
-            package:result = call/rec is_at_func(p);
         end
     with
         every gc in draw do

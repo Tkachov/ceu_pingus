@@ -26,13 +26,7 @@ do
         this.canvas = _new_Surface(rect.rect.get_width(), rect.rect.get_height());
     end;
 
-    var EventProxy ep with this.gui = outer; end;
-    var PointerProxy pp with this.gui = outer; end;
-    var PrimaryButtonProxy pbp with this.gui = outer; end;
-
-    function @rec (Vector2i pos) => bool is_at_func do
-        return false; //TODO
-    end
+    RECT_IS_AT(rect);
 
     function @rec (_Sprite* sprite, _Vector3f pos) => void draw_sprite do
         if global:world == null then

@@ -3,6 +3,7 @@
 
 #include "../../c.ceu"
 #include "../../sdl.ceu"
+#include "../../engine/gui/gui_manager.ceu"
 #include "../../engine/screen/screen.ceu"
 #include "../../math/math.ceu"
 #include "../iworld.ceu"
@@ -78,10 +79,18 @@ input _ScreenUpdatePackage* GAME_SESSION_UPDATE;
 input _GameSession* DELETE_GAME_SESSION;
 
 class GameSession with
+    interface Screen;
     interface IGameSession;
-    var _GameSession* me;
 do
-    var _GameSession&? game_session = _PTR2REF((_GameSession*)me);
+    var _GameSession&? game_session = _PTR2REF((_GameSession*)&me);
+    var GUIManager gui_manager with
+        this.me = _new_GUI__RectComponent(_Rect(0, 0, _Display__get_width(), _Display__get_height()));
+        this.drawing_context = _new_DrawingContext(_Rect(0, 0, _Display__get_width(), _Display__get_height()), false);
+    end;
+    var ScreenFramework sf with
+        this.screen = outer;
+        this.gui_manager = &gui_manager;
+    end;
 
     var Server server with
         this.me = _new_Server(game_session.plf);
@@ -90,6 +99,7 @@ do
 
     var ButtonPanel button_panel with
         this.me = _PTR2REF(_new_RectComponent(_Rect()));
+        this.me.ceu = &this;
         this.server = server;
     end;
 
@@ -102,6 +112,7 @@ do
 
     var PingusCounter pcounter with
         this.me = _new_GUI_Component();
+        this.me.ceu = &this;
         this.server = server;
     end;
 
@@ -118,6 +129,7 @@ do
                             );
         
         this.me = _PTR2REF(_new_RectComponent(_deref(rect)));
+        this.me.ceu = &this;
         this.scene_context = _new_SceneContext(_deref(rect));
         this.state = _new_GraphicContextState(rect.get_width(), rect.get_height());
         this.server = server;
@@ -128,22 +140,26 @@ do
 
     var SmallMap small_map with
         this.rect = _PTR2REF(_new_RectComponent(_Rect(_Vector2i(5, game_session.size.height - 105), _Size(175, 100))));
-        this.me = _PTR2REF(this.rect);        
+        this.me = _PTR2REF(this.rect);
+        this.me.ceu = &this;      
         this.playfield = playfield;
     end;
 
     var ArmageddonButton armageddon_button with
         this.me = _PTR2REF(_new_RectComponent(_Rect(_Vector2i(_Display__get_width() - 40, _Display__get_height()-62), _Size(38, 60))));
+        this.me.ceu = &this;
         this.server = server;
     end;
 
     var ForwardButton forward_button with
         this.me = _PTR2REF(_new_RectComponent(_Rect(_Vector2i(_Display__get_width() - 40*2, _Display__get_height()-62), _Size(38, 60))));
+        this.me.ceu = &this;
         this.session = outer;
     end;
 
     var PauseButton pause_button with
         this.me = _PTR2REF(_new_RectComponent(_Rect(_Vector2i(_Display__get_width() - 40*3, _Display__get_height()-62), _Size(38, 60))));
+        this.me.ceu = &this;
         this.session = outer;
     end;
     
@@ -152,14 +168,14 @@ do
         this.server = server;
     end;
 
-    game_session.gui_manager:add(&playfield.me) finalize with end;
-    game_session.gui_manager:add(&button_panel.me) finalize with end;
-    game_session.gui_manager:add(&pcounter.me) finalize with end;
-    game_session.gui_manager:add(&small_map.rect) finalize with end;
-    game_session.gui_manager:add(&time_display.me) finalize with end;
-    game_session.gui_manager:add(&armageddon_button.me) finalize with end;
-    game_session.gui_manager:add(&forward_button.me) finalize with end;
-    game_session.gui_manager:add(&pause_button.me) finalize with end;
+    gui_manager.add(&playfield.me);
+    gui_manager.add(&button_panel.me);
+    gui_manager.add(&pcounter.me);
+    gui_manager.add(_addr(small_map.rect));
+    gui_manager.add(&time_display.me);
+    gui_manager.add(&armageddon_button.me);
+    gui_manager.add(&forward_button.me);
+    gui_manager.add(&pause_button.me);
 
     var int world_delay = 0;
 
@@ -194,11 +210,7 @@ do
     end
 
     par/or do
-        every package in GAME_SESSION_UPDATE do
-            if package:screen != &game_session then
-                continue;
-            end
-
+        every delta in global:update do
             if call/rec server.is_finished() then
                 var IPinguHolder* pingu_holder = _PTR2REF(global:world:get_pingus());
                 var _Result&? result = _new_Result();
@@ -236,7 +248,7 @@ do
             else
 
                 // how much time we have to account for while doing world updates
-                var int time_passed = (int)(package:delta * 1000) + world_delay;
+                var int time_passed = (int)(delta * 1000) + world_delay;
                 // how much time each world update represents
                 var int update_time = _globals__game_speed;
 
@@ -274,43 +286,37 @@ do
                 // so that we can account for that while updating in the next frame
                 world_delay = time_passed - (world_updates*update_time);
             end
-            
-            game_session.gui_manager:update(package:delta) finalize with end;
         end
     with
-        every package in SCREEN_UPDATE_EVENT do
+        every ev in update_event do
             //log_info("Events: " << event.get_type ());
 
-            if package:event.type == _Input__BUTTON_EVENT_TYPE then
-                if package:event.button.state == _Input__BUTTON_PRESSED then              
-                    if  package:event.button.name >= _Input__ACTION_1_BUTTON
-                    and package:event.button.name <= _Input__ACTION_10_BUTTON then
-                        button_panel.set_button(package:event.button.name - _Input__ACTION_1_BUTTON);                    
-                    else/if package:event.button.name == _Input__ACTION_DOWN_BUTTON then                    
+            if ev:type == _Input__BUTTON_EVENT_TYPE then
+                if ev:button.state == _Input__BUTTON_PRESSED then              
+                    if  ev:button.name >= _Input__ACTION_1_BUTTON
+                    and ev:button.name <= _Input__ACTION_10_BUTTON then
+                        button_panel.set_button(ev:button.name - _Input__ACTION_1_BUTTON);                    
+                    else/if ev:button.name == _Input__ACTION_DOWN_BUTTON then                    
                         button_panel.next_action();                    
-                    else/if package:event.button.name == _Input__ACTION_UP_BUTTON then                    
+                    else/if ev:button.name == _Input__ACTION_UP_BUTTON then                    
                         button_panel.previous_action();
                     end
                 end
-            else/if package:event.type == _Input__SCROLLER_EVENT_TYPE then
-                playfield.scroll(-package:event.scroll.x_delta, -package:event.scroll.y_delta);
-            else/if package:event.type == _Input__POINTER_EVENT_TYPE then // Ignore, is handled in GUIScreen
-            else/if package:event.type == _Input__AXIS_EVENT_TYPE then
+            else/if ev:type == _Input__SCROLLER_EVENT_TYPE then
+                playfield.scroll(-ev:scroll.x_delta, -ev:scroll.y_delta);
+            else/if ev:type == _Input__POINTER_EVENT_TYPE then // Ignore, is handled in GUIScreen
+            else/if ev:type == _Input__AXIS_EVENT_TYPE then
                 // ???
                 //process_axis_event (event.axis);
-            else/if package:event.type == _Input__KEYBOARD_EVENT_TYPE then
-            else/if package:event.type == _Input__TEXT_INPUT_EVENT_TYPE then
+            else/if ev:type == _Input__KEYBOARD_EVENT_TYPE then
+            else/if ev:type == _Input__TEXT_INPUT_EVENT_TYPE then
             else
                 // unhandled event
-                _log_info("unhandled event: %1%", package:event.type) finalize with end;
+                _log_info("unhandled event: %1%", ev:type) finalize with end;
             end
         end        
     with
-        every screen in ON_STARTUP do
-            if screen != &game_session then
-                continue;
-            end
-
+        every on_startup do
             if _globals__developer_mode then
                 _log_info("Starting Music: %1%", server.get_plf().get_music());
             end
@@ -322,38 +328,24 @@ do
             end
         end
     with
-        every screen in ON_ESCAPE_PRESS do
-            if screen == &game_session then
-                emit server.e_FINISH_EVENT;
-            end
+        every on_escape_press do
+            emit server.e_FINISH_EVENT;            
         end
     with
-        every screen in ON_ARMAGEDDON_PRESS do
-            if screen == &game_session then
-                emit server.e_ARMAGEDDON;
-            end
+        every on_armageddon_press do
+            emit server.e_ARMAGEDDON;
         end
     with
-        every screen in ON_PAUSE_PRESS do
-            if screen == &game_session then
-                set_pause(not get_pause());
-            end
+        every on_pause_press do
+            set_pause(not get_pause());
         end
     with
-        every screen in ON_SINGLE_STEP_PRESS do
-            if screen != &game_session then
-                continue;
-            end
-
+        every on_single_step_press do
             set_pause(true);
             single_step = true;
         end    
     with
-        every screen in ON_FAST_FORWARD_PRESS do
-            if screen != &game_session then
-                continue;
-            end
-
+        every on_fast_forward_press do
             if get_pause() then
                 set_pause(false);
             else
@@ -361,31 +353,23 @@ do
             end
         end
     with
-        every screen in ON_FAST_FORWARD_RELEASE do
-            if screen != &game_session then
-                continue;
-            end
-
+        every on_fast_forward_release do
             set_fast_forward(false);
         end
     with
-        every package in SCREEN_DRAW_BACKGROUND do
+        every gc in draw_background do
             var _GUI_RectComponent* rect = (_GUI_RectComponent*)&playfield.me;
-
-            if package:screen != &game_session then
-                continue;
-            end
 
             if rect:get_rect() != _Rect(_Vector2i(0,0), _Size(_Display__get_width(), _Display__get_height())) then
                 // Draw a black border around the playfield when the playfield is smaller then the screen                
                 // top
-                package:gc.draw_fillrect(_Rect(0, 0, _Display__get_width(), rect:get_rect().top), _Color(0, 0, 0));
+                gc:draw_fillrect(_Rect(0, 0, _Display__get_width(), rect:get_rect().top), _Color(0, 0, 0));
                 // bottom
-                package:gc.draw_fillrect(_Rect(0, rect:get_rect().bottom, _Display__get_width(), _Display__get_height()), _Color(0, 0, 0));
+                gc:draw_fillrect(_Rect(0, rect:get_rect().bottom, _Display__get_width(), _Display__get_height()), _Color(0, 0, 0));
                 // left
-                package:gc.draw_fillrect(_Rect(0, rect:get_rect().top, rect:get_rect().left, rect:get_rect().bottom), _Color(0, 0, 0));
+                gc:draw_fillrect(_Rect(0, rect:get_rect().top, rect:get_rect().left, rect:get_rect().bottom), _Color(0, 0, 0));
                 // right
-                package:gc.draw_fillrect(_Rect(rect:get_rect().right, rect:get_rect().top, _Display__get_width(), rect:get_rect().bottom), _Color(0, 0, 0));
+                gc:draw_fillrect(_Rect(rect:get_rect().right, rect:get_rect().top, _Display__get_width(), rect:get_rect().bottom), _Color(0, 0, 0));
             end
         end
     with
@@ -418,19 +402,15 @@ do
             button_panel.set_pos(bp_pos);
         end
     with
-        every package in ON_ACTION_AXIS_MOVE do
-            if package:screen != &game_session then
-                continue;
-            end
-
-            if package:move > 0 then
+        every move in on_action_axis_move do
+            if move > 0 then
                 button_panel.next_action();
-            else/if package:move < 0 then
+            else/if move < 0 then
                 button_panel.previous_action();
             end
         end
     with
-        var _GameSession* e = await DELETE_GAME_SESSION until (e == &game_session);
+        var _GameSession* e = await DELETE_GAME_SESSION until (e == _addr(game_session));
         emit server.e_DELETE;
     end
 end

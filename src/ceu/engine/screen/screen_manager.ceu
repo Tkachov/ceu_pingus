@@ -52,7 +52,7 @@ do
             end
 
             var bool fade_over = false;
-            var Screen*? screen;
+            var Screen* screen = null;
 
             loop i in package:events.size() do
                 if package:events.at(i).type == _Input__POINTER_EVENT_TYPE and package:events.at(i).pointer.name == _Input__STANDARD_POINTER then
@@ -122,7 +122,7 @@ do
             _Display__flip_display();
         end           
     with
-        var _ScreenManager* e = await DELETE_SCREEN_MANAGER until (e == &screen_manager);
+        var _ScreenManager* e = await DELETE_SCREEN_MANAGER until (e == _addr(screen_manager));
     end
 end
 

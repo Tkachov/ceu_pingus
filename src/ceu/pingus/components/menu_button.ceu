@@ -34,10 +34,6 @@ do
         _delete_obj(desc);
         _delete_obj(text);
     end
-    
-    var PrimaryButtonProxy p with this.gui = outer; end;
-    var PointerProxy pp with this.gui = outer; end;
-    var EventProxy ep with this.gui = outer; end;
 
     var Sprite surface_p;
     var Sprite highlight;
@@ -81,13 +77,6 @@ do
     with
         every mouse_click do
             emit func.execute;
-        end
-    with
-        every package in is_at do
-            var Vector2i pos;
-            pos.x = package:mouse_pos.x;
-            pos.y = package:mouse_pos.y;
-            package:result = call/rec is_at_func(pos);
         end
     end
 end

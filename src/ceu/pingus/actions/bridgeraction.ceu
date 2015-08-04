@@ -92,13 +92,13 @@ do
 
         if pingu.direction().is_right() then
             global:world:put(
-                       &brick_r,
+                       _addr(brick_r),
                        (int)(pingu.get_x() + 10.0 - (float)brick_r.get_width()),
                        (int)pingu.get_y(),
                        _GT_BRIDGE);
         else
             global:world:put(
-                       &brick_l,
+                       _addr(brick_l),
                        (int)(pingu.get_x() - 10.0),
                        (int)pingu.get_y(),
                        _GT_BRIDGE);
