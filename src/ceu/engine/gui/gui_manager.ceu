@@ -145,8 +145,6 @@ do
                     if children.at(i):ceu == null then
                         _printf("update/ceu==null\n");
                         children.at(i):update(delta);
-                    else
-                        emit ((IGUI_Component*)children.at(i):ceu):update => delta;
                     end
                 end
             end

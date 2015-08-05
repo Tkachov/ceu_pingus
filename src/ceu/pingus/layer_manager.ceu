@@ -38,7 +38,6 @@ do
     
     par do
         every gc in parent.draw do
-            _printf("parent.draw\n");
             var Vector3f v;
             v.x = x_pos + x_offset;
             v.y = y_pos + y_offset;

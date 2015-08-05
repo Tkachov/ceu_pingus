@@ -13,24 +13,10 @@ end
 
 class EventProxy with
     var IGUI_Component& gui;
-do
-    par do
-        every package in COMPONENT_DRAW do
-            if package:component == &gui.me then
-                emit gui.draw => package:gc;
-            end
-        end
-    with
-        every package in COMPONENT_UPDATE do
-            if package:component == &gui.me then
-                emit gui.update => package:delta;
-            end
-        end
-    with
-        every package in COMPONENT_IS_AT do
-            if package:component == &gui.me then
-                emit gui.is_at => package;
-            end
+do    
+    every package in COMPONENT_DRAW do
+        if package:component == &gui.me then
+            emit gui.draw => package:gc;
         end
     end
 end

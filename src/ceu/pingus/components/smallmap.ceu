@@ -94,7 +94,11 @@ do
             gc_ptr = null;
         end
     with
-        every delta in update do
+        every delta in global:update do
+            if not me.is_visible() then
+                continue;
+            end
+            
             emit image.e_UPDATE => delta;
         end
     with

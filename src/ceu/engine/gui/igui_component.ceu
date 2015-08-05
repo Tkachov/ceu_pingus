@@ -28,7 +28,6 @@ interface IGUI_Component with
     function @rec (Vector2i pos) => bool is_at_func;
 
     event _DrawingContext* draw;
-    event float update;
     event _ComponentIsAtPackage* is_at;
 
     event void mouse_enter;
@@ -56,10 +55,6 @@ do
     par do
         every gc in src.draw do
             emit dst.draw => gc;
-        end
-    with
-        every d in src.update do
-            emit dst.update => d;
         end
     with
         every p in src.is_at do

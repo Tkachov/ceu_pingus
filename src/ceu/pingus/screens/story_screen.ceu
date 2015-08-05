@@ -233,7 +233,11 @@ do
             gc:print_left(_Fonts__chalk_normal, _Vector2i(gc:get_width()/2  - 280, gc:get_height()/2 + 35), _deref(display_text));
         end
     with
-        every delta in update do
+        every delta in global:update do
+            if not me.is_visible() then
+                continue;
+            end
+
             time_passed = time_passed + delta;
 
             if not page_displayed_completly then  

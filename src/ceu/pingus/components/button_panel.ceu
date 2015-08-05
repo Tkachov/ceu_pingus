@@ -151,7 +151,11 @@ do
             end
         end
     with
-        every delta in update do
+        every delta in global:update do
+            if not me.is_visible() then
+                continue;
+            end
+
             loop i in buttons.size() do
                 if i == current_button then
                     buttons.at(i).sprite.update(delta);

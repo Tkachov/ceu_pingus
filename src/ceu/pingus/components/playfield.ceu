@@ -226,7 +226,11 @@ do
             scene_context.set_rect(playfield.rect) finalize with end;
         end
     with
-        every delta in update do
+        every delta in global:update do
+            if not me.is_visible() then
+                continue;
+            end
+            
             //original FIXME: This should be delta dependant
             if not mouse_scrolling then
                 //find a current pingu & pass it to capture rectangle

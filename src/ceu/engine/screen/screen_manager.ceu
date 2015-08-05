@@ -80,10 +80,10 @@ do
                 continue;
             end
 
+            emit global:update => package:delta;
+            
             screen = _PTR2REF((Screen*)package:screen:ceu);
-            if screen then
-                emit global:update => package:delta;
-            else
+            if not screen then
                 _log_error("Screen has no `ceu` organism binded!");
                 package:screen:update(package:delta) finalize with end;
             end

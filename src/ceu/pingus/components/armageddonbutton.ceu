@@ -28,9 +28,6 @@ do
 
     var _GUI_RectComponent&? me_ = _PTR2REF((_GUI_RectComponent*)&this.me);
 
-    //freed in GroupComponent
-    //finalize with _delete_obj(me_); end
-
     RECT_IS_AT(&me_);
 
     par do
@@ -57,8 +54,10 @@ do
             end
         end
     with
-        every delta in update do
-            sprite.update_delta(delta);
+        every delta in global:update do
+            if me.is_visible() then
+                sprite.update_delta(delta);
+            end
         end
     end
 end
