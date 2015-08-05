@@ -63,7 +63,7 @@ do
         end
     end
 
-    function @rec (_SceneContext* gc) => void f_draw do
+    function @rec (_SceneContext* gc) => void f_draw do        
         if pingu then
             if pingu:ceu_action:catchable then
                 // Draw the capture rectangle

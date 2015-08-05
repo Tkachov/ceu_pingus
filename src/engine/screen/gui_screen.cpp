@@ -99,10 +99,6 @@ GUIScreen::update (const Input::Event& event)
       log_error("unhandled event type: %1%", event.type);
       break;
   }
-
-  ScreenUpdateEventPackage package(this, event);
-  ScreenUpdateEventPackage* pp = &package;
-  ceu_out_go(&CEUapp, CEU_IN_SCREEN_UPDATE_EVENT, &pp);
 }
 
 void
@@ -186,17 +182,9 @@ GUIScreen::process_button_event (const Input::ButtonEvent& event)
   }
 }
 
-void GUIScreen::draw_background(DrawingContext& gc) {
-  ScreenDrawPackage package(this, gc);
-  ScreenDrawPackage* pp = &package;
-  ceu_out_go(&CEUapp, CEU_IN_SCREEN_DRAW_BACKGROUND, &pp);
-}
+void GUIScreen::draw_background(DrawingContext& gc) {}
 
-void GUIScreen::draw_foreground(DrawingContext& gc) {
-  ScreenDrawPackage package(this, gc);
-  ScreenDrawPackage* pp = &package;
-  ceu_out_go(&CEUapp, CEU_IN_SCREEN_DRAW_FOREGROUND, &pp);
-}
+void GUIScreen::draw_foreground(DrawingContext& gc) {}
 
 void GUIScreen::resize(const Size& size_) {
   Screen::resize(size_);
@@ -212,69 +200,30 @@ void GUIScreen::on_startup() {
   ceu_out_go(&CEUapp, CEU_IN_ON_STARTUP, &self);
 }
 
-void GUIScreen::on_armageddon_press() {
-  GUIScreen* self = this;
-  ceu_out_go(&CEUapp, CEU_IN_ON_ARMAGEDDON_PRESS, &self);
-}
+void GUIScreen::on_armageddon_press() {}
 
-void GUIScreen::on_escape_press() {
-  GUIScreen* self = this;
-  ceu_out_go(&CEUapp, CEU_IN_ON_ESCAPE_PRESS, &self);
-}
+void GUIScreen::on_escape_press() {}
 
-void GUIScreen::on_pause_press() {
-  GUIScreen* self = this;
-  ceu_out_go(&CEUapp, CEU_IN_ON_PAUSE_PRESS, &self);
-}
+void GUIScreen::on_pause_press() {}
 
-void GUIScreen::on_single_step_press() {
-  GUIScreen* self = this;
-  ceu_out_go(&CEUapp, CEU_IN_ON_SINGLE_STEP_PRESS, &self);
-}
+void GUIScreen::on_single_step_press() {}
 
-void GUIScreen::on_fast_forward_press() {
-  GUIScreen* self = this;
-  ceu_out_go(&CEUapp, CEU_IN_ON_FAST_FORWARD_PRESS, &self);
-}
+void GUIScreen::on_fast_forward_press() {}
 
-void GUIScreen::on_action_up_press() {
-  GUIScreen* self = this;
-  ceu_out_go(&CEUapp, CEU_IN_ON_ACTION_UP_PRESS, &self);
-}
+void GUIScreen::on_action_up_press() {}
 
-void GUIScreen::on_action_down_press() {
-  GUIScreen* self = this;
-  ceu_out_go(&CEUapp, CEU_IN_ON_ACTION_DOWN_PRESS, &self);
-}
+void GUIScreen::on_action_down_press() {}
 
-void GUIScreen::on_pause_release() {
-  GUIScreen* self = this;
-  ceu_out_go(&CEUapp, CEU_IN_ON_PAUSE_RELEASE, &self);
-}
-void GUIScreen::on_single_step_release() {
-  GUIScreen* self = this;
-  ceu_out_go(&CEUapp, CEU_IN_ON_SINGLE_STEP_RELEASE, &self);
-}
+void GUIScreen::on_pause_release() {}
 
-void GUIScreen::on_armageddon_release() {
-  GUIScreen* self = this;
-  ceu_out_go(&CEUapp, CEU_IN_ON_ARMAGEDDON_RELEASE, &self);
-}
+void GUIScreen::on_single_step_release() {}
 
-void GUIScreen::on_escape_release() {
-  GUIScreen* self = this;
-  ceu_out_go(&CEUapp, CEU_IN_ON_ESCAPE_RELEASE, &self);
-}
+void GUIScreen::on_armageddon_release() {}
 
-void GUIScreen::on_fast_forward_release() {
-  GUIScreen* self = this;
-  ceu_out_go(&CEUapp, CEU_IN_ON_FAST_FORWARD_RELEASE, &self);
-}
+void GUIScreen::on_escape_release() {}
 
-void GUIScreen::on_action_axis_move(float move) {
-  ScreenAxisMovePackage package(this, move);
-  ScreenAxisMovePackage* pp = &package;
-  ceu_out_go(&CEUapp, CEU_IN_ON_ACTION_AXIS_MOVE, &pp);
-}
+void GUIScreen::on_fast_forward_release() {}
+
+void GUIScreen::on_action_axis_move(float move) {}
 
 /* EOF */

@@ -34,6 +34,8 @@ input _ScreenManager* DELETE_SCREEN_MANAGER;
 class ScreenManager with
     //interface IScreenManager;
     var _ScreenManager* me;
+
+    event (_Screen*, _Screen*) fade_over;
 do
     var _ScreenManager&? screen_manager = _PTR2REF((_ScreenManager*)me);
 
@@ -51,7 +53,7 @@ do
                 continue;
             end
 
-            var bool fade_over = false;
+            var bool do_fade_over = false;
             var Screen*? screen;
 
             loop i in package:events.size() do
@@ -68,13 +70,13 @@ do
                 end
 
                 if package:screen != screen_manager.get_current_screen() then
-                    fade_over = true;
+                    do_fade_over = true;
                     break;
                 end
             end
 
-            if fade_over then
-                screen_manager.fade_over(package:screen, screen_manager.get_current_screen()) finalize with end;
+            if do_fade_over then
+                emit fade_over => (package:screen.get(), screen_manager.get_current_screen().get());
                 continue;
             end
 
@@ -82,11 +84,12 @@ do
             if screen then
                 emit global:update => package:delta;
             else
+                _log_error("Screen has no `ceu` organism binded!");
                 package:screen:update(package:delta) finalize with end;
             end
 
-            if package:screen != screen_manager.get_current_screen() then
-                screen_manager.fade_over(package:screen, screen_manager.get_current_screen()) finalize with end;
+            if package:screen != screen_manager.get_current_screen() then                
+                emit fade_over => (package:screen.get(), screen_manager.get_current_screen().get());
                 continue;
             end
 
@@ -120,7 +123,53 @@ do
             end
 
             _Display__flip_display();
-        end           
+        end
+    with
+        every (old_screen, new_screen) in fade_over do
+            if not old_screen or not new_screen then
+                continue;
+            end
+            
+            var u32 last_ticks = _SDL_GetTicks();
+            var float progress = 0.01;
+            loop do
+                if progress > 1.0 then
+                    break;
+                end
+
+                var int border_x = ((float)_Display__get_width()/2)  * (1.0 - progress);
+                var int border_y = ((float)_Display__get_height()/2) * (1.0 - progress);
+
+                if old_screen:ceu == null then
+                    old_screen:draw(*screen_manager.display_gc) finalize with end;
+                else            
+                    emit ((Screen*)old_screen:ceu):call_draw => screen_manager.display_gc.get();
+                end
+                screen_manager.display_gc:render({*Display::get_framebuffer(), Rect(Vector2i(0, 0), Size(Display::get_width(), Display::get_height()))});
+                screen_manager.display_gc:clear();
+                    
+                ({Display::get_framebuffer()}):push_cliprect(
+                    _Rect(_Vector2i(0 + border_x, 0 + border_y), 
+                          _Size(_Display__get_width() - 2*border_x, _Display__get_height() - 2*border_y))
+                );
+                
+                if new_screen:ceu == null then
+                    new_screen:draw(*screen_manager.display_gc) finalize with end;
+                else            
+                    emit ((Screen*)new_screen:ceu):call_draw => screen_manager.display_gc.get();
+                end
+                screen_manager.display_gc:render({*Display::get_framebuffer(), Rect(Vector2i(0, 0), Size(Display::get_width(), Display::get_height()))});
+                screen_manager.display_gc:clear();
+                    
+                ({Display::get_framebuffer()}):pop_cliprect();
+                ({Display::get_framebuffer()}):flip();
+                screen_manager.display_gc:clear();
+                    
+                progress = (float)(_SDL_GetTicks() - last_ticks)/1000.0 * 2.0;        
+            end
+
+            screen_manager.input_manager.refresh();
+        end
     with
         var _ScreenManager* e = await DELETE_SCREEN_MANAGER until (e == &screen_manager);
     end

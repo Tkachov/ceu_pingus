@@ -100,10 +100,6 @@ do
                      "core/worldmap/credits_button_pressed",
                      "core/worldmap/credits_button_hover");
 
-    var PrimaryButtonProxy pbp with this.gui = outer; end;
-    var PointerProxy pp with this.gui = outer; end;
-    var EventProxy ep with this.gui = outer; end;
-
     function @rec (int x, int y) => void set_pos do
         sb.set_pos(x, y);
     end
@@ -153,10 +149,6 @@ do
                      "core/worldmap/leave_button_pressed",
                      "core/worldmap/leave_button_hover");
 
-    var PrimaryButtonProxy pbp with this.gui = outer; end;
-    var PointerProxy pp with this.gui = outer; end;
-    var EventProxy ep with this.gui = outer; end;
-
     function @rec (int x, int y) => void set_pos do
         sb.set_pos(x, y);
     end
@@ -194,11 +186,6 @@ do
     function @rec (Vector2i pos) => bool is_at_func do
         return true;
     end
-
-    var PrimaryButtonProxy p with this.gui = outer; end;
-    var SecondaryButtonProxy sbp with this.gui = outer; end;
-    var PointerProxy pp with this.gui = outer; end;
-    var EventProxy ep with this.gui = outer; end;
 
     par do
         every package in is_at do

@@ -55,9 +55,9 @@ interface Screen with
     event void on_fast_forward_press;
     event void on_fast_forward_release;
     event void on_action_up_press;
-    event void on_action_up_release; //TODO C++
+    event void on_action_up_release;
     event void on_action_down_press;
-    event void on_action_down_release; //TODO C++
+    event void on_action_down_release;
     event float on_action_axis_move;
 end
 
@@ -137,113 +137,11 @@ do
             else
                 _log_error("got unknown event.state: %1%", e:state);
             end
-        end
-    with
-        every package in SCREEN_DRAW_BACKGROUND do
-            if package:screen == &screen.me then
-                emit screen.draw_background => &package:gc;
-                if gui_manager then
-                    emit gui_manager:draw => &package:gc;
-                end
-            end
-        end
-    with
-        every package in SCREEN_DRAW_FOREGROUND do
-            if package:screen == &screen.me then
-                emit screen.draw_foreground => &package:gc;
-            end
-        end
-    with
-        every package in SCREEN_UPDATE_EVENT do
-            if package:screen == &screen.me then
-                if gui_manager then
-                    emit gui_manager:update_event => &package:event;
-                end
-                emit screen.update_event => &package:event;
-            end
-        end
+        end    
     with
         every screen_ptr in ON_STARTUP do
             if screen_ptr == &screen.me then
                 emit screen.on_startup;
-            end
-        end
-    with
-        every screen_ptr in ON_ARMAGEDDON_PRESS do
-            if screen_ptr == &screen.me then
-                emit screen.on_armageddon_press;
-            end
-        end
-    with
-        every screen_ptr in ON_ARMAGEDDON_RELEASE do
-            if screen_ptr == &screen.me then
-                emit screen.on_armageddon_release;
-            end
-        end
-    with
-        every screen_ptr in ON_ESCAPE_PRESS do
-            if screen_ptr == &screen.me then
-                emit screen.on_escape_press;
-            end
-        end
-    with
-        every screen_ptr in ON_ESCAPE_RELEASE do
-            if screen_ptr == &screen.me then
-                emit screen.on_escape_release;
-            end
-        end
-    with
-        every screen_ptr in ON_PAUSE_PRESS do
-            if screen_ptr == &screen.me then
-                emit screen.on_pause_press;
-            end
-        end
-    with
-        every screen_ptr in ON_PAUSE_RELEASE do
-            if screen_ptr == &screen.me then
-                emit screen.on_pause_release;
-            end
-        end
-    with
-        every screen_ptr in ON_SINGLE_STEP_PRESS do
-            if screen_ptr == &screen.me then
-                emit screen.on_single_step_press;
-            end
-        end
-    with
-        every screen_ptr in ON_SINGLE_STEP_RELEASE do
-            if screen_ptr == &screen.me then
-                emit screen.on_single_step_release;
-            end
-        end
-    with
-        every screen_ptr in ON_FAST_FORWARD_PRESS do
-            if screen_ptr == &screen.me then
-                emit screen.on_fast_forward_press;
-            end
-        end
-    with
-        every screen_ptr in ON_FAST_FORWARD_RELEASE do
-            if screen_ptr == &screen.me then
-                emit screen.on_fast_forward_release;
-            end
-        end
-    with
-        every screen_ptr in ON_ACTION_UP_PRESS do
-            if screen_ptr == &screen.me then
-                emit screen.on_action_up_press;
-            end
-        end
-    with
-        every screen_ptr in ON_ACTION_DOWN_PRESS do
-            if screen_ptr == &screen.me then
-                emit screen.on_action_down_press;
-            end
-        end
-    with
-        every package in ON_ACTION_AXIS_MOVE do
-            if package:screen == &screen.me then
-                emit screen.on_action_axis_move => package:move;
             end
         end
     end

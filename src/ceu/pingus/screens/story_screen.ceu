@@ -82,10 +82,6 @@ do
 
     ///call/rec sb.load("", "", ""), //original FIXME: Little fugly way to do a text button
 
-    var PrimaryButtonProxy p with this.gui = outer; end;
-    var PointerProxy pp with this.gui = outer; end;
-    var EventProxy ep with this.gui = outer; end;
-
     function @rec (int x, int y) => void set_pos do
         sb.set_pos(x, y);
     end
@@ -97,13 +93,6 @@ do
     with
         every mouse_enter do
             _Sound__PingusSound__play_sound("tick");
-        end
-    with
-        every package in is_at do
-            var Vector2i pos;
-            pos.x = package:mouse_pos.x;
-            pos.y = package:mouse_pos.y;
-            package:result = call/rec is_at_func(pos);
         end
     with
         every gc in draw do
@@ -137,10 +126,6 @@ do
 
     call/rec sb.load("core/misc/next", "core/misc/next", "core/misc/next_hover");
 
-    var PrimaryButtonProxy p with this.gui = outer; end;
-    var PointerProxy pp with this.gui = outer; end;
-    var EventProxy ep with this.gui = outer; end;
-
     function @rec (int x, int y) => void set_pos do
         sb.set_pos(x, y);
     end
@@ -164,10 +149,6 @@ class StoryScreenComponent with
     var _WorldmapNS__WorldmapStory* story;
     var bool m_credits;
 do
-    var PrimaryButtonProxy p with this.gui = outer; end;
-    var PointerProxy pp with this.gui = outer; end;
-    var EventProxy ep with this.gui = outer; end;
-
     RECT_IS_AT(&me);
 
     var Sprite background;

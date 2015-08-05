@@ -15,7 +15,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "engine/gui/rect_component.hpp"
-
+#include "util/log.hpp"
 #include "ceuvars.h"
 
 namespace GUI {
@@ -27,16 +27,12 @@ void Component::draw(DrawingContext& gc) {
 }
 
 void Component::update(float delta) {
-  ComponentUpdatePackage package(this, delta);
-  ComponentUpdatePackage* pp = &package;
-  ceu_out_go(&CEUapp, CEU_IN_COMPONENT_UPDATE, &pp);
+  log_error("Component::update() called");
 }
 
 bool Component::is_at(int x, int y) {  
-  ComponentIsAtPackage package(this, Vector2i(x, y));
-  ComponentIsAtPackage* pp = &package;
-  ceu_out_go(&CEUapp, CEU_IN_COMPONENT_IS_AT, &pp);
-  return package.result;
+  log_error("Component::is_at() called");
+  return false;
 }
 
 void Component::on_primary_button_press(int x, int y) {

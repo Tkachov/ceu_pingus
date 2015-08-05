@@ -40,10 +40,6 @@ do
 
     finalize with _delete_obj(choices); end
 
-    var PrimaryButtonProxy p with this.gui = outer; end;
-    var PointerProxy pp with this.gui = outer; end;
-    var EventProxy ep with this.gui = outer; end;
-
     RECT_IS_AT(&rect);
 
     function (int x, int y) => void shift_pos do

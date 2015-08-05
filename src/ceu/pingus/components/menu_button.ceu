@@ -34,10 +34,6 @@ do
         _delete_obj(desc);
         _delete_obj(text);
     end
-    
-    var PrimaryButtonProxy p with this.gui = outer; end;
-    var PointerProxy pp with this.gui = outer; end;
-    var EventProxy ep with this.gui = outer; end;
 
     var Sprite surface_p;
     var Sprite highlight;

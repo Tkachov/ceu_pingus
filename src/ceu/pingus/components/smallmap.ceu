@@ -26,10 +26,6 @@ do
         this.canvas = _new_Surface(rect.rect.get_width(), rect.rect.get_height());
     end;
 
-    var EventProxy ep with this.gui = outer; end;
-    var PointerProxy pp with this.gui = outer; end;
-    var PrimaryButtonProxy pbp with this.gui = outer; end;
-
     RECT_IS_AT(&rect);
 
     function @rec (_Sprite* sprite, _Vector3f pos) => void draw_sprite do

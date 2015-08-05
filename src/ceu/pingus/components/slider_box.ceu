@@ -36,10 +36,6 @@ do
     var _GUI_RectComponent&? rect = _PTR2REF((_GUI_RectComponent*)&me);
     var bool drag_drop = false;
 
-    var PrimaryButtonProxy p with this.gui = outer; end;
-    var PointerProxy pp with this.gui = outer; end;
-    var EventProxy ep with this.gui = outer; end;
-
     function @rec (Vector2i pos) => bool is_at_func do
         return rect.is_at(pos.x, pos.y);
     end

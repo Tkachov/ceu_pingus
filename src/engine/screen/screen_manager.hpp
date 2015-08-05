@@ -87,10 +87,6 @@ public:
   /** @return a pointer to the current Screen */
   ScreenPtr get_current_screen();
 
-private:
-  /** FadeOver test*/
-  void fade_over(ScreenPtr old_screen, ScreenPtr new_screen);
-
 public:
   static ScreenManager* instance();
 

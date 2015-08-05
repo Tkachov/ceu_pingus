@@ -27,8 +27,6 @@ do
     call/rec sprite.reload_by_name("core/buttons/armageddon_anim");
 
     var _GUI_RectComponent&? me_ = _PTR2REF((_GUI_RectComponent*)&this.me);
-    var PrimaryButtonProxy p with this.gui = outer; end;
-    var EventProxy ep with this.gui = outer; end;
 
     //freed in GroupComponent
     //finalize with _delete_obj(me_); end
@@ -36,6 +34,14 @@ do
     RECT_IS_AT(&me_);
 
     par do
+        loop do
+            await mouse_click;
+            watching 1s do
+                await mouse_click;
+                emit mouse_double_click;
+            end
+        end
+    with
         every mouse_double_click do
             emit server.e_ARMAGEDDON;
         end

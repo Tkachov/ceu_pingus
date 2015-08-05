@@ -222,7 +222,7 @@ do
 
     var _std__string&? hint = _new_String();
     var _std__string&? help = _new_String();
-    var LayerManager*? background = null;
+    var LayerManager background;
 
     var Sprite logo;
     call/rec logo.reload_by_name("core/misc/logo");
@@ -247,7 +247,7 @@ do
     with
         every (width, height) in create_background do
             // Recreate the layer manager in the new size
-            background = spawn LayerManager;
+            emit background.respawn;
 
             var _Surface&? layer1 = _new_Surface(_Resource__load_surface("core/menu/layer1"));
             var _Surface&? layer2 = _new_Surface(_Resource__load_surface("core/menu/layer2"));
@@ -264,17 +264,17 @@ do
                 layer4 = _PTR2REF(layer4.scale(width, 171 * height / _globals__default_screen_height));
                 layer5 = _PTR2REF(layer5.scale(302 * width / _globals__default_screen_width, 104 * height / _globals__default_screen_height));
                   
-                emit background:add_layer => (&layer1, 0, 0, 12, 0);
-                emit background:add_layer => (&layer2, 0, 150 * ((float)height) / ((float)_globals__default_screen_height), 25, 0);
-                emit background:add_layer => (&layer3, 0, 200 * ((float)height) / ((float)_globals__default_screen_height), 50, 0);
-                emit background:add_layer => (&layer4, 0, 429 * ((float)height) / ((float)_globals__default_screen_height), 100, 0);
-                emit background:add_layer => (&layer5, 0, 500 * ((float)height) / ((float)_globals__default_screen_height), 200, 0);
+                emit background.add_layer => (&layer1, 0, 0, 12, 0);
+                emit background.add_layer => (&layer2, 0, 150 * ((float)height) / ((float)_globals__default_screen_height), 25, 0);
+                emit background.add_layer => (&layer3, 0, 200 * ((float)height) / ((float)_globals__default_screen_height), 50, 0);
+                emit background.add_layer => (&layer4, 0, 429 * ((float)height) / ((float)_globals__default_screen_height), 100, 0);
+                emit background.add_layer => (&layer5, 0, 500 * ((float)height) / ((float)_globals__default_screen_height), 200, 0);
             else
-                emit background:add_layer => (&layer1, 0, 0, 12, 0);
-                emit background:add_layer => (&layer2, 0, 150, 25, 0);
-                emit background:add_layer => (&layer3, 0, 200, 50, 0);
-                emit background:add_layer => (&layer4, 0, 429, 100, 0);
-                emit background:add_layer => (&layer5, 0, 500, 200, 0);
+                emit background.add_layer => (&layer1, 0, 0, 12, 0);
+                emit background.add_layer => (&layer2, 0, 150, 25, 0);
+                emit background.add_layer => (&layer3, 0, 200, 50, 0);
+                emit background.add_layer => (&layer4, 0, 429, 100, 0);
+                emit background.add_layer => (&layer5, 0, 500, 200, 0);
             end
 
             _delete_obj(layer1);
@@ -284,8 +284,9 @@ do
             _delete_obj(layer5);
         end
     with
-        every gc in draw_background do
-            emit background:draw => gc;
+        every gc in draw_background do            
+            emit background.draw => gc;
+
             gc:draw(_deref(logo.get()), _Vector2i(gc:get_width()/2 - logo.get_width()/2, gc:get_height()/2 - 280));
             gc:print_left(_Fonts__pingus_small, _Vector2i(gc:get_width()/2 - 400 + 25, gc:get_height()-140),
                                   _make_String("Pingus ") + _VERSION + _make_String(" - Copyright (C) 1998-2011 Ingo Ruhnke <grumbel@gmail.com>\nSee the file AUTHORS for a complete list of contributors.\nPingus comes with ABSOLUTELY NO WARRANTY. This is free software, and you are\nwelcome to redistribute it under certain conditions; see the file COPYING for details.\n"));

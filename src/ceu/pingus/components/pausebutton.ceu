@@ -27,8 +27,6 @@ do
     call/rec surface.reload_by_name("core/buttons/pause");
 
     var _GUI_RectComponent&? me_ = _PTR2REF((_GUI_RectComponent*)&this.me);
-    var PrimaryButtonProxy p with this.gui = outer; end;
-    var EventProxy ep with this.gui = outer; end;
 
     RECT_IS_AT(&me_);
 

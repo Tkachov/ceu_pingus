@@ -38,6 +38,7 @@ do
     
     par do
         every gc in parent.draw do
+            _printf("parent.draw\n");
             var Vector3f v;
             v.x = x_pos + x_offset;
             v.y = y_pos + y_offset;
@@ -57,20 +58,28 @@ do
 end
 
 class LayerManager with
-    interface ILayerManager;
-    pool Layer[] layers;
+    interface ILayerManager;    
 
     event (_Surface*, float, float, float, float) add_layer;
+    event void respawn;
 do
-    every (sprite, x_o, y_o, x_u, y_u) in add_layer do
-        var Layer*? l = spawn Layer in layers with            
-            this.x_update = x_u;
-            this.y_update = y_u;
-            this.x_offset = x_o;
-            this.y_offset = y_o;
-            this.parent = outer;
-        end;
-        l:load(sprite);
+    loop do
+        pool Layer[] layers;
+
+        par/or do
+            every (sprite, x_o, y_o, x_u, y_u) in add_layer do
+                var Layer*? l = spawn Layer in layers with            
+                    this.x_update = x_u;
+                    this.y_update = y_u;
+                    this.x_offset = x_o;
+                    this.y_offset = y_o;
+                    this.parent = outer;
+                end;
+                l:load(sprite);
+            end
+        with
+            await respawn;
+        end
     end
 end
 

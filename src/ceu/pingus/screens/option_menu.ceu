@@ -111,10 +111,6 @@ do
 
     call/rec sb.load("core/start/ok", "core/start/ok_clicked", "core/start/ok_hover");
 
-    var PrimaryButtonProxy p with this.gui = outer; end;
-    var PointerProxy pp with this.gui = outer; end;
-    var EventProxy ep with this.gui = outer; end;
-
     function @rec (int x, int y) => void set_pos do
         sb.set_pos(x, y);
     end

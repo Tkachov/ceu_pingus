@@ -90,10 +90,6 @@ do
 
     _delete_obj(actions);
   
-    var EventProxy ep with this.gui = outer; end;
-    var PointerProxy pp with this.gui = outer; end;
-    var PrimaryButtonProxy pbp with this.gui = outer; end;
-  
     function (void) => int get_action_name do
         return buttons[current_button].name;
     end

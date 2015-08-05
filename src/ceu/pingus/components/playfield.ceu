@@ -66,11 +66,6 @@ do
     //original FIXME: Temporary workaround till start-pos is integrated a bit more properly
     state.set_pos(global:world:get_start_pos(0));
 
-    var EventProxy ep with this.gui = outer; end;
-    var PointerProxy pp with this.gui = outer; end;
-    var PrimaryButtonProxy pbp with this.gui = outer; end;
-    var SecondaryButtonProxy sbp with this.gui = outer; end;
-
     var CaptureRectangle capture_rectangle with
         this.session = session;
     end;
@@ -130,7 +125,9 @@ do
             scene_context.clear();
             state.push(_deref(scene_context));
 
-            call/rec capture_rectangle.set_pingu(get_current_pingu()); //another no-"access across `await`"-hack
+            current_pingu = _PTR2REF(call/rec current_pingu_find_mouse());
+            call/rec capture_rectangle.set_pingu(current_pingu);
+            //call/rec capture_rectangle.set_pingu(get_current_pingu()); //another no-"access across `await`"-hack
             emit capture_rectangle.draw => &scene_context;
 
             if global:world != null then
@@ -233,8 +230,8 @@ do
             //original FIXME: This should be delta dependant
             if not mouse_scrolling then
                 //find a current pingu & pass it to capture rectangle
-                current_pingu = _PTR2REF(call/rec current_pingu_find_mouse());
-                call/rec capture_rectangle.set_pingu(current_pingu);
+                //current_pingu = _PTR2REF(call/rec current_pingu_find_mouse());
+                //call/rec capture_rectangle.set_pingu(current_pingu);
             else
                 if _globals__drag_drop_scrolling then
                     state.set_pos(_toVector2i(old_state_pos) + (_toVector2i(scroll_center) - _toVector2i(mouse_pos)));
@@ -242,6 +239,8 @@ do
                     state.set_pos(_Vector2i(state.get_pos().x - (int)((float)(scroll_center.x - mouse_pos.x)*0.2),
                                                       state.get_pos().y - (int)((float)(scroll_center.y - mouse_pos.y)*0.2)));
                 end
+
+                //current_pingu = null;
             end
 
             if _globals__auto_scrolling and (_Display__is_fullscreen() or _Display__has_grab()) then

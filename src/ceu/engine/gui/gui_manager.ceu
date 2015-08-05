@@ -21,10 +21,6 @@ end
 native @pure _new_Vector_Component(), _new_DrawingContext();
 
 /*
-  void on_pointer_leave();
-
-  void on_pointer_move(int x, int y);
-
   void add(Component* comp);
 
   template<typename C, typename ...Args>
@@ -403,6 +399,21 @@ do
             end
         end
     with
+        every mouse_leave do
+            if not grabbed_comp then
+                if mouse_over_comp then
+                    mouse_over_comp:set_mouse_over(false);
+                    if mouse_over_comp:ceu == null then
+                        _log_error("/ceu==null");
+                        mouse_over_comp:on_pointer_leave();
+                    else
+                        emit ((IGUI_Component*)mouse_over_comp:ceu):mouse_leave;
+                    end
+                end
+                mouse_over_comp = null;
+            end
+        end
+    with
         every kev in key_pressed do
             if grabbed_comp then
                 if grabbed_comp:ceu == null then
@@ -454,22 +465,6 @@ void
 GroupComponent::update_layout()
 {
   drawing_context.set_rect(rect);
-}
-
-void
-GroupComponent::on_pointer_leave()
-{
-  if (!grabbed_comp)
-  {
-    if (mouse_over_comp)
-    {
-      mouse_over_comp->set_mouse_over(false);
-      mouse_over_comp->on_pointer_leave();
-      //Ceu ON_POINTER_LEAVE
-      ceu_sys_go(&CEUapp, CEU_IN_ON_POINTER_LEAVE, &mouse_over_comp);
-    }
-    mouse_over_comp = 0; 
-  }
 }
 
 void

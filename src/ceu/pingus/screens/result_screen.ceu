@@ -77,9 +77,6 @@ do
 
     call/rec sb.load("core/start/ok", "core/start/ok_clicked", "core/start/ok_hover");
 
-    var PrimaryButtonProxy p with this.gui = outer; end;
-    var PointerProxy pp with this.gui = outer; end;
-
     function @rec (int x, int y) => void set_pos do
         sb.set_pos(x, y);
     end
@@ -120,10 +117,6 @@ do
     end
 
     call/rec sb.load("core/start/back", "core/start/back_clicked", "core/start/back_hover");
-
-    var PrimaryButtonProxy p with this.gui = outer; end;
-    var PointerProxy pp with this.gui = outer; end;
-    var EventProxy ep with this.gui = outer; end;
 
     function @rec (int x, int y) => void set_pos do
         sb.set_pos(x, y);
@@ -169,10 +162,6 @@ do
 
     call/rec sb.load("core/start/ok", "core/start/ok_clicked", "core/start/ok_hover");
 
-    var PrimaryButtonProxy p with this.gui = outer; end;
-    var PointerProxy pp with this.gui = outer; end;
-    var EventProxy ep with this.gui = outer; end;
-
     function @rec (int x, int y) => void set_pos do
         sb.set_pos(x, y);
     end
@@ -203,10 +192,6 @@ class ResultScreenComponent with
     interface IGUI_Component;
     var IResultScreen& parent;
 do
-    var PrimaryButtonProxy p with this.gui = outer; end;
-    var PointerProxy pp with this.gui = outer; end;
-    var EventProxy ep with this.gui = outer; end;
-
     RECT_IS_AT(&me);
 
     var Sprite background;
