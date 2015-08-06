@@ -35,7 +35,7 @@ native/pre do
 
     ##define new_GUI_Component() new GUI::Component()
     ##define ScreenManager__instance() ScreenManager::instance()
-    ##define StatManager__instance() StatManager::instance()
+    ##define StatManager__instance StatManager::instance
     ##define std__make_shared_GameSession std::make_shared<GameSession>
     ##define std__make_shared_StoryScreen std::make_shared<StoryScreen>
     ##define Display__get_width() Display::get_width()
@@ -51,7 +51,6 @@ native/pre do
 
     ##define WorldmapNS__WorldmapScreen WorldmapNS::WorldmapScreen    
 
-    ##define StatManager__instance() StatManager::instance()
     ##define new_PathGraph new WorldmapNS::PathGraph
     ##define DrawableFactory__create(x) WorldmapNS::DrawableFactory::create(x)    
     ##define WorldmapNS__Edge_WorldmapNS__Path WorldmapNS::Edge<WorldmapNS::Path*>

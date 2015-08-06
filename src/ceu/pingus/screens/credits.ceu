@@ -51,13 +51,9 @@ native/pre do
     ##define Fonts__chalk_small Fonts::chalk_small
 
     ##define std__make_shared_StoryScreen std::make_shared<StoryScreen>
-    ##define Pathname__DATA_PATH Pathname::DATA_PATH
-    ##define StatManager__instance() StatManager::instance()
+    ##define Pathname__DATA_PATH Pathname::DATA_PATH    
 
     ##define std__vector_std__string std::vector<std::string>
-    ##define new_Vector_String new std::vector<std::string>
-    ##define new_SceneContext new SceneContext
-    ##define new_SceneContextDrawingRequest new SceneContextDrawingRequest
 
     ##define std__ifstream std::ifstream
     ##define new_std__ifstream new std::ifstream

@@ -25,7 +25,7 @@ native/pre do
     ##define new_RectComponent(r) new GUI::RectComponent(r)
     ##define new_Rect(v, s) new Rect(v, s)
     ##define new_SceneContext(rect) new SceneContext(rect)
-    ##define new_GraphicContextState(w, h) new GraphicContextState(w, h)
+    ##define new_GraphicContextState new GraphicContextState
     ##define new_Server(a) new Server(a)    
     ##define ScreenManager__instance() ScreenManager::instance()
 end

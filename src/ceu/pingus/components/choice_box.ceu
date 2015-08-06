@@ -19,7 +19,7 @@ native/pre do
     ##include "engine/display/sprite.hpp"
     ##include "engine/gui/component.hpp"
 
-    ##define new_Vector_String new std::vector<std::string>()
+    ##define new_Vector_String new std::vector<std::string>
     ##define std__vector_String std::vector<std::string>
 end
 

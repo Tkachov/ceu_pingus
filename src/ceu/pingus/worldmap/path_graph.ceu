@@ -75,7 +75,7 @@ native/pre do
     ##define WorldmapNS__Worldmap WorldmapNS::Worldmap
     ##define WorldmapNS__WorldmapScreen WorldmapNS::WorldmapScreen    
 
-    ##define StatManager__instance() StatManager::instance()
+    ##define StatManager__instance StatManager::instance
     ##define new_PathGraph new WorldmapNS::PathGraph
     ##define DrawableFactory__create(x) WorldmapNS::DrawableFactory::create(x)
 

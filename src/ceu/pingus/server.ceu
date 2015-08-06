@@ -32,8 +32,6 @@ end
 
 native @pure _stream_print();
 
-input _Server* SERVER_UPDATE;
-
 class Server with
     interface IServer;    
     function @rec (void) => bool is_finished;    
