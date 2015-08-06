@@ -81,7 +81,7 @@ do
     var _Vector_ActionButton&? buttons = _new_Vector_ActionButton(actions.size());    
     finalize with _delete_obj(buttons); end
 
-    loop i in actions.size() do        
+    loop/100 i in actions.size() do        
         buttons.at(i).name   = _PTR2REF(actions.at(i));
         buttons.at(i).sprite = _make_Sprite(_scc3("pingus/player0/", _ActionName__to_string(actions.at(i)), "/right"));
         buttons.at(i).sprite.set_hotspot(_origin_center, 0, 0);
@@ -123,7 +123,7 @@ do
         every gc in draw do        
             var _ActionHolder&? aholder = _PTR2REF(server.me.get_action_holder());
 
-            loop i in buttons.size() do
+            loop/100 i in buttons.size() do
                 var Vector3f pos;
                 pos.x = button_panel.rect.left;
                 pos.y = button_panel.rect.top + BHEIGHT*((int)i);
@@ -156,7 +156,7 @@ do
                 continue;
             end
 
-            loop i in buttons.size() do
+            loop/100 i in buttons.size() do
                 if i == current_button then
                     buttons.at(i).sprite.update(delta);
                 else
