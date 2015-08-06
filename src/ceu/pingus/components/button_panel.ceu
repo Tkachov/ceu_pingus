@@ -72,7 +72,7 @@ do
     var int tip_button = 0;
     var bool show_tip = false;
 
-    var _ActionHolder&? aholder_ = _PTR2REF(server.me.get_action_holder());
+    var _ActionHolder&? aholder_ = _addr(_deref(server.me.get_action_holder()));
     var _Vector_ActionName&? actions = _new_Vector_ActionName(aholder_.get_available_actions());
 
     // Sort the action so that they always have the same order in the panel
@@ -121,7 +121,7 @@ do
 
     par do
         every gc in draw do        
-            var _ActionHolder&? aholder = _PTR2REF(server.me.get_action_holder());
+            var _ActionHolder&? aholder = _addr(_deref(server.me.get_action_holder()));
 
             loop/100 i in buttons.size() do
                 var Vector3f pos;

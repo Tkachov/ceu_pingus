@@ -18,14 +18,12 @@ input _ServerEvent* NEW_SERVER_EVENT;
 input _ServerEvent* DELETE_SERVER_EVENT;
 
 class ServerEvent with
-    var _ServerEvent* me;
+    var _ServerEvent&? me;
 do
-    var _ServerEvent&? server_event = _PTR2REF((_ServerEvent*)me);
-
     par/or do
         await FOREVER;
     with
-        var _ServerEvent* e = await DELETE_SERVER_EVENT until (e == &server_event);
+        var _ServerEvent* e = await DELETE_SERVER_EVENT until (e == &me);
     end
 end
 

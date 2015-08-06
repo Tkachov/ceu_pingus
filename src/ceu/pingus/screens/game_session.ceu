@@ -140,7 +140,7 @@ do
 
     var SmallMap small_map with
         this.rect = _new_RectComponent(_Rect(_Vector2i(5, game_session.size.height - 105), _Size(175, 100)));
-        this.me = _PTR2REF(this.rect);
+        this.me = this.rect;
         this.me.ceu = &this;    
         this.playfield = playfield;
     end;
@@ -213,13 +213,12 @@ do
     par/or do
         every delta in global:update do
             if call/rec server.is_finished() then
-                var IPinguHolder* pingu_holder = _PTR2REF(global:world:get_pingus());
                 var _Result&? result = _new_Result();
 
                 finalize result.plf    = server.get_plf(); with end
 
-                result.saved  = pingu_holder:get_number_of_exited();
-                result.killed = pingu_holder:get_number_of_killed();
+                result.saved  = global:world:get_pingus().get_number_of_exited();
+                result.killed = global:world:get_pingus().get_number_of_killed();
                 finalize result.total  = server.get_plf().get_number_of_pingus(); with end
 
                 finalize result.needed = server.get_plf().get_number_to_save(); with end

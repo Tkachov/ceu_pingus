@@ -73,7 +73,7 @@ do
         end
     with
         every global:world:update do
-            loop pingu in global:world:get_pingus():all_pingus do
+            loop pingu in global:world:get_pingus().all_pingus do
                 // Make sure this particular exit is allowed for this pingu
                 if pingu:get_owner() != owner_id then
                     continue;

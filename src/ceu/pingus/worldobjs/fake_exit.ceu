@@ -40,7 +40,7 @@ do
             loop do
                 await global:world:update;
                 
-                loop pingu in global:world:get_pingus():all_pingus do
+                loop pingu in global:world:get_pingus().all_pingus do
                     if pingu:get_x() > pos.x+31 and pingu:get_x() < pos.x+31+15 and
                        pingu:get_y() > pos.y+56 and pingu:get_y() < pos.y+56+56 then
                         if pingu:get_current_action() != _A_SPLASHED and
@@ -61,7 +61,7 @@ do
             par/or do
                 every global:world:update do
                     if sprite.get_current_frame() == 4 then
-                        loop pingu in global:world:get_pingus():all_pingus do
+                        loop pingu in global:world:get_pingus().all_pingus do
                             if pingu:get_x() > pos.x+31 and pingu:get_x() < pos.x+31+15 and
                                pingu:get_y() > pos.y+56 and pingu:get_y() < pos.y+56+56 then
                                 if pingu:get_current_action() != _A_SPLASHED and

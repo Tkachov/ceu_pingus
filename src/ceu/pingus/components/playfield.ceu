@@ -81,7 +81,7 @@ do
         var float dist;
         var IPingu* c_pingu = null;
 
-        loop pingu in global:world:get_pingus():all_pingus do
+        loop pingu in global:world:get_pingus().all_pingus do
             if call/rec pingu:is_over(mx, my) then
                 dist = call/rec pingu:dist(mx, my);
 

@@ -32,7 +32,7 @@ do
             loop do
                 await global:world:update;
                 
-                loop pingu in global:world:get_pingus():all_pingus do
+                loop pingu in global:world:get_pingus().all_pingus do
                     if pingu:get_x() <= pos.x+34 or pingu:get_x() >= pos.x+34+10 or
                        pingu:get_y() <= pos.y+43 or pingu:get_y() >= pos.y+43+20 then
                         continue;

@@ -19,7 +19,6 @@ native/pre do
     ##include "engine/display/drawing_context.hpp"
     ##include "pingus/fonts.hpp"
     ##include "pingus/gettext.h"
-    ##define Fonts__pingus_small_fixnum &Fonts::pingus_small_fixnum
 
     struct chrarr {
         char s[128];
@@ -37,21 +36,19 @@ do
         return false;
     end
 
-    var _Font* font = _Fonts__pingus_small_fixnum;
-
     every gc in draw do
         var _chrarr str;
 
         gc:draw(_deref(background.get()), _Vector2i(gc:get_width()/2, 0));
 
         _snprintf(str.s, 128, __("Released:%3d/%d   Out:%3d   Saved:%3d/%d").c_str(),
-                 global:world:get_pingus():get_number_of_released(),
-                 global:world:get_pingus():get_number_of_allowed(),
-                 global:world:get_pingus():get_number_of_alive(),
-                 global:world:get_pingus():get_number_of_exited(),
+                 global:world:get_pingus().get_number_of_released(),
+                 global:world:get_pingus().get_number_of_allowed(),
+                 global:world:get_pingus().get_number_of_alive(),
+                 global:world:get_pingus().get_number_of_exited(),
                  server.get_plf().get_number_to_save()) finalize with end;
 
-        gc:print_center(_deref(font), _Vector2i(gc:get_width()/2, -2), str.s) finalize with end;
+        gc:print_center({Fonts::pingus_small_fixnum}, _Vector2i(gc:get_width()/2, -2), str.s) finalize with end;
     end
 end
 

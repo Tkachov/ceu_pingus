@@ -36,7 +36,7 @@ do
                 sprite.set_frame(current_frame);
 
                 if current_frame == sprite.get_frame_count()-1 then
-                    loop pingu in global:world:get_pingus():all_pingus do
+                    loop pingu in global:world:get_pingus().all_pingus do
                         if pingu:get_current_action() == _A_SPLASHED or
                            pingu:get_current_action() == _A_DEAD or pingu:get_current_action() == _A_EXITED then
                             continue;

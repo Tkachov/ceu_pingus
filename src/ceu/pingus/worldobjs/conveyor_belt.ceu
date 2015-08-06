@@ -69,7 +69,7 @@ do
             middle_sur.update();
             right_sur.update();
 
-            loop pingu in global:world:get_pingus():all_pingus do
+            loop pingu in global:world:get_pingus().all_pingus do
                 if pingu:get_x() > pos.x and pingu:get_x() < pos.x + 15*(float)(width+2) and
                    pingu:get_y() > pos.y-2 and pingu:get_y() < pos.y+10 then
                     var Vector3f ppos = call/rec pingu:get_pos();

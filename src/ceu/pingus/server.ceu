@@ -44,7 +44,7 @@ do
     end;    
 
     var World world with
-        this.pingus_level = _PTR2REF(&me.plf);
+        this.pingus_level = me.plf;
         global:world = &this;
     end;
 
@@ -113,7 +113,7 @@ do
             else/if server_event:type == _SE_END_EVENT then
                 // do nothing
             else/if server_event:type == _SE_PINGU_ACTION_EVENT then
-                emit do_pingu_action_event => (server_event, call/rec global:world:get_pingus():get_pingu(server_event:pingu_id));
+                emit do_pingu_action_event => (server_event, call/rec global:world:get_pingus().get_pingu(server_event:pingu_id));
             else
                 _assert(not "Unknown type");
             end

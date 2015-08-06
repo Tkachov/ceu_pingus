@@ -82,7 +82,7 @@ do
 
     var SmallMap small_map with
         this.rect = _new_RectComponent(_Rect(_Vector2i(5, demo_session.size.height - 105), _Size(175, 100)));
-        this.me = _PTR2REF(this.rect);        
+        this.me = this.rect;
         this.playfield = playfield;
     end;
 

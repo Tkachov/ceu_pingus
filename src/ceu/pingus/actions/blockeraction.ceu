@@ -53,7 +53,7 @@ do
             escape _A_FALLER;
         end
 
-        loop catched in global:world:get_pingus():all_pingus do
+        loop catched in global:world:get_pingus().all_pingus do
             // avoid 'self' catch
             if catched == &pingu then
                 continue;

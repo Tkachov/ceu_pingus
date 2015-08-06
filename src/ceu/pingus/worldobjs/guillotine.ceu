@@ -36,7 +36,7 @@ do
                     await global:world:update;
                     var bool stop = false;
 
-                    loop pingu in global:world:get_pingus():all_pingus do
+                    loop pingu in global:world:get_pingus().all_pingus do
                         if pingu:is_inside((int)(pos.x + 38), (int)(pos.y + 90), (int)(pos.x + 42), (int)(pos.y + 98)) then
                             stop = true;
                             direction.value = pingu:direction().value;

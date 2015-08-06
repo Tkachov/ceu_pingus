@@ -211,10 +211,10 @@ do
     end
 
     function (void) => _CollisionMap* get_colmap do
-        return _PTR2REF(gfx_map.gmap.colmap.get());
+        return gfx_map.gmap.colmap.get();
     end
 
-    function (void) => IPinguHolder* get_pingus do
+    function (void) => IPinguHolder&? get_pingus do
         return holder;
     end
 

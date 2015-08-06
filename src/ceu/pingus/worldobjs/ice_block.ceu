@@ -42,7 +42,7 @@ do
             loop do
                 await global:world:update;
                 
-                loop pingu in global:world:get_pingus():all_pingus do
+                loop pingu in global:world:get_pingus().all_pingus do
                     if pingu:get_x() > pos.x and pingu:get_x() < pos.x+(float)block_sur.get_width() and
                        pingu:get_y() > pos.y-4 and pingu:get_y() < pos.y+(float)block_sur.get_height() then
                         last_contact = global:world:get_time();

@@ -51,7 +51,7 @@ do
             end
 
             // Check if a pingu is passing the switch
-            loop pingu in global:world:get_pingus():all_pingus do
+            loop pingu in global:world:get_pingus().all_pingus do
                 if pingu:get_x() > pos.x and
                    pingu:get_x() < pos.x+(float)switch_sur.get_width() and
                    pingu:get_y() > pos.y and

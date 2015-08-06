@@ -47,7 +47,7 @@ do
     with
         every global:world:update do
             if target != null then
-                loop pingu in global:world:get_pingus():all_pingus do
+                loop pingu in global:world:get_pingus().all_pingus do
                     if pingu:get_x() > pos.x-3 and pingu:get_x() < pos.x+3 and
                        pingu:get_y() > pos.y-52 and pingu:get_y() < pos.y then
                         pingu:set_posf((call/rec target:get_pos()).x, (call/rec target:get_pos()).y);

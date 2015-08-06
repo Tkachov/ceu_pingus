@@ -453,14 +453,14 @@ do
 
     var LevelsetSelector levelset_selector with
         this.rect = _new_GUI__RectComponent();
-        this.me = _PTR2REF(this.rect);
+        this.me = this.rect;
         this.me.ceu = &this;
         this.parent = outer;
     end;
 
     var LevelSelector level_selector with
         this.rect = _new_GUI__RectComponent();
-        this.me = _PTR2REF(this.rect);
+        this.me = this.rect;
         this.me.ceu = &this;
         this.parent = outer;
     end;

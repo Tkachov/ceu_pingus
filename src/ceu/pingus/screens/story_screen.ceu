@@ -58,7 +58,7 @@ end
 
 class StoryScreenSkipButton with
     interface IGUI_Component;
-    var IStoryScreenComponent& story_comp;
+    var IStoryScreenComponent* story_comp;
 
     function @rec (int x, int y) => void set_pos;
 do
@@ -88,7 +88,7 @@ do
 
     par do
         every mouse_click do
-            call/rec story_comp.skip_story();
+            call/rec story_comp:skip_story();
         end
     with
         every mouse_enter do
@@ -292,7 +292,7 @@ do
         skip_button = spawn StoryScreenSkipButton with
             this.me = _new_GUI_Component();
             this.me.ceu = &this;
-            this.story_comp = _PTR2REF(story_comp);
+            this.story_comp = &story_comp;
         end;
         gui_manager.add(&skip_button:me);
     end

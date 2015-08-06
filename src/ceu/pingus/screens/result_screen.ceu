@@ -289,7 +289,7 @@ end
 class ResultScreen with
     interface IResultScreen;    
 do
-    var _ResultScreen&? result_screen = _PTR2REF((_ResultScreen*)&me);
+    var _ResultScreen&? result_screen = (_ResultScreen*)&me;
     var GUIManager gui_manager with
         this.me = _new_GUI__RectComponent(_Rect(0, 0, _Display__get_width(), _Display__get_height()));
         this.drawing_context = _new_DrawingContext(_Rect(0, 0, _Display__get_width(), _Display__get_height()), false);

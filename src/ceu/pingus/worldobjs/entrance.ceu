@@ -52,7 +52,7 @@ do
         every global:world:update do
             var bool pr = call/rec pingu_ready();
             if pr and not global:world:check_armageddon() then
-                emit global:world:get_pingus():e_MAKE_PINGU => (&this, owner_id, go_left);
+                emit global:world:get_pingus().e_MAKE_PINGU => (&this, owner_id, go_left);
 
                 if direction == ED_MISC then
                     go_left = not go_left;

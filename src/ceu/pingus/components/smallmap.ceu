@@ -83,7 +83,7 @@ do
                 emit global:world:e_DRAW_SMALLMAP => &this;
 
                 // Draw Pingus
-                loop pingu in global:world:get_pingus():all_pingus do
+                loop pingu in global:world:get_pingus().all_pingus do
                     var int x = (float)rect.rect.left + pingu:get_x()*(float)rect.rect.get_width()/(float)global:world:get_width();
                     var int y = (float)rect.rect.top + pingu:get_y()*(float)rect.rect.get_height()/(float)global:world:get_height();
 
