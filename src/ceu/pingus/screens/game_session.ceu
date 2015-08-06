@@ -148,18 +148,21 @@ do
         this.me = _PTR2REF(_new_RectComponent(_Rect(_Vector2i(_Display__get_width() - 40, _Display__get_height()-62), _Size(38, 60))));
         this.me.ceu = &this;
         this.server = server;
+        this.dc = dc;
     end;
 
     var ForwardButton forward_button with
         this.me = _PTR2REF(_new_RectComponent(_Rect(_Vector2i(_Display__get_width() - 40*2, _Display__get_height()-62), _Size(38, 60))));
         this.me.ceu = &this;
         this.session = outer;
+        this.dc = dc;
     end;
 
     var PauseButton pause_button with
         this.me = _PTR2REF(_new_RectComponent(_Rect(_Vector2i(_Display__get_width() - 40*3, _Display__get_height()-62), _Size(38, 60))));
         this.me.ceu = &this;
         this.session = outer;
+        this.dc = dc;
     end;
     
     var TimeDisplay time_display with

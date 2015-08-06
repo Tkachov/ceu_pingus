@@ -2,6 +2,7 @@
 #define ISCREEN_CEU
 
 #include "../gui/igui_manager.ceu"
+#include "../../pingus/global_interface.ceu"
 
 native/pre do
     ##include "engine/screen/gui_screen.hpp"
@@ -34,7 +35,8 @@ input _ScreenResizePackage* SCREEN_RESIZE; //TODO
 input _ScreenAxisMovePackage* ON_ACTION_AXIS_MOVE;
 
 interface Screen with
-    var _GUIScreen&? me;    
+    var _GUIScreen&? me;
+    var _DrawingContext* dc; 
 
     event _DrawingContext* call_draw;
     event _const_Input__Event* call_update_event;
@@ -73,6 +75,7 @@ do
             if gui_manager then
                 emit gui_manager:draw => gc;
             end
+            emit global:dc_draw;
             emit screen.draw_foreground => gc;
         end
     with

@@ -42,14 +42,16 @@ do
             session.set_fast_forward(false);
         end
     with
-        every gc in draw do
-            if session.get_fast_forward() then
-                _gc_draw(gc, backgroundhl.get(), me_.rect);
-            else
-                _gc_draw(gc, background.get(), me_.rect);
-            end
+        every global:dc_draw do
+            if me.is_visible() then
+                if session.get_fast_forward() then
+                    _gc_draw(dc, backgroundhl.get(), me_.rect);
+                else
+                    _gc_draw(dc, background.get(), me_.rect);
+                end
 
-            _gc_draw(gc, surface.get(), me_.rect);
+                _gc_draw(dc, surface.get(), me_.rect);
+            end
         end
     end
 end

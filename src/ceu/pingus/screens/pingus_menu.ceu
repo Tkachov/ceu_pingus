@@ -168,6 +168,7 @@ do
         this.y_pos = _Display__get_height()/2 - 20;
         this.text = _new_String(__("Story"));
         this.desc = _new_String(__("..:: Start the game ::.."));
+        this.dc = dc;
     end;
 
     var MenuButton editor_button with
@@ -179,6 +180,7 @@ do
         this.y_pos = _Display__get_height()/2 - 20;
         this.text = _new_String(__("Editor"));
         this.desc = _new_String(__("..:: Create your own levels ::.."));
+        this.dc = dc;
     end;
 
     var MenuButton options_button with
@@ -190,6 +192,7 @@ do
         this.y_pos = _Display__get_height()/2 + 50;
         this.text = _new_String(__("Options"));
         this.desc = _new_String(__("..:: Configure the game ::.."));
+        this.dc = dc;
     end;
 
     var MenuButton contrib_button with
@@ -201,6 +204,7 @@ do
         this.y_pos = _Display__get_height()/2 + 50;
         this.text = _new_String(__("Levelsets"));
         this.desc = _new_String(__("..:: Play User Built levels ::.."));
+        this.dc = dc;
     end;
 
     var MenuButton quit_button with
@@ -212,6 +216,7 @@ do
         this.y_pos = _Display__get_height()/2 + 120;
         this.text = _new_String(__("Exit"));
         this.desc = _new_String(__("..:: Bye, bye ::.."));
+        this.dc = dc;
     end;
 
     gui_manager.add(&quit_button.me);
@@ -228,6 +233,7 @@ do
     call/rec logo.reload_by_name("core/misc/logo");
 
     finalize with
+        _printf("pingus_menu dead\n");
         _delete_obj(hint);
         _delete_obj(help);
     end

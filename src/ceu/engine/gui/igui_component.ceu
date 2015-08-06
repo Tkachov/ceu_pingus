@@ -24,6 +24,7 @@ end
 
 interface IGUI_Component with
     var _GUI_Component& me;
+    var _DrawingContext* dc;
 
     function @rec (Vector2i pos) => bool is_at_func;
 

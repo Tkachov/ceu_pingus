@@ -50,12 +50,16 @@ do
         y_pos = y;
     end
 
+    finalize with _printf("menu_button dead\n"); end
+
     par do
         loop do
             par/or do
-                every gc in draw do
-                    gc:draw(_deref(surface_p.get()), _Vector2i(x_pos, y_pos));
-                    gc:print_center(_Fonts__chalk_large, _Vector2i(x_pos, y_pos - 28), _deref(text));
+                every global:dc_draw do
+                    if me.is_visible() then
+                        dc:draw(_deref(surface_p.get()), _Vector2i(x_pos, y_pos));
+                        dc:print_center(_Fonts__chalk_large, _Vector2i(x_pos, y_pos - 28), _deref(text));
+                    end
                 end
             with
                 await mouse_enter;
@@ -64,10 +68,12 @@ do
             end
 
             par/or do
-                every gc in draw do
-                    gc:draw(_deref(surface_p.get()), _Vector2i(x_pos, y_pos));
-                    gc:draw(_deref(highlight.get()), _Vector2i(x_pos, y_pos));
-                    gc:print_center(_Fonts__chalk_large, _Vector2i(x_pos, y_pos - 28), _deref(text));
+                every global:dc_draw do
+                    if me.is_visible() then
+                        dc:draw(_deref(surface_p.get()), _Vector2i(x_pos, y_pos));
+                        dc:draw(_deref(highlight.get()), _Vector2i(x_pos, y_pos));
+                        dc:print_center(_Fonts__chalk_large, _Vector2i(x_pos, y_pos - 28), _deref(text));
+                    end
                 end
             with
                 await mouse_leave;                

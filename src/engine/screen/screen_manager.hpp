@@ -89,6 +89,7 @@ public:
 
 public:
   static ScreenManager* instance();
+  static DrawingContext* get_dc() { return instance_->display_gc.get(); }
 
 private:
   ScreenManager (const ScreenManager&);

@@ -9,6 +9,7 @@ interface Global with
     var IWorld* world;
 
     event float update;
+    event void dc_draw;
 
     event void push_option_menu;
     event void push_worldmap_tutorial_screen;

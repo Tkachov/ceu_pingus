@@ -43,14 +43,16 @@ do
             emit server.e_ARMAGEDDON;
         end
     with
-        every gc in draw do
-            if global:world:check_armageddon() then
-                _gc_draw(gc, backgroundhl.get(), me_.rect);
-                _gc_draw(gc, sprite.get(), me_.rect);
-            else
-                _gc_draw(gc, background.get(), me_.rect);
-                sprite.set_frame(7);
-                _gc_draw(gc, sprite.get(), me_.rect);
+        every global:dc_draw do
+            if me.is_visible() then
+                if global:world:check_armageddon() then
+                    _gc_draw(dc, backgroundhl.get(), me_.rect);
+                    _gc_draw(dc, sprite.get(), me_.rect);
+                else
+                    _gc_draw(dc, background.get(), me_.rect);
+                    sprite.set_frame(7);
+                    _gc_draw(dc, sprite.get(), me_.rect);
+                end
             end
         end
     with
