@@ -34,7 +34,7 @@ class ChoiceBox with
     function (_const_char_string str) => void add_choice;
     function (int choice) => void set_current_choice;
 do
-    var _GUI_RectComponent&? rect = _PTR2REF((_GUI_RectComponent*)&me);
+    var _GUI_RectComponent&? rect = (_GUI_RectComponent*)&me;
     var int current_choice = 0;
     var _std__vector_String&? choices = _new_Vector_String();
 

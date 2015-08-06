@@ -33,7 +33,7 @@ class SliderBox with
     function (int x, int y) => void shift_pos;
     function (int v) => void set_value;
 do
-    var _GUI_RectComponent&? rect = _PTR2REF((_GUI_RectComponent*)&me);
+    var _GUI_RectComponent&? rect = (_GUI_RectComponent*)&me;
     var bool drag_drop = false;
 
     function @rec (Vector2i pos) => bool is_at_func do

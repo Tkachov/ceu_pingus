@@ -116,7 +116,7 @@ class World with
     event _CreationPackage* create_rain_generator;
     event _CreationPackage* create_groundpiece;
 do
-    var _Container&? objs = _PTR2REF(_new_Container());
+    var _Container&? objs = _new_Container();
     finalize with _delete_obj(objs); end
 
     var bool do_armageddon = false;
@@ -135,7 +135,7 @@ do
     var SnowParticlesHolder snow_particles_holder;
 
     var GroundMap gfx_map with
-        this.gmap = _PTR2REF(_new_GroundMap(pingus_level.get_size().width, pingus_level.get_size().height));
+        this.gmap = _new_GroundMap(pingus_level.get_size().width, pingus_level.get_size().height);
     end;
 
     finalize with global:world = null; end
@@ -374,7 +374,7 @@ do
         end
     with
         every package in create_prefab do
-            var _std__string&? name = _PTR2REF(_new_String());
+            var _std__string&? name = _new_String();
             _string_read_string(name, package:reader, "name");
 
             var Vector3f pos;
@@ -479,7 +479,7 @@ do
                     this.owner_id = 0;
                 end
 
-                var _std__string&? direction_str = _PTR2REF(_new_String());
+                var _std__string&? direction_str = _new_String();
                 _string_read_string(direction_str, package:reader, "direction");
 
                 if direction_str == "left" then
@@ -501,12 +501,12 @@ do
             spawn Exit with
                 package:result.push_back(&this) finalize with end;
 
-                this.desc = _PTR2REF(_new_ResDescriptor());
+                this.desc = _new_ResDescriptor();
 
                 _read_position(package:reader, this.pos);
                 this.construct(package:reader); //can't put reference initiation there =(
 
-                this.flag = _PTR2REF(_new_SpriteA(_scc2("core/misc/flag", _StringUtil__to_string(this.owner_id))));
+                this.flag = _new_SpriteA(_scc2("core/misc/flag", _StringUtil__to_string(this.owner_id)));
             end;
         end
     with
@@ -521,7 +521,7 @@ do
             spawn Groundpiece with
                 package:result.push_back(&this) finalize with end;
                 _read_position(package:reader, this.pos);
-                this.desc = _PTR2REF(_new_ResDescriptor());
+                this.desc = _new_ResDescriptor();
                 package:reader:read_desc("surface", _deref(this.desc));
                 this.gptype = _GT_GROUND;
                 _reader_read_Groundtype(package:reader, "type", _PTR2REF(this.gptype));
@@ -546,13 +546,13 @@ do
             spawn Hotspot with
                 package:result.push_back(&this) finalize with end;
 
-                var _ResDescriptor&? desc = _PTR2REF(_new_ResDescriptor());
+                var _ResDescriptor&? desc = _new_ResDescriptor();
 
                 _read_position(package:reader, this.pos);
                 package:reader:read_desc  ("surface",  _deref(desc));
                 package:reader:read_float ("parallax", _PTR2REF(this.para));
 
-                this.sprite = _PTR2REF(_new_SpriteA(_deref(desc)));
+                this.sprite = _new_SpriteA(_deref(desc));
 
                 _delete_obj(desc);
             end;
@@ -583,13 +583,13 @@ do
 
                 this.width = 0;
 
-                var _ResDescriptor&? desc = _PTR2REF(_new_ResDescriptor());
+                var _ResDescriptor&? desc = _new_ResDescriptor();
 
                 _read_position(package:reader, this.pos);
                 package:reader:read_desc  ("surface",  _deref(desc));
                 package:reader:read_int   ("repeat",   _PTR2REF(this.width));
 
-                this.sprite = _PTR2REF(_new_SpriteA(_deref(desc)));
+                this.sprite = _new_SpriteA(_deref(desc));
 
                 _delete_obj(desc);
             end;
@@ -621,7 +621,7 @@ do
             spawn SolidColorBackground with
                 package:result.push_back(&this) finalize with end;
 
-                this.color = _PTR2REF(_new_Color());
+                this.color = _new_Color();
                 if not package:reader:read_colori("colori", _deref(this.color)) then
                     package:reader:read_colorf("color", _deref(this.color));
                 end
@@ -657,7 +657,7 @@ do
                 this.para_y = 0.5;
                 this.scroll_x = 0;
                 this.scroll_y = 0;
-                this.color = _PTR2REF(_new_Color(0, 0, 0, 0));
+                this.color = _new_Color(0, 0, 0, 0);
                 this.stretch_x = false;
                 this.stretch_y = false;
                 this.keep_aspect = false;
@@ -672,7 +672,7 @@ do
                     this.pos.z = -150;
                 end
 
-                var _ResDescriptor&? desc = _PTR2REF(_new_ResDescriptor());
+                var _ResDescriptor&? desc = _new_ResDescriptor();
                 package:reader:read_desc("surface",  _deref(desc));
 
                 if not package:reader:read_colori("colori", _deref(this.color)) then
@@ -693,7 +693,7 @@ do
                 if not this.stretch_x and not this.stretch_y and this.color.a == 0 then
                     //orignal FIXME: would be nice to allow surface manipulation with
                     // animated sprites, but it's not that easy to do
-                    this.sprite = _PTR2REF(_new_SpriteA(_deref(desc)));
+                    this.sprite = _new_SpriteA(_deref(desc));
                 else
                     var _Surface&? surface = _new_Surface();
                     _opeq(surface, _Resource__load_surface(_deref(desc)));
@@ -727,7 +727,7 @@ do
                         end
                     end
 
-                    this.sprite = _PTR2REF(_new_SpriteA(_deref(surface)));
+                    this.sprite = _new_SpriteA(_deref(surface));
                 end
 
                 _delete_obj(desc);
@@ -738,7 +738,7 @@ do
             spawn SwitchDoorDoor in switch_door_doors with
                 package:result.push_back(&this) finalize with end;
 
-                this.id = _PTR2REF(_new_String());
+                this.id = _new_String();
                 _string_read_string(this.id, package:reader, "id");
 
                 _read_position(package:reader, this.pos);
@@ -752,7 +752,7 @@ do
             spawn SwitchDoorSwitch with
                 pack4ge:result.push_back(&this) finalize with end;
 
-                this.m_target = _PTR2REF(_new_String());
+                this.m_target = _new_String();
                 _string_read_string(this.m_target, pack4ge:reader, "target-id");
                 _read_position(pack4ge:reader, this.pos);
             end;
@@ -763,7 +763,7 @@ do
                 packag3:result.push_back(&this) finalize with end;
 
                 _read_position(packag3:reader, this.pos);
-                this.target_id = _PTR2REF(_new_String());
+                this.target_id = _new_String();
                 _string_read_string(this.target_id, packag3:reader, "target-id");
             end;
         end
@@ -772,7 +772,7 @@ do
             spawn TeleporterTarget in teleporter_targets with
                 package:result.push_back(&this) finalize with end;
 
-                this.id = _PTR2REF(_new_String());
+                this.id = _new_String();
                 _string_read_string(this.id, package:reader, "id");
                 _read_position(package:reader, this.pos);
             end;

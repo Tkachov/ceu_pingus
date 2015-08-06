@@ -43,7 +43,7 @@ class DemoSession with
     interface Screen;
     event void update_demo;
 do
-    var _DemoSession&? demo_session = _PTR2REF((_DemoSession*)&me);
+    var _DemoSession&? demo_session = (_DemoSession*)&me;
 
     var ScreenFramework sf with
         this.screen = outer;
@@ -81,13 +81,13 @@ do
     end;
 
     var SmallMap small_map with
-        this.rect = _PTR2REF(_new_RectComponent(_Rect(_Vector2i(5, demo_session.size.height - 105), _Size(175, 100))));
+        this.rect = _new_RectComponent(_Rect(_Vector2i(5, demo_session.size.height - 105), _Size(175, 100)));
         this.me = _PTR2REF(this.rect);        
         this.playfield = playfield;
     end;
 
     var ButtonPanel button_panel with
-        this.me = _PTR2REF(_new_RectComponent(_Rect()));
+        this.me = _new_RectComponent(_Rect());
         this.server = server;
     end;
 

@@ -23,7 +23,7 @@ class Label with
 
     function (int x, int y) => void shift_pos;
 do
-    var _GUI_RectComponent&? rect = _PTR2REF((_GUI_RectComponent*)&me);
+    var _GUI_RectComponent&? rect = (_GUI_RectComponent*)&me;
 
     function (int x, int y) => void shift_pos do
         rect.set_rect(_Rect(_Vector2i(rect.rect.left + x, rect.rect.top + y), rect.rect.get_size()));        

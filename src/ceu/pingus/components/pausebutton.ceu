@@ -26,7 +26,7 @@ do
     call/rec backgroundhl.reload_by_name("core/buttons/hbuttonbg");
     call/rec surface.reload_by_name("core/buttons/pause");
 
-    var _GUI_RectComponent&? me_ = _PTR2REF((_GUI_RectComponent*)&this.me);
+    var _GUI_RectComponent&? me_ = (_GUI_RectComponent*)&this.me;
 
     RECT_IS_AT(&me_);
 

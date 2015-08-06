@@ -11,7 +11,7 @@
 class PinguParticlesHolder with
     interface IPinguParticlesHolder;
 do
-    var _Vector_PinguParticle&? particles = _PTR2REF(_new_Vector_PinguParticle());
+    var _Vector_PinguParticle&? particles = _new_Vector_PinguParticle();
     var Sprite sprite;
     call/rec sprite.reload_by_name("particles/pingu_explo");
     finalize with _delete_obj(particles); end

@@ -117,7 +117,7 @@ end
 class Credits with
     interface ICredits;
 do
-    var _Credits&? credits_screen = _PTR2REF((_Credits*)&me);
+    var _Credits&? credits_screen = (_Credits*)&me;
     var GUIManager gui_manager with
         this.me = _new_GUI__RectComponent(_Rect(0, 0, _Display__get_width(), _Display__get_height()));
         this.drawing_context = _new_DrawingContext(_Rect(0, 0, _Display__get_width(), _Display__get_height()), false);

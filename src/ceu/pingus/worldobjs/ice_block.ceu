@@ -14,7 +14,7 @@ class IceBlock with
     interface IWorldObj;
     var int width;
 do
-    var _CollisionMask&? block_sur_cmap = _PTR2REF(_new_CollisionMask("worldobjs/iceblock_cmap"));
+    var _CollisionMask&? block_sur_cmap = _new_CollisionMask("worldobjs/iceblock_cmap");
     finalize with _delete_obj(block_sur_cmap); end
 
     call/rec global:world:add_object(&this);

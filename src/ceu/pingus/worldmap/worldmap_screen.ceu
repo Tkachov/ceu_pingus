@@ -270,7 +270,6 @@ end
 class WorldmapScreen with
     interface IWorldmapScreen;
 do
-    var _GUIScreen&? worldmap_screen = _PTR2REF((_GUIScreen*)&me);
     var GUIManager gui_manager with
         this.me = _new_GUI__RectComponent(_Rect(0, 0, _Display__get_width(), _Display__get_height()));
         this.drawing_context = _new_DrawingContext(_Rect(0, 0, _Display__get_width(), _Display__get_height()), false);
@@ -341,7 +340,7 @@ do
 
     par/or do
         every package in LOAD_WORLDMAP_SCREEN do
-            if package:screen != &worldmap_screen then
+            if package:screen != &me then
                 continue;
             end
 
@@ -400,17 +399,17 @@ do
         end
     with
         every package in SCREEN_RESIZE do
-            if package:screen != &worldmap_screen then
+            if package:screen != &me then
                 continue;
             end
 
-            call/rec close_button.set_pos(0, worldmap_screen.size.height - 37);
+            call/rec close_button.set_pos(0, me.size.height - 37);
             if credits_button then
-                call/rec credits_button:set_pos(worldmap_screen.size.width - 150, 0);
+                call/rec credits_button:set_pos(me.size.width - 150, 0);
             end
         end
     with
-        var _GUIScreen* e = await DELETE_WORLDMAP_SCREEN until (e == &worldmap_screen);
+        var _GUIScreen* e = await DELETE_WORLDMAP_SCREEN until (e == &me);
         if worldmap then
             emit worldmap:delete;
         end

@@ -379,24 +379,24 @@ do
         end
     with
         every package in SCREEN_RESIZE do
-            if package:screen != &result_screen then
+            if package:screen != &me then
                 continue;
             end
 
             if ok_button then
-                call/rec ok_button:set_pos(result_screen.size.width/2 + 245, result_screen.size.height/2 + 150);
+                call/rec ok_button:set_pos(me.size.width/2 + 245, me.size.height/2 + 150);
             end
 
             if abort_button then
-                call/rec abort_button:set_pos(result_screen.size.width/2 - 300, result_screen.size.height/2 + 200);
+                call/rec abort_button:set_pos(me.size.width/2 - 300, me.size.height/2 + 200);
             end
 
             if retry_button then
-                call/rec retry_button:set_pos(result_screen.size.width/2 + 245, result_screen.size.height/2 + 150);
+                call/rec retry_button:set_pos(me.size.width/2 + 245, me.size.height/2 + 150);
             end
         end
     with
-        var _ResultScreen* e = await DELETE_RESULT_SCREEN until (e == &result_screen);
+        var _ResultScreen* e = await DELETE_RESULT_SCREEN until (e == &me);
     end
 end
 

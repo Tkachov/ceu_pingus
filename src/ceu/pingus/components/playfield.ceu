@@ -47,7 +47,7 @@ class Playfield with
     var IServer& server;
     var IGameSession* session;
 do
-    var _GUI_RectComponent&? playfield = _PTR2REF((_GUI_RectComponent*)&me);
+    var _GUI_RectComponent&? playfield = (_GUI_RectComponent*)&me;
 
     finalize with
         _delete_obj(scene_context);

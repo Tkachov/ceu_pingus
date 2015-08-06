@@ -122,7 +122,7 @@ do
     
     var PathGraph path_graph with
         this.worldmap = outer;
-        this.path_graph = _PTR2REF(_new_PathGraph());
+        this.path_graph = _new_PathGraph();
     end;
 
     default_node = path_graph.path_graph.lookup_node(_deref(pingus_worldmap:get_default_node()));

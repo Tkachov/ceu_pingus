@@ -11,7 +11,7 @@
 class SmokeParticlesHolder with
     interface ISmokeParticlesHolder;
 do
-    var _Vector_SmokeParticle&? particles = _PTR2REF(_new_Vector_SmokeParticle());
+    var _Vector_SmokeParticle&? particles = _new_Vector_SmokeParticle();
     var Sprite surf1;
     var Sprite surf2;
     call/rec surf1.reload_by_name("particles/smoke");

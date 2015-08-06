@@ -33,12 +33,10 @@ input _ScreenManager* DELETE_SCREEN_MANAGER;
 
 class ScreenManager with
     //interface IScreenManager;
-    var _ScreenManager* me;
+    var _ScreenManager&? screen_manager;
 
     event (_Screen*, _Screen*) fade_over;
 do
-    var _ScreenManager&? screen_manager = _PTR2REF((_ScreenManager*)me);
-
     var FPSCounter fps_counter;
     var Vector2i mouse_pos;
 

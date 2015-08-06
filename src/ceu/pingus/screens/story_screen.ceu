@@ -258,8 +258,7 @@ end
 
 class StoryScreen with
     interface Screen;
-do
-    var _StoryScreen&? story_screen = _PTR2REF((_StoryScreen*)&me);
+do    
     var GUIManager gui_manager with
         this.me = _new_GUI__RectComponent(_Rect(0, 0, _Display__get_width(), _Display__get_height()));
         this.drawing_context = _new_DrawingContext(_Rect(0, 0, _Display__get_width(), _Display__get_height()), false);
@@ -272,6 +271,8 @@ do
     var StoryScreenComponent story_comp with
         this.me = _new_GUI_Component();
         this.me.ceu = &this;
+
+        var _StoryScreen&? story_screen = (_StoryScreen*)&me;
         this.story = _PTR2REF(story_screen.story.get());
         this.m_credits = story_screen.m_credits;
     end;
@@ -307,21 +308,21 @@ do
         end
     with
         every on_fast_forward_press do
-            call/rec story_comp.next_text();        
+            call/rec story_comp.next_text();
         end
     with
         every package in SCREEN_RESIZE do
-            if package:screen != &story_screen then
+            if package:screen != &me then
                 continue;
             end
             
-            call/rec continue_button.set_pos(story_screen.size.width/2 + 260, story_screen.size.height/2 + 212);
+            call/rec continue_button.set_pos(me.size.width/2 + 260, me.size.height/2 + 212);
             if skip_button then
-                call/rec skip_button:set_pos(story_screen.size.width - 4, story_screen.size.height - 26);
+                call/rec skip_button:set_pos(me.size.width - 4, me.size.height - 26);
             end
         end
     with
-        var _StoryScreen* e = await DELETE_STORY_SCREEN until (e == &story_screen);
+        var _StoryScreen* e = await DELETE_STORY_SCREEN until (e == &me);
     end
 end
 

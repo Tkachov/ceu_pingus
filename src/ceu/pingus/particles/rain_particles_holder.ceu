@@ -11,7 +11,7 @@
 class RainParticlesHolder with
     interface IRainParticlesHolder;
 do
-    var _Vector_RainParticle&? particles = _PTR2REF(_new_Vector_RainParticle());
+    var _Vector_RainParticle&? particles = _new_Vector_RainParticle();
     var Sprite rain1_surf;
     var Sprite rain2_surf;
     var Sprite rain_splash;

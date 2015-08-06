@@ -6,7 +6,7 @@ native/pre do
 end
 
 interface IServer with
-    var _Server* me;
+    var _Server&? me;
 
     event void e_ARMAGEDDON;
     

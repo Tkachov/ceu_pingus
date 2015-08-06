@@ -438,7 +438,7 @@ end
 class LevelMenu with
     interface ILevelMenu;    
 do
-    var _LevelMenu&? level_menu = _PTR2REF((_LevelMenu*)&me);
+    var _LevelMenu&? level_menu = (_LevelMenu*)&me;
     var GUIManager gui_manager with
         this.me = _new_GUI__RectComponent(_Rect(0, 0, _Display__get_width(), _Display__get_height()));
         this.drawing_context = _new_DrawingContext(_Rect(0, 0, _Display__get_width(), _Display__get_height()), false);

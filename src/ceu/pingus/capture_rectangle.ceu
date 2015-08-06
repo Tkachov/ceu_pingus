@@ -27,10 +27,10 @@ do
     var _std__string&? action_str = _new_String();
     finalize with _delete_obj(action_str); end;
 
-    var _Sprite&? good = _PTR2REF(_new_SpriteA("game/cursors/capgood"));
-    var _Sprite&? bad = _PTR2REF(_new_SpriteA("game/cursors/capbad"));
-    var _Sprite&? arrow_left = _PTR2REF(_new_SpriteA("game/cursors/arrow_left"));
-    var _Sprite&? arrow_right = _PTR2REF(_new_SpriteA("game/cursors/arrow_right"));
+    var _Sprite&? good = _new_SpriteA("game/cursors/capgood");
+    var _Sprite&? bad = _new_SpriteA("game/cursors/capbad");
+    var _Sprite&? arrow_left = _new_SpriteA("game/cursors/arrow_left");
+    var _Sprite&? arrow_right = _new_SpriteA("game/cursors/arrow_right");
     finalize with _delete_obj(good); end;
     finalize with _delete_obj(bad); end;
     finalize with _delete_obj(arrow_left); end;

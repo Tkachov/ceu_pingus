@@ -26,7 +26,7 @@ do
     call/rec backgroundhl.reload_by_name("core/buttons/hbuttonbg");
     call/rec surface.reload_by_name("core/buttons/fast_forward");
 
-    var _GUI_RectComponent&? me_ = _PTR2REF((_GUI_RectComponent*)&this.me);
+    var _GUI_RectComponent&? me_ = (_GUI_RectComponent*)&this.me;
 
     //freed in GroupComponent
     //finalize with _delete_obj(me_); end

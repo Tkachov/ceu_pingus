@@ -59,7 +59,7 @@ class ButtonPanel with
     interface IButtonPanel;
     var IServer& server;
 do
-    var _GUI_RectComponent&? button_panel = _PTR2REF((_GUI_RectComponent*)&me);
+    var _GUI_RectComponent&? button_panel = (_GUI_RectComponent*)&me;
 
     RECT_IS_AT(&button_panel);
 
@@ -72,7 +72,7 @@ do
     var int tip_button = 0;
     var bool show_tip = false;
 
-    var _ActionHolder&? aholder_ = _PTR2REF(server.me:get_action_holder());
+    var _ActionHolder&? aholder_ = _PTR2REF(server.me.get_action_holder());
     var _Vector_ActionName&? actions = _new_Vector_ActionName(aholder_.get_available_actions());
 
     // Sort the action so that they always have the same order in the panel
@@ -121,7 +121,7 @@ do
 
     par do
         every gc in draw do        
-            var _ActionHolder&? aholder = _PTR2REF(server.me:get_action_holder());
+            var _ActionHolder&? aholder = _PTR2REF(server.me.get_action_holder());
 
             loop i in buttons.size() do
                 var Vector3f pos;

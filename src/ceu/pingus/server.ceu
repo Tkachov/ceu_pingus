@@ -41,19 +41,18 @@ class Server with
 do
     var GoalManager goal_manager with
         this.server = outer;
-    end;
-    var _Server&? server = _PTR2REF((_Server*)me);    
+    end;    
 
     var World world with
-        this.pingus_level = _PTR2REF(&me:plf);
+        this.pingus_level = _PTR2REF(&me.plf);
         global:world = &this;
     end;
 
     emit world.e_CREATE;
 
     function (_ServerEvent e) => void record do
-        if server.demostream.get() then
-            e.write(_deref(server.demostream));
+        if me.demostream.get() then
+            e.write(_deref(me.demostream));
         end
     end
 
@@ -66,7 +65,7 @@ do
     end
 
     function (void) => _PingusLevel get_plf do
-        return server.plf;
+        return me.plf;
     end
 
     par/or do
@@ -96,12 +95,12 @@ do
                 )
             );
 
-            if server.action_holder.pop_action(_to_AN(action)) then
+            if me.action_holder.pop_action(_to_AN(action)) then
                 var _SetActionPackage package;
                 package.action = action;            
                 emit pingu:request_set_action => &package;
                 if not package.result then 
-                    server.action_holder.push_action(_to_AN(action));
+                    me.action_holder.push_action(_to_AN(action));
                 end
             end
         end
@@ -142,12 +141,12 @@ do
         await e_DELETE;
 
         //original FIXME: Any better place to put this? 
-        if server.demostream.get() then
+        if me.demostream.get() then
             //(*demostream) << "(end (time " << get_time() << "))" << std::endl;  
-            _stream_print(server.demostream, "(end (time ");
-            _stream_print(server.demostream, call/rec get_time());
-            _stream_print(server.demostream, "))");
-            _stream_print(server.demostream, _std__endl);
+            _stream_print(me.demostream, "(end (time ");
+            _stream_print(me.demostream, call/rec get_time());
+            _stream_print(me.demostream, "))");
+            _stream_print(me.demostream, _std__endl);
         end
 
         emit world.e_DELETE;

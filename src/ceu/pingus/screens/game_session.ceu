@@ -82,7 +82,7 @@ class GameSession with
     interface Screen;
     interface IGameSession;
 do
-    var _GameSession&? game_session = _PTR2REF((_GameSession*)&me);
+    var _GameSession&? game_session = (_GameSession*)&me;
     var GUIManager gui_manager with
         this.me = _new_GUI__RectComponent(_Rect(0, 0, _Display__get_width(), _Display__get_height()));
         this.drawing_context = _new_DrawingContext(_Rect(0, 0, _Display__get_width(), _Display__get_height()), false);
@@ -94,11 +94,11 @@ do
 
     var Server server with
         this.me = _new_Server(game_session.plf);
-        this.me:demostream = _get_demostream(this.me:plf);
+        this.me.demostream = _get_demostream(this.me.plf);
     end;
 
     var ButtonPanel button_panel with
-        this.me = _PTR2REF(_new_RectComponent(_Rect()));
+        this.me = _new_RectComponent(_Rect());
         this.me.ceu = &this;
         this.server = server;
     end;
@@ -128,7 +128,7 @@ do
                                 )
                             );
         
-        this.me = _PTR2REF(_new_RectComponent(_deref(rect)));
+        this.me = _new_RectComponent(_deref(rect));
         this.me.ceu = &this;
         this.scene_context = _new_SceneContext(_deref(rect));
         this.state = _new_GraphicContextState(rect.get_width(), rect.get_height());
@@ -139,26 +139,26 @@ do
     end;
 
     var SmallMap small_map with
-        this.rect = _PTR2REF(_new_RectComponent(_Rect(_Vector2i(5, game_session.size.height - 105), _Size(175, 100))));
+        this.rect = _new_RectComponent(_Rect(_Vector2i(5, game_session.size.height - 105), _Size(175, 100)));
         this.me = _PTR2REF(this.rect);
         this.me.ceu = &this;    
         this.playfield = playfield;
     end;
 
     var ArmageddonButton armageddon_button with
-        this.me = _PTR2REF(_new_RectComponent(_Rect(_Vector2i(_Display__get_width() - 40, _Display__get_height()-62), _Size(38, 60))));
+        this.me = _new_RectComponent(_Rect(_Vector2i(_Display__get_width() - 40, _Display__get_height()-62), _Size(38, 60)));
         this.me.ceu = &this;
         this.server = server;
     end;
 
     var ForwardButton forward_button with
-        this.me = _PTR2REF(_new_RectComponent(_Rect(_Vector2i(_Display__get_width() - 40*2, _Display__get_height()-62), _Size(38, 60))));
+        this.me = _new_RectComponent(_Rect(_Vector2i(_Display__get_width() - 40*2, _Display__get_height()-62), _Size(38, 60)));
         this.me.ceu = &this;
         this.session = outer;
     end;
 
     var PauseButton pause_button with
-        this.me = _PTR2REF(_new_RectComponent(_Rect(_Vector2i(_Display__get_width() - 40*3, _Display__get_height()-62), _Size(38, 60))));
+        this.me = _new_RectComponent(_Rect(_Vector2i(_Display__get_width() - 40*3, _Display__get_height()-62), _Size(38, 60)));
         this.me.ceu = &this;
         this.session = outer;
     end;

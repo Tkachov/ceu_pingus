@@ -11,8 +11,8 @@
 class SnowParticlesHolder with
     interface ISnowParticlesHolder;
 do
-    var _Vector_SnowParticle&? particles = _PTR2REF(_new_Vector_SnowParticle());
-    var _CollisionMask&? ground = _PTR2REF(_new_CollisionMask("particles/ground_snow"));
+    var _Vector_SnowParticle&? particles = _new_Vector_SnowParticle();
+    var _CollisionMask&? ground = _new_CollisionMask("particles/ground_snow");
     var Sprite snow1;
     var Sprite snow2;
     var Sprite snow3;

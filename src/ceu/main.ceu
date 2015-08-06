@@ -56,14 +56,6 @@ input _LevelMenu* NEW_LEVEL_MENU;
 input _Pathname* PUSH_FONT_TEST_SCREEN;
 input _ScreenManager* NEW_SCREEN_MANAGER;
 
-#define WITH_SCREEN(CClassName, ClassName, Event) with \
-    loop do \
-        var CClassName* p = await Event; \
-        spawn ClassName with \
-            this.me = _PTR2REF(p); \
-        end; \
-    end
-
 #define WITH_SCREEN_CEU(CClassName, ClassName, Event) with \
     loop do \
         var CClassName* p = await Event; \
@@ -77,23 +69,8 @@ var IWorld* world = null;
 
 par/or do
     await SDL_QUIT;
-with
-    loop do
-        var _DemoSession* new_demo_session = await NEW_DEMO_SESSION;
-        spawn DemoSession with
-            this.me = _PTR2REF(new_demo_session);
-            this.me.ceu = &this;
-        end;
-    end
-with
-    loop do
-        //`every` hangs the program
-        var _GameSession* new_game_session = await NEW_GAME_SESSION;        
-        spawn GameSession with
-            this.me = _PTR2REF(new_game_session);
-            this.me.ceu = &this;
-        end;
-    end
+WITH_SCREEN_CEU(_DemoSession, DemoSession, NEW_DEMO_SESSION)
+WITH_SCREEN_CEU(_GameSession, GameSession, NEW_GAME_SESSION)
 WITH_SCREEN_CEU(_StartScreen, StartScreen, NEW_START_SCREEN)
 WITH_SCREEN_CEU(_StoryScreen, StoryScreen, NEW_STORY_SCREEN)
 WITH_SCREEN_CEU(_ResultScreen, ResultScreen, NEW_RESULT_SCREEN)
@@ -109,7 +86,7 @@ with
         ScreenManager::instance()->push_screen(worldmap_screen);
         */
         var WorldmapScreen*? ws = spawn WorldmapScreen with
-            this.me = _PTR2REF(_new_GUIScreen());
+            this.me = _new_GUIScreen();
             this.me.ceu = &this;            
         end;
 
@@ -122,7 +99,7 @@ with
 with
     every push_option_menu do
         var OptionMenu*? os = spawn OptionMenu with
-            this.me = _PTR2REF(_new_OptionMenu());
+            this.me = _new_OptionMenu();
             this.me.ceu = &this;
         end;
         _ScreenManager__instance():push_screen(_make_std__shared_ptr_Screen(os:me));
@@ -130,7 +107,7 @@ with
 with
     every filename in PUSH_FONT_TEST_SCREEN do
         spawn FontTestScreen with
-            this.me = _PTR2REF(_new_GUIScreen());
+            this.me = _new_GUIScreen();
             this.fontfile = _PTR2REF(filename);
             _ScreenManager__instance():push_screen(_make_std__shared_ptr_Screen(this.me));
         end;
@@ -144,7 +121,7 @@ with
 with
     every new_sm in NEW_SCREEN_MANAGER do
         spawn ScreenManager with
-            this.me = _PTR2REF(new_sm);
+            this.screen_manager = _PTR2REF(new_sm);
         end;
     end
 with

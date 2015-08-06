@@ -27,7 +27,7 @@ class CheckBox with
     function (int x, int y) => void shift_pos;
     function (bool v) => void set_state;
 do
-    var _GUI_RectComponent&? rect = _PTR2REF((_GUI_RectComponent*)&me);
+    var _GUI_RectComponent&? rect = (_GUI_RectComponent*)&me;
     var bool state = false;
     var Sprite m_checkbox_marked;
     var Sprite m_checkbox;

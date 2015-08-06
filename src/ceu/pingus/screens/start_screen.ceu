@@ -227,7 +227,6 @@ end
 class StartScreen with
     interface IStartScreen;
 do
-    var _StartScreen&? start_screen = _PTR2REF((_StartScreen*)&me);
     var GUIManager gui_manager with
         this.me = _new_GUI__RectComponent(_Rect(0, 0, _Display__get_width(), _Display__get_height()));
         this.drawing_context = _new_DrawingContext(_Rect(0, 0, _Display__get_width(), _Display__get_height()), false);
@@ -260,7 +259,7 @@ do
     gui_manager.add(&abort_button.me);
 
     function (void) => void start_game do
-        _ScreenManager__instance():replace_screen(_std__make_shared_GameSession(start_screen.plf, true));
+        _ScreenManager__instance():replace_screen(_std__make_shared_GameSession(((_StartScreen*)&me):plf, true));
     end
 
     function (void) => void cancel_game do
@@ -268,7 +267,7 @@ do
     end
 
     function (void) => _PingusLevel* get_plf do
-        return &start_screen.plf;
+        return &((_StartScreen*)&me):plf;
     end
 
     par/or do
@@ -285,15 +284,15 @@ do
         end
     with
         every package in SCREEN_RESIZE do
-            if package:screen != &start_screen then
+            if package:screen != &me then
                 continue;
             end
 
-            call/rec abort_button.set_pos(start_screen.size.width/2 - 300, start_screen.size.height/2 + 200);
-            call/rec ok_button.set_pos(start_screen.size.width/2 + 245, start_screen.size.height/2 + 150);
+            call/rec abort_button.set_pos(me.size.width/2 - 300, me.size.height/2 + 200);
+            call/rec ok_button.set_pos(me.size.width/2 + 245, me.size.height/2 + 150);
         end
     with
-        var _StartScreen* e = await DELETE_START_SCREEN until (e == &start_screen);
+        var _StartScreen* e = await DELETE_START_SCREEN until (e == &me);
     end
 end
 
