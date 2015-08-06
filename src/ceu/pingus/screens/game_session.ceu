@@ -266,17 +266,21 @@ do
                     if not pause or single_step then
                         single_step = false;
 
-                        if fast_forward then
-                            _printf("fast_forward: %d\n", (int)_globals__fast_forward_time_scale);
+                        if fast_forward then                            
                             loop i in _globals__fast_forward_time_scale do
-                                //TODO: figure out why it doesn't work with Ceu-style update
-                                //UPD: it works now, but slows down EXTREMELY fast
-                                server.me:update();
-                                //emit server.e_UPDATE;
+                                _printf("<");
+                                async do
+                                    emit SERVER_UPDATE;
+                                end
+                                _printf(">");
                             end
+                            _printf("\n");
                         else
-                            //server.me:update();
-                            emit server.e_UPDATE;
+                            _printf("<");
+                            async do
+                                emit SERVER_UPDATE;
+                            end
+                            _printf(">\n");
                         end
                     end
 

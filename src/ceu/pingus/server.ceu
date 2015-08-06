@@ -32,14 +32,11 @@ end
 
 native @pure _stream_print();
 
-input _Server* SERVER_UPDATE;
-
 class Server with
     interface IServer;    
     function @rec (void) => bool is_finished;    
     event _ServerEvent* e_EVENT_SEND;    
     event void e_FINISH_EVENT;
-    event void e_UPDATE;
     event void e_DELETE;    
 do
     var GoalManager goal_manager with
@@ -140,23 +137,6 @@ do
                 )
             );
             goal_manager.set_abort_goal();
-        end
-    with
-        every e_UPDATE do
-            ////_printf("Ceu e_UPDATE\n");
-            emit world.e_UPDATE;
-            emit goal_manager.e_UPDATE;
-        end
-    with
-        //TODO: remove (used because `update()` is also called from C++ DemoSession which is not ported yet)
-        every s in SERVER_UPDATE do
-            ////_printf("C++ update()\n");
-            if s != &server then
-                continue;
-            end
-
-            emit world.e_UPDATE;
-            emit goal_manager.e_UPDATE;
         end
     with
         await e_DELETE;

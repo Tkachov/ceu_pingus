@@ -21,7 +21,6 @@ end
 
 class GoalManager with
     var IServer& server;
-    event void e_UPDATE;
 
     function (void) => void set_abort_goal;
     function @rec (void) => bool is_finished;
@@ -53,7 +52,7 @@ do
         end
     end
 
-    every e_UPDATE do
+    every SERVER_UPDATE do
         if exit_time == 0 then
             var IPinguHolder* pingus = _PTR2REF(global:world:get_pingus());
 

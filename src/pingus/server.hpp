@@ -39,8 +39,6 @@ public:
   Server(const PingusLevel& arg_plf);
   ~Server() {};
 
-  void update();
-
   ActionHolder* get_action_holder();  
 
 private:
