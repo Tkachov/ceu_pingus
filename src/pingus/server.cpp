@@ -76,11 +76,6 @@ Server::Server(const PingusLevel& arg_plf) :
   demostream()
 {}
 
-void Server::update() {
-  Server* self = this;
-  ceu_out_go(&CEUapp, CEU_IN_SERVER_UPDATE, &self);
-}
-
 ActionHolder*
 Server::get_action_holder ()
 {

@@ -34,6 +34,7 @@ native/pre do
 
     ##include "engine/display/graphic_context_state.hpp"
     ##include "engine/gui/rect_component.hpp"
+    ##include "util/ceu_utils.h"
     ##include "util/log.hpp"
 
     ##define new_GUI_Component() new GUI::Component()
@@ -267,16 +268,11 @@ do
                         single_step = false;
 
                         if fast_forward then
-                            _printf("fast_forward: %d\n", (int)_globals__fast_forward_time_scale);
                             loop i in _globals__fast_forward_time_scale do
-                                //TODO: figure out why it doesn't work with Ceu-style update
-                                //UPD: it works now, but slows down EXTREMELY fast
-                                server.me:update();
-                                //emit server.e_UPDATE;
+                                { ceu_utils::async_emit(CEU_IN_SERVER_UPDATE); };
                             end
                         else
-                            //server.me:update();
-                            emit server.e_UPDATE;
+                            { ceu_utils::async_emit(CEU_IN_SERVER_UPDATE); };
                         end
                     end
 

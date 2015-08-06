@@ -19,6 +19,7 @@ native/pre do
     ##include "engine/screen/screen_manager.hpp"
     ##include "pingus/pingus_demo.hpp"
     ##include "pingus/server.hpp"
+    ##include "util/ceu_utils.h"
     ##include "util/log.hpp"
     ##define new_GUI_Component() new GUI::Component()
     ##define new_RectComponent(r) new GUI::RectComponent(r)
@@ -112,11 +113,11 @@ do
                     if demo_session.fast_forward then
                         loop i in 4 do
                             emit update_demo;
-                            demo_session.server:update();                            
+                            { ceu_utils::async_emit(CEU_IN_SERVER_UPDATE); };
                         end
                     else
                         emit update_demo;
-                        emit server.e_UPDATE;                        
+                        { ceu_utils::async_emit(CEU_IN_SERVER_UPDATE); };
                     end
                 end
             end

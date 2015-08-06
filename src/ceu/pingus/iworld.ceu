@@ -65,7 +65,6 @@ interface IWorld with
     event void e_CREATE;
     event _SceneContext* e_DRAW;
     event ISmallMap* e_DRAW_SMALLMAP;
-    event void e_UPDATE;
     event void e_ARMAGEDDON;
     event void e_DELETE;
 

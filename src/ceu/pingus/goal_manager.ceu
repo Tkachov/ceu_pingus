@@ -53,7 +53,7 @@ do
         end
     end
 
-    every e_UPDATE do
+    every SERVER_UPDATE do
         if exit_time == 0 then
             var IPinguHolder* pingus = _PTR2REF(global:world:get_pingus());
 

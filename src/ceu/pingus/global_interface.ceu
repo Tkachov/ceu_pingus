@@ -14,4 +14,6 @@ interface Global with
     event void push_worldmap_tutorial_screen;
 end
 
+input void SERVER_UPDATE;
+
 #endif
