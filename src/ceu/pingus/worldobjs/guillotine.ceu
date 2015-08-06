@@ -32,7 +32,8 @@ do
                 sprite_idle.reload_by_name("traps/guillotineidle");
                 sprite_idle.set_play_loop(true);
                 
-                every global:world:update do
+                loop do
+                    await global:world:update;
                     var bool stop = false;
 
                     loop pingu in global:world:get_pingus():all_pingus do

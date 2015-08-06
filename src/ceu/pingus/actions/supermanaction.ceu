@@ -36,7 +36,8 @@ do
     end;
     sprite.reload_by_name(_scc3("pingus/player", pingu.get_owner_str(), "/superman").c_str());    
     
-    every global:world:update do
+    loop do
+        await global:world:update;
         pingu.set_posf(pingu.get_x() + 40.0*0.025, pingu.get_y() - 200.0*0.025);
 
         if pingu.get_y() < -32 then

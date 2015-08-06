@@ -19,9 +19,7 @@ native/pre do
     ##include "pingus/globals.hpp"
     ##include "pingus/server.hpp"
     ##include "util/log.hpp"
-    ##include "util/string_util.hpp"
-    ##define Fonts__pingus_small_fixnum &Fonts::pingus_small_fixnum
-    ##define globals__developer_mode globals::developer_mode
+    ##include "util/string_util.hpp"    
     ##define GameTime__ticks_to_realtime_string(time_value) GameTime::ticks_to_realtime_string(time_value)
 end
 
@@ -36,17 +34,15 @@ do
         return false;
     end
 
-    var _Font* font = _Fonts__pingus_small_fixnum;
-
     every gc in draw do
-        if server.get_plf().get_time() != -1 or _globals__developer_mode then
+        if server.get_plf().get_time() != -1 or {globals::developer_mode} then
             var int time_value = call/rec server.get_time();
             
-            if server.get_plf().get_time() != -1 and not _globals__developer_mode then
+            if server.get_plf().get_time() != -1 and not {globals::developer_mode} then
                 time_value = time_value - server.get_plf().get_time();
             end
 
-            gc:print_right(_deref(font), _Vector2i(_Display__get_width() - 30, 3), _GameTime__ticks_to_realtime_string(time_value), 150);
+            gc:print_right({Fonts::pingus_small_fixnum}, _Vector2i(_Display__get_width() - 30, 3), _GameTime__ticks_to_realtime_string(time_value), 150);
         end
     end
 end
