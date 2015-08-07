@@ -178,7 +178,7 @@ do
 
         edge_path.push_back(((Dot*)path_graph.path_graph.graph.resolve_node(source_node).data):get_pos());
         // Why do we need to reverse this?!
-        edge_path.reverse_insert(_PTR2REF(*partial_path));
+        edge_path.reverse_insert(_deref(partial_path));
         edge_path.push_back(((Dot*)path_graph.path_graph.graph.resolve_node(target_node).data):get_pos());
     end
 

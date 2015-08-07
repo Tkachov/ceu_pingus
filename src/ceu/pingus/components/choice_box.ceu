@@ -59,7 +59,7 @@ do
     par do
         every gc in draw do
             if _globals__developer_mode then
-                gc:draw_rect(_PTR2REF(rect.rect), _Color(0, 255, 255));
+                gc:draw_rect(rect.rect, _Color(0, 255, 255)) finalize with end;
             end
 
             if not choices.empty() then  

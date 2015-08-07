@@ -70,12 +70,14 @@ native/pre do
     ##define std__vector_Drawable std::vector<void*>
     ##define new_Vector_Drawable new std::vector<void*>
     ##define new_GraphicContextState new GraphicContextState
+    ##define vector_push_back(v, e) v->push_back(e)
+    ##define graph_resolve_node(graph, node) graph.resolve_node(node)
 end
 
 native @pure _new_GUI_Component(), _ScreenManager__instance(), _StatManager__instance(), _std__make_shared_GameScreen(), _std__make_shared_StoryScreen(),
              _Display__get_width(), _Display__get_height(), _new_Pingus(),
              _SU2str(), _StringFormat__break_line(), _new_SceneContextE(), _StatManager__instance(),
-             _new_PathGraph(), _addr(), _new_GraphicContextState(), _new_Vector_Drawable();
+             _new_PathGraph(), _addr(), _new_GraphicContextState(), _new_Vector_Drawable(), _vector_push_back(), _graph_resolve_node();
 
 class Worldmap with
     interface IWorldmap;
@@ -114,7 +116,7 @@ do
         ////////////////////////////
 
         if drawable then            
-            drawables.push_back(_PTR2REF(drawable));
+            _vector_push_back(drawables, drawable);
         else
             _log_info("Worldmap::parse_objects: Parse Error");
         end
@@ -203,9 +205,9 @@ do
                     loop j in node:next.size() do                        
                         var _WorldmapNS__Edge_WorldmapNS__Path* edge = _addr(path_graph.path_graph.graph.resolve_edge(node:next.at(j)));
 
-                        //original FIXME: This should be identical to node.data->unlock(), but not sure
-                        ((Dot*)path_graph.path_graph.graph.resolve_node(_PTR2REF(edge:source)).data):unlock();
-                        ((Dot*)path_graph.path_graph.graph.resolve_node(_PTR2REF(edge:destination)).data):unlock();
+                        //original FIXME: This should be identical to node.data->unlock(), but not sure                        
+                        ((Dot*)_graph_resolve_node(path_graph.path_graph.graph, edge:source).data):unlock();
+                        ((Dot*)_graph_resolve_node(path_graph.path_graph.graph, edge:destination).data):unlock();
                     end
                 end
             end

@@ -70,13 +70,18 @@ native/pre do
 
     ##define new_std__vector_FileReader(package) new std::vector<FileReader>(package->reader->read_section("objects").get_sections())
     ##define new_PrefabFile(x) new PrefabFile(PrefabFile::from_resource(x))
+
+    ##define reader_read_int(rdr, key, value) rdr->read_int(key, value)
+    ##define reader_read_float(rdr, key, value) rdr->read_float(key, value)
+    ##define reader_read_bool(rdr, key, value) rdr->read_bool(key, value)
 end
 
 native @pure _new_CreationPackage(), _vecget(), _vecget_addr(), _addr(), _new_OverrideFileReader(), _new_FileReader(),
              _new_std__vector_FileReader(), _new_PrefabFile(), _PrefabFile__from_resource();
 
 native @pure _reader_read_Groundtype(), _Resource__load_surface(), _opeq(), _new_Container(), _new_Color(),
-             _read_position(), _read_position2(), _log_error(), _log_warn();
+             _read_position(), _read_position2(), _log_error(), _log_warn(),
+             _reader_read_int(), _reader_read_float(), _reader_read_bool();
 
 input IWorldObj* WORLD_DRAW_OBJECT;
 input IWorldObj* WORLD_DRAW_SMALLMAP_OBJECT;
@@ -454,11 +459,11 @@ do
                 package:result.push_back(&this) finalize with end;
 
                 _read_position(package:reader, this.pos);
-                if not package:reader:read_int("repeat", _PTR2REF(this.width)) then
+                if not _reader_read_int(package:reader, "repeat", this.width) then
                     _log_warn("old 'width' tag used");
-                    package:reader:read_int("width", _PTR2REF(this.width));
+                    _reader_read_int(package:reader, "width", this.width);
                 end
-                package:reader:read_float("speed", _PTR2REF(this.speed));
+                _reader_read_float(package:reader, "speed", this.speed);
             end;
         end
     with
@@ -470,9 +475,9 @@ do
                 this.release_rate = 150;
                 this.owner_id = 0;
 
-                package:reader:read_int("owner-id", _PTR2REF(this.owner_id));
+                _reader_read_int(package:reader, "owner-id", this.owner_id);
                 _read_position(package:reader, this.pos);
-                package:reader:read_int("release-rate",  _PTR2REF(this.release_rate));
+                _reader_read_int(package:reader, "release-rate", this.release_rate);
 
                 // Set default owner ID to 0
                 if this.owner_id<0 or this.owner_id>3 then
@@ -524,7 +529,7 @@ do
                 this.desc = _new_ResDescriptor();
                 package:reader:read_desc("surface", _deref(this.desc));
                 this.gptype = _GT_GROUND;
-                _reader_read_Groundtype(package:reader, "type", _PTR2REF(this.gptype));
+                _reader_read_Groundtype(package:reader, "type", this.gptype);
             end;
         end
     with
@@ -550,7 +555,7 @@ do
 
                 _read_position(package:reader, this.pos);
                 package:reader:read_desc  ("surface",  _deref(desc));
-                package:reader:read_float ("parallax", _PTR2REF(this.para));
+                _reader_read_float(package:reader, "parallax", this.para);
 
                 this.sprite = _new_SpriteA(_deref(desc));
 
@@ -563,9 +568,9 @@ do
                 package:result.push_back(&this) finalize with end;
 
                 _read_position(package:reader, this.pos);
-                if not package:reader:read_int("repeat", _PTR2REF(this.width)) then
+                if not _reader_read_int(package:reader, "repeat", this.width) then
                     _log_warn("old 'width' tag used");
-                    package:reader:read_int("width", _PTR2REF(this.width));
+                    _reader_read_int(package:reader, "width", this.width);
                 end
             end;
         end
@@ -587,7 +592,7 @@ do
 
                 _read_position(package:reader, this.pos);
                 package:reader:read_desc  ("surface",  _deref(desc));
-                package:reader:read_int   ("repeat",   _PTR2REF(this.width));
+                _reader_read_int(package:reader, "repeat", this.width);
 
                 this.sprite = _new_SpriteA(_deref(desc));
 
@@ -613,7 +618,7 @@ do
                 package:result.push_back(&this) finalize with end;
 
                 this.intensity = 1;
-                package:reader:read_float("intensity", _PTR2REF(this.intensity));
+                _reader_read_float(package:reader, "intensity", this.intensity);
             end;
         end
     with
@@ -643,9 +648,9 @@ do
                 this.middle_stars_count = 50;
                 this.large_stars_count = 25;
 
-                package:reader:read_int("small-stars", _PTR2REF(this.small_stars_count));
-                package:reader:read_int("middle-stars", _PTR2REF(this.middle_stars_count));
-                package:reader:read_int("large-stars", _PTR2REF(this.large_stars_count));
+                _reader_read_int(package:reader, "small-stars", this.small_stars_count);
+                _reader_read_int(package:reader, "middle-stars", this.middle_stars_count);
+                _reader_read_int(package:reader, "large-stars", this.large_stars_count);
             end;
         end
     with
@@ -679,16 +684,16 @@ do
                     package:reader:read_colorf("color", _deref(this.color));
                 end
 
-                package:reader:read_float("para-x", _PTR2REF(this.para_x));
-                package:reader:read_float("para-y", _PTR2REF(this.para_y));
+                _reader_read_float(package:reader, "para-x", this.para_x);
+                _reader_read_float(package:reader, "para-y", this.para_y);
 
-                package:reader:read_float("scroll-x", _PTR2REF(this.scroll_x));
-                package:reader:read_float("scroll-y", _PTR2REF(this.scroll_y));
+                _reader_read_float(package:reader, "scroll-x", this.scroll_x);
+                _reader_read_float(package:reader, "scroll-y", this.scroll_y);
 
-                package:reader:read_bool("stretch-x", _PTR2REF(this.stretch_x));
-                package:reader:read_bool("stretch-y", _PTR2REF(this.stretch_y));
+                _reader_read_bool(package:reader, "stretch-x", this.stretch_x);
+                _reader_read_bool(package:reader, "stretch-y", this.stretch_y);
 
-                package:reader:read_bool("keep-aspect", _PTR2REF(this.keep_aspect));
+                _reader_read_bool(package:reader, "keep-aspect", this.keep_aspect);
 
                 if not this.stretch_x and not this.stretch_y and this.color.a == 0 then
                     //orignal FIXME: would be nice to allow surface manipulation with
@@ -743,7 +748,7 @@ do
 
                 _read_position(package:reader, this.pos);
 
-                package:reader:read_int("height", _PTR2REF(this.door_height));
+                _reader_read_int(package:reader, "height", this.door_height);
                 this.current_door_height = this.door_height;
             end;
         end

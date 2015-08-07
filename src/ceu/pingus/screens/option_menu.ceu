@@ -390,13 +390,13 @@ do
         end
     with
         every v in renderer_box.changed do
-            _config_manager.set_renderer(_framebuffer_type_from_string(_PTR2REF(v)));
+            _config_manager.set_renderer(_framebuffer_type_from_string(v) finalize with end);
         end
     with
         every v in language_box.changed do
-            if option_menu.m_language_map.count(_PTR2REF(v)) then
-                option_menu.m_language = _PTR2REF(option_menu.m_language_map.at(_PTR2REF(v)));
-                _config_manager.set_language(_PTR2REF(option_menu.m_language));
+            if option_menu.m_language_map.count(v) finalize with end then
+                option_menu.m_language = _PTR2REF(option_menu.m_language_map.at(v) finalize with end);
+                _config_manager.set_language(option_menu.m_language) finalize with end;
             else  
                 _log_error("unknown language: %1%", v);        
             end

@@ -155,13 +155,13 @@ do
     with
         every gc in draw_hover do
             if accessible() then  
-                gc:print_center(_Fonts__pingus_small, _Vector2i(pos.x, pos.y - 44), __(_PTR2REF(get_plf():get_levelname())), 10000);
+                gc:print_center(_Fonts__pingus_small, _Vector2i(pos.x, pos.y - 44), __(get_plf():get_levelname()), 10000);
             else
                 gc:print_center(_Fonts__pingus_small, _Vector2i(pos.x, pos.y - 44), __("???"), 10000);
             end
 
             if _globals__developer_mode then  
-                gc:print_center(_Fonts__pingus_small, _Vector2i(pos.x, pos.y - 70), _PTR2REF(get_plf():get_resname()), 10000);
+                gc:print_center(_Fonts__pingus_small, _Vector2i(pos.x, pos.y - 70), get_plf():get_resname(), 10000);
             end
         end
     with

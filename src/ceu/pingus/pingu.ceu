@@ -252,7 +252,7 @@ do
                 if package:action == current_action then
                     _printf("Pingu: Already have action\n");
                     _log_debug("Pingu: Already have action");
-                else/if ceu_action:change_allowed(_PTR2REF(package:action)) then
+                else/if ceu_action:change_allowed((int)package:action) then
                     _printf("setting instant action\n");
                     _log_debug("setting instant action");
                     result = true;
@@ -268,7 +268,7 @@ do
                     _log_debug("Not using wall action, we have already");
                 else
                     _log_debug("Setting wall action");
-                    wall_action = _PTR2REF(package:action);
+                    wall_action = (int)package:action;
                     wall_action_set = true;
                     result = true;
                 end
@@ -277,7 +277,7 @@ do
                     _log_debug("Not using fall action, we have already");
                 else
                     _log_debug("Setting fall action");
-                    fall_action = _PTR2REF(package:action);
+                    fall_action = (int)package:action;
                     fall_action_set = true;
                     result = true;
                 end

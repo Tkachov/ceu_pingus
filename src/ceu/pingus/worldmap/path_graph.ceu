@@ -129,16 +129,16 @@ do
 
         if dot then
             // add the dot to the pathfinding
-            var int id = path_graph.graph.add_node(_PTR2REF(dot));
+            var int id = path_graph.graph.add_node(dot) finalize with end;
 
             //log_info("Adding to lookup table: " << dot->get_name());
             path_graph.node_lookup[_deref(dot:name)] = id;
 
             // add the dot to the list of drawables
-            worldmap.add_drawable(_PTR2REF(dot));            
+            worldmap.add_drawable(dot);            
 
             //original FIXME: should be use this for freeing the stuff?
-            path_graph.dots.push_back(_PTR2REF(dot));
+            path_graph.dots.push_back(dot) finalize with end;
         else
             _log_info("PathGraph: Couldn't create node");
         end
@@ -192,16 +192,16 @@ do
             end
 
             //original FIXME: No error checking,
-            var int id1 = path_graph.graph.add_edge(_PTR2REF(path), //original FIXME: Memory leak!
+            var int id1 = path_graph.graph.add_edge(path, //original FIXME: Memory leak!
                                       path_graph.lookup_node(_deref(destination)), path_graph.lookup_node(_deref(source)),
-                                      cost);
+                                      cost) finalize with end;
 
             var _WorldmapNS__Path* path2 = _new_Path();
             path2:reverse_insert(*path) finalize with end;
             //EdgeId id2 =
-            path_graph.graph.add_edge(_PTR2REF(path2), //original FIXME: Memory leak!
+            path_graph.graph.add_edge(path2, //original FIXME: Memory leak!
                          path_graph.lookup_node(_deref(source)), path_graph.lookup_node(_deref(destination)),
-                         cost);
+                         cost) finalize with end;
 
             //original FIXME: edge lookup is flawed, since we have different edges in both directions
             path_graph.edge_lookup[_deref(name)] = id1;
