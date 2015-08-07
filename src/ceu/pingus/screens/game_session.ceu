@@ -267,11 +267,15 @@ do
                         single_step = false;
 
                         if fast_forward then
-                            loop i in _globals__fast_forward_time_scale do
-                                { ceu_utils::async_emit(CEU_IN_SERVER_UPDATE); };
+                            loop i in _globals__fast_forward_time_scale do                                
+                                async do
+                                    emit SERVER_UPDATE;
+                                end
                             end
                         else
-                            { ceu_utils::async_emit(CEU_IN_SERVER_UPDATE); };
+                            async do
+                                emit SERVER_UPDATE;
+                            end
                         end
                     end
 

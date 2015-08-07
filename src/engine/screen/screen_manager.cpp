@@ -207,6 +207,8 @@ ScreenManager::display()
       ceu_sys_go(&CEUapp, CEU_IN__WCLOCK, &dt_us);
       ceu_sys_go(&CEUapp, CEU_IN_SDL_DT, &dt);
     }
+
+    ceu_sys_go(&CEUapp, CEU_IN__ASYNC, 0);
       
     if (record_input)
     {
@@ -225,7 +227,7 @@ ScreenManager::display()
     }
     else
     {  
-      update(previous_frame_time, events);
+      update(previous_frame_time, events);      
       
       // cap the framerate at the desired value
       // figure out how long this frame took

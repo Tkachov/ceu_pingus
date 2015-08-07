@@ -113,11 +113,15 @@ do
                     if demo_session.fast_forward then
                         loop i in 4 do
                             emit update_demo;
-                            { ceu_utils::async_emit(CEU_IN_SERVER_UPDATE); };
+                            async do
+                                emit SERVER_UPDATE;
+                            end
                         end
                     else
                         emit update_demo;
-                        { ceu_utils::async_emit(CEU_IN_SERVER_UPDATE); };
+                        async do
+                            emit SERVER_UPDATE;
+                        end
                     end
                 end
             end
