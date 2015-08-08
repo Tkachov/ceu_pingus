@@ -70,7 +70,7 @@ do
     par do
         every gc in screen.call_draw do
             var _DrawingContext&? ref = _addr(_deref(gc));
-            emit screen.draw_background => &ref;            
+            emit screen.draw_background => &ref;
             if gui_manager then
                 emit gui_manager:draw => &ref;
             end
@@ -78,7 +78,7 @@ do
         end
     with
         every e in screen.call_update_event do
-            var _const_Input__Event&? ref = _addr(_deref(e));
+            var _const_Input__Event&? ref = _deref(_addr(e));
             // Dispatch the recieved input events
             if gui_manager then
                 emit gui_manager:update_event => &ref;

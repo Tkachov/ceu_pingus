@@ -52,6 +52,9 @@ EditorScreen::EditorScreen() :
   m_level_new_msgbox(),
   show_help(false)
 {
+  ceu = 0;
+  printf("EditorScreen [%d], ceu = %d\n", this, ceu);
+
   // Create the viewport for the images and data
   viewport = new Viewport(this, Rect(0, 38,
                                      size.width - 244, 
@@ -71,14 +74,14 @@ EditorScreen::EditorScreen() :
 
   action_properties = gui_manager->create<ActionProperties>(this, Rect());
   action_properties->hide();
-
+/*
   level_properties = gui_manager->create<LevelProperties>(this, Rect());
   level_properties->hide();
   level_properties->set_level(plf.get());
+  */
   action_properties->set_level(plf.get());
-
+/*
   object_selector = gui_manager->create<ObjectSelector>(this, Rect());
-
   file_load_dialog = gui_manager->create<FileDialog>(this, Rect(Vector2i(50, 50), 
                                                                 Size(size.width  - 100, 
                                                                      size.height - 100)), 
@@ -92,7 +95,7 @@ EditorScreen::EditorScreen() :
                                                      FileDialog::SAVE);
   file_save_dialog->set_directory(".");
   file_save_dialog->hide();
-
+*/
   {
     Size msg_size(600, 160);
 
@@ -110,7 +113,9 @@ EditorScreen::EditorScreen() :
   viewport->selection_changed.connect(std::bind(&ObjectProperties::set_objects, object_properties, std::placeholders::_1));
   viewport->refresh();
 
+  printf("I repeat, EditorScreen\n");
   update_layout();
+  printf("EditorScreen over\n");
 }
 
 // Destructor
@@ -206,6 +211,7 @@ EditorScreen::load(const Pathname& file)
 void
 EditorScreen::draw(DrawingContext& gc)
 {
+  printf("EditorScreen draw\n");
   // Black out screen
   //gc.fill_screen(Color(255,0,255)); // FIXME: Could be removed for added speed
   gui_manager->draw(gc);
@@ -513,6 +519,7 @@ EditorScreen::update_layout()
 
   minimap->set_rect(Rect(Vector2i(size_.width-244, size_.height-183), Size(244, 183)));
 
+  /*
   if (minimap->is_visible())
     object_selector->set_rect(Rect(size_.width-244, 38, size_.width, size_.height - 183));
   else
@@ -528,17 +535,20 @@ EditorScreen::update_layout()
     viewport->set_rect(Rect(0, 38, size_.width, size_.height));
     level_properties->set_rect(Rect(Vector2i(0,38), Size(size_.width, 258))); 
   }
+  */
 
   action_properties->set_rect(Rect(Vector2i(0, 38), Size(150, 240)));
-
+  /*
   object_properties->set_rect(Rect(Vector2i(0, size_.height - object_properties->get_rect().get_height()), 
                                    Size(object_properties->get_rect().get_width(),
                                         object_properties->get_rect().get_height())));
+  
   
   file_load_dialog->set_rect(Rect(Vector2i(50, 50), Size(size_.width  - 100, 
                                                          size_.height - 100)));
   file_save_dialog->set_rect(Rect(Vector2i(50, 50), Size(size_.width  - 100, 
                                                          size_.height - 100)));
+  */
 }
 
 void

@@ -40,7 +40,7 @@ do
         pingu = p;
 
         if pingu then
-            _string_set(action_str, _PTR2REF(pingu:ceu_action:get_name()));
+            _string_set(action_str, pingu:ceu_action:get_name());
 
             if pingu:has_wall_action() or pingu:has_fall_action() then
                 _string_add(action_str, "[");

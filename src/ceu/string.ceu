@@ -52,7 +52,7 @@ do
     end
 
     function (void) => _const_char_string get do
-        return _PTR2REF(ss.c_str());
+        return ss.c_str();
     end
 
     await FOREVER;
