@@ -1,3 +1,13 @@
+# Week 12 (10/08--16/08)
+
+## What I was supposed to do the past week?
+
+Fix editor screen and demo/game difference bugs.
+
+## What I actually did the past week?
+
+## What I'll do this week?
+
 # Week 11 (3/08--9/08)
 
 ## What I was supposed to do the past week?
@@ -10,7 +20,16 @@ Work on removing warnings and unsafe code.
 
 ## What I actually did the past week?
 
+* added `GUIManager`/`Screen` support (remove proxies & external events (from GUI::Component, GUI::Screen));
+* joined global internal events, removed some "chains" (`global:world:update`, `ScreenManager` emits `global:update`);
+* some small fixes;
+* removed some warnings (`#define`, `every`, etc);
+* analyzed `PTR2REF` use and fixed some cases;
+* found out that EditorScreen crashes.
+
 ## What I'll do this week?
+
+Fix editor screen and demo/game difference bugs.
 
 # Week 10 (27/07--2/08)
 
