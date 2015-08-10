@@ -144,7 +144,6 @@ ObjectSelector::ObjectSelector(EditorScreen* editor_, const Rect& rect_) :
   worldobj_set(),
   prefab_set()
 {
-  printf("\tcreating\n");
   object_list = create<ObjectSelectorList>(editor, this, 
                                            Rect(2, 2 + 60 + 2, rect.get_width() - 2, rect.get_height() - 2));
 
@@ -163,7 +162,6 @@ ObjectSelector::ObjectSelector(EditorScreen* editor_, const Rect& rect_) :
   worldobj_set   = create_worldobj();
   prefab_set     = create_prefab();
 
-  printf("\tadding buttons\n");
   add_button("core/editor/obj_entrance",   _("Entrance"), entrance_set.get());
   add_button("core/editor/obj_gp_ground",  _("Groundpiece (ground)"), gp_ground_set.get());
   add_button("core/editor/obj_gp_solid",   _("Groundpiece (solid)"), gp_solid_set.get());
@@ -179,7 +177,6 @@ ObjectSelector::ObjectSelector(EditorScreen* editor_, const Rect& rect_) :
   add_button("core/editor/obj_weather",  _("Weather"), weather_set.get());
   add_button("core/editor/obj_worldobj", _("Special Object"), worldobj_set.get());
   add_button("core/editor/obj_prefab",   _("Prefab Object"), prefab_set.get());
-  printf("\tdone\n");
 }
 
 ObjectSelector::~ObjectSelector()

@@ -41,13 +41,11 @@ FileDialog::FileDialog(EditorScreen* editor_, const Rect& rect_, Mode mode_) :
   pathname_inputbox(),
   filename_inputbox()
 {
-  printf("\tcreating FileList\n");
   file_list = create<FileList>(Rect(4, 30 + 30 + 30,
                                     rect.get_width()-4 - 30, rect.get_height() - 4 - 35));
 
   file_list->on_click.connect(std::bind(&FileDialog::load_file, this, std::placeholders::_1));
 
-  printf("\tcreating up/down buttons\n");
   Rect file_rect = file_list->get_rect();
   up_button = create<Button>(Rect(file_rect.right + 2, file_rect.top,
                               rect.get_width()-4, file_rect.top + file_rect.get_height()/2 - 1),
@@ -56,20 +54,17 @@ FileDialog::FileDialog(EditorScreen* editor_, const Rect& rect_, Mode mode_) :
                                 rect.get_width()-4, file_rect.bottom),
                            "|\n\\/");
 
-  printf("\tcreating datadir_button & userdir_button\n");
   datadir_button = create<Button>(Rect(Vector2i(4, rect.get_height() - 4 - 30),
                                        Size(100, 30)), _("Datadir"));
   userdir_button = create<Button>(Rect(Vector2i(4 + 110, rect.get_height() - 4 - 30),
                                        Size(100, 30)), _("Userdir"));
   
-  printf("\tcreating open & cancel buttons\n");
   open_button = create<Button>(Rect(Vector2i(rect.get_width() - 104, rect.get_height() - 4 - 30),
                                     Size(100, 30)), mode == LOAD ? _("Open") : _("Save"));
   
   cancel_button = create<Button>(Rect(Vector2i(rect.get_width() - 104 - 104, rect.get_height() - 4 - 30),
                                       Size(100, 30)), _("Cancel"));
   
-  printf("\tbinding\n");
   up_button->on_click.connect(std::bind(&FileDialog::on_up, this));
   down_button->on_click.connect(std::bind(&FileDialog::on_down, this));
 
@@ -87,7 +82,6 @@ FileDialog::FileDialog(EditorScreen* editor_, const Rect& rect_, Mode mode_) :
   
   filename_inputbox->on_enter.connect(std::bind(&FileDialog::on_filename_enter, this));
   pathname_inputbox->on_enter.connect(std::bind(&FileDialog::on_pathname_change, this));
-  printf("\tdone\n");
 }
 
 FileDialog::~FileDialog()
