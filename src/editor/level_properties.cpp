@@ -50,6 +50,7 @@ LevelProperties::LevelProperties(EditorScreen* editor_, const Rect& rect_) :
   height(),
   music()
 {
+  printf("\tcreating labels\n");
   create<Label>(Rect(Vector2i( 10,  10), Size( 80, 20)), _("Author:"));
   author = create<Inputbox>();
 
@@ -78,6 +79,7 @@ LevelProperties::LevelProperties(EditorScreen* editor_, const Rect& rect_) :
   create<Label>(Rect(Vector2i( 10, y+110), Size( 80, 20)), _("Music:"));
   music = create<Inputbox>();
 
+  printf("\tbinding functions\n");
   author->on_change.connect(std::bind(&LevelProperties::on_author_change, this, std::placeholders::_1));
   levelname->on_change.connect(std::bind(&LevelProperties::on_levelname_change, this, std::placeholders::_1));
   description->on_change.connect(std::bind(&LevelProperties::on_description_change, this, std::placeholders::_1));
@@ -89,6 +91,7 @@ LevelProperties::LevelProperties(EditorScreen* editor_, const Rect& rect_) :
   height->on_change.connect(std::bind(&LevelProperties::on_height_change, this, std::placeholders::_1));
   time->on_change.connect(std::bind(&LevelProperties::on_time_change, this, std::placeholders::_1));
   music->on_change.connect(std::bind(&LevelProperties::on_music_change, this, std::placeholders::_1));
+  printf("\tdone\n");
 }
 
 LevelProperties::~LevelProperties()

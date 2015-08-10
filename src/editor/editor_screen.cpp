@@ -74,20 +74,31 @@ EditorScreen::EditorScreen() :
 
   action_properties = gui_manager->create<ActionProperties>(this, Rect());
   action_properties->hide();
-/*
+  printf("level_properties\n");
   level_properties = gui_manager->create<LevelProperties>(this, Rect());
+  printf("hiding it\n");
   level_properties->hide();
-  level_properties->set_level(plf.get());
-  */
+  printf("setting level\n");
+  level_properties->set_level(plf.get());  
+  printf("level_properties end\n");
   action_properties->set_level(plf.get());
-/*
+
+  /*
+  printf("object_selector\n");
   object_selector = gui_manager->create<ObjectSelector>(this, Rect());
+  printf("object_selector end\n");
+  */
+
+  printf("file_load_dialog\n");  
   file_load_dialog = gui_manager->create<FileDialog>(this, Rect(Vector2i(50, 50), 
                                                                 Size(size.width  - 100, 
                                                                      size.height - 100)), 
                                                      FileDialog::LOAD);
+  printf("file_load_dialog set_directory\n");
   file_load_dialog->set_directory(".");
+  printf("file_load_dialog hiding\n");
   file_load_dialog->hide();
+  printf("file_load_dialog end\n");
 
   file_save_dialog = gui_manager->create<FileDialog>(this, Rect(Vector2i(50, 50), 
                                                                 Size(Display::get_width() - 100, 
@@ -95,7 +106,7 @@ EditorScreen::EditorScreen() :
                                                      FileDialog::SAVE);
   file_save_dialog->set_directory(".");
   file_save_dialog->hide();
-*/
+  printf("file_save_dialog end\n");
   {
     Size msg_size(600, 160);
 
