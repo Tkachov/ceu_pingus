@@ -189,6 +189,14 @@ ScreenManager::display()
       input_manager.update(previous_frame_time);
       input_controller->clear_events();
       read_events(std::cin, events);
+
+      printf("playback_input?\n");
+
+      //Ceu SDL_DT
+      dt = previous_frame_time*1000;
+      int dt_us = 1000*dt;
+      ceu_sys_go(&CEUapp, CEU_IN__WCLOCK, &dt_us);
+      ceu_sys_go(&CEUapp, CEU_IN_SDL_DT, &dt);
     }
     else
     {

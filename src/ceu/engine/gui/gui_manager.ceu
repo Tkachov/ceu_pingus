@@ -6,6 +6,9 @@
 #include "../../math/vector2i.ceu"
 #include "../display/sprite.ceu"
 #include "../../pingus/global_interface.ceu"
+#include "../../proxies/pointerproxy.ceu"
+#include "../../proxies/primarybuttonproxy.ceu"
+#include "../../proxies/eventproxy.ceu"
 #include "igui_manager.ceu"
 
 native/pre do

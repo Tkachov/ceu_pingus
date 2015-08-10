@@ -75,15 +75,6 @@ DemoSession::DemoSession(const Pathname& pathname_) :
   // Create GUI
   DemoSession* self = this;
   ceu_out_go(&CEUapp, CEU_IN_NEW_DEMO_SESSION, &self);
-
-  gui_manager->add(fastforward_button= new BButton(32+50, 32, "core/demo/fastforward",
-                                                   std::bind(&DemoSession::on_fast_forward_press, this),
-                                                   std::bind(&DemoSession::is_fast_forward, this)));
-  gui_manager->add(pause_button =new BButton(32,  32, "core/demo/pause",
-                                             std::bind(&DemoSession::on_pause_press, this),
-                                             std::bind(&DemoSession::is_pause, this)));
-  gui_manager->add(restart_button = new BButton(size.width - 32 - 48, 32, "core/demo/reload",
-                                                std::bind(&DemoSession::restart, this)));
 }
 
 DemoSession::~DemoSession()

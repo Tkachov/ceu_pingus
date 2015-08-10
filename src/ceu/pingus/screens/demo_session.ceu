@@ -3,6 +3,7 @@
 
 #include "../../c.ceu"
 #include "../../sdl.ceu"
+#include "../../engine/gui/gui_manager.ceu"
 #include "../../engine/screen/screen.ceu"
 #include "../iworld.ceu"
 #include "../global_interface.ceu"
@@ -28,11 +29,14 @@ native/pre do
     ##define new_GraphicContextState new GraphicContextState
     ##define new_Server(a) new Server(a)    
     ##define ScreenManager__instance() ScreenManager::instance()
+    ##define new_BButton new BButton
+    ##define std__bind(f, p) std::bind(f, p)
 end
 
 native @pure _new_PingusCounter(), _new_GUI_Component(), _new_RectComponent(), 
              _new_Rect(), _new_SceneContext(), _new_GraphicContextState(),
-             _new_Server(), _ScreenManager__instance(), _addr();
+             _new_Server(), _ScreenManager__instance(), _addr(),
+             _new_BButton(), _std__bind();
 
 input _ComponentUpdatePackage* DEMO_SESSION_UPDATE_SERVER;
 input _DemoSession* DEMO_SESSION_UPDATE;
@@ -45,17 +49,24 @@ class DemoSession with
 do
     var _DemoSession&? demo_session = (_DemoSession*)&me;
 
+    var GUIManager gui_manager with
+        this.me = _new_GUI__RectComponent(_Rect(0, 0, _Display__get_width(), _Display__get_height()));
+        this.drawing_context = _new_DrawingContext(_Rect(0, 0, _Display__get_width(), _Display__get_height()), false);
+    end;
+
     var ScreenFramework sf with
         this.screen = outer;
+        this.gui_manager = &gui_manager;
     end;
 
     var Server server with
-        this.me = _new_Server(demo_session.plf);
+        this.me = _new_Server(demo_session.plf);        
         demo_session.server = _PTR2REF(this.me);
     end;
 
     var PingusCounter pcounter with
         this.me = _new_GUI_Component();
+        this.me.ceu = &this;
         this.server = server;
     end;
 
@@ -72,6 +83,7 @@ do
                             );
         
         this.me = _new_RectComponent(_deref(rect));
+        this.me.ceu = &this;
         this.scene_context = _new_SceneContext(_deref(rect));
         this.state = _new_GraphicContextState(rect.get_width(), rect.get_height());
         this.server = server;
@@ -83,11 +95,13 @@ do
     var SmallMap small_map with
         this.rect = _new_RectComponent(_Rect(_Vector2i(5, demo_session.size.height - 105), _Size(175, 100)));
         this.me = this.rect;
+        this.me.ceu = &this;
         this.playfield = playfield;
     end;
 
     var ButtonPanel button_panel with
         this.me = _new_RectComponent(_Rect());
+        this.me.ceu = &this;
         this.server = server;
     end;
 
@@ -98,10 +112,25 @@ do
         button_panel.set_pos(bp_pos);
     end
 
-    demo_session.gui_manager:add(&pcounter.me) finalize with end;
-    demo_session.gui_manager:add(&button_panel.me) finalize with end;
-    demo_session.gui_manager:add(&playfield.me) finalize with end;
-    demo_session.gui_manager:add(&small_map.rect) finalize with end;
+    gui_manager.add(&pcounter.me);
+    gui_manager.add(&button_panel.me);
+    gui_manager.add(&playfield.me);
+    gui_manager.add(&small_map.rect);
+
+    demo_session.fastforward_button = _new_BButton(32+50, 32, "core/demo/fastforward",
+                                                   _std__bind({&DemoSession::on_fast_forward_press}, &demo_session),
+                                                   _std__bind({&DemoSession::is_fast_forward}, &demo_session));
+
+    demo_session.pause_button = _new_BButton(32, 32, "core/demo/pause",
+                                             _std__bind({&DemoSession::on_pause_press}, &demo_session),
+                                             _std__bind({&DemoSession::is_pause}, &demo_session));
+
+    demo_session.restart_button = _new_BButton(demo_session.size.width - 32 - 48, 32, "core/demo/reload",
+                                               _std__bind({&DemoSession::restart}, &demo_session));
+
+    gui_manager.add(demo_session.fastforward_button);
+    gui_manager.add(demo_session.pause_button);
+    gui_manager.add(demo_session.restart_button);
 
     par/or do
         every delta in global:update do
