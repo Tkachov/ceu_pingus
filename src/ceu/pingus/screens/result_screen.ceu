@@ -378,21 +378,17 @@ do
             end
         end
     with
-        every package in SCREEN_RESIZE do
-            if package:screen != &me then
-                continue;
-            end
-
+        every (width, height) in resize do
             if ok_button then
-                call/rec ok_button:set_pos(me.size.width/2 + 245, me.size.height/2 + 150);
+                call/rec ok_button:set_pos(width/2 + 245, height/2 + 150);
             end
 
             if abort_button then
-                call/rec abort_button:set_pos(me.size.width/2 - 300, me.size.height/2 + 200);
+                call/rec abort_button:set_pos(width/2 - 300, height/2 + 200);
             end
 
             if retry_button then
-                call/rec retry_button:set_pos(me.size.width/2 + 245, me.size.height/2 + 150);
+                call/rec retry_button:set_pos(width/2 + 245, height/2 + 150);
             end
         end
     with

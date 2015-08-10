@@ -398,14 +398,10 @@ do
             emit comp.fast_forward_release;
         end
     with
-        every package in SCREEN_RESIZE do
-            if package:screen != &me then
-                continue;
-            end
-
-            call/rec close_button.set_pos(0, me.size.height - 37);
+        every (width, height) in resize do
+            call/rec close_button.set_pos(0, height - 37);
             if credits_button then
-                call/rec credits_button:set_pos(me.size.width - 150, 0);
+                call/rec credits_button:set_pos(width - 150, 0);
             end
         end
     with

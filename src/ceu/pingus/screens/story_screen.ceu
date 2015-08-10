@@ -311,14 +311,10 @@ do
             call/rec story_comp.next_text();
         end
     with
-        every package in SCREEN_RESIZE do
-            if package:screen != &me then
-                continue;
-            end
-            
-            call/rec continue_button.set_pos(me.size.width/2 + 260, me.size.height/2 + 212);
+        every (width, height) in resize do
+            call/rec continue_button.set_pos(width/2 + 260, height/2 + 212);
             if skip_button then
-                call/rec skip_button:set_pos(me.size.width - 4, me.size.height - 26);
+                call/rec skip_button:set_pos(width - 4, height - 26);
             end
         end
     with

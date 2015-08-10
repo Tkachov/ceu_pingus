@@ -283,13 +283,9 @@ do
             start_game();            
         end
     with
-        every package in SCREEN_RESIZE do
-            if package:screen != &me then
-                continue;
-            end
-
-            call/rec abort_button.set_pos(me.size.width/2 - 300, me.size.height/2 + 200);
-            call/rec ok_button.set_pos(me.size.width/2 + 245, me.size.height/2 + 150);
+        every (width, height) in resize do
+            call/rec abort_button.set_pos(width/2 - 300, height/2 + 200);
+            call/rec ok_button.set_pos(width/2 + 245, height/2 + 150);
         end
     with
         var _StartScreen* e = await DELETE_START_SCREEN until (e == &me);

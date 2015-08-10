@@ -566,20 +566,16 @@ do
             next_page();
         end
     with
-        every package in SCREEN_RESIZE do
-            if package:screen != &level_menu then
-                continue;
-            end
-
-            var int x_pos = (level_menu.size.width  - _globals__default_screen_width)/2;
-            var int y_pos = (level_menu.size.height - _globals__default_screen_height)/2;
+        every (width, height) in resize do
+            var int x_pos = (width  - _globals__default_screen_width)/2;
+            var int y_pos = (height - _globals__default_screen_height)/2;
 
             levelset_selector.rect.set_rect(_Rect(_Vector2i(x_pos + 60, y_pos + 50), _Size(680, 500)));
             level_selector   .rect.set_rect(_Rect(_Vector2i(x_pos + 60, y_pos + 50), _Size(680, 500)));
 
-            call/rec prev_button.set_pos(level_menu.size.width/2 + 280, level_menu.size.height/2 - 60);
-            call/rec next_button.set_pos(level_menu.size.width/2 + 280, level_menu.size.height/2 + 12);
-            call/rec abort_button.set_pos(level_menu.size.width/2 - 300, level_menu.size.height/2 + 200);
+            call/rec prev_button.set_pos(width/2 + 280, height/2 - 60);
+            call/rec next_button.set_pos(width/2 + 280, height/2 + 12);
+            call/rec abort_button.set_pos(width/2 - 300, height/2 + 200);
         end
     with
         var _LevelMenu* e = await DELETE_LEVEL_MENU until (e == &level_menu);

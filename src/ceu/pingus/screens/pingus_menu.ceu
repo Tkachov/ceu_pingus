@@ -303,18 +303,14 @@ do
             //original FIXME: get_manager()->show_exit_menu ();            
         end
     with
-        every package in SCREEN_RESIZE do
-            if package:screen != &me then
-                continue;
-            end
+        every (width, height) in resize do
+            emit create_background => (width, height);
 
-            emit create_background => (me.size.width, me.size.height);
-
-            start_button.set_pos(me.size.width/2 - 125, me.size.height/2 - 20);
-            editor_button.set_pos(me.size.width/2 + 125, me.size.height/2 - 20);
-            contrib_button.set_pos(me.size.width/2 - 125, me.size.height/2 + 50);
-            options_button.set_pos(me.size.width/2 + 125, me.size.height/2 + 50);
-            quit_button.set_pos(me.size.width/2, me.size.height/2 + 120);
+            start_button.set_pos(width/2 - 125, height/2 - 20);
+            editor_button.set_pos(width/2 + 125, height/2 - 20);
+            contrib_button.set_pos(width/2 - 125, height/2 + 50);
+            options_button.set_pos(width/2 + 125, height/2 + 50);
+            quit_button.set_pos(width/2, height/2 + 120);
         end
     with
         var _PingusMenu* e = await DELETE_PINGUS_MENU until (e == &me);

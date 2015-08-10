@@ -431,11 +431,7 @@ do
             close_screen();            
         end
     with
-        every package in SCREEN_RESIZE do
-            if package:screen != &option_menu then
-                continue;
-            end
-
+        every resize do
             call/rec ok_button.set_pos(option_menu.size.width/2 + 245, option_menu.size.height/2 + 150);
 
             //original FIXME: this drifts due to rounding errors

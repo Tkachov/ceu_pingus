@@ -30,7 +30,7 @@ input _GUIScreen* ON_ACTION_DOWN_PRESS;
 input _ScreenUpdateEventPackage* SCREEN_UPDATE_EVENT;
 input _ScreenDrawPackage* SCREEN_DRAW_BACKGROUND;
 input _ScreenDrawPackage* SCREEN_DRAW_FOREGROUND;
-input _ScreenResizePackage* SCREEN_RESIZE; //TODO
+input _ScreenResizePackage* SCREEN_RESIZE;
 input _ScreenAxisMovePackage* ON_ACTION_AXIS_MOVE;
 
 interface Screen with
@@ -42,6 +42,8 @@ interface Screen with
     event _DrawingContext* draw_background;
     event _DrawingContext* draw_foreground;
     event _const_Input__Event* update_event;
+
+    event (int, int) resize;
 
     event void on_startup;
     event void on_armageddon_press;
@@ -146,6 +148,21 @@ do
             if screen_ptr == &screen.me then
                 emit screen.on_startup;
             end
+        end
+    with
+        loop do
+            var _ScreenResizePackage* package = await SCREEN_RESIZE until package:screen == &screen.me;            
+
+            if gui_manager then
+                ((_GUI_RectComponent*)&gui_manager:me):set_rect(_Rect(_Vector2i(0, 0), package:size) finalize with end);
+            end
+
+            var int w = package:size.width;
+            var int h = package:size.height;
+
+            await 10ms; //hack
+
+            emit screen.resize => (w, h);
         end
     end
 end

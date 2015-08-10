@@ -368,32 +368,28 @@ do
             end
         end
     with
-        every package in SCREEN_RESIZE do
-            if package:screen != &game_session then
-                continue;
-            end
-
+        every (width, height) in resize do
             ((_GUI_RectComponent*)&playfield.me):set_rect(
                 _Rect(
                     _Vector2i(
-                        _Math__max((game_session.size.width - global:world:get_width())/2,  0),
-                        _Math__max((game_session.size.height - global:world:get_height())/2, 0)
+                        _Math__max((width - global:world:get_width())/2,  0),
+                        _Math__max((height - global:world:get_height())/2, 0)
                     ),
                     _Size(
-                        _Math__min(game_session.size.width, global:world:get_width()),
-                        _Math__min(game_session.size.height, global:world:get_height())
+                        _Math__min(width, global:world:get_width()),
+                        _Math__min(height, global:world:get_height())
                     )
                 )
             );
 
-            ((_GUI_RectComponent*)&armageddon_button.me):set_rect(_Rect(_Vector2i(game_session.size.width - 40, game_session.size.height - 62), _Size(38, 60)));
-            ((_GUI_RectComponent*)&forward_button.me):set_rect(_Rect(_Vector2i(game_session.size.width - 40*2, game_session.size.height - 62), _Size(38, 60)));
-            ((_GUI_RectComponent*)&pause_button.me):set_rect(_Rect(_Vector2i(game_session.size.width - 40*3, game_session.size.height - 62), _Size(38, 60)));
-            small_map.rect.set_rect(_Rect(_Vector2i(5, game_session.size.height - 105), _Size(175, 100)));
+            ((_GUI_RectComponent*)&armageddon_button.me):set_rect(_Rect(_Vector2i(width - 40, height - 62), _Size(38, 60)));
+            ((_GUI_RectComponent*)&forward_button.me):set_rect(_Rect(_Vector2i(width - 40*2, height - 62), _Size(38, 60)));
+            ((_GUI_RectComponent*)&pause_button.me):set_rect(_Rect(_Vector2i(width - 40*3, height - 62), _Size(38, 60)));
+            small_map.rect.set_rect(_Rect(_Vector2i(5, height - 105), _Size(175, 100)));
 
             var Vector2i bp_pos;
             bp_pos.x = 0;
-            bp_pos.y = (game_session.size.height - 150)/2;
+            bp_pos.y = (height - 150)/2;
             button_panel.set_pos(bp_pos);
         end
     with

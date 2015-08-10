@@ -167,29 +167,25 @@ do
             //well, I think it isn't
         end
     with
-        every package in SCREEN_RESIZE do
-            if package:screen != &demo_session then
-                continue;
-            end
-
+        every (width, height) in resize do
             ((_GUI_RectComponent*)&playfield.me):set_rect(
                 _Rect(
                     _Vector2i(
-                        _Math__max((demo_session.size.width  - global:world:get_width())/2,  0),
-                        _Math__max((demo_session.size.height - global:world:get_height())/2, 0)
+                        _Math__max((width  - global:world:get_width())/2,  0),
+                        _Math__max((height - global:world:get_height())/2, 0)
                     ), 
                     _Size(
-                        _Math__min(demo_session.size.width,  global:world:get_width()),
-                        _Math__min(demo_session.size.height, global:world:get_height())
+                        _Math__min(width,  global:world:get_width()),
+                        _Math__min(height, global:world:get_height())
                     )
                 )
             );
 
             demo_session.fastforward_button:set_pos(32+50, 32);
             demo_session.pause_button:set_pos(32, 32);
-            demo_session.restart_button:set_pos(demo_session.size.width - 32 - 48, 32);
+            demo_session.restart_button:set_pos(width - 32 - 48, 32);
 
-            small_map.rect.set_rect(_Rect(_Vector2i(5, demo_session.size.height - 105), _Size(175, 100)));
+            small_map.rect.set_rect(_Rect(_Vector2i(5, height - 105), _Size(175, 100)));
         end
     with
         var _DemoSession* e = await DELETE_DEMO_SESSION until (e == &demo_session);
