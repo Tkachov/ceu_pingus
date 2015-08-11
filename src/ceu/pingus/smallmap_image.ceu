@@ -57,7 +57,11 @@ do
         var int height = canvas.get_height();
         var int pitch  = canvas.get_pitch();
 
-        _assert(width < cmap_width and height < cmap_height);
+        ///_assert(width < cmap_width and height < cmap_height);
+        if width >= cmap_width or height >= cmap_height then
+            _log_error("assert"); //happens when we leave the level
+            return;
+        end
 
         var int red   = 0;
         var int green = 1;

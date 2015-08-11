@@ -349,6 +349,7 @@ do
                 end
             end
 
+            global:world = _PTR2REF(&this);
             emit update;
         end
     with
@@ -784,12 +785,12 @@ do
         end
     with
         await e_DELETE;
-
-        objs.cleanup();
-        loop i in objs.size() do
-            emit ((IWorldObj*)objs.get(i)):e_DELETE;
-        end
     end    
+
+    objs.cleanup();
+    loop i in objs.size() do
+        emit ((IWorldObj*)objs.get(i)):e_DELETE;
+    end
 end
 
 #endif

@@ -401,9 +401,10 @@ do
             end
         end
     with
-        var _GameSession* e = await DELETE_GAME_SESSION until (e == &game_session);
-        emit server.e_DELETE;
+        var _GameSession* e = await DELETE_GAME_SESSION until (e == &game_session);        
     end
+
+    emit server.e_DELETE;
 end
 
 #endif

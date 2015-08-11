@@ -30,17 +30,19 @@ native/pre do
     ##define new_Server(a) new Server(a)    
     ##define ScreenManager__instance() ScreenManager::instance()
     ##define new_BButton new BButton
-    ##define std__bind(f, p) std::bind(f, p)
+    ##define std__bind(f, p) std::bind(f, p)    
+    ##define std__make_shared_DemoSession std::make_shared<DemoSession>
 end
 
 native @pure _new_PingusCounter(), _new_GUI_Component(), _new_RectComponent(), 
              _new_Rect(), _new_SceneContext(), _new_GraphicContextState(),
              _new_Server(), _ScreenManager__instance(), _addr(),
-             _new_BButton(), _std__bind();
+             _new_BButton(), _std__bind(), _std__make_shared_DemoSession();
 
 input _ComponentUpdatePackage* DEMO_SESSION_UPDATE_SERVER;
 input _DemoSession* DEMO_SESSION_UPDATE;
 input _DemoSession* DELETE_DEMO_SESSION;
+input _DemoSession* RESTART_DEMO_SESSION;
 input _Vector2i* DEMO_SESSION_ON_SCROLLER_MOVE;
 
 class DemoSession with
@@ -195,6 +197,13 @@ do
             playfield.scroll(-pos:x, -pos:y);
             //well, I think it isn't
         end
+    with
+        var _DemoSession* e = await RESTART_DEMO_SESSION until (e == &demo_session);
+
+        //await 10ms;                
+        _ScreenManager__instance():replace_screen(_std__make_shared_DemoSession(demo_session.pathname));
+
+        e = await DELETE_DEMO_SESSION until (e == &demo_session);
     with
         every (width, height) in resize do
             ((_GUI_RectComponent*)&playfield.me):set_rect(

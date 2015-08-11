@@ -61,7 +61,12 @@ do
     end
 
     function @rec (void) => int get_time do
-        return global:world:get_time();
+        if global:world then
+            return global:world:get_time();
+        end
+
+        _log_error("get_time() called when no world exists\n");
+        return 0;
     end
 
     function (void) => _PingusLevel get_plf do
@@ -147,10 +152,10 @@ do
             _stream_print(me.demostream, call/rec get_time());
             _stream_print(me.demostream, "))");
             _stream_print(me.demostream, _std__endl);
-        end
-
-        emit world.e_DELETE;
+        end        
     end
+
+    emit world.e_DELETE;
 end
 
 #endif

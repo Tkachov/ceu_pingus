@@ -100,7 +100,8 @@ void DemoSession::on_scroller_move(float x, float y) {
 void
 DemoSession::restart()
 {
-  ScreenManager::instance()->replace_screen(std::make_shared<DemoSession>(pathname));
+  DemoSession* self = this;
+  ceu_out_go(&CEUapp, CEU_IN_RESTART_DEMO_SESSION, &self);  
 }
 
 /* EOF */
