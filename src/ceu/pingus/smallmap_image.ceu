@@ -125,8 +125,8 @@ do
         update_count = update_count + delta;
 
         if update_count > smallmap_update_time then
-            update_count = 0;
-            if colmap_serial != global:world:get_colmap():get_serial() then
+            update_count = 0;            
+            if global:world and global:world:get_colmap() and colmap_serial != global:world:get_colmap():get_serial() then
                 call/rec update_surface();
             end
         end
