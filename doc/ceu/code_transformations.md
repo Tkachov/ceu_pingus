@@ -96,6 +96,8 @@ In some cases we can't have a single event for all organisms as we have them ord
 
 For example, we have `PINGU_DRAW_WALKER` and `PINGU_DRAW_OTHERS` events, because we want to draw non-Walkers on top of the Walkers, because they probably need more player's attention than Walkers.
 
+**UPD:** `draw` requests are sorted before actual rendering and I decided that `update` could be done in any order.
+
 ### No "none" value in actions enum
 
 In Pingus C++ code `PinguAction` smart pointers were used to determine whether an action was set or not. If it's `null`, there is no action set. Otherwise, we can get action's type.
@@ -122,6 +124,8 @@ I just left all code in C++ as global (in a namespace) functions. Now Céu organ
 
 I needed the classes ported to remove `WorldObj`, so that was the simplest solution. I'll do an actual port of these later.
 
+**UPD:** particles holders are ported; `GroundMap` is left in C++.
+
 ### `Container`
 
 The `Container` class is needed to storage Céu organisms and iterate over that collection inside Céu.
@@ -146,3 +150,5 @@ end
 ```
 
 Yes, it guarantees that **all** objects are updated in **necessary order**. But as `Container` can't emit an event of object itself, we have to add more Céu events. More than that, if we want to pass a parameter, we have to remember it in a local variable and use it in another `every` block (actually, that can be fixed by adding a special "package" `struct`, which would contain both current object pointer and passed parameter).
+
+**UPD:** `Container` is now used for storaging only. `draw` and `update` are more global now, and objects themselves react to these. `e_DELETE` event still emitted to each object in a loop, though.
