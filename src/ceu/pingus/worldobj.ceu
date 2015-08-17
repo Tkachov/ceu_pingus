@@ -25,7 +25,6 @@ interface IWorldObj with
 
     event void e_STARTUP;
     event _SceneContext* e_DRAW;
-    event void e_UPDATE;
     event void e_DELETE;
 
     function (_FileReader* reader) => void construct;

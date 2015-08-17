@@ -290,22 +290,12 @@ do
     par/or do
         every e_CREATE do
             var _const_std__vector_FileReader* ov = _addr(pingus_level.get_objects());
-            var _CreationPackage* pack = _new_CreationPackage();
-            ///_printf("going to do %d emits\n----\n", ov:size());
+            var _CreationPackage* pack = _new_CreationPackage();            
             loop i in ov:size() do
                 pack:reader = _PTR2REF((_FileReader*)_vecget_addr(ov, i));
-                pack:result.clear();
-                ///_printf("create #%d: \t", i+1);
+                pack:result.clear();                
                 emit create => pack;
-
-                loop j in pack:result.size() do
-                    if _vecget(pack:result, j) then
-                        ///_printf(" %d", _vecget(pack:result, j));
-                    end
-                end
-                ///_printf("\n");
             end
-            ///_printf("\n");
             _delete_obj(pack);
 
             //first: there are few world objects (like pingu_holder) which are not created by WorldObjFactory up there
@@ -341,13 +331,7 @@ do
                 end
             end
 
-            objs.cleanup();
-            loop i in objs.size() do
-                ///_printf("update object = %d\n", objs.get(i));
-                if objs.get(i) != null then
-                    emit ((IWorldObj*)objs.get(i)):e_UPDATE; //TODO: remove this
-                end
-            end
+            objs.cleanup(); //actually necessary before iterating `objs` only
 
             global:world = _PTR2REF(&this);
             emit update;
@@ -366,7 +350,9 @@ do
             loop i in sections.size() do
                 new_package:reader = _vecget_addr(sections, i);
                 new_package:result.clear();
-                emit create_object => new_package; //TODO: fix `create` emitting
+                emit create_object => new_package;
+                //TODO: recursive `create` emitting is not working, but may be required
+                //     (`create_object` -> ... -> `create_object`)
 
                 loop j in new_package:result.size() do
                     if _vecget(new_package:result, j) then
@@ -397,7 +383,9 @@ do
                 var _OverrideFileReader&? override_reader = _new_OverrideFileReader(objects, i, _deref(overrides));
                 new_package:reader = _PTR2REF(override_reader);
                 new_package:result.clear();
-                emit create_object => new_package; //TODO: fix `create` emitting
+                emit create_object => new_package;
+                //TODO: recursive `create` emitting is not working, but may be required
+                //     (`create_object` -> ... -> `create_object`)
 
                 loop j in new_package:result.size() do
                     if _vecget(new_package:result, j) then

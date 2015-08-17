@@ -21,7 +21,6 @@ end
 
 class GoalManager with
     var IServer& server;
-    event void e_UPDATE;
 
     function (void) => void set_abort_goal;
     function @rec (void) => bool is_finished;
