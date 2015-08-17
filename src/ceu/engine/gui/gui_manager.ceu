@@ -55,6 +55,8 @@ anyways that rect is also passed into _GUI_RectComponent()
 
 class GUIManager with
     interface IGUIManager;
+
+    function @rec (Vector2i pos) => _GUI_Component* component_at;
 do
     var Vector2i mouse_pos;
     mouse_pos.x = 400;
@@ -85,11 +87,10 @@ do
     var PointerProxy pp with this.gui = outer; end;
     var EventProxy ep with this.gui = outer; end;
 
-    function @rec (Vector2i pos) => bool is_at_func do
-        //TODO
-        ///package:result = (package:mouse_pos.x > pos.x and package:mouse_pos.x < pos.x + (int)button_surface.get_width() and package:mouse_pos.y > pos.y and package:mouse_pos.y < pos.y + (int)button_surface.get_height());
-        ///return (RectComponent::is_at(x,y) or call/rec component_at(drawing_context.screen_to_world(_Vector2i(package:mouse_pos.x, package:mouse_pos.y))));
-        return false;
+    function @rec (Vector2i pos) => bool is_at_func do        
+        var Vector2i mpos;
+        _readVector2i(mpos, drawing_context.screen_to_world(_Vector2i(pos.x, pos.y)));
+        return (((_GUI__RectComponent*)&me):is_at(pos.x, pos.y) or call/rec component_at(mpos)); //return false if anything goes wrong
     end
 
     function @rec (Vector2i pos) => _GUI_Component* component_at do

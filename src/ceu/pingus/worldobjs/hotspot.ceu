@@ -32,6 +32,8 @@ do
     with
         every global:world:update do
             sprite.update(); //TODO: replace with autonomous sprite?
+                             //     (such sprites don't have any "para support",
+                             //      but neither does this organism (even if wants to))
         end
     with
         await e_DELETE;

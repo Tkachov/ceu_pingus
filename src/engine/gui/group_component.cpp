@@ -186,7 +186,7 @@ GroupComponent::on_secondary_button_release(int x, int y)
 void
 GroupComponent::on_key_pressed(const Input::KeyboardEvent& ev)
 {
-  //TODO: Ceu ON_KEY_PRESSED
+  //TODO: Ceu ON_KEY_PRESSED external event (not necessary as `GUIManager` is ported already)
   if (grabbed_comp)
     grabbed_comp->on_key_pressed(ev);
   else if (focused_comp)
@@ -198,7 +198,7 @@ GroupComponent::on_key_pressed(const Input::KeyboardEvent& ev)
 void
 GroupComponent::on_text_input(const Input::TextInputEvent& ev)
 {
-  //TODO: Ceu ON_TEXT_INPUT
+  //TODO: Ceu ON_TEXT_INPUT external event (not necessary as `GUIManager` is ported already)
   if (grabbed_comp)
     grabbed_comp->on_text_input(ev);
   else if (focused_comp)
@@ -211,7 +211,7 @@ void
 GroupComponent::on_pointer_move(int x, int y)
 {
   Vector2i mouse_pos = drawing_context.screen_to_world(Vector2i(x, y));
-  PositionPackage package(0, mouse_pos); //make sure you update the pointer!
+  PositionPackage package(0, mouse_pos); //make sure you update the `component` pointer!
   PositionPackage* pp = &package;  
 
   if (grabbed_comp)
