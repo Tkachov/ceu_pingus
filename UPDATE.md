@@ -1,3 +1,13 @@
+# Week 13 (17/08--23/08)
+
+## What I was supposed to do the past week?
+
+Finish up the work.
+
+## What I actually did the past week?
+
+## What I'll do this week?
+
 # Week 12 (10/08--16/08)
 
 ## What I was supposed to do the past week?
@@ -6,7 +16,18 @@ Fix editor screen and demo/game difference bugs.
 
 ## What I actually did the past week?
 
+Fixed editor;
+Fixed resize issue;
+Fixed demo/game difference bug;
+Fixed demo restart;
+Played the whole game to test it;
+Measured CPU, RAM and I/O usage and FPS in both Ceu and C++ versions;
+Found the reason of lags;
+Added some documentation.
+
 ## What I'll do this week?
+
+Finish up the work.
 
 # Week 11 (3/08--9/08)
 
