@@ -35,7 +35,7 @@ ServerEvent::ServerEvent() :
 }
 
 ServerEvent::~ServerEvent() {
-  //TODO: port completely or somehow solve that
+  //TODO: port completely or somehow fix segfault it causes
   //ServerEvent* self = this;
   //ceu_out_go(&CEUapp, CEU_IN_DELETE_SERVER_EVENT, &self);
 }

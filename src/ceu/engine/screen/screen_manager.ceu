@@ -138,11 +138,9 @@ do
                 var int border_x = ((float)_Display__get_width()/2)  * (1.0 - progress);
                 var int border_y = ((float)_Display__get_height()/2) * (1.0 - progress);
 
-                ///_printf("fade_over before draw old [%d]\n", old_screen);
                 if old_screen:ceu == null then                    
                     old_screen:draw(*screen_manager.display_gc) finalize with end;
                 else            
-                    ///_printf("[%d] ceu draw\n", old_screen:ceu);
                     _fflush(_stdout);
                     emit ((Screen*)old_screen:ceu):call_draw => screen_manager.display_gc.get();
                 end

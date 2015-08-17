@@ -190,8 +190,6 @@ ScreenManager::display()
       input_controller->clear_events();
       read_events(std::cin, events);
 
-      printf("playback_input?\n");
-
       //Ceu SDL_DT
       dt = previous_frame_time*1000;
       int dt_us = 1000*dt;

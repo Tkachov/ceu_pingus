@@ -222,8 +222,9 @@ SDLDriver::update(float delta)
       case SDL_QUIT: // FIXME: make this into a GameEvent
         ScreenManager::instance()->pop_all_screens();
         //Ceu SDL_QUIT
-        ///ceu_sys_go(&CEUapp, CEU_IN_SDL_QUIT, 0);
-        //TODO: fix that segfault somehow
+        ceu_sys_go(&CEUapp, CEU_IN_SDL_QUIT, 0);
+        //there was some segfault when Ceu application quits (main.ceu) earlier than something else happens
+        //I don't see that problem now, so let it be emitted
       break;
 
       case SDL_MOUSEMOTION:
@@ -241,12 +242,12 @@ SDLDriver::update(float delta)
                                          static_cast<float>(event.motion.yrel)));
         }
 
-        //TODO: somehow pass x, y, xrel, yrel info in Ceu SDL_MOUSEMOTION
+        //TODO: pass a pointer to event.motion in Ceu SDL_MOUSEMOTION
       break;
 
       case SDL_MOUSEWHEEL:
         log_error("mousewheel not implemented: %1% %2%", event.wheel.which, event.wheel.x, event.wheel.y);
-        //TODO: somehow pass which, x, y info in Ceu SDL_MOUSEWHEEL
+        //TODO: pass a pointer to event.wheel in Ceu SDL_MOUSEWHEEL
       break;
 
       case SDL_TEXTINPUT:
@@ -254,13 +255,13 @@ SDLDriver::update(float delta)
         {
           keyboard_binding->send_event(event);
         }
-        //TODO: somehow pass event in Ceu SDL_TEXTINPUT
+        //TODO: pass event (event.text?) in Ceu SDL_TEXTINPUT
       break;
 
       case SDL_TEXTEDITING:
         log_error("textediting not implemented: %1% %2% '%3%'",
                   event.edit.start, event.edit.length, event.edit.text);
-        //TODO: somehow pass event in Ceu SDL_TEXTEDITING
+        //TODO: pass event.edit in Ceu SDL_TEXTEDITING
       break;
 
       case SDL_MOUSEBUTTONDOWN:

@@ -78,9 +78,8 @@ do
             if p then
                 if _Math__abs(server_event:pos.x - (call/rec p:get_pos()).x)>1 or _Math__abs(server_event:pos.y - (call/rec p:get_pos()).y)>1 then
                 //if server_event:pos.x != (call/rec p:get_pos()).x or server_event:pos.y != (call/rec p:get_pos()).y then
-                    //_log_error("DemoFile inconsistent with world, pingu %1% is at the wrong position", server_event:pingu_id);
+                    _log_error("DemoFile inconsistent with world, pingu %1% is at the wrong position", server_event:pingu_id);
                     _printf("DIFF: %f %f\n", server_event:pos.x - (call/rec p:get_pos()).x, server_event:pos.y - (call/rec p:get_pos()).y);
-                    _printf("wanted (%f %f)\n", server_event:pos.x, server_event:pos.y);
                 end
 
                 emit send_pingu_action_event => (p, server_event:pingu_action);
@@ -90,7 +89,6 @@ do
         end
     with
         every (pingu, action) in send_pingu_action_event do
-            _printf("%d: pingu #%d action %d\n", call/rec get_time(), pingu:get_id(), action);
             record(
                 _ServerEvent__make_pingu_action_event(
                     call/rec get_time(),
